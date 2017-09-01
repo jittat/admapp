@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block content %}
+  <h2>ลงทะเบียนบัญชีผู้สมัครเข้าศึกษา</h2>
+  <form action="{% url 'regis:register' %}" method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" class="btn btn-lg btn-primary" value="ลงทะเบียน" />
+  </form>
+{% endblock %}
