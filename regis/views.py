@@ -3,6 +3,8 @@ from django.forms import ValidationError
 
 from django.shortcuts import render
 
+from .validators import is_valid_national_id
+
 class RegistrationForm(forms.Form):
     national_id = forms.CharField(label='รหัสประจำตัวประชาชน',
                                   max_length=20)
@@ -26,17 +28,8 @@ class RegistrationForm(forms.Form):
     password_confirm = forms.CharField(label='ยืนยันรหัสผ่าน',
                                        max_length=100)
 
-    @staticmethod
-    def is_valid_national_id(national_id):
-        if len(national_id) != 13:
-            return False
-        for c in national_id:
-            if c > '9' or c < '0':
-                return False
-        return True
-    
     def clean_national_id(self):
-        if not RegistrationForm.is_valid_national_id(self.cleaned_data['national_id']):
+        if not is_valid_national_id(self.cleaned_data['national_id']):
             del self.cleaned_data['national_id']
             raise ValidationError('รหัสประจำตัวประชาชนผิดรูปแบบ', code='invalid')
         return self.cleaned_data['national_id']
@@ -50,7 +43,7 @@ class RegistrationForm(forms.Form):
                 raise ValidationError(error_message, code='invalid')
         
     def clean_national_id_confirm(self):
-        if not RegistrationForm.is_valid_national_id(self.cleaned_data['national_id_confirm']):
+        if not is_valid_national_id(self.cleaned_data['national_id_confirm']):
             del self.cleaned_data['national_id_confirm']
             raise ValidationError('รหัสประจำตัวประชาชนผิดรูปแบบ', code='invalid')
 
