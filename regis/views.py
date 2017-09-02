@@ -1,7 +1,8 @@
 from django import forms
 from django.forms import ValidationError
-
 from django.shortcuts import render
+
+from django.contrib.auth.password_validation import validate_password
 
 from .validators import is_valid_national_id
 
@@ -24,7 +25,8 @@ class RegistrationForm(forms.Form):
                                 max_length=200)
 
     password = forms.CharField(label='รหัสผ่าน',
-                               max_length=100)
+                               max_length=100,
+                               help_text='ต้องมีความยาวไม่น้อยกว่า 8 ตัวอักษร ห้ามใช้แต่ตัวเลข')
     password_confirm = forms.CharField(label='ยืนยันรหัสผ่าน',
                                        max_length=100)
 
@@ -56,6 +58,10 @@ class RegistrationForm(forms.Form):
                                            'อีเมลที่ยืนยันไม่ตรงกัน')
         return self.cleaned_data['email_confirm']
 
+    def clean_password(self):
+        validate_password(self.cleaned_data['password'])
+        return self.cleaned_data['password']
+    
     def clean_password_confirm(self):
         self.check_confirm_and_raise_error('password', 'password_confirm',
                                            'รหัสผ่านที่ยืนยันไม่ตรงกัน')
