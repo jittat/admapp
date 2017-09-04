@@ -1,0 +1,5 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>สวัสดีครับ {{ applicant }}</h1>
+<a href="{% url 'regis:logout' %}">Log out</a>
+{% endblock %}

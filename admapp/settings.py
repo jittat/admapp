@@ -106,7 +106,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'th'
 
 TIME_ZONE = 'Asia/Bangkok'
 
@@ -125,6 +125,10 @@ STATIC_URL = '/static/'
 # Crispy forms
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+# Admission App Configs
+
+VERIFY_NATIONAL_ID = False
 
 try:
     from .settings_local import *

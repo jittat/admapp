@@ -1,9 +1,30 @@
 {% extends 'base.html' %}
+{% load crispy_forms_tags %}
 {% block content %}
 <div class="row">
   <div class="col-md-12">
     <h1>สวัสดีครับ</h1>
-    <a class="btn btn-primary btn-lg" href="{% url 'regis:register' %}">ลงทะเบียน</a>
+    เข้าใช้ระบบรับสมัคร
+    {% if error_message %}
+      <div class="alert alert-danger">
+        {% if error_message == 'no-login' %}
+          กรุณา login เข้าใช้ระบบก่อนใช้งาน
+        {% endif %}
+        {% if error_message == 'wrong-password' %}
+          ขออภัย ไม่สามารถเข้าใช้ระบบได้ เนื่องจากรหัสผ่านหรือรหัสประจำตัวประชาชนผิดพลาด
+        {% endif %}
+        {% if error_message == 'invalide' %}
+          ขออภัย ไม่สามารถเข้าใช้ระบบได้ เนื่องจากฟอร์มผิดพลาด
+        {% endif %}
+      </div>
+    {% endif %}
+    <form action="{% url 'regis:login' %}" method="post">
+      {% csrf_token %}
+      {{ login_form|crispy }}
+      <input class="btn btn-primary btn-lg" type="submit" value="เข้าใช้ระบบ" />
+    </form>
+    หรือลงทะเบียนสำหรับผู้ใช้ใหม่<br />
+    <a class="btn btn-success btn-lg" href="{% url 'regis:register' %}">ลงทะเบียน</a>
   </div>
 </div>
 {% endblock %}
