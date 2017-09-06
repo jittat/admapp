@@ -132,6 +132,9 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 VERIFY_NATIONAL_ID = False
 
+# login/logout urls
+LOGOUT_REDIRECT_URL = '/backoffice/'
+
 try:
     from .settings_local import *
 except ImportError:

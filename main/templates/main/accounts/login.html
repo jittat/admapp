@@ -1,35 +1,34 @@
 {% extends "base.html" %}
-
+{% load crispy_forms_tags %}
 {% block content %}
-
-{% if form.errors %}
-<p>Your username and password didn't match. Please try again.</p>
-{% endif %}
-
-{% if next %}
-    {% if user.is_authenticated %}
-    <p>Your account doesn't have access to this page. To proceed,
-    please login with an account that has access.</p>
-    {% else %}
-    <p>Please login to see this page.</p>
+<div class="row">
+  <div class="col-md-12">
+    <h2>ระบบจัดการผู้สมัคร</h2>
+  
+    {% if form.errors %}
+      <div class="alert alert-danger">
+        ชื่อผู้ใช้หรือรหัสผ่านผิดพลาด
+      </div>
     {% endif %}
-{% endif %}
 
-<form method="post" action="{% url 'login' %}">
-{% csrf_token %}
-<table>
-<tr>
-    <td>{{ form.username.label_tag }}</td>
-    <td>{{ form.username }}</td>
-</tr>
-<tr>
-    <td>{{ form.password.label_tag }}</td>
-    <td>{{ form.password }}</td>
-</tr>
-</table>
+    {% if next %}
+      {% if user.is_authenticated %}
+        <p>
+          คุณไม่มีสิทธิ์เข้าถึงหน้าดังกล่าว กรุณาเข้าระบบด้วยบัญชีผู้ใช้ที่มีสิทธิ์ใช้งาน
+        </p>
+      {% else %}
+        <p>
+          กรุณาเข้าใช้ระบบก่อนที่จะเริ่มทำงาน
+        </p>
+      {% endif %}
+    {% endif %}
 
-<input type="submit" value="login" />
-<input type="hidden" name="next" value="{{ next }}" />
-</form>
-
+    <form method="post" action="{% url 'backoffice-login' %}">
+      {% csrf_token %}
+      {{ form|crispy }}
+      <input class="btn btn-primary btn-lg" type="submit" value="เข้าระบบ" />
+      <input type="hidden" name="next" value="{{ next }}" />
+    </form>
+  </div>
+</div>
 {% endblock %}
