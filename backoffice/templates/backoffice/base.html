@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block navbar %}
+<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+  <a class="navbar-brand" href="{% url 'main-index' %}">KU-TCAS'61 - ระบบจัดการผู้สมัคร</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+   <div class="collapse navbar-collapse" id="navbarText">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'backoffice:index' %}">หน้าหลัก</a>
+      </li>
+    </ul>
+    {% if user.is_authenticated %}
+      <span class="navbar-text">
+        {{ user.get_full_name }}
+      </span>
+      <a class="nav-link nav-item" href="{% url 'backoffice-logout' %}">ออกจากระบบ</a>
+    {% endif %}
+  </div>
+</nav>
+{% endblock %}

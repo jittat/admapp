@@ -29,7 +29,7 @@ urlpatterns = [
 
 
     url(r'^accounts/login/$',
-        auth_views.LoginView.as_view(template_name='main/accounts/login.html'),
+        auth_views.LoginView.as_view(template_name='backoffice/accounts/login.html'),
         name='backoffice-login'),
     url(r'^accounts/logout/$',
         auth_views.LogoutView.as_view(),
