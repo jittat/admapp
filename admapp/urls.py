@@ -21,6 +21,7 @@ import main.views
 urlpatterns = [
     url(r'^$', main.views.index, name='main-index'),
     url(r'^regis/', include('regis.urls')),
+    url(r'^appl/', include('appl.urls')),
     url(r'^admin/', admin.site.urls),
 ]
 

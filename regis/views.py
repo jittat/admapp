@@ -138,7 +138,7 @@ def login(request):
 
         if applicant.check_password(password):
             login_applicant(request, applicant)
-            return redirect(reverse('regis:apptemp'))
+            return redirect(reverse('appl:index'))
         else:
             return redirect(reverse('main-index') + '?error=wrong-password')
     else:
@@ -151,16 +151,3 @@ def logout(request):
     return redirect(reverse('main-index'))
 
     
-def apptemp(request):
-    if 'applicant_id' not in request.session:
-        return redirect(reverse('main-index') + '?error=no-login')
-
-    applicant_id = request.session['applicant_id']
-    applicant = get_object_or_404(Applicant,pk=applicant_id)
-    
-    return render(request,
-                  'regis/apptemp.html',
-                  { 'applicant': applicant })
-
-        
-        
