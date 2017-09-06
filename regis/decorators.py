@@ -5,7 +5,7 @@ from .models import Applicant
 
 def appl_login_required(view_function):
 
-    def login_required_view_function(request):
+    def login_required_view_function(request, *args, **kw):
         if 'applicant_id' not in request.session:
             return redirect(reverse('main-index') + '?error=no-login')
 
@@ -14,6 +14,6 @@ def appl_login_required(view_function):
 
         request.applicant = applicant
 
-        return view_function(request)
+        return view_function(request, *args, **kw)
 
     return login_required_view_function

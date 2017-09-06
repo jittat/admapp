@@ -17,7 +17,8 @@ class Profile(models.Model):
     is_admission_admin = models.BooleanField(verbose_name='ดูแลข้อมูลทุกคณะ',
                                              default=False)
 
-    admission_projects = models.ManyToManyField(AdmissionProject)
+    admission_projects = models.ManyToManyField(AdmissionProject,
+                                                blank=True)
 
     def __str__(self):
         if self.faculty:
@@ -34,4 +35,7 @@ def create_user_profile(sender, instance, created, **kwargs):
 
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):
-    instance.profile.save()
+    try:
+        instance.profile.save()
+    except Profile.DoesNotExist:
+        Profile.objects.create(user=instance)

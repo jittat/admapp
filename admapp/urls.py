@@ -16,12 +16,20 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 
+from django.contrib.auth import views as auth_views
+
 import main.views
 
 urlpatterns = [
     url(r'^$', main.views.index, name='main-index'),
     url(r'^regis/', include('regis.urls')),
     url(r'^appl/', include('appl.urls')),
+    url(r'^backoffice/', include('backoffice.urls')),
     url(r'^admin/', admin.site.urls),
+
+
+    url(r'^accounts/login/$',
+        auth_views.LoginView.as_view(template_name='main/accounts/login.html'),
+        name='login'),
 ]
 
