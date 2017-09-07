@@ -22,7 +22,7 @@ class Profile(models.Model):
 
     def __str__(self):
         if self.faculty:
-            return self.user.get_full_name() + ' (' + self.faculty + ')'
+            return self.user.get_full_name() + ' (' + str(self.faculty) + ')'
         elif self.is_admission_admin:
             return self.user.get_full_name() + ' (ADMADMIN)'
         else:

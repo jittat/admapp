@@ -1,4 +1,22 @@
 {% extends 'backoffice/base.html' %}
 {% block content %}
-<h1>สวัสดี {{ user.get_full_name }}</h1>
+<div class="row">
+  <div class="col-md-12">
+    <h1>ระบบจัดการผู้สมัคร</h1>
+    {% if is_admission_admin %}
+      คุณเป็นผู้ดูแลจากฝ่ายรับเข้า สามารถดูแลได้ทุกสาขาในโครงการรับสมัครที่รับผิดชอบ
+    {% else %}
+      {% if faculty %}
+        คุณเป็นผู้ดูแลจาก {{ faculty }} สามารถดูแลได้ทุกสาขาจากคณะในโครงการรับสมัครที่รับผิดชอบ
+      {% endif %}
+    {% endif %}
+    ด้านล่างเป็นรายการโครงการรับสมัครที่คุณรับผิดชอบ
+
+    <ul>
+      {% for project in admission_projects %}
+        <li>{{ project }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
 {% endblock %}
