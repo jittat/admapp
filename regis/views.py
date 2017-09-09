@@ -20,6 +20,12 @@ class LoginForm(forms.Form):
                                widget=forms.PasswordInput)
 
 
+PASSWORD_THAI_ERROR_MESSAGES = {
+    'password_entirely_numeric': 'รหัสผ่านมีแต่ตัวเลข',
+    'password_too_short': 'รหัสผ่านสั้นเกินไป',
+    'password_too_common': 'รหัสผ่านเป็นรหัสผ่านที่ใช้บ่อยมากเกินไป',
+}
+    
 class RegistrationForm(forms.Form):
     national_id = forms.CharField(label='รหัสประจำตัวประชาชน',
                                   max_length=20)
@@ -79,7 +85,13 @@ class RegistrationForm(forms.Form):
         return self.cleaned_data['email_confirm']
 
     def clean_password(self):
-        validate_password(self.cleaned_data['password'])
+        try:
+            validate_password(self.cleaned_data['password'])
+        except ValidationError as errors:
+            for error in errors.error_list:
+                if error.code in PASSWORD_THAI_ERROR_MESSAGES:
+                    error.message = PASSWORD_THAI_ERROR_MESSAGES[error.code]
+            raise errors
         return self.cleaned_data['password']
     
     def clean_password_confirm(self):
