@@ -9,9 +9,11 @@
 
 <div class="row">
   <div class="col-md-12">
-    {% for project_upload_document in project_upload_documents %}
-      {% include 'appl/include/document_upload_form.html' %}
-    {% endfor %}
+    <div class="all-document-upload-forms">
+      {% for project_uploaded_document in project_uploaded_documents %}
+        {% include 'appl/include/document_upload_form.html' %}
+      {% endfor %}
+    </div>
   </div>
 </div>
 {% include 'appl/include/document_upload_js.html' %}

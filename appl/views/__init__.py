@@ -9,14 +9,16 @@ from appl.views.upload import upload_form_for
 
 @appl_login_required
 def index(request):
-    project_upload_documents = ProjectUploadedDocument.objects.filter(admission_project=None).all()
+    applicant = request.applicant
+    project_uploaded_documents = ProjectUploadedDocument.objects.filter(admission_project=None).all()
 
-    for d in project_upload_documents:
+    for d in project_uploaded_documents:
         d.form = upload_form_for(d)
+        d.applicant_uploaded_documents = d.uploaded_document_for_applicant(applicant)
     
     return render(request,
                   'appl/index.html',
-                  { 'applicant': request.applicant,
-                    'project_upload_documents': project_upload_documents })
+                  { 'applicant': applicant,
+                    'project_uploaded_documents': project_uploaded_documents })
 
         

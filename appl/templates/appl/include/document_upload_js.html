@@ -1,15 +1,12 @@
 <script>
  $(function(){
-   $(".upload-form-submit-buttons").click(function(){
+   $(".all-document-upload-forms").on("click",".upload-form-submit-buttons",function(){
+     var div = $(this).parents('.project-document-upload-forms')[0];
      var form = $(this).parents('form')[0];
-     alert(form.action);
+     var data = new FormData(form);
+     var progress = $(form).find(".progress-bars");
+     $(progress).show().text("0%");
      
-     var data = new FormData();
-     jQuery.each($(form).find(".input-files")[0].files,
-                 function(i,elt) {
-                   data.append('file',elt);
-                 });
-
      jQuery.ajax({
        url: form.action,
        data: data,
@@ -18,7 +15,13 @@
        processData: false,
        type: 'POST',
        success: function(data){
-         alert(data);
+         if(data.result == 'OK') {
+           $(div).replaceWith(data.html);
+         }
+       }
+     }).uploadProgress(function(e){
+       if(e.lengthComputable) {
+         $(progress).show().text(Math.round((e.loaded * 100) / e.total) + "%");
        }
      });
      

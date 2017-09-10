@@ -137,6 +137,9 @@ class ProjectUploadedDocument(models.Model):
     def __str__(self):
         return self.title
 
+    def uploaded_document_for_applicant(self, applicant):
+        return self.uploaded_document_set.filter(applicant=applicant).all()
+    
 
 def applicant_document_path(instance, filename):
     try:
@@ -158,7 +161,8 @@ class UploadedDocument(models.Model):
                                           blank=True,
                                           null=True)
     project_uploaded_document = models.ForeignKey(ProjectUploadedDocument,
-                                                  on_delete=models.CASCADE)
+                                                  on_delete=models.CASCADE,
+                                                  related_name='uploaded_document_set')
     rank = models.IntegerField()
     original_filename = models.CharField(max_length=200)
 
@@ -166,5 +170,5 @@ class UploadedDocument(models.Model):
     
 
     def __str__(self):
-        return '%s (%s)' % (self.project_upload_document.title,
+        return '%s (%s)' % (self.project_uploaded_document.title,
                             self.applicant)
