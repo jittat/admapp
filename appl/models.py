@@ -3,6 +3,8 @@ import csv
 
 from django.db import models
 
+from regis.models import Applicant
+
 class Campus(models.Model):
     title = models.CharField(max_length=100)
     short_title = models.CharField(max_length=50)
@@ -108,3 +110,61 @@ class Major(models.Model):
         reader = csv.reader(csv_io)
         for row in reader:
             return row
+
+
+class ProjectUploadedDocument(models.Model):
+    admission_project = models.ForeignKey(AdmissionProject,
+                                          on_delete=models.CASCADE,
+                                          blank=True,
+                                          null=True)
+    rank = models.IntegerField()
+    title = models.CharField(max_length=200)
+    descriptions = models.TextField()
+    specifications = models.CharField(max_length=100)
+
+    allowed_extentions = models.CharField(max_length=50)
+
+    is_required = models.BooleanField(default=True)
+    can_have_multiple_files = models.BooleanField(default=False)
+
+    file_prefix = models.CharField(max_length=50,
+                                   blank=True)
+    size_limit = models.IntegerField(default=2000000)
+
+    class Meta:
+        ordering = ['rank']
+
+    def __str__(self):
+        return self.title
+
+
+def applicant_document_path(instance, filename):
+    try:
+        project_id = instance.admission_project.id
+    except:
+        project_id = 0
+    return ('documents/applicant_{0}/project_{1}/doc_{2}/{3}'
+            .format(instance.applicant.id,
+                    project_id,
+                    instance.project_uploaded_document.id,
+                    filename))
+
+
+class UploadedDocument(models.Model):
+    applicant = models.ForeignKey(Applicant,
+                                  on_delete=models.CASCADE)
+    admission_project = models.ForeignKey(AdmissionProject,
+                                          on_delete=models.CASCADE,
+                                          blank=True,
+                                          null=True)
+    project_uploaded_document = models.ForeignKey(ProjectUploadedDocument,
+                                                  on_delete=models.CASCADE)
+    rank = models.IntegerField()
+    original_filename = models.CharField(max_length=200)
+
+    uploaded_file = models.FileField(upload_to=applicant_document_path)
+    
+
+    def __str__(self):
+        return '%s (%s)' % (self.project_upload_document.title,
+                            self.applicant)

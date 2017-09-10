@@ -1,5 +1,18 @@
 {% extends 'base.html' %}
 {% block content %}
-<h1>สวัสดีครับ {{ applicant }}</h1>
-<a href="{% url 'regis:logout' %}">Log out</a>
+<div class="row">
+  <div class="col-md-12">
+    <h1>สวัสดีครับ {{ applicant }}</h1>
+    <a href="{% url 'regis:logout' %}">Log out</a>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    {% for project_upload_document in project_upload_documents %}
+      {% include 'appl/include/document_upload_form.html' %}
+    {% endfor %}
+  </div>
+</div>
+{% include 'appl/include/document_upload_js.html' %}
 {% endblock %}

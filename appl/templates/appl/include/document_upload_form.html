@@ -1,0 +1,16 @@
+<div style="background: #f0f0f0; border: 1px solid #e0e0e0; margin: 5px 0 5px 0; padding: 10px;">
+  {% with project_upload_document as doc %}
+    <p>
+      <b>{{ doc.title }}</b> &nbsp;&nbsp;
+      {{ doc.descriptions|linebreaksbr }}
+    </p>
+    <form class="upload-forms" action="{% url 'appl:upload' doc.id %}" method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <input type="file" name="uploaded_file" required id="id_uploaded_file" />
+      <input class="btn btn-success upload-form-submit-buttons" type="submit" value="อัพโหลด" />
+      <br />
+      <small>{{ doc.specifications }}</small>
+      <div class="progress-bars" style="display:none;"></div>
+    </form>
+  {% endwith %}
+</div>

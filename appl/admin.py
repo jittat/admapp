@@ -1,3 +1,8 @@
 from django.contrib import admin
 
-# Register your models here.
+from .models import ProjectUploadedDocument, AdmissionProject
+
+admin.site.register(AdmissionProject)
+admin.site.register(ProjectUploadedDocument)
+
+

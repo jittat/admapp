@@ -2,4 +2,4 @@
 *.pyc
 settings_local.py
 /data/*
-/uploads/*
+/media/*

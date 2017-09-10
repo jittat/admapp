@@ -1,0 +1,28 @@
+<script>
+ $(function(){
+   $(".upload-form-submit-buttons").click(function(){
+     var form = $(this).parents('form')[0];
+     alert(form.action);
+     
+     var data = new FormData();
+     jQuery.each($(form).find(".input-files")[0].files,
+                 function(i,elt) {
+                   data.append('file',elt);
+                 });
+
+     jQuery.ajax({
+       url: form.action,
+       data: data,
+       cache: false,
+       contentType: false,
+       processData: false,
+       type: 'POST',
+       success: function(data){
+         alert(data);
+       }
+     });
+     
+     return false;
+   });
+ });
+</script>
