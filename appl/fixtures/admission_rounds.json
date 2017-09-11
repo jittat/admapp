@@ -1,0 +1,68 @@
+[
+{
+ "model": "appl.admissionround",
+ "pk": 1,
+ "fields": {
+  "number": 1,
+  "subround_number": 1,
+  "rank": 1,
+  "short_descriptions": "\u0e01\u0e32\u0e23\u0e23\u0e31\u0e1a\u0e14\u0e49\u0e27\u0e22 Portfolio (\u0e0a\u0e48\u0e27\u0e07\u0e17\u0e35\u0e48\u0e2b\u0e19\u0e36\u0e48\u0e07)",
+  "admission_dates": ""
+ }
+},
+{
+ "model": "appl.admissionround",
+ "pk": 2,
+ "fields": {
+  "number": 1,
+  "subround_number": 2,
+  "rank": 2,
+  "short_descriptions": "\u0e01\u0e32\u0e23\u0e23\u0e31\u0e1a\u0e14\u0e49\u0e27\u0e22 Portfolio (\u0e0a\u0e48\u0e27\u0e07\u0e17\u0e35\u0e48\u0e2a\u0e2d\u0e07)",
+  "admission_dates": ""
+ }
+},
+{
+ "model": "appl.admissionround",
+ "pk": 3,
+ "fields": {
+  "number": 2,
+  "subround_number": 0,
+  "rank": 3,
+  "short_descriptions": "\u0e01\u0e32\u0e23\u0e23\u0e31\u0e1a\u0e23\u0e30\u0e1a\u0e1a\u0e42\u0e04\u0e27\u0e15\u0e32",
+  "admission_dates": ""
+ }
+},
+{
+ "model": "appl.admissionround",
+ "pk": 4,
+ "fields": {
+  "number": 3,
+  "subround_number": 0,
+  "rank": 4,
+  "short_descriptions": "\u0e01\u0e32\u0e23\u0e23\u0e31\u0e1a\u0e15\u0e23\u0e07\u0e23\u0e48\u0e27\u0e21\u0e01\u0e31\u0e19",
+  "admission_dates": ""
+ }
+},
+{
+ "model": "appl.admissionround",
+ "pk": 5,
+ "fields": {
+  "number": 4,
+  "subround_number": 0,
+  "rank": 5,
+  "short_descriptions": "\u0e01\u0e32\u0e23\u0e23\u0e31\u0e1a\u0e23\u0e30\u0e1a\u0e1a\u0e01\u0e25\u0e32\u0e07 Admissions",
+  "admission_dates": ""
+ }
+},
+{
+ "model": "appl.admissionround",
+ "pk": 6,
+ "fields": {
+  "number": 5,
+  "subround_number": 0,
+  "rank": 6,
+  "short_descriptions": "\u0e01\u0e32\u0e23\u0e23\u0e31\u0e1a\u0e15\u0e23\u0e07\u0e2d\u0e34\u0e2a\u0e23\u0e30",
+  "admission_dates": ""
+ }
+}
+]
