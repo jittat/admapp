@@ -32,7 +32,11 @@ CHOICES = (
 )
 
 class RegistrationForm(forms.Form):
-    id_bool = forms.ChoiceField(label='มีรหัสประจำตัวประชาชนหรือไม่?', required = True, choices = CHOICES, widget=forms.RadioSelect(attrs={'class' : 'Radio'}), initial=1)
+    id_bool = forms.ChoiceField(label='มีรหัสประจำตัวประชาชนหรือไม่?', 
+                                required = True, 
+                                choices = CHOICES, 
+                                widget=forms.RadioSelect(attrs={'class' : 'Radio'}), 
+                                initial=1)
     
     # if id_bool:
     #   national_id = forms.CharField(label='รหัสประจำตัวประชาชน',
