@@ -4,6 +4,10 @@
 <div class="row">
   <div class="col-md-12">
     <h2>ลงทะเบียนบัญชีผู้สมัครเข้าศึกษา</h2>
+    <p>มีรหัสประจำตัวประชาชนหรือไม่?</p>
+	<input type="radio" name="id_bool" id="have" value="have" checked> มี
+	<input type="radio" name="id_bool" id="dont_have" value="dont_have"> ไม่มี<br><br>
+	<p id="test">I'm here.</p>
     <form action="{% url 'regis:register' %}" method="post">
       {% csrf_token %}
       {{ form|crispy }}
@@ -11,4 +15,15 @@
     </form>
   </div>
 </div>
+
+<script>
+	$(function(){
+		$("#have").click(function(){
+			$("#test").show();
+		});
+		$("#dont_have").click(function(){
+			$("#test").hide();
+		});
+	});
+</script>
 {% endblock %}

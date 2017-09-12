@@ -26,17 +26,17 @@ PASSWORD_THAI_ERROR_MESSAGES = {
     'password_too_common': 'รหัสผ่านเป็นรหัสผ่านที่ใช้บ่อยมากเกินไป',
 }
 
-CHOICES = (
-    (1, 'มี'),
-    (0, 'ไม่มี')
-)
+# CHOICES = (
+#     (1, 'มี'),
+#     (0, 'ไม่มี')
+# )
 
 class RegistrationForm(forms.Form):
-    id_bool = forms.ChoiceField(label='มีรหัสประจำตัวประชาชนหรือไม่?', 
-                                required = True, 
-                                choices = CHOICES, 
-                                widget=forms.RadioSelect(attrs={'class' : 'Radio'}), 
-                                initial=1)
+    # id_bool = forms.ChoiceField(label='มีรหัสประจำตัวประชาชนหรือไม่?', 
+    #                             required = True, 
+    #                             choices = CHOICES, 
+    #                             widget=forms.RadioSelect(attrs={'class' : 'Radio'}), 
+    #                             initial=1)
     
     # if id_bool:
     #   national_id = forms.CharField(label='รหัสประจำตัวประชาชน',
