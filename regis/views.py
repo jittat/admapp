@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+import os, sys
 from django import forms
 from django.forms import ValidationError
 

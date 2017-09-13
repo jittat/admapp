@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+import os, sys
 from django.db import models
 
 from django.contrib.auth.models import User
