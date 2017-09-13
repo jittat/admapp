@@ -26,6 +26,7 @@ urlpatterns = [
     url(r'^appl/', include('appl.urls')),
     url(r'^backoffice/', include('backoffice.urls')),
     url(r'^admin/', admin.site.urls),
+    url(r'^form/', include('form.urls')),
 
 
     url(r'^accounts/login/$',

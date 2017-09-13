@@ -5,6 +5,7 @@ from django.db import models
 
 from regis.models import Applicant
 
+
 class Campus(models.Model):
     title = models.CharField(max_length=100)
     short_title = models.CharField(max_length=50)

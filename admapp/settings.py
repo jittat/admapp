@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'main.apps.MainConfig',
     'regis.apps.RegisConfig',
     'appl.apps.ApplConfig',
+    'form.apps.FormConfig',
     'backoffice.apps.BackofficeConfig',
     'django.contrib.admin',
     'django.contrib.auth',
