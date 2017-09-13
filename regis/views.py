@@ -26,25 +26,30 @@ PASSWORD_THAI_ERROR_MESSAGES = {
     'password_too_common': 'รหัสผ่านเป็นรหัสผ่านที่ใช้บ่อยมากเกินไป',
 }
 
-# CHOICES = (
-#     (1, 'มี'),
-#     (0, 'ไม่มี')
-# )
+HAS_NATIONAL_ID_CHOICES = [
+    ('1','มี'),
+    ('0','ไม่มี'),
+]
 
 class RegistrationForm(forms.Form):
-    # id_bool = forms.ChoiceField(label='มีรหัสประจำตัวประชาชนหรือไม่?', 
-    #                             required = True, 
-    #                             choices = CHOICES, 
-    #                             widget=forms.RadioSelect(attrs={'class' : 'Radio'}), 
-    #                             initial=1)
-    
-    # if id_bool:
-    #   national_id = forms.CharField(label='รหัสประจำตัวประชาชน',
-    #                               max_length=20)
-    #   national_id_confirm = forms.CharField(label='ยืนยันรหัสประจำตัวประชาชน',
-    #                                       max_length=20)
-    # else:
-    #   passport_number = forms.CharField(label='เลขที่หนังสือเดินทาง (Passport No.)', max_length=20)
+    has_national_id = forms.ChoiceField(label='มีรหัสประจำตัวประชาชนหรือไม่?', 
+                                        choices=HAS_NATIONAL_ID_CHOICES, 
+                                        widget=forms.RadioSelect(), 
+                                        initial=1)
+
+    national_id = forms.CharField(label='รหัสประจำตัวประชาชน',
+                                  max_length=20, 
+                                  required=False)
+    national_id_confirm = forms.CharField(label='ยืนยันรหัสประจำตัวประชาชน',
+                                          max_length=20,
+                                          required=False)
+
+    passport_number = forms.CharField(label='เลขที่หนังสือเดินทาง (Passport No.)', 
+                                      max_length=20,
+                                      required=False)
+    passport_number_confirm = forms.CharField(label='ยืนยันเลขที่หนังสือเดินทาง (Passport No.)', 
+                                              max_length=20,
+                                              required=False)
 
     email = forms.EmailField(label='อีเมล')
     email_confirm = forms.EmailField(label='ยืนยันอีเมล')
