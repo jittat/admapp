@@ -25,12 +25,31 @@ PASSWORD_THAI_ERROR_MESSAGES = {
     'password_too_short': 'รหัสผ่านสั้นเกินไป',
     'password_too_common': 'รหัสผ่านเป็นรหัสผ่านที่ใช้บ่อยมากเกินไป',
 }
-    
+
+HAS_NATIONAL_ID_CHOICES = [
+    ('1','มี'),
+    ('0','ไม่มี'),
+]
+
 class RegistrationForm(forms.Form):
+    has_national_id = forms.ChoiceField(label='มีรหัสประจำตัวประชาชนหรือไม่?', 
+                                        choices=HAS_NATIONAL_ID_CHOICES, 
+                                        widget=forms.RadioSelect(), 
+                                        initial=1)
+
     national_id = forms.CharField(label='รหัสประจำตัวประชาชน',
-                                  max_length=20)
+                                  max_length=20, 
+                                  required=False)
     national_id_confirm = forms.CharField(label='ยืนยันรหัสประจำตัวประชาชน',
-                                          max_length=20)
+                                          max_length=20,
+                                          required=False)
+
+    passport_number = forms.CharField(label='เลขที่หนังสือเดินทาง (Passport No.)', 
+                                      max_length=20,
+                                      required=False)
+    passport_number_confirm = forms.CharField(label='ยืนยันเลขที่หนังสือเดินทาง (Passport No.)', 
+                                              max_length=20,
+                                              required=False)
 
     email = forms.EmailField(label='อีเมล')
     email_confirm = forms.EmailField(label='ยืนยันอีเมล')

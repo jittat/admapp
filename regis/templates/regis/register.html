@@ -4,11 +4,43 @@
 <div class="row">
   <div class="col-md-12">
     <h2>ลงทะเบียนบัญชีผู้สมัครเข้าศึกษา</h2>
-    <form action="{% url 'regis:register' %}" method="post">
+	<form action="{% url 'regis:register' %}" method="post">
       {% csrf_token %}
       {{ form|crispy }}
       <input type="submit" class="btn btn-lg btn-primary" value="ลงทะเบียน" />
     </form>
   </div>
 </div>
+
+<script>
+var disableInputs = function(ids) {
+	jQuery.each(ids, function(idx, elt) {
+		$(elt).hide();
+		$(elt).find("input").prop('required',false);
+	});
+};
+var enableInputs = function(ids) {
+	jQuery.each(ids, function(idx, elt) {
+		$(elt).show();
+		$(elt).find("input").prop('required',true);
+	});
+};
+var passportInputIds = ["#div_id_passport_number", "#div_id_passport_number_confirm"];
+var nationalIdInputsIds = ["#div_id_national_id", "#div_id_national_id_confirm"]; 
+var handleHasNationalIdChange = function() {
+	var hasNatId = $("#id_has_national_id_1").prop("checked");
+	if(hasNatId) {
+		disableInputs(passportInputIds);
+		enableInputs(nationalIdInputsIds);
+	} else {
+		disableInputs(nationalIdInputsIds);
+		enableInputs(passportInputIds);
+	}
+};
+$(function(){
+	handleHasNationalIdChange();
+	$("#id_has_national_id_1").click(handleHasNationalIdChange);
+	$("#id_has_national_id_2").click(handleHasNationalIdChange);
+});
+</script>
 {% endblock %}

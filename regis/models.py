@@ -5,6 +5,7 @@ from django.contrib.auth.hashers import check_password as check_hashed_password
 class Applicant(models.Model):
     national_id = models.CharField(max_length=16,
                                    unique=True)
+    passport_number = models.CharField(max_length=20, blank=True)
     prefix = models.CharField(max_length=10)
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=200)
