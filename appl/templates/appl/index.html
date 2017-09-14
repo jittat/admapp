@@ -8,7 +8,14 @@
 </div>
 
 <div class="row">
-  <div class="col-md-12">
+  <div class="col-md-6">
+    <ul>
+      <li>กรอกข้อมุลส่วนตัว</li>
+      <li><a href="{% url 'appl:education' %}">กรอกข้อมูลการศึกษา</a></li>
+    </ul>
+    </ul>
+  </div>
+  <div class="col-md-6">
     <div class="all-document-upload-forms">
       {% for project_uploaded_document in project_uploaded_documents %}
         {% include 'appl/include/document_upload_form.html' %}

@@ -173,3 +173,21 @@ class UploadedDocument(models.Model):
     def __str__(self):
         return '%s (%s)' % (self.project_uploaded_document.title,
                             self.applicant)
+
+
+class Province(models.Model):
+    name = models.CharField(max_length=30)
+
+    def __str__(self):
+    	return "%s" % (self.name,)
+
+
+class School(models.Model):
+    name = models.CharField(max_length=200)
+    code = models.CharField(max_length=20,
+                            blank=True)
+    province = models.ForeignKey(Province,
+                                 on_delete=models.CASCADE)
+
+    def __str__(self):
+        return "%s" % (self.name,)
