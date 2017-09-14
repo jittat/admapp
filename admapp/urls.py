@@ -27,7 +27,6 @@ urlpatterns = [
     url(r'^backoffice/', include('backoffice.urls')),
     url(r'^admin/', admin.site.urls),
 
-
     url(r'^accounts/login/$',
         auth_views.LoginView.as_view(template_name='backoffice/accounts/login.html'),
         name='backoffice-login'),
