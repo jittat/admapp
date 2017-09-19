@@ -167,7 +167,8 @@ def login(request):
         if not applicant:
             return redirect(reverse('main-index') + '?error=wrong-password')
 
-        if applicant.check_password(password):
+        if ((settings.FAKE_LOGIN and settings.DEBUG)
+            or applicant.check_password(password)):
             login_applicant(request, applicant)
             return redirect(reverse('appl:index'))
         else:

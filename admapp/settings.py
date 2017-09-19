@@ -133,12 +133,14 @@ MEDIA_URL = '/media/'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
+# login/logout urls for backoffice
+
+LOGOUT_REDIRECT_URL = '/backoffice/'
+
 # Admission App Configs
 
 VERIFY_NATIONAL_ID = False
-
-# login/logout urls
-LOGOUT_REDIRECT_URL = '/backoffice/'
+FAKE_LOGIN = False
 
 try:
     from .settings_local import *
