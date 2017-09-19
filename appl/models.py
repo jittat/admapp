@@ -42,6 +42,8 @@ class AdmissionRound(models.Model):
                                        blank=True,
                                        verbose_name='กำหนดการ')
 
+    is_available = models.BooleanField(default=False)
+    
     class Meta:
         ordering = ['rank']
 
@@ -52,6 +54,16 @@ class AdmissionRound(models.Model):
         else:
             return 'รอบที่ %d/%d' % (self.number, self.subround_number)
 
+    @staticmethod
+    def get_available():
+        rounds = AdmissionRound.objects.filter(is_available=True).all()
+        if len(rounds) > 0:
+            return rounds[0]
+        else:
+            return None
+
+    def get_available_projects(self):
+        return self.admissionproject_set.filter(is_available=True).all()
 
 class AdmissionProject(models.Model):
     title = models.CharField(max_length=400)
@@ -75,11 +87,26 @@ class AdmissionProject(models.Model):
 
     major_detail_visible = models.BooleanField(default=False,
                                                verbose_name='แสดงรายละเอียดสาขา')
+
+    is_available = models.BooleanField(default=False)
+
+    is_started = models.BooleanField(default=False,
+                                     verbose_name='เปิดรับสมัครแล้ว')
+    is_auto_start = models.BooleanField(default=False)
+    applying_start_time = models.DateTimeField(blank=True,
+                                               null=True,
+                                               verbose_name='เวลาเริ่มเปิดรับสมัคร')
+    applying_deadline = models.DateTimeField(blank=True,
+                                             null=True,
+                                             verbose_name='เวลาปิดรับสมัคร')
+
     
     def __str__(self):
         return self.title
 
-
+    def get_admission_rounds_display(self):
+        return ','.join([str(r) for r in self.admission_rounds.all()])
+    
 
 class AdmissionProjectRound(models.Model):
     admission_round = models.ForeignKey('AdmissionRound',
@@ -138,7 +165,11 @@ class ProjectUploadedDocument(models.Model):
     def __str__(self):
         return self.title
 
-    def uploaded_document_for_applicant(self, applicant):
+    @staticmethod
+    def get_common_documents():
+        return ProjectUploadedDocument.objects.filter(admission_project=None).all()
+
+    def get_uploaded_documents_for_applicant(self, applicant):
         return self.uploaded_document_set.filter(applicant=applicant).all()
     
 

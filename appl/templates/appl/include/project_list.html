@@ -1,0 +1,17 @@
+<h2>รายการโครงการรับสมัคร{% if admission_round %}{{ admission_round }}{% endif %}</h2>
+{% if admission_round %}
+  <ul>
+    {% for project in admission_projects %}
+      <li>
+        {{ project.title }}
+        {% if project.applying_start_time %}
+          (เปิดรับสมัครวันที่ {{ project.applying_start_time|date }})
+        {% endif %}
+      </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>
+    ขณะนี้ยังไม่ถึงรอบการรับสมัครใดเลย รอบการรับสมัครครั้งถัดไปคือรอบ xxxx จะเริ่มรับสมัครวันที่ yyyy สามารถอ่านรายละเอียดได้ที่ zzzz
+  </p>
+{% endif %}
