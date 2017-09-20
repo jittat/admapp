@@ -1,5 +1,6 @@
 mysqlclient
-pkg-resources
 pytz
 Django==1.11.5
 django-crispy-forms
+django-mailer
+
