@@ -3,6 +3,9 @@
   <ul>
     {% for project in admission_projects %}
       <li>
+        {% if project.is_deadline_passed %}
+          <span class="badge badge-info">หมดเวลารับสมัคร</span>
+        {% endif %}
         {{ project.title }}
         {% if project.applying_start_time %}
           (เปิดรับสมัครวันที่ {{ project.applying_start_time|date }})

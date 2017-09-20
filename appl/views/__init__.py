@@ -11,7 +11,7 @@ def prepare_uploaded_document_forms(applicant, project_uploaded_documents):
     for d in project_uploaded_documents:
         d.form = upload_form_for(d)
         d.applicant_uploaded_documents = d.get_uploaded_documents_for_applicant(applicant)
-        
+
 
 @appl_login_required
 def index(request):

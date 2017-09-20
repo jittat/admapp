@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 import io
 import csv
+from datetime import datetime
 
 from django.db import models
 
@@ -67,6 +68,7 @@ class AdmissionRound(models.Model):
     def get_available_projects(self):
         return self.admissionproject_set.filter(is_available=True).all()
 
+    
 class AdmissionProject(models.Model):
     title = models.CharField(max_length=400)
     short_title = models.CharField(max_length=200)
@@ -108,6 +110,12 @@ class AdmissionProject(models.Model):
 
     def get_admission_rounds_display(self):
         return ','.join([str(r) for r in self.admission_rounds.all()])
+
+    def is_deadline_passed(self):
+        if self.applying_deadline:
+            return datetime.now() > self.applying_deadline
+        else:
+            return True
     
 
 class AdmissionProjectRound(models.Model):
