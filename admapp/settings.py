@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_extensions',
     'crispy_forms',
     'mailer',
 ]
@@ -133,6 +134,16 @@ MEDIA_URL = '/media/'
 # EMAILS
 
 EMAIL_BACKEND = "mailer.backend.DbBackend"
+
+MAILER_EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# Use these in production
+# MAILER_EMAIL_BACKEND = 'django_ses.SESBackend'
+#
+# AWS_ACCESS_KEY_ID = 'YOUR-ACCESS-KEY-ID'
+# AWS_SECRET_ACCESS_KEY = 'YOUR-SECRET-ACCESS-KEY'
+# AWS_SES_REGION_NAME = 'us-west-2'
+# AWS_SES_REGION_ENDPOINT = 'email.us-west-2.amazonaws.com'
 
 # Crispy forms
 

@@ -1,6 +1,8 @@
 mysqlclient
-pytz
 Django==1.11.5
+pytz
+django-extensions
 django-crispy-forms
 django-mailer
-
+boto
+django-ses
