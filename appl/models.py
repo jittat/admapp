@@ -86,6 +86,9 @@ class AdmissionProject(models.Model):
     short_descriptions = models.CharField(max_length=400,
                                           blank=True,
                                           verbose_name='รายละเอียดโครงการ (สั้น) แสดงในหน้าแรก')
+    applying_confirmation_warning = models.TextField(blank=True,
+                                                     verbose_name='รายละเอียดโครงการ แจ้งยืนยันก่อนสมัคร')
+    
     slots = models.IntegerField(default=0,
                                 verbose_name='จำนวนรับ')
 

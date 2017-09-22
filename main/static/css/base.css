@@ -1,8 +1,21 @@
 body {
-  padding-top: 5rem;
+    padding-top: 5rem;
 }
-.starter-template {
-  padding: 3rem 1.5rem;
-  text-align: center;
+
+.mb5 {
+    margin-bottom: 5px;
+}
+
+.p10 {
+    padding: 10px;
+}
+
+.border-a0 {
+    border: 1px solid #a0a0a0;
+    border-radius: 5px;
+}
+
+.bg-warn {
+    background: #fff3cd;
 }
 
