@@ -10,5 +10,7 @@ urlpatterns = [
     url(r'^upload/(\d+)/$', upload_views.upload, name='upload'),
 
     url(r'^education/$', general_forms.education, name='education'),
+
+    url(r'^apply/(\d+)/(\d+)/$', views.apply_project, name='apply-project'),
 ]
 

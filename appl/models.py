@@ -116,7 +116,10 @@ class AdmissionProject(models.Model):
             return datetime.now() > self.applying_deadline
         else:
             return True
-    
+
+    def is_open(self):
+        return self.is_started and (not self.is_deadline_passed())
+                
 
 class AdmissionProjectRound(models.Model):
     admission_round = models.ForeignKey('AdmissionRound',
@@ -232,3 +235,21 @@ class School(models.Model):
 
     def __str__(self):
         return "%s" % (self.name,)
+
+
+class ProjectApplication(models.Model):
+    applicant = models.ForeignKey(Applicant,
+                                  on_delete=models.CASCADE,
+                                  related_name='project_applications')
+    admission_project = models.ForeignKey(AdmissionProject,
+                                          on_delete=models.CASCADE)
+    admission_round = models.ForeignKey(AdmissionRound)
+
+    is_canceled = models.BooleanField(default=False)
+    applied_at = models.DateTimeField()
+    cancelled_at = models.DateTimeField(blank=True,
+                                        null=True)
+
+    def is_active(self):
+        return not self.is_canceled
+    

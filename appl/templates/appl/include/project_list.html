@@ -10,6 +10,12 @@
         {% if project.applying_start_time %}
           (เปิดรับสมัครวันที่ {{ project.applying_start_time|date }})
         {% endif %}
+        {% if project.is_open %}
+          <form class="d-inline" method="post" action="{% url 'appl:apply-project' project.id admission_round.id %}">
+            {% csrf_token %}
+            <input type="submit" class="btn btn-primary btn-sm" value="สมัครโครงการนี้" />
+          </form>
+        {% endif %}
       </li>
     {% endfor %}
   </ul>
