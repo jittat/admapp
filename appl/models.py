@@ -152,6 +152,16 @@ class Major(models.Model):
     def __str__(self):
         return self.title
 
+    @staticmethod
+    def get_by_project_number(project, number):
+        majors = Major.objects.filter(admission_project=project,
+                                      number=number).all()
+        if len(majors)==0:
+            return None
+        else:
+            return majors[0]
+
+        
     def get_detail_items(self):
         csv_io = io.StringIO(self.detail_items_csv)
         reader = csv.reader(csv_io)
@@ -258,4 +268,36 @@ class ProjectApplication(models.Model):
 
     def is_active(self):
         return not self.is_canceled
-    
+
+
+class MajorSelection(models.Model):
+    applicant = models.ForeignKey(Applicant)
+    project_application = models.OneToOneField(ProjectApplication)
+    admission_project = models.ForeignKey(AdmissionProject)
+    admission_round = models.ForeignKey(AdmissionRound)
+
+    num_selected = models.IntegerField(default=0)
+    major_list = models.CharField(max_length=50,
+                                  blank=True)
+
+
+    def __str__(self):
+        return self.major_list
+
+    def get_majors(self):
+        try:
+            return self.majors
+        except:
+            pass
+
+        self.majors = []
+        for num in self.major_list.split(','):
+            self.majors.append(Major.get_by_project_number(self.admission_project,
+                                                           num))
+        return self.majors
+
+    def set_majors(self, majors):
+        self.majors = majors
+        self.major_list = ','.join([str(m.number) for m in self.majors])
+        self.num_selected = len(majors)
+                            

@@ -3,6 +3,7 @@ from django.conf.urls import url, include
 from appl import views
 from appl.views import upload as upload_views
 from appl.views import general_forms
+from appl.views import major_selection
 
 app_name = 'appl'
 urlpatterns = [
@@ -12,5 +13,7 @@ urlpatterns = [
     url(r'^education/$', general_forms.education, name='education'),
 
     url(r'^apply/(\d+)/(\d+)/$', views.apply_project, name='apply-project'),
+
+    url(r'^select/(\d+)/', major_selection.select, name='major-selection'),
 ]
 

@@ -25,9 +25,14 @@ def index(request):
     if admission_round:
         admission_projects = admission_round.get_available_projects()
         active_application = applicant.get_active_application(admission_round)
+        try:
+            major_selection = active_application.majorselection
+        except:
+            major_selection = None
     else:
         admission_projects = []
         active_application = None
+        major_selection = None
         
     return render(request,
                   'appl/index.html',
@@ -37,6 +42,7 @@ def index(request):
                     'admission_round': admission_round,
                     'admission_projects': admission_projects,
                     'active_application': active_application,
+                    'major_selection': major_selection,
                   })
 
         

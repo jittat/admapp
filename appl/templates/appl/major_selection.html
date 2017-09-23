@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row">
+  <div class="col-md-12">
+    <h1>เลือกสาขาโครงการ{{ admission_project }}</h1>
+    ผู้สมัคร: {{ applicant }} จำนวนสาขาที่เลือกได้ {{ admission_project.max_num_selections }}
+    <form action="{% url 'appl:major-selection' admission_round.id %}" method="post">
+      {% csrf_token %}
+      <div class="form-group">
+        <select name="major">
+          {% for m in all_majors %}
+            <option value="{{ m.number }}" {% if major and m.id == major.id %}selected{% endif %}>{{ m.faculty }} - สาขา{{ m.title }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <input type="submit" name="save" class="btn btn-success" value="จัดเก็บ" />
+        <input type="submit" name="cancel" class="btn btn-danger" value="ยกเลิก" />
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

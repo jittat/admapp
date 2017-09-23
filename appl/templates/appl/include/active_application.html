@@ -1,2 +1,15 @@
 <h2>โครงการ{{ active_application.admission_project }} ({{ admission_round }})</h2>
+<ul>
+  <li>กรอกข้อมูลเพิ่มเติม</li>
+  <li>
+    {% if major_selection %}
+      สาขาที่คุณเลือก<br />
+      {% for m in major_selection.get_majors %}
+        {{ forloop.counter }}. {{ m.faculty }} - {{ m.title }}<br />
+      {% endfor %}
+    {% endif %}
+    <a class="btn btn-sm btn-primary" href="{% url 'appl:major-selection' admission_round.id %}">เลือกสาขา</a><br />
+  </li>
+  <li>พิมพ์ใบชำระเงิน</li>
+</ul>
 
