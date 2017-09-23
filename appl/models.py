@@ -106,7 +106,10 @@ class AdmissionProject(models.Model):
     applying_deadline = models.DateTimeField(blank=True,
                                              null=True,
                                              verbose_name='เวลาปิดรับสมัคร')
-
+    
+    max_num_selections = models.IntegerField(default=1,
+                                             verbose_name='จำนวนสาขาที่เลือกได้')
+    
     
     def __str__(self):
         return self.title
@@ -223,14 +226,14 @@ class UploadedDocument(models.Model):
 
 
 class Province(models.Model):
-    name = models.CharField(max_length=30)
+    title = models.CharField(max_length=30)
 
     def __str__(self):
     	return "%s" % (self.name,)
 
 
 class School(models.Model):
-    name = models.CharField(max_length=200)
+    title = models.CharField(max_length=200)
     code = models.CharField(max_length=20,
                             blank=True)
     province = models.ForeignKey(Province,
