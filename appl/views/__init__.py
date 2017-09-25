@@ -31,7 +31,11 @@ def index(request):
         except:
             major_selection = None
 
-        admission_fee = active_application.admission_fee()
+        if active_application:
+            admission_fee = active_application.admission_fee()
+        else:
+            admission_fee = 0
+
         payments = Payment.find_for_applicant_in_round(applicant, admission_round)
         paid_amount = sum([p.amount for p in payments])
 
