@@ -1,0 +1,951 @@
+[
+{
+  "model": "appl.admissionproject",
+  "pk": 1,
+  "fields": {
+    "title": "\u0e2b\u0e25\u0e31\u0e01\u0e2a\u0e39\u0e15\u0e23\u0e19\u0e32\u0e19\u0e32\u0e0a\u0e32\u0e15\u0e34/\u0e20\u0e32\u0e04\u0e20\u0e32\u0e29\u0e32\u0e2d\u0e31\u0e07\u0e01\u0e24\u0e29",
+    "short_title": "\u0e2b\u0e25\u0e31\u0e01\u0e2a\u0e39\u0e15\u0e23\u0e19\u0e32\u0e19\u0e32\u0e0a\u0e32\u0e15\u0e34/\u0e20\u0e32\u0e04\u0e20\u0e32\u0e29\u0e32\u0e2d\u0e31\u0e07\u0e01\u0e24\u0e29",
+    "campus": 1,
+    "general_conditions": "1. \u0e40\u0e1b\u0e47\u0e19\u0e1c\u0e39\u0e49\u0e01\u0e33\u0e25\u0e31\u0e07\u0e28\u0e36\u0e01\u0e29\u0e32\u0e2d\u0e22\u0e39\u0e48\u0e43\u0e19\u0e23\u0e30\u0e14\u0e31\u0e1a\u0e0a\u0e31\u0e49\u0e19\u0e21\u0e31\u0e18\u0e22\u0e21\u0e28\u0e36\u0e01\u0e29\u0e32\u0e1b\u0e35\u0e17\u0e35\u0e48 6 \u0e2b\u0e23\u0e37\u0e2d\u0e40\u0e17\u0e35\u0e22\u0e1a\u0e40\u0e17\u0e48\u0e32 \u0e2b\u0e23\u0e37\u0e2d \u0e40\u0e01\u0e23\u0e14 12 \n2. \u0e40\u0e1b\u0e47\u0e19\u0e1c\u0e39\u0e49\u0e2a\u0e33\u0e40\u0e23\u0e47\u0e08\u0e01\u0e32\u0e23\u0e28\u0e36\u0e01\u0e29\u0e32\u0e23\u0e30\u0e14\u0e31\u0e1a\u0e0a\u0e31\u0e49\u0e19\u0e21\u0e31\u0e18\u0e22\u0e21\u0e28\u0e36\u0e01\u0e29\u0e32\u0e1b\u0e35\u0e17\u0e35\u0e48 6 \u0e2b\u0e23\u0e37\u0e2d\u0e40\u0e17\u0e35\u0e22\u0e1a\u0e40\u0e17\u0e48\u0e32 \u0e2b\u0e23\u0e37\u0e2d \u0e40\u0e01\u0e23\u0e14 12 \n3. \u0e21\u0e35\u0e04\u0e30\u0e41\u0e19\u0e19\u0e2a\u0e2d\u0e1a\u0e2d\u0e37\u0e48\u0e19\u0e46 \u0e15\u0e32\u0e21\u0e17\u0e35\u0e48\u0e04\u0e13\u0e30/\u0e2a\u0e32\u0e02\u0e32\u0e27\u0e34\u0e0a\u0e32 \u0e01\u0e33\u0e2b\u0e19\u0e14\n\n\u0e2b\u0e21\u0e32\u0e22\u0e40\u0e2b\u0e15\u0e38 : \u0e1c\u0e39\u0e49\u0e2a\u0e21\u0e31\u0e04\u0e23\u0e40\u0e25\u0e37\u0e2d\u0e01\u0e44\u0e14\u0e49\u0e40\u0e1e\u0e35\u0e22\u0e07 1 \u0e2a\u0e32\u0e02\u0e32",
+    "column_descriptions": "* \u0e04\u0e38\u0e13\u0e2a\u0e21\u0e1a\u0e31\u0e15\u0e34\u0e40\u0e09\u0e1e\u0e32\u0e30\u0e40\u0e1e\u0e34\u0e48\u0e21\u0e40\u0e15\u0e34\u0e21\t\t\t\t\t\n** \u0e41\u0e1c\u0e19\u0e01\u0e32\u0e23\u0e40\u0e23\u0e35\u0e22\u0e19\n** GPAX\n** \u0e40\u0e01\u0e13\u0e11\u0e4c\u0e01\u0e32\u0e23\u0e04\u0e31\u0e14\u0e40\u0e25\u0e37\u0e2d\u0e01\t\n** \u0e40\u0e2d\u0e01\u0e2a\u0e32\u0e23\u0e2b\u0e25\u0e31\u0e01\u0e10\u0e32\u0e19\u0e40\u0e1e\u0e34\u0e48\u0e21\u0e40\u0e15\u0e34\u0e21\n** \u0e40\u0e07\u0e37\u0e48\u0e2d\u0e19\u0e44\u0e02\u0e01\u0e32\u0e23\u0e2a\u0e31\u0e21\u0e20\u0e32\u0e29\u0e13\u0e4c",
+    "descriptions": "",
+    "short_descriptions": "",
+    "applying_confirmation_warning": "",
+    "slots": 318,
+    "major_detail_visible": false,
+    "is_available": false,
+    "is_started": false,
+    "is_auto_start": false,
+    "applying_start_time": null,
+    "applying_deadline": null,
+    "max_num_selections": 1,
+    "base_fee": 0
+  }
+},
+{
+  "model": "appl.admissionproject",
+  "pk": 2,
+  "fields": {
+    "title": "\u0e0a\u0e49\u0e32\u0e07\u0e40\u0e1c\u0e37\u0e2d\u0e01",
+    "short_title": "\u0e0a\u0e49\u0e32\u0e07\u0e40\u0e1c\u0e37\u0e2d\u0e01",
+    "campus": 1,
+    "general_conditions": "1. \u0e40\u0e1b\u0e47\u0e19\u0e19\u0e31\u0e01\u0e40\u0e23\u0e35\u0e22\u0e19\u0e23\u0e30\u0e14\u0e31\u0e1a\u0e0a\u0e31\u0e49\u0e19\u0e21\u0e31\u0e18\u0e22\u0e21\u0e28\u0e36\u0e01\u0e29\u0e32\u0e15\u0e2d\u0e19\u0e1b\u0e25\u0e32\u0e22 \u0e21\u0e35\u0e04\u0e30\u0e41\u0e19\u0e19\u0e40\u0e09\u0e25\u0e35\u0e48\u0e22\u0e2a\u0e30\u0e2a\u0e21 4 \u0e20\u0e32\u0e04\u0e01\u0e32\u0e23\u0e28\u0e36\u0e01\u0e29\u0e32 \u0e44\u0e21\u0e48\u0e15\u0e48\u0e33\u0e01\u0e27\u0e48\u0e32 3.00\n2. \u0e21\u0e35\u0e1c\u0e25\u0e01\u0e32\u0e23\u0e40\u0e23\u0e35\u0e22\u0e19\u0e2d\u0e22\u0e39\u0e48\u0e43\u0e19\u0e25\u0e33\u0e14\u0e31\u0e1a\u0e17\u0e35\u0e48 1-20 \u0e02\u0e2d\u0e07\u0e42\u0e23\u0e07\u0e40\u0e23\u0e35\u0e22\u0e19 \u0e42\u0e14\u0e22\u0e40\u0e23\u0e35\u0e22\u0e07\u0e15\u0e32\u0e21\u0e04\u0e30\u0e41\u0e19\u0e19\u0e2a\u0e39\u0e07\u0e2a\u0e38\u0e14\u0e44\u0e1b\u0e2b\u0e32\u0e19\u0e49\u0e2d\u0e22\u0e2a\u0e38\u0e14 \u0e17\u0e31\u0e49\u0e07\u0e19\u0e35\u0e49\u0e19\u0e31\u0e01\u0e40\u0e23\u0e35\u0e22\u0e19\u0e17\u0e35\u0e48\u0e21\u0e35\u0e1c\u0e25\u0e01\u0e32\u0e23\u0e40\u0e23\u0e35\u0e22\u0e19\u0e40\u0e17\u0e48\u0e32\u0e01\u0e31\u0e19\u0e08\u0e31\u0e14\u0e2d\u0e22\u0e39\u0e48\u0e43\u0e19\u0e25\u0e33\u0e14\u0e31\u0e1a\u0e40\u0e14\u0e35\u0e22\u0e27\u0e01\u0e31\u0e19 \u0e42\u0e14\u0e22\u0e21\u0e35\u0e2b\u0e19\u0e31\u0e07\u0e2a\u0e37\u0e2d\u0e23\u0e31\u0e1a\u0e23\u0e2d\u0e07\u0e08\u0e32\u0e01\u0e1c\u0e39\u0e49\u0e2d\u0e33\u0e19\u0e27\u0e22\u0e01\u0e32\u0e23\u0e42\u0e23\u0e07\u0e40\u0e23\u0e35\u0e22\u0e19\u0e2b\u0e23\u0e37\u0e2d\u0e19\u0e32\u0e22\u0e17\u0e30\u0e40\u0e1a\u0e35\u0e22\u0e19\u0e27\u0e48\u0e32\u0e40\u0e1b\u0e47\u0e19\u0e1c\u0e39\u0e49\u0e21\u0e35\u0e1c\u0e25\u0e01\u0e32\u0e23\u0e40\u0e23\u0e35\u0e22\u0e19\u0e43\u0e19\u0e25\u0e33\u0e14\u0e31\u0e1a\u0e17\u0e35\u0e48 1-20 \u0e43\u0e19\u0e02\u0e2d\u0e07\u0e42\u0e23\u0e07\u0e40\u0e23\u0e35\u0e22\u0e19\u0e08\u0e23\u0e34\u0e07\n3. \u0e21\u0e35\u0e1b\u0e23\u0e30\u0e27\u0e31\u0e15\u0e34\u0e1c\u0e25\u0e07\u0e32\u0e19\u0e2b\u0e23\u0e37\u0e2d\u0e40\u0e2d\u0e01\u0e2a\u0e32\u0e23\u0e40\u0e1e\u0e34\u0e48\u0e21\u0e40\u0e15\u0e34\u0e21 \u0e15\u0e32\u0e21\u0e17\u0e35\u0e48\u0e04\u0e13\u0e30/\u0e2a\u0e32\u0e02\u0e32\u0e27\u0e34\u0e0a\u0e32 \u0e01\u0e33\u0e2b\u0e19\u0e14\n\u0e2b\u0e21\u0e32\u0e22\u0e40\u0e2b\u0e15\u0e38 : \u0e1c\u0e39\u0e49\u0e2a\u0e21\u0e31\u0e04\u0e23\u0e40\u0e25\u0e37\u0e2d\u0e01\u0e44\u0e14\u0e49\u0e40\u0e1e\u0e35\u0e22\u0e07 1 \u0e2a\u0e32\u0e02\u0e32",
+    "column_descriptions": "* \u0e41\u0e1c\u0e19\u0e01\u0e32\u0e23\u0e40\u0e23\u0e35\u0e22\u0e19\n* GPAX\n* \u0e04\u0e38\u0e13\u0e2a\u0e21\u0e1a\u0e31\u0e15\u0e34\u0e40\u0e09\u0e1e\u0e32\u0e30\u0e02\u0e2d\u0e07\u0e1c\u0e39\u0e49\u0e2a\u0e21\u0e31\u0e04\u0e23 / \u0e40\u0e01\u0e13\u0e11\u0e4c\u0e01\u0e32\u0e23\u0e04\u0e31\u0e14\u0e40\u0e25\u0e37\u0e2d\u0e01",
+    "descriptions": "",
+    "short_descriptions": "",
+    "applying_confirmation_warning": "",
+    "slots": 271,
+    "major_detail_visible": false,
+    "is_available": true,
+    "is_started": true,
+    "is_auto_start": false,
+    "applying_start_time": "2017-10-10T00:00:00",
+    "applying_deadline": "2017-10-31T23:59:59",
+    "max_num_selections": 1,
+    "base_fee": 0
+  }
+},
+{
+  "model": "appl.admissionproject",
+  "pk": 3,
+  "fields": {
+    "title": "\u0e19\u0e31\u0e01\u0e01\u0e35\u0e2c\u0e32\u0e17\u0e35\u0e21\u0e0a\u0e32\u0e15\u0e34\u0e41\u0e25\u0e30\u0e40\u0e22\u0e32\u0e27\u0e0a\u0e19\u0e17\u0e35\u0e21\u0e0a\u0e32\u0e15\u0e34",
+    "short_title": "\u0e19\u0e31\u0e01\u0e01\u0e35\u0e2c\u0e32\u0e17\u0e35\u0e21\u0e0a\u0e32\u0e15\u0e34\u0e41\u0e25\u0e30\u0e40\u0e22\u0e32\u0e27\u0e0a\u0e19\u0e17\u0e35\u0e21\u0e0a\u0e32\u0e15\u0e34",
+    "campus": null,
+    "general_conditions": "",
+    "column_descriptions": "* \u0e41\u0e1c\u0e19\u0e01\u0e32\u0e23\u0e40\u0e23\u0e35\u0e22\u0e19\r\n* \u0e2a\u0e31\u0e21\u0e20\u0e32\u0e29\u0e13\u0e4c",
+    "descriptions": "",
+    "short_descriptions": "",
+    "applying_confirmation_warning": "\u0e42\u0e04\u0e23\u0e07\u0e01\u0e32\u0e23\u0e19\u0e35\u0e49\u0e23\u0e31\u0e1a\u0e40\u0e09\u0e1e\u0e32\u0e30\u0e1c\u0e39\u0e49\u0e2a\u0e21\u0e31\u0e04\u0e23\u0e17\u0e35\u0e48\u0e40\u0e1b\u0e47\u0e19 \u0e1a\u0e25\u0e32\u0e1a\u0e25\u0e32\r\n\r\n\u0e17\u0e14\u0e2a\u0e2d\u0e1a\u0e1a\u0e25\u0e32\u0e1a\u0e25\u0e32 <b>\u0e15\u0e31\u0e27\u0e2b\u0e19\u0e32</b> \u0e41\u0e25\u0e30\u0e23\u0e32\u0e22\u0e25\u0e30\u0e40\u0e2d\u0e35\u0e22\u0e14<a href=\"http://www.google.com\">\u0e2d\u0e22\u0e48\u0e32\u0e07\u0e2d\u0e37\u0e48\u0e19 \u0e44\u0e1b google \u0e2a\u0e34</a>\r\n\r\n<ul>\r\n<li>\u0e44\u0e14\u0e49\u0e44\u0e2b\u0e21</li>\r\n<li>\u0e44\u0e14\u0e49\u0e1a\u0e49\u0e32\u0e07</li>\r\n</ul>",
+    "slots": 134,
+    "major_detail_visible": false,
+    "is_available": true,
+    "is_started": true,
+    "is_auto_start": false,
+    "applying_start_time": "2017-08-01T05:40:14",
+    "applying_deadline": "2017-10-05T05:52:42",
+    "max_num_selections": 1,
+    "base_fee": 200
+  }
+},
+{
+  "model": "appl.admissionproject",
+  "pk": 4,
+  "fields": {
+    "title": "\u0e40\u0e23\u0e35\u0e22\u0e19\u0e25\u0e48\u0e27\u0e07\u0e2b\u0e19\u0e49\u0e32",
+    "short_title": "\u0e40\u0e23\u0e35\u0e22\u0e19\u0e25\u0e48\u0e27\u0e07\u0e2b\u0e19\u0e49\u0e32",
+    "campus": null,
+    "general_conditions": "",
+    "column_descriptions": "",
+    "descriptions": "",
+    "short_descriptions": "",
+    "applying_confirmation_warning": "",
+    "slots": 351,
+    "major_detail_visible": false,
+    "is_available": true,
+    "is_started": false,
+    "is_auto_start": false,
+    "applying_start_time": null,
+    "applying_deadline": null,
+    "max_num_selections": 1,
+    "base_fee": 0
+  }
+},
+{
+  "model": "appl.admissionproject",
+  "pk": 5,
+  "fields": {
+    "title": "\u0e2a\u0e48\u0e07\u0e40\u0e2a\u0e23\u0e34\u0e21\u0e40\u0e14\u0e47\u0e01\u0e14\u0e35\u0e21\u0e35\u0e04\u0e38\u0e13\u0e18\u0e23\u0e23\u0e21\u0e40\u0e02\u0e49\u0e32\u0e28\u0e36\u0e01\u0e29\u0e32\u0e15\u0e48\u0e2d \u0e21\u0e01.",
+    "short_title": "\u0e2a\u0e48\u0e07\u0e40\u0e2a\u0e23\u0e34\u0e21\u0e40\u0e14\u0e47\u0e01\u0e14\u0e35\u0e21\u0e35\u0e04\u0e38\u0e13\u0e18\u0e23\u0e23\u0e21\u0e40\u0e02\u0e49\u0e32\u0e28\u0e36\u0e01\u0e29\u0e32\u0e15\u0e48\u0e2d \u0e21\u0e01.",
+    "campus": 2,
+    "general_conditions": "",
+    "column_descriptions": "",
+    "descriptions": "",
+    "short_descriptions": "",
+    "applying_confirmation_warning": "",
+    "slots": 163,
+    "major_detail_visible": false,
+    "is_available": false,
+    "is_started": false,
+    "is_auto_start": false,
+    "applying_start_time": null,
+    "applying_deadline": null,
+    "max_num_selections": 1,
+    "base_fee": 0
+  }
+},
+{
+  "model": "appl.admissionproject",
+  "pk": 6,
+  "fields": {
+    "title": "\u0e01\u0e49\u0e32\u0e27\u0e2a\u0e39\u0e48\u0e40\u0e04\u0e22\u0e39 \u0e40\u0e23\u0e35\u0e22\u0e19\u0e23\u0e39\u0e49\u0e25\u0e48\u0e27\u0e07\u0e2b\u0e19\u0e49\u0e32 (KU Connect)",
+    "short_title": "\u0e01\u0e49\u0e32\u0e27\u0e2a\u0e39\u0e48\u0e40\u0e04\u0e22\u0e39 \u0e40\u0e23\u0e35\u0e22\u0e19\u0e23\u0e39\u0e49\u0e25\u0e48\u0e27\u0e07\u0e2b\u0e19\u0e49\u0e32 (KU Connect)",
+    "campus": 2,
+    "general_conditions": "",
+    "column_descriptions": "",
+    "descriptions": "",
+    "short_descriptions": "",
+    "applying_confirmation_warning": "",
+    "slots": 81,
+    "major_detail_visible": false,
+    "is_available": false,
+    "is_started": false,
+    "is_auto_start": false,
+    "applying_start_time": null,
+    "applying_deadline": null,
+    "max_num_selections": 1,
+    "base_fee": 0
+  }
+},
+{
+  "model": "appl.admissionproject",
+  "pk": 7,
+  "fields": {
+    "title": "\u0e2a\u0e19\u0e31\u0e1a\u0e2a\u0e19\u0e38\u0e19\u0e01\u0e32\u0e23\u0e08\u0e31\u0e14\u0e15\u0e31\u0e49\u0e07\u0e2b\u0e49\u0e2d\u0e07\u0e40\u0e23\u0e35\u0e22\u0e19\u0e27\u0e34\u0e17\u0e22\u0e32\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c\u0e43\u0e19\u0e42\u0e23\u0e07\u0e40\u0e23\u0e35\u0e22\u0e19 (\u0e27\u0e21\u0e27.)",
+    "short_title": "\u0e2a\u0e19\u0e31\u0e1a\u0e2a\u0e19\u0e38\u0e19\u0e01\u0e32\u0e23\u0e08\u0e31\u0e14\u0e15\u0e31\u0e49\u0e07\u0e2b\u0e49\u0e2d\u0e07\u0e40\u0e23\u0e35\u0e22\u0e19\u0e27\u0e34\u0e17\u0e22\u0e32\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c\u0e43\u0e19\u0e42\u0e23\u0e07\u0e40\u0e23\u0e35\u0e22\u0e19 (\u0e27\u0e21\u0e27.)",
+    "campus": 2,
+    "general_conditions": "",
+    "column_descriptions": "",
+    "descriptions": "",
+    "short_descriptions": "",
+    "applying_confirmation_warning": "",
+    "slots": 23,
+    "major_detail_visible": false,
+    "is_available": false,
+    "is_started": false,
+    "is_auto_start": false,
+    "applying_start_time": null,
+    "applying_deadline": null,
+    "max_num_selections": 1,
+    "base_fee": 0
+  }
+},
+{
+  "model": "appl.admissionproject",
+  "pk": 8,
+  "fields": {
+    "title": "\u0e2a\u0e48\u0e07\u0e40\u0e2a\u0e23\u0e34\u0e21\u0e19\u0e31\u0e01\u0e40\u0e23\u0e35\u0e22\u0e19\u0e17\u0e35\u0e48\u0e21\u0e35\u0e04\u0e38\u0e13\u0e18\u0e23\u0e23\u0e21\u0e41\u0e25\u0e30\u0e08\u0e23\u0e34\u0e22\u0e18\u0e23\u0e23\u0e21",
+    "short_title": "\u0e2a\u0e48\u0e07\u0e40\u0e2a\u0e23\u0e34\u0e21\u0e19\u0e31\u0e01\u0e40\u0e23\u0e35\u0e22\u0e19\u0e17\u0e35\u0e48\u0e21\u0e35\u0e04\u0e38\u0e13\u0e18\u0e23\u0e23\u0e21\u0e41\u0e25\u0e30\u0e08\u0e23\u0e34\u0e22\u0e18\u0e23\u0e23\u0e21",
+    "campus": 3,
+    "general_conditions": "",
+    "column_descriptions": "",
+    "descriptions": "",
+    "short_descriptions": "",
+    "applying_confirmation_warning": "",
+    "slots": 163,
+    "major_detail_visible": false,
+    "is_available": false,
+    "is_started": false,
+    "is_auto_start": false,
+    "applying_start_time": null,
+    "applying_deadline": null,
+    "max_num_selections": 1,
+    "base_fee": 0
+  }
+},
+{
+  "model": "appl.admissionproject",
+  "pk": 9,
+  "fields": {
+    "title": "\u0e04\u0e27\u0e32\u0e21\u0e23\u0e39\u0e49\u0e04\u0e39\u0e48\u0e04\u0e38\u0e13\u0e18\u0e23\u0e23\u0e21\u0e2a\u0e23\u0e49\u0e32\u0e07\u0e1c\u0e39\u0e49\u0e19\u0e33\u0e40\u0e22\u0e32\u0e27\u0e0a\u0e19",
+    "short_title": "\u0e04\u0e27\u0e32\u0e21\u0e23\u0e39\u0e49\u0e04\u0e39\u0e48\u0e04\u0e38\u0e13\u0e18\u0e23\u0e23\u0e21\u0e2a\u0e23\u0e49\u0e32\u0e07\u0e1c\u0e39\u0e49\u0e19\u0e33\u0e40\u0e22\u0e32\u0e27\u0e0a\u0e19",
+    "campus": 3,
+    "general_conditions": "",
+    "column_descriptions": "",
+    "descriptions": "",
+    "short_descriptions": "",
+    "applying_confirmation_warning": "",
+    "slots": 81,
+    "major_detail_visible": false,
+    "is_available": false,
+    "is_started": false,
+    "is_auto_start": false,
+    "applying_start_time": null,
+    "applying_deadline": null,
+    "max_num_selections": 1,
+    "base_fee": 0
+  }
+},
+{
+  "model": "appl.admissionproject",
+  "pk": 10,
+  "fields": {
+    "title": "\u0e42\u0e04\u0e27\u0e15\u0e32\u0e1e\u0e34\u0e40\u0e28\u0e29\u0e04\u0e13\u0e30\u0e1e\u0e32\u0e13\u0e34\u0e0a\u0e22\u0e19\u0e32\u0e27\u0e35\u0e19\u0e32\u0e19\u0e32\u0e0a\u0e32\u0e15\u0e34",
+    "short_title": "\u0e42\u0e04\u0e27\u0e15\u0e32\u0e1e\u0e34\u0e40\u0e28\u0e29\u0e04\u0e13\u0e30\u0e1e\u0e32\u0e13\u0e34\u0e0a\u0e22\u0e19\u0e32\u0e27\u0e35\u0e19\u0e32\u0e19\u0e32\u0e0a\u0e32\u0e15\u0e34",
+    "campus": 3,
+    "general_conditions": "",
+    "column_descriptions": "",
+    "descriptions": "",
+    "short_descriptions": "",
+    "applying_confirmation_warning": "",
+    "slots": 23,
+    "major_detail_visible": false,
+    "is_available": false,
+    "is_started": false,
+    "is_auto_start": false,
+    "applying_start_time": null,
+    "applying_deadline": null,
+    "max_num_selections": 1,
+    "base_fee": 0
+  }
+},
+{
+  "model": "appl.admissionproject",
+  "pk": 11,
+  "fields": {
+    "title": "\u0e02\u0e22\u0e32\u0e22\u0e42\u0e2d\u0e01\u0e32\u0e2a\u0e17\u0e32\u0e07\u0e01\u0e32\u0e23\u0e28\u0e36\u0e01\u0e29\u0e32",
+    "short_title": "\u0e02\u0e22\u0e32\u0e22\u0e42\u0e2d\u0e01\u0e32\u0e2a\u0e17\u0e32\u0e07\u0e01\u0e32\u0e23\u0e28\u0e36\u0e01\u0e29\u0e32",
+    "campus": 4,
+    "general_conditions": "",
+    "column_descriptions": "",
+    "descriptions": "",
+    "short_descriptions": "",
+    "applying_confirmation_warning": "",
+    "slots": 1089,
+    "major_detail_visible": false,
+    "is_available": false,
+    "is_started": false,
+    "is_auto_start": false,
+    "applying_start_time": null,
+    "applying_deadline": null,
+    "max_num_selections": 1,
+    "base_fee": 0
+  }
+},
+{
+  "model": "appl.admissionproject",
+  "pk": 12,
+  "fields": {
+    "title": "\u0e23\u0e31\u0e1a\u0e19\u0e31\u0e01\u0e40\u0e23\u0e35\u0e22\u0e19\u0e14\u0e35\u0e40\u0e14\u0e48\u0e19\u0e08\u0e32\u0e01\u0e42\u0e23\u0e07\u0e40\u0e23\u0e35\u0e22\u0e19\u0e2a\u0e32\u0e18\u0e34\u0e15\u0e41\u0e2b\u0e48\u0e07 \u0e21\u0e01.",
+    "short_title": "\u0e23\u0e31\u0e1a\u0e19\u0e31\u0e01\u0e40\u0e23\u0e35\u0e22\u0e19\u0e14\u0e35\u0e40\u0e14\u0e48\u0e19\u0e08\u0e32\u0e01\u0e42\u0e23\u0e07\u0e40\u0e23\u0e35\u0e22\u0e19\u0e2a\u0e32\u0e18\u0e34\u0e15\u0e41\u0e2b\u0e48\u0e07 \u0e21\u0e01.",
+    "campus": null,
+    "general_conditions": "",
+    "column_descriptions": "",
+    "descriptions": "",
+    "short_descriptions": "",
+    "applying_confirmation_warning": "",
+    "slots": 454,
+    "major_detail_visible": false,
+    "is_available": false,
+    "is_started": false,
+    "is_auto_start": false,
+    "applying_start_time": null,
+    "applying_deadline": null,
+    "max_num_selections": 1,
+    "base_fee": 0
+  }
+},
+{
+  "model": "appl.admissionproject",
+  "pk": 13,
+  "fields": {
+    "title": "\u0e40\u0e21\u0e25\u0e47\u0e14\u0e1e\u0e31\u0e19\u0e18\u0e38\u0e4c\u0e2a\u0e39\u0e48\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c\u0e41\u0e2b\u0e48\u0e07\u0e41\u0e1c\u0e48\u0e19\u0e14\u0e34\u0e19",
+    "short_title": "\u0e40\u0e21\u0e25\u0e47\u0e14\u0e1e\u0e31\u0e19\u0e18\u0e38\u0e4c\u0e2a\u0e39\u0e48\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c\u0e41\u0e2b\u0e48\u0e07\u0e41\u0e1c\u0e48\u0e19\u0e14\u0e34\u0e19",
+    "campus": 1,
+    "general_conditions": "",
+    "column_descriptions": "",
+    "descriptions": "",
+    "short_descriptions": "",
+    "applying_confirmation_warning": "",
+    "slots": 198,
+    "major_detail_visible": false,
+    "is_available": false,
+    "is_started": false,
+    "is_auto_start": false,
+    "applying_start_time": null,
+    "applying_deadline": null,
+    "max_num_selections": 1,
+    "base_fee": 0
+  }
+},
+{
+  "model": "appl.admissionproject",
+  "pk": 14,
+  "fields": {
+    "title": "\u0e40\u0e1e\u0e0a\u0e23\u0e19\u0e19\u0e17\u0e23\u0e35",
+    "short_title": "\u0e40\u0e1e\u0e0a\u0e23\u0e19\u0e19\u0e17\u0e23\u0e35",
+    "campus": 1,
+    "general_conditions": "",
+    "column_descriptions": "",
+    "descriptions": "",
+    "short_descriptions": "",
+    "applying_confirmation_warning": "",
+    "slots": 151,
+    "major_detail_visible": false,
+    "is_available": false,
+    "is_started": false,
+    "is_auto_start": false,
+    "applying_start_time": null,
+    "applying_deadline": null,
+    "max_num_selections": 1,
+    "base_fee": 0
+  }
+},
+{
+  "model": "appl.admissionproject",
+  "pk": 15,
+  "fields": {
+    "title": "\u0e25\u0e39\u0e01\u0e1e\u0e23\u0e30\u0e1e\u0e34\u0e23\u0e38\u0e13",
+    "short_title": "\u0e25\u0e39\u0e01\u0e1e\u0e23\u0e30\u0e1e\u0e34\u0e23\u0e38\u0e13",
+    "campus": 1,
+    "general_conditions": "",
+    "column_descriptions": "",
+    "descriptions": "",
+    "short_descriptions": "",
+    "applying_confirmation_warning": "",
+    "slots": 149,
+    "major_detail_visible": false,
+    "is_available": false,
+    "is_started": false,
+    "is_auto_start": false,
+    "applying_start_time": null,
+    "applying_deadline": null,
+    "max_num_selections": 1,
+    "base_fee": 0
+  }
+},
+{
+  "model": "appl.admissionproject",
+  "pk": 16,
+  "fields": {
+    "title": "\u0e40\u0e14\u0e47\u0e01\u0e44\u0e17\u0e22\u0e2a\u0e39\u0e48\u0e2a\u0e32\u0e01\u0e25",
+    "short_title": "\u0e40\u0e14\u0e47\u0e01\u0e44\u0e17\u0e22\u0e2a\u0e39\u0e48\u0e2a\u0e32\u0e01\u0e25",
+    "campus": 1,
+    "general_conditions": "",
+    "column_descriptions": "",
+    "descriptions": "",
+    "short_descriptions": "",
+    "applying_confirmation_warning": "",
+    "slots": 166,
+    "major_detail_visible": false,
+    "is_available": false,
+    "is_started": false,
+    "is_auto_start": false,
+    "applying_start_time": null,
+    "applying_deadline": null,
+    "max_num_selections": 1,
+    "base_fee": 0
+  }
+},
+{
+  "model": "appl.admissionproject",
+  "pk": 17,
+  "fields": {
+    "title": "\u0e42\u0e04\u0e27\u0e15\u0e32\u0e1e\u0e34\u0e40\u0e28\u0e29 30 \u0e08\u0e31\u0e07\u0e2b\u0e27\u0e31\u0e14",
+    "short_title": "\u0e42\u0e04\u0e27\u0e15\u0e32\u0e1e\u0e34\u0e40\u0e28\u0e29 30 \u0e08\u0e31\u0e07\u0e2b\u0e27\u0e31\u0e14",
+    "campus": 1,
+    "general_conditions": "",
+    "column_descriptions": "",
+    "descriptions": "",
+    "short_descriptions": "",
+    "applying_confirmation_warning": "",
+    "slots": 333,
+    "major_detail_visible": false,
+    "is_available": false,
+    "is_started": false,
+    "is_auto_start": false,
+    "applying_start_time": null,
+    "applying_deadline": null,
+    "max_num_selections": 1,
+    "base_fee": 0
+  }
+},
+{
+  "model": "appl.admissionproject",
+  "pk": 18,
+  "fields": {
+    "title": "\u0e42\u0e04\u0e27\u0e15\u0e32\u0e19\u0e31\u0e01\u0e01\u0e35\u0e2c\u0e32\u0e14\u0e35\u0e40\u0e14\u0e48\u0e19\u0e2f",
+    "short_title": "\u0e42\u0e04\u0e27\u0e15\u0e32\u0e19\u0e31\u0e01\u0e01\u0e35\u0e2c\u0e32\u0e14\u0e35\u0e40\u0e14\u0e48\u0e19\u0e2f",
+    "campus": 1,
+    "general_conditions": "",
+    "column_descriptions": "",
+    "descriptions": "",
+    "short_descriptions": "",
+    "applying_confirmation_warning": "",
+    "slots": 104,
+    "major_detail_visible": false,
+    "is_available": false,
+    "is_started": false,
+    "is_auto_start": false,
+    "applying_start_time": null,
+    "applying_deadline": null,
+    "max_num_selections": 1,
+    "base_fee": 0
+  }
+},
+{
+  "model": "appl.admissionproject",
+  "pk": 19,
+  "fields": {
+    "title": "\u0e42\u0e04\u0e27\u0e15\u0e32\u0e28\u0e34\u0e25\u0e1b\u0e27\u0e31\u0e12\u0e19\u0e18\u0e23\u0e23\u0e21\u0e2f",
+    "short_title": "\u0e42\u0e04\u0e27\u0e15\u0e32\u0e28\u0e34\u0e25\u0e1b\u0e27\u0e31\u0e12\u0e19\u0e18\u0e23\u0e23\u0e21\u0e2f",
+    "campus": 1,
+    "general_conditions": "",
+    "column_descriptions": "",
+    "descriptions": "",
+    "short_descriptions": "",
+    "applying_confirmation_warning": "",
+    "slots": 81,
+    "major_detail_visible": false,
+    "is_available": false,
+    "is_started": false,
+    "is_auto_start": false,
+    "applying_start_time": null,
+    "applying_deadline": null,
+    "max_num_selections": 1,
+    "base_fee": 0
+  }
+},
+{
+  "model": "appl.admissionproject",
+  "pk": 20,
+  "fields": {
+    "title": "\u0e23\u0e31\u0e1a\u0e15\u0e23\u0e07\u0e40\u0e02\u0e15\u0e1e\u0e37\u0e49\u0e19\u0e17\u0e35\u0e48\u0e01\u0e32\u0e23\u0e28\u0e36\u0e01\u0e29\u0e32\u0e21\u0e31\u0e18\u0e22\u0e21\u0e28\u0e36\u0e01\u0e29\u0e32 \u0e40\u0e02\u0e15 5, 8, 9, 10",
+    "short_title": "\u0e23\u0e31\u0e1a\u0e15\u0e23\u0e07\u0e40\u0e02\u0e15\u0e1e\u0e37\u0e49\u0e19\u0e17\u0e35\u0e48\u0e01\u0e32\u0e23\u0e28\u0e36\u0e01\u0e29\u0e32\u0e21\u0e31\u0e18\u0e22\u0e21\u0e28\u0e36\u0e01\u0e29\u0e32 \u0e40\u0e02\u0e15 5, 8, 9, 10",
+    "campus": 2,
+    "general_conditions": "",
+    "column_descriptions": "",
+    "descriptions": "",
+    "short_descriptions": "",
+    "applying_confirmation_warning": "",
+    "slots": 458,
+    "major_detail_visible": false,
+    "is_available": false,
+    "is_started": false,
+    "is_auto_start": false,
+    "applying_start_time": null,
+    "applying_deadline": null,
+    "max_num_selections": 1,
+    "base_fee": 0
+  }
+},
+{
+  "model": "appl.admissionproject",
+  "pk": 21,
+  "fields": {
+    "title": "\u0e19\u0e31\u0e01\u0e40\u0e23\u0e35\u0e22\u0e19\u0e1c\u0e39\u0e49\u0e21\u0e35\u0e1c\u0e25\u0e01\u0e32\u0e23\u0e40\u0e23\u0e35\u0e22\u0e19\u0e14\u0e35\u0e40\u0e14\u0e48\u0e19 20% \u0e41\u0e23\u0e01\u0e02\u0e2d\u0e07\u0e42\u0e23\u0e07\u0e40\u0e23\u0e35\u0e22\u0e19",
+    "short_title": "\u0e19\u0e31\u0e01\u0e40\u0e23\u0e35\u0e22\u0e19\u0e1c\u0e39\u0e49\u0e21\u0e35\u0e1c\u0e25\u0e01\u0e32\u0e23\u0e40\u0e23\u0e35\u0e22\u0e19\u0e14\u0e35\u0e40\u0e14\u0e48\u0e19 20% \u0e41\u0e23\u0e01\u0e02\u0e2d\u0e07\u0e42\u0e23\u0e07\u0e40\u0e23\u0e35\u0e22\u0e19",
+    "campus": 2,
+    "general_conditions": "",
+    "column_descriptions": "",
+    "descriptions": "",
+    "short_descriptions": "",
+    "applying_confirmation_warning": "",
+    "slots": 126,
+    "major_detail_visible": false,
+    "is_available": false,
+    "is_started": false,
+    "is_auto_start": false,
+    "applying_start_time": null,
+    "applying_deadline": null,
+    "max_num_selections": 1,
+    "base_fee": 0
+  }
+},
+{
+  "model": "appl.admissionproject",
+  "pk": 22,
+  "fields": {
+    "title": "\u0e42\u0e04\u0e27\u0e15\u0e32\u0e1e\u0e34\u0e40\u0e28\u0e29-\u0e2a\u0e33\u0e2b\u0e23\u0e31\u0e1a\u0e1a\u0e38\u0e15\u0e23\u0e40\u0e01\u0e29\u0e15\u0e23\u0e01\u0e23",
+    "short_title": "\u0e42\u0e04\u0e27\u0e15\u0e32\u0e1e\u0e34\u0e40\u0e28\u0e29-\u0e2a\u0e33\u0e2b\u0e23\u0e31\u0e1a\u0e1a\u0e38\u0e15\u0e23\u0e40\u0e01\u0e29\u0e15\u0e23\u0e01\u0e23",
+    "campus": 2,
+    "general_conditions": "",
+    "column_descriptions": "",
+    "descriptions": "",
+    "short_descriptions": "",
+    "applying_confirmation_warning": "",
+    "slots": 212,
+    "major_detail_visible": false,
+    "is_available": false,
+    "is_started": false,
+    "is_auto_start": false,
+    "applying_start_time": null,
+    "applying_deadline": null,
+    "max_num_selections": 1,
+    "base_fee": 0
+  }
+},
+{
+  "model": "appl.admissionproject",
+  "pk": 23,
+  "fields": {
+    "title": "\u0e19\u0e31\u0e01\u0e40\u0e23\u0e35\u0e22\u0e19\u0e1c\u0e39\u0e49\u0e21\u0e35\u0e04\u0e27\u0e32\u0e21\u0e40\u0e1b\u0e47\u0e19\u0e40\u0e25\u0e34\u0e28\u0e17\u0e32\u0e07\u0e27\u0e34\u0e0a\u0e32\u0e01\u0e32\u0e23 \u0e04\u0e13\u0e30\u0e27\u0e34\u0e28\u0e27\u0e01\u0e23\u0e23\u0e21\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c \u0e01\u0e33\u0e41\u0e1e\u0e07\u0e41\u0e2a\u0e19",
+    "short_title": "\u0e19\u0e31\u0e01\u0e40\u0e23\u0e35\u0e22\u0e19\u0e1c\u0e39\u0e49\u0e21\u0e35\u0e04\u0e27\u0e32\u0e21\u0e40\u0e1b\u0e47\u0e19\u0e40\u0e25\u0e34\u0e28\u0e17\u0e32\u0e07\u0e27\u0e34\u0e0a\u0e32\u0e01\u0e32\u0e23 \u0e04\u0e13\u0e30\u0e27\u0e34\u0e28\u0e27\u0e01\u0e23\u0e23\u0e21\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c \u0e01\u0e33\u0e41\u0e1e\u0e07\u0e41\u0e2a\u0e19",
+    "campus": 2,
+    "general_conditions": "",
+    "column_descriptions": "",
+    "descriptions": "",
+    "short_descriptions": "",
+    "applying_confirmation_warning": "",
+    "slots": 14,
+    "major_detail_visible": false,
+    "is_available": false,
+    "is_started": false,
+    "is_auto_start": false,
+    "applying_start_time": null,
+    "applying_deadline": null,
+    "max_num_selections": 1,
+    "base_fee": 0
+  }
+},
+{
+  "model": "appl.admissionproject",
+  "pk": 24,
+  "fields": {
+    "title": "\u0e42\u0e04\u0e27\u0e15\u0e32\u0e19\u0e31\u0e01\u0e01\u0e35\u0e2c\u0e32\u0e14\u0e35\u0e40\u0e14\u0e48\u0e19\u0e2f \u0e01\u0e33\u0e41\u0e1e\u0e07\u0e41\u0e2a\u0e19",
+    "short_title": "\u0e42\u0e04\u0e27\u0e15\u0e32\u0e19\u0e31\u0e01\u0e01\u0e35\u0e2c\u0e32\u0e14\u0e35\u0e40\u0e14\u0e48\u0e19\u0e2f \u0e01\u0e33\u0e41\u0e1e\u0e07\u0e41\u0e2a\u0e19",
+    "campus": 2,
+    "general_conditions": "",
+    "column_descriptions": "",
+    "descriptions": "",
+    "short_descriptions": "",
+    "applying_confirmation_warning": "",
+    "slots": 64,
+    "major_detail_visible": false,
+    "is_available": false,
+    "is_started": false,
+    "is_auto_start": false,
+    "applying_start_time": null,
+    "applying_deadline": null,
+    "max_num_selections": 1,
+    "base_fee": 0
+  }
+},
+{
+  "model": "appl.admissionproject",
+  "pk": 25,
+  "fields": {
+    "title": "\u0e23\u0e31\u0e1a\u0e15\u0e23\u0e07 9 \u0e08\u0e31\u0e07\u0e2b\u0e27\u0e31\u0e14",
+    "short_title": "\u0e23\u0e31\u0e1a\u0e15\u0e23\u0e07 9 \u0e08\u0e31\u0e07\u0e2b\u0e27\u0e31\u0e14",
+    "campus": 3,
+    "general_conditions": "",
+    "column_descriptions": "",
+    "descriptions": "",
+    "short_descriptions": "",
+    "applying_confirmation_warning": "",
+    "slots": 930,
+    "major_detail_visible": false,
+    "is_available": false,
+    "is_started": false,
+    "is_auto_start": false,
+    "applying_start_time": null,
+    "applying_deadline": null,
+    "max_num_selections": 1,
+    "base_fee": 0
+  }
+},
+{
+  "model": "appl.admissionproject",
+  "pk": 26,
+  "fields": {
+    "title": "\u0e42\u0e04\u0e27\u0e15\u0e32\u0e20\u0e32\u0e04\u0e15\u0e30\u0e27\u0e31\u0e19\u0e2d\u0e2d\u0e01\u0e40\u0e09\u0e35\u0e22\u0e07\u0e40\u0e2b\u0e19\u0e37\u0e2d\u0e41\u0e25\u0e30\u0e42\u0e23\u0e07\u0e40\u0e23\u0e35\u0e22\u0e19\u0e40\u0e04\u0e23\u0e37\u0e2d\u0e02\u0e48\u0e32\u0e22",
+    "short_title": "\u0e42\u0e04\u0e27\u0e15\u0e32\u0e20\u0e32\u0e04\u0e15\u0e30\u0e27\u0e31\u0e19\u0e2d\u0e2d\u0e01\u0e40\u0e09\u0e35\u0e22\u0e07\u0e40\u0e2b\u0e19\u0e37\u0e2d\u0e41\u0e25\u0e30\u0e42\u0e23\u0e07\u0e40\u0e23\u0e35\u0e22\u0e19\u0e40\u0e04\u0e23\u0e37\u0e2d\u0e02\u0e48\u0e32\u0e22",
+    "campus": 4,
+    "general_conditions": "",
+    "column_descriptions": "",
+    "descriptions": "",
+    "short_descriptions": "",
+    "applying_confirmation_warning": "",
+    "slots": 358,
+    "major_detail_visible": false,
+    "is_available": false,
+    "is_started": false,
+    "is_auto_start": false,
+    "applying_start_time": null,
+    "applying_deadline": null,
+    "max_num_selections": 1,
+    "base_fee": 0
+  }
+},
+{
+  "model": "appl.admissionround",
+  "pk": 1,
+  "fields": {
+    "number": 1,
+    "subround_number": 1,
+    "rank": 1,
+    "short_descriptions": "\u0e01\u0e32\u0e23\u0e23\u0e31\u0e1a\u0e14\u0e49\u0e27\u0e22 Portfolio (\u0e0a\u0e48\u0e27\u0e07\u0e17\u0e35\u0e48\u0e2b\u0e19\u0e36\u0e48\u0e07)",
+    "admission_dates": "",
+    "is_available": true
+  }
+},
+{
+  "model": "appl.admissionround",
+  "pk": 2,
+  "fields": {
+    "number": 1,
+    "subround_number": 2,
+    "rank": 2,
+    "short_descriptions": "\u0e01\u0e32\u0e23\u0e23\u0e31\u0e1a\u0e14\u0e49\u0e27\u0e22 Portfolio (\u0e0a\u0e48\u0e27\u0e07\u0e17\u0e35\u0e48\u0e2a\u0e2d\u0e07)",
+    "admission_dates": "",
+    "is_available": false
+  }
+},
+{
+  "model": "appl.admissionround",
+  "pk": 3,
+  "fields": {
+    "number": 2,
+    "subround_number": 0,
+    "rank": 3,
+    "short_descriptions": "\u0e01\u0e32\u0e23\u0e23\u0e31\u0e1a\u0e23\u0e30\u0e1a\u0e1a\u0e42\u0e04\u0e27\u0e15\u0e32",
+    "admission_dates": "",
+    "is_available": false
+  }
+},
+{
+  "model": "appl.admissionround",
+  "pk": 4,
+  "fields": {
+    "number": 3,
+    "subround_number": 0,
+    "rank": 4,
+    "short_descriptions": "\u0e01\u0e32\u0e23\u0e23\u0e31\u0e1a\u0e15\u0e23\u0e07\u0e23\u0e48\u0e27\u0e21\u0e01\u0e31\u0e19",
+    "admission_dates": "",
+    "is_available": false
+  }
+},
+{
+  "model": "appl.admissionround",
+  "pk": 5,
+  "fields": {
+    "number": 4,
+    "subround_number": 0,
+    "rank": 5,
+    "short_descriptions": "\u0e01\u0e32\u0e23\u0e23\u0e31\u0e1a\u0e23\u0e30\u0e1a\u0e1a\u0e01\u0e25\u0e32\u0e07 Admissions",
+    "admission_dates": "",
+    "is_available": false
+  }
+},
+{
+  "model": "appl.admissionround",
+  "pk": 6,
+  "fields": {
+    "number": 5,
+    "subround_number": 0,
+    "rank": 6,
+    "short_descriptions": "\u0e01\u0e32\u0e23\u0e23\u0e31\u0e1a\u0e15\u0e23\u0e07\u0e2d\u0e34\u0e2a\u0e23\u0e30",
+    "admission_dates": "",
+    "is_available": false
+  }
+},
+{
+  "model": "appl.admissionprojectround",
+  "pk": 1,
+  "fields": {
+    "admission_round": 2,
+    "admission_project": 1,
+    "admission_dates": "22 \u0e18.\u0e04. 60 \u2013 12 \u0e21.\u0e04. 61"
+  }
+},
+{
+  "model": "appl.admissionprojectround",
+  "pk": 2,
+  "fields": {
+    "admission_round": 1,
+    "admission_project": 2,
+    "admission_dates": "10 \u2013 30 \u0e15.\u0e04. 60"
+  }
+},
+{
+  "model": "appl.admissionprojectround",
+  "pk": 3,
+  "fields": {
+    "admission_round": 1,
+    "admission_project": 3,
+    "admission_dates": "10 \u2013 30 \u0e15.\u0e04. 60"
+  }
+},
+{
+  "model": "appl.admissionprojectround",
+  "pk": 4,
+  "fields": {
+    "admission_round": 1,
+    "admission_project": 4,
+    "admission_dates": "24 \u2013 31 \u0e15.\u0e04. 60"
+  }
+},
+{
+  "model": "appl.admissionprojectround",
+  "pk": 5,
+  "fields": {
+    "admission_round": 1,
+    "admission_project": 5,
+    "admission_dates": "1 \u2013 31 \u0e15.\u0e04. 60"
+  }
+},
+{
+  "model": "appl.admissionprojectround",
+  "pk": 6,
+  "fields": {
+    "admission_round": 2,
+    "admission_project": 5,
+    "admission_dates": "23 \u0e18.\u0e04. 60 \u2013 30 \u0e21.\u0e04. 61"
+  }
+},
+{
+  "model": "appl.admissionprojectround",
+  "pk": 7,
+  "fields": {
+    "admission_round": 1,
+    "admission_project": 6,
+    "admission_dates": "1 \u2013 31 \u0e15.\u0e04. 60"
+  }
+},
+{
+  "model": "appl.admissionprojectround",
+  "pk": 8,
+  "fields": {
+    "admission_round": 2,
+    "admission_project": 6,
+    "admission_dates": "23 \u0e18.\u0e04. 60 \u2013 30 \u0e21.\u0e04. 61"
+  }
+},
+{
+  "model": "appl.admissionprojectround",
+  "pk": 9,
+  "fields": {
+    "admission_round": 1,
+    "admission_project": 7,
+    "admission_dates": "1 \u2013 31 \u0e15.\u0e04. 60"
+  }
+},
+{
+  "model": "appl.admissionprojectround",
+  "pk": 10,
+  "fields": {
+    "admission_round": 2,
+    "admission_project": 7,
+    "admission_dates": "23 \u0e18.\u0e04. 60 \u2013 30 \u0e21.\u0e04. 61"
+  }
+},
+{
+  "model": "appl.admissionprojectround",
+  "pk": 11,
+  "fields": {
+    "admission_round": 1,
+    "admission_project": 8,
+    "admission_dates": "1 \u2013 31 \u0e15.\u0e04. 60"
+  }
+},
+{
+  "model": "appl.admissionprojectround",
+  "pk": 12,
+  "fields": {
+    "admission_round": 1,
+    "admission_project": 9,
+    "admission_dates": "1 \u2013 31 \u0e15.\u0e04. 60"
+  }
+},
+{
+  "model": "appl.admissionprojectround",
+  "pk": 13,
+  "fields": {
+    "admission_round": 1,
+    "admission_project": 10,
+    "admission_dates": "1 \u2013 31 \u0e15.\u0e04. 60"
+  }
+},
+{
+  "model": "appl.admissionprojectround",
+  "pk": 14,
+  "fields": {
+    "admission_round": 2,
+    "admission_project": 10,
+    "admission_dates": "2 \u0e15.\u0e04. 60 \u2013 12 \u0e1e.\u0e22. 60"
+  }
+},
+{
+  "model": "appl.admissionprojectround",
+  "pk": 15,
+  "fields": {
+    "admission_round": 1,
+    "admission_project": 11,
+    "admission_dates": "1 \u0e15.\u0e04. - 17 \u0e1e.\u0e22. 60"
+  }
+},
+{
+  "model": "appl.admissionprojectround",
+  "pk": 16,
+  "fields": {
+    "admission_round": 2,
+    "admission_project": 11,
+    "admission_dates": "22 \u0e18.\u0e04. 60 \u2013 28 \u0e01.\u0e1e. 61"
+  }
+},
+{
+  "model": "appl.admissionprojectround",
+  "pk": 17,
+  "fields": {
+    "admission_round": 3,
+    "admission_project": 12,
+    "admission_dates": "15 \u2013 30 \u0e21.\u0e04. 61"
+  }
+},
+{
+  "model": "appl.admissionprojectround",
+  "pk": 18,
+  "fields": {
+    "admission_round": 3,
+    "admission_project": 13,
+    "admission_dates": "15 \u2013 30 \u0e21.\u0e04. 61"
+  }
+},
+{
+  "model": "appl.admissionprojectround",
+  "pk": 19,
+  "fields": {
+    "admission_round": 3,
+    "admission_project": 14,
+    "admission_dates": "15 \u2013 30 \u0e21.\u0e04. 61"
+  }
+},
+{
+  "model": "appl.admissionprojectround",
+  "pk": 20,
+  "fields": {
+    "admission_round": 3,
+    "admission_project": 15,
+    "admission_dates": "15 \u2013 30 \u0e21.\u0e04. 61"
+  }
+},
+{
+  "model": "appl.admissionprojectround",
+  "pk": 21,
+  "fields": {
+    "admission_round": 3,
+    "admission_project": 16,
+    "admission_dates": "15 \u2013 30 \u0e21.\u0e04. 61"
+  }
+},
+{
+  "model": "appl.admissionprojectround",
+  "pk": 22,
+  "fields": {
+    "admission_round": 3,
+    "admission_project": 17,
+    "admission_dates": "15 \u2013 30 \u0e21.\u0e04. 61"
+  }
+},
+{
+  "model": "appl.admissionprojectround",
+  "pk": 23,
+  "fields": {
+    "admission_round": 3,
+    "admission_project": 18,
+    "admission_dates": "15 \u2013 30 \u0e21.\u0e04. 61"
+  }
+},
+{
+  "model": "appl.admissionprojectround",
+  "pk": 24,
+  "fields": {
+    "admission_round": 3,
+    "admission_project": 19,
+    "admission_dates": "15 \u2013 30 \u0e21.\u0e04. 61"
+  }
+},
+{
+  "model": "appl.admissionprojectround",
+  "pk": 25,
+  "fields": {
+    "admission_round": 3,
+    "admission_project": 20,
+    "admission_dates": "23 \u0e18.\u0e04. 60 \u2013 30 \u0e21.\u0e04. 61"
+  }
+},
+{
+  "model": "appl.admissionprojectround",
+  "pk": 26,
+  "fields": {
+    "admission_round": 3,
+    "admission_project": 21,
+    "admission_dates": "23 \u0e18.\u0e04. 60 \u2013 30 \u0e21.\u0e04. 61"
+  }
+},
+{
+  "model": "appl.admissionprojectround",
+  "pk": 27,
+  "fields": {
+    "admission_round": 3,
+    "admission_project": 22,
+    "admission_dates": "23 \u0e18.\u0e04. 60 \u2013 30 \u0e21.\u0e04. 61"
+  }
+},
+{
+  "model": "appl.admissionprojectround",
+  "pk": 28,
+  "fields": {
+    "admission_round": 3,
+    "admission_project": 23,
+    "admission_dates": "23 \u0e18.\u0e04. 60 \u2013 30 \u0e21.\u0e04. 61"
+  }
+},
+{
+  "model": "appl.admissionprojectround",
+  "pk": 29,
+  "fields": {
+    "admission_round": 3,
+    "admission_project": 24,
+    "admission_dates": "23 \u0e18.\u0e04. 60 \u2013 30 \u0e21.\u0e04. 61"
+  }
+},
+{
+  "model": "appl.admissionprojectround",
+  "pk": 30,
+  "fields": {
+    "admission_round": 3,
+    "admission_project": 25,
+    "admission_dates": "20 \u0e18.\u0e04. 60 \u2013 2 \u0e40\u0e21.\u0e22. 61"
+  }
+},
+{
+  "model": "appl.admissionprojectround",
+  "pk": 31,
+  "fields": {
+    "admission_round": 3,
+    "admission_project": 26,
+    "admission_dates": "1 \u0e18.\u0e04. 60 \u2013 31 \u0e21\u0e35.\u0e04. 61"
+  }
+}
+]
