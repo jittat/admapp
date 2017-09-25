@@ -46,7 +46,7 @@ def select(request, admission_round_id):
     project = application.admission_project
 
     try:
-        major_selection = application.majorselection
+        major_selection = application.major_selection
     except MajorSelection.DoesNotExist:
         major_selection = MajorSelection(major_list='')
 

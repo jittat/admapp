@@ -4,7 +4,7 @@ from django.urls import reverse
 from regis.models import Applicant
 from regis.decorators import appl_login_required
 
-from appl.models import AdmissionProject, ProjectUploadedDocument, AdmissionRound
+from appl.models import AdmissionProject, ProjectUploadedDocument, AdmissionRound, Payment
 
 from appl.views.upload import upload_form_for
 
@@ -24,15 +24,28 @@ def index(request):
     admission_round = AdmissionRound.get_available()
     if admission_round:
         admission_projects = admission_round.get_available_projects()
+
         active_application = applicant.get_active_application(admission_round)
         try:
-            major_selection = active_application.majorselection
+            major_selection = active_application.major_selection
         except:
             major_selection = None
+
+        admission_fee = active_application.admission_fee()
+        payments = Payment.find_for_applicant_in_round(applicant, admission_round)
+        paid_amount = sum([p.amount for p in payments])
+
+        if admission_fee > paid_amount:
+            additional_payment = admission_fee - paid_amount
+        else:
+            additional_payment = 0
     else:
         admission_projects = []
         active_application = None
         major_selection = None
+        payments = []
+        paid_amount = 0
+        additional_payment = 0
         
     return render(request,
                   'appl/index.html',
@@ -43,6 +56,10 @@ def index(request):
                     'admission_projects': admission_projects,
                     'active_application': active_application,
                     'major_selection': major_selection,
+
+                    'payments': payments,
+                    'paid_amount': paid_amount,
+                    'additional_payment': additional_payment,
                   })
 
         

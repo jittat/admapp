@@ -109,7 +109,9 @@ class AdmissionProject(models.Model):
     
     max_num_selections = models.IntegerField(default=1,
                                              verbose_name='จำนวนสาขาที่เลือกได้')
-    
+
+    base_fee = models.IntegerField(default=0,
+                                   verbose_name='ค่าสมัคร')
     
     def __str__(self):
         return self.title
@@ -146,6 +148,11 @@ class Major(models.Model):
 
     detail_items_csv = models.TextField()
 
+    additional_fee_one_time = models.IntegerField(default=0,
+                                                  verbose_name='ค่าสมัครเพิ่มเติม (ไม่คิดซ้ำ)')
+    additional_fee_per_major = models.IntegerField(default=0,
+                                                   verbose_name='ค่าสมัครเพิ่มเติม (คิดซ้ำสาขา)')
+    
     class Meta:
         ordering = ['number']
     
@@ -269,10 +276,31 @@ class ProjectApplication(models.Model):
     def is_active(self):
         return not self.is_canceled
 
+    def admission_fee(self):
+        fee = self.admission_project.base_fee
+        try:
+            major_selection = self.major_selection
+        except:
+            major_selection = None
+
+        if major_selection:
+            majors = major_selection.get_majors()
+            one_time_fee = 0
+            acc_fee = 0
+            for m in majors:
+                if m.additional_fee_one_time > one_time_fee:
+                    one_time_fee = m.additional_fee_one_time
+                acc_fee += m.additional_fee_per_major
+
+            fee += one_time_fee + acc_fee
+
+        return fee
+
 
 class MajorSelection(models.Model):
     applicant = models.ForeignKey(Applicant)
-    project_application = models.OneToOneField(ProjectApplication)
+    project_application = models.OneToOneField(ProjectApplication,
+                                               related_name='major_selection')
     admission_project = models.ForeignKey(AdmissionProject)
     admission_round = models.ForeignKey(AdmissionRound)
 
@@ -301,3 +329,33 @@ class MajorSelection(models.Model):
         self.major_list = ','.join([str(m.number) for m in self.majors])
         self.num_selected = len(majors)
                             
+
+class Payment(models.Model):
+    applicant = models.ForeignKey(Applicant,
+                                  null=True)
+    admission_round = models.ForeignKey(AdmissionRound)
+
+    national_id = models.CharField(max_length=20)
+    verification_number = models.CharField(max_length=30)
+
+    source_type = models.IntegerField(default=0)
+
+    payment_name = models.CharField(max_length=100,
+                                    blank=True)
+    
+    amount = models.FloatField(default=0)
+    paid_at = models.DateTimeField()
+
+    has_payment_error = models.BooleanField(default=False)
+    
+
+    def __str__(self):
+        return '{0} ({1}/{2})'.format(self.amount, self.id, self.paid_at)
+
+
+    @staticmethod
+    def find_for_applicant_in_round(applicant, admission_round):
+        return Payment.objects.filter(applicant=applicant,
+                                      admission_round=admission_round).all()
+
+    
