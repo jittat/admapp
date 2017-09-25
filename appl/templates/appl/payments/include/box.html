@@ -1,0 +1,96 @@
+<div class="outside-frame">
+  <div class="top-header">
+    <div class="acenter top-right-box">
+      <small><?= $rcpt ?></small><br>
+      เลขที่ใบสมัคร <?= $submission->application_number() ?><br>
+      <b>ใบแจ้งการชำระเงินค่าสมัคร KU Admission</b>
+    </div>
+    <div class="title-box acenter">
+      <table class="empty">
+        <tr>
+          <td>
+            <img src="<?= url('static/img/payment/ku.png') ?>" height="40px">
+          </td>
+          <td style="text-align: left">
+            <b><span style="font-size: 130%">การรับนิสิตเข้าศึกษาต่อ มหาวิทยาลัยเกษตรศาสตร์</span></b><br>
+            <b>1. ชำระผ่านธนาคารกรุงเทพ</b> ชำระเงินผ่านเคาน์เตอร์ ATM และ Internet Banking ภายใน <?= $deadline ?> หรือ<br><b>2.ชำระผ่านบริการเคาน์เตอร์เซอร์วิส</b> ภายใน <?= $deadline ?>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div style="clear:both"></div>
+  </div>
+
+  <div class="bank-section">
+    <div class="bank-info">
+      <table>
+        <tr>
+          <td>
+            <img src="<?= url('static/img/payment/bbl.png') ?>">
+          </td>
+          <td>
+            เพื่อเข้าบัญชี "โครงการรับตรงเพื่อเข้าศึกษาต่อมหาวิทยาลัยเกษตรศาสตร์"<br>
+            <b>
+              ธ.กรุงเทพ จำกัด (มหาชน) (BR 1081)(10/10) Comp Code: 28200<br>
+              SERVICE CODE: KUAD
+            </b>
+          </td>
+        </tr>
+        <tr><td colspan="2"><img src="<?= url('static/img/payment/Logo_CS.png')?>"> หรือชำระผ่านบริการเคาน์เตอร์เซอร์วิส (ค่าธรรมเนียม 10 บาท)</td></tr>
+      </table>
+    </div>
+    <div class="payment-info">
+      SERVICE CODE: KUAD<br>
+      รหัสผู้เสียภาษีอากร 0994000159382
+      <div style="border-bottom: 1px solid gray;"></div>
+      COMP CODE: 28200<br>
+      ชื่อ-นามสกุล <?= $applicant->full_name() ?><br>
+      Ref No1.: <?= $applicant->national_id ?><br>
+      Ref No2.: <?= $verification ?><br>
+    </div>
+    <div style="clear:both"></div>
+  </div>
+
+  <div class="payment-section">
+    <div class="payment-tab">
+      <b>รับเฉพาะเงินสด</b><br>
+      <table>
+        <tr>
+          <td>ลำดับ</td>
+          <td>รายการ</td>
+          <td width="10%" colspan="2">จำนวนเงิน</td>
+        </tr>
+        <tr>
+          <td>1</td>
+          <td style="text-align: left; padding-left: 10px;">
+            ค่าสมัครโครงการรับเข้าศึกษาต่อมหาวิทยาลัยเกษตรศาสตร์ เลือก <?= count($majors) ?> สาขา <? if($is_additional_payment) { ?>(ชำระเพิ่มเติม)<? } ?><br>
+            <small>หมายเหตุ: สาขาที่ได้รับการพิจารณาจะใช้ข้อมูลล่าสุดในระบบรับสมัครออนไลน์</small>
+          </td>
+          <td style="text-align: right; padding-right: 5px;"><?= $amount_numeric ?></td>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td colspan="2" style="text-align: right;">รวม</td>
+          <td style="text-align: right; padding-right: 5px;"><?= $amount_numeric ?></td>
+          <td>-</td>
+        </tr>
+      </table>
+      <div style="float: right;">
+        <small>
+          <? if($rcpt == 'สำหรับผู้สมัคร') { ?>
+            * หมายเหตุ ธรรมเนียมธนาคาร 10 บาท ทั่วประเทศ
+          <? } else { ?>
+          * หมายเหตุ โปรดเรียกเก็บค่าธรรมเนียมจากผู้ชำระเงิน (10/10)
+          <? } ?>
+        </small>
+      </div>
+      <b>จำนวนเงินเป็นตัวอักษร:</b> <?= $amount_str ?><br>
+    </div>
+    <div class="" style="padding: 5px 10px 5px 10px;">
+      ชื่อผู้ฝาก............................    โทรศัพท์ ................................
+      &nbsp;&nbsp;&nbsp;&nbsp;
+      &nbsp;&nbsp;&nbsp;&nbsp;
+      ลายเซ็นต์เจ้าหน้าที่.........................................
+    </div>
+  </div>
+</div>

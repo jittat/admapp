@@ -10,16 +10,18 @@
     {% endif %}
     <a class="btn btn-sm btn-primary" href="{% url 'appl:major-selection' admission_round.id %}">เลือกสาขา</a><br />
   </li>
-  <li>
-    พิมพ์ใบชำระเงิน (
-    {{ active_application.admission_fee }} บาท
-    ชำระแล้ว {{ paid_amount }} บาท
-    {% if active_application.admission_fee > paid_amount %}
-      ต้องชำระเพิ่ม {{ additional_payment }}
-    {% else %}
-      ไม่ต้องชำระเพิ่ม
-    {% endif %}
-    )
-  </li>
+  {% if major_selection %}
+    <li>
+      พิมพ์ใบชำระเงิน:
+      ค่าสมัคร {{ active_application.admission_fee }} บาท
+      ชำระแล้ว {{ paid_amount }} บาท
+      {% if active_application.admission_fee > paid_amount %}
+        ต้องชำระเพิ่ม {{ additional_payment }} บาท
+        <a target="_blank" class="btn btn-sm btn-success" href="{% url 'appl:payment' active_application.id %}">พิมพ์</a>
+      {% else %}
+        ไม่ต้องชำระเพิ่ม
+      {% endif %}
+    </li>
+  {% endif %}
 </ul>
 

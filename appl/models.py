@@ -97,16 +97,6 @@ class AdmissionProject(models.Model):
 
     is_available = models.BooleanField(default=False)
 
-    is_started = models.BooleanField(default=False,
-                                     verbose_name='เปิดรับสมัครแล้ว')
-    is_auto_start = models.BooleanField(default=False)
-    applying_start_time = models.DateTimeField(blank=True,
-                                               null=True,
-                                               verbose_name='เวลาเริ่มเปิดรับสมัคร')
-    applying_deadline = models.DateTimeField(blank=True,
-                                             null=True,
-                                             verbose_name='เวลาปิดรับสมัคร')
-    
     max_num_selections = models.IntegerField(default=1,
                                              verbose_name='จำนวนสาขาที่เลือกได้')
 
@@ -120,6 +110,49 @@ class AdmissionProject(models.Model):
         return ','.join([str(r) for r in self.admission_rounds.all()])
 
     def is_deadline_passed(self):
+        started = False
+        for around in self.admissionprojectround_set.all():
+            if around.is_started:
+                started = True
+                if around.is_open():
+                    return False
+        if started:
+            return True
+        else:
+            return False
+
+    def is_open(self):
+        for around in self.admissionprojectround_set.all():
+            if around.is_open():
+                return True
+        return False
+                    
+
+class AdmissionProjectRound(models.Model):
+    admission_round = models.ForeignKey('AdmissionRound',
+                                        on_delete=models.CASCADE)
+    admission_project = models.ForeignKey('AdmissionProject',
+                                          on_delete=models.CASCADE)
+    admission_dates = models.CharField(max_length=100)
+
+    is_auto_start = models.BooleanField(default=False)
+
+    is_started = models.BooleanField(default=False,
+                                     verbose_name='เปิดรับสมัครแล้ว')
+    applying_start_time = models.DateTimeField(blank=True,
+                                               null=True,
+                                               verbose_name='เวลาเริ่มเปิดรับสมัคร')
+    applying_deadline = models.DateTimeField(blank=True,
+                                             null=True,
+                                             verbose_name='เวลาปิดรับสมัคร')
+    payment_deadline = models.DateField(blank=True,
+                                        null=True,
+                                        verbose_name='วันชำระค่าสมัครวันสุดท้าย')
+
+    def __str__(self):
+        return "{0} ({1})".format(self.admission_project.title, str(self.admission_round))
+
+    def is_deadline_passed(self):
         if self.applying_deadline:
             return datetime.now() > self.applying_deadline
         else:
@@ -129,13 +162,7 @@ class AdmissionProject(models.Model):
         return self.is_started and (not self.is_deadline_passed())
                 
 
-class AdmissionProjectRound(models.Model):
-    admission_round = models.ForeignKey('AdmissionRound',
-                                        on_delete=models.CASCADE)
-    admission_project = models.ForeignKey('AdmissionProject',
-                                          on_delete=models.CASCADE)
-    admission_dates = models.CharField(max_length=100)
-
+    
     
 class Major(models.Model):
     number = models.IntegerField()
@@ -276,12 +303,13 @@ class ProjectApplication(models.Model):
     def is_active(self):
         return not self.is_canceled
 
-    def admission_fee(self):
+    def admission_fee(self, major_selection=None):
         fee = self.admission_project.base_fee
-        try:
-            major_selection = self.major_selection
-        except:
-            major_selection = None
+        if not major_selection:
+            try:
+                major_selection = self.major_selection
+            except:
+                major_selection = None
 
         if major_selection:
             majors = major_selection.get_majors()

@@ -1,0 +1,32 @@
+{% load static %}
+<div class="payin-content">
+  {% with rcpt='สำหรับผู้สมัคร' %}
+    {% include "appl/payments/include/box.html" %}
+    {% if deadline %}
+      <div style="float:right"><b><small>ชำระภายในวันที่ {{ deadline }}</small></b></div>
+    {% endif %}
+  {% endwith %}
+  <div id="cut-sept"></div>
+  {% with rcpt='สำหรับธนาคาร' %}
+    {% include "appl/payments/include/box.html" %}
+  {% endwith %}
+    
+  {% include "appl/payments/include/payment_barcode.html" %}
+
+  <div style="width: 100%">
+    <img width="100%" src="{% static 'img/payment/howto.png' %}">
+  </div>
+  
+  <div style="font-size: 109%; display: none;">
+    <b>ช่องทางชำระเงิน:</b> <img height="12px" src="{% static 'img/payment/bbl.png' %}"> <b>1.ชำระผ่านธนาคารกรุงเทพ</b> สามารถดำเนินการได้ 2 แบบคือ (1) ยื่นใบแจ้งการชำระเงินค่าสมัครฉบับนี้ที่เคาน์เตอร์บริการธนาคารกรุงเทพ &nbsp;&nbsp;&nbsp;
+    (2) ชำระที่ตู้เอทีเอ็ม (ATM) ของธนาคารกรุงเทพ ดำเนินการดังนี้:
+    2.1 เลือกชำระด้วยบาร์โค้ด ให้ตู้เอทีเอ็มอ่านบาร์โค้ดบนใบแจ้งการชำระเงิน แล้วป้อนจำนวนเงิน
+    2.2 กรณีอ่านบาร์โค้ดไม่ได้ ให้เลือกชำระด้วย COMP CODE โดยใช้รหัส COMP CODE เป็น 28200 ป้อน Ref1 และ Ref2 ตามด้วยยอดเงินที่ชำระ &nbsp;&nbsp;&nbsp;
+    <img height="12px" src="{% static 'img/payment/Logo_CS.png' %}"> <b>2.ชำระผ่านบริการเคาน์เตอร์เซอร์วิส</b> โดยมีค่าธรรมเนียม 10 บาท
+  </div>
+</div>
+<script>
+ //$(function() {
+ //  window.print();
+ //});
+</script>

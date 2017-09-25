@@ -6,9 +6,7 @@
         <span class="badge badge-info">หมดเวลารับสมัคร</span>
       {% endif %}
       {{ project.title }}
-      {% if project.applying_start_time %}
-        (เปิดรับสมัครวันที่ {{ project.applying_start_time|date }})
-      {% endif %}
+      (เปิดรับสมัครวันที่ xxxxx)
       {% if project.is_open %}
         <a class="btn btn-primary btn-sm applying-links" href="#">สมัครโครงการนี้</a>
         <div class="p10 border-a0 bg-warn applying-confirmations" style="display:none;">

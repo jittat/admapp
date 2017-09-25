@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import ProjectUploadedDocument, AdmissionProject, AdmissionRound
+from .models import ProjectUploadedDocument, AdmissionProject, AdmissionRound, AdmissionProjectRound
 
 def make_available(modeladmin, request, queryset):
     for project in queryset:
@@ -16,5 +16,6 @@ class AdmissionProjectAdmin(admin.ModelAdmin):
     
 admin.site.register(AdmissionProject, AdmissionProjectAdmin)
 admin.site.register(AdmissionRound)
+admin.site.register(AdmissionProjectRound)
 admin.site.register(ProjectUploadedDocument)
 
