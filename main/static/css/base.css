@@ -19,3 +19,15 @@ body {
     background: #fff3cd;
 }
 
+p.help-block {
+	font-style: normal;
+    font-weight: lighter;
+    font-size: 75% ;
+    color: rgba(206, 60, 55, 0.87) ;
+    float: right ;
+    margin-top: 4px ;
+    margin-left: 3px;
+}
+
+
+
