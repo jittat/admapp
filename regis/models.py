@@ -31,6 +31,9 @@ class Applicant(models.Model):
         except Applicant.DoesNotExist:
             return None
 
+    def get_full_name(self):
+        return "{0}{1} {2}".format(self.prefix, self.first_name, self.last_name)
+        
     def set_password(self, password):
         self.hashed_password = make_password(password)
         

@@ -126,6 +126,13 @@ class AdmissionProject(models.Model):
             if around.is_open():
                 return True
         return False
+
+    def get_project_round_for(self, admission_round):
+        project_rounds = self.admissionprojectround_set.filter(admission_round=admission_round).all()
+        if len(project_rounds)==0:
+            return None
+        else:
+            return project_rounds[0]
                     
 
 class AdmissionProjectRound(models.Model):
@@ -300,6 +307,12 @@ class ProjectApplication(models.Model):
     cancelled_at = models.DateTimeField(blank=True,
                                         null=True)
 
+    def number(self):
+        return 1003241 + self.id
+
+    def verification_number(self):
+        return 1000000 + (self.id * 952183) % 951361
+    
     def is_active(self):
         return not self.is_canceled
 

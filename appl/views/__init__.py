@@ -4,7 +4,9 @@ from django.urls import reverse
 from regis.models import Applicant
 from regis.decorators import appl_login_required
 
-from appl.models import AdmissionProject, ProjectUploadedDocument, AdmissionRound, Payment, ProjectApplication
+from admapp.utils import number_to_thai_text
+
+from appl.models import AdmissionProject, ProjectUploadedDocument, AdmissionRound, Payment, ProjectApplication, AdmissionProjectRound
 
 from appl.views.upload import upload_form_for
 
@@ -80,7 +82,11 @@ def apply_project(request, project_id, admission_round_id):
     applicant = request.applicant
     project = get_object_or_404(AdmissionProject, pk=project_id)
     admission_round = get_object_or_404(AdmissionRound, pk=admission_round_id)
-    
+
+    project_round = project.get_project_round_for(admission_round)
+    if not project_round:
+        return redirect(reverse('appl:index'))
+
     active_application = applicant.get_active_application(admission_round)
     
     if active_application:
@@ -109,6 +115,12 @@ def payment(request, application_id):
     else:
         additional_payment = 0
 
+    project_round = admission_project.get_project_round_for(admission_round)
+    if not project_round:
+        return redirect(reverse('appl:index'))
+
+    deadline = project_round.payment_deadline
+        
     return render(request,
                   'appl/payments/payment.html',
                   { 'applicant': applicant,
@@ -119,7 +131,8 @@ def payment(request, application_id):
                     'major_selection': major_selection,
 
                     'payment_amount': additional_payment,
+                    'payment_str': number_to_thai_text(int(additional_payment)) + 'บาทถ้วน',
 
-                    'deadline': 'ลืมไปเลยว่าผมเคยเสีย',
+                    'deadline': deadline,
                   })
 
