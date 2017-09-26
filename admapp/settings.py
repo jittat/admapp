@@ -162,3 +162,11 @@ try:
     from .settings_local import *
 except ImportError:
     pass 
+
+import sys
+if 'test' in sys.argv:
+    DATABASES['default'] = {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'TEST_CHARSET': 'UTF8',
+        'NAME': ':memory:', 
+    }
