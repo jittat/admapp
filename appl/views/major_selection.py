@@ -3,7 +3,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.http import HttpResponseForbidden, HttpResponseServerError
-from django.core import serializers
 
 from regis.models import Applicant
 from appl.models import AdmissionProject, AdmissionRound, Major, MajorSelection, Faculty
@@ -19,7 +18,6 @@ def process_selection_form(request,
                            major_selection):
     if 'major' not in request.POST:
         return (True, 'คุณยังไม่ได้เลือกสาขา')
-
     number = request.POST['major']
     major = Major.get_by_project_number(application.admission_project,
                                         number)
@@ -62,7 +60,6 @@ def select(request, admission_round_id):
     if request.method == 'POST':
         if 'cancel' in request.POST:
             return redirect(reverse('appl:index'))
-
         error, error_message = process_selection_form(request,
                                                       applicant,
                                                       application,

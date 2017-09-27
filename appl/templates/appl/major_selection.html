@@ -10,10 +10,33 @@
         <select name="falculty" onchange="changeFalcuty(this)">
           <option value="">เลือกคณะ</option>            
           {% for f in faculties %}
-          <option value="{{ f.id }}">{{ f.title }}</option>
+            <option 
+              value="{{ f.id }}"
+              {% if major and f.id == major.faculty_id %}
+                selected
+              {% endif %}
+            >
+              {{ f.title }}
+            </option>
           {% endfor %}
         </select>
-        <div id="major-selected-list"></div>
+        <div id="major-selected-list">
+          {% for m in all_majors %}
+            {% if major and major.faculty_id == m.faculty_id %}
+              <div>
+                <input 
+                  type="radio" 
+                  value="{{ m.number }}" 
+                  name="major"
+                  {% if major.id == m.id  %}
+                    checked
+                  {% endif %}
+                />
+                {{ m.title }}
+              </div>
+            {% endif %}  
+          {% endfor %}
+        </div>
         <!-- <select name="majoer">
           {% for m in all_majors %}
             <option value="{{ m.number }}" {% if major and m.id == major.id %}selected{% endif %}>{{ m.faculty }} - สาขา{{ m.title }}</option>
@@ -36,7 +59,7 @@
     var majors = [];
     {% for m in all_majors %}
       majors[{{ m.number }}] = {
-        id: "{{ m.id }}",
+        number: "{{ m.number }}",
         title: "{{ m.title }}",
         faculty_id: "{{ m.faculty_id }}"
       };
@@ -49,7 +72,7 @@
           var majorWrapper = document.createElement('div')
           var radioInput = document.createElement('input');
           radioInput.setAttribute('type', 'radio');
-          radioInput.setAttribute('value', m.id);
+          radioInput.setAttribute('value', m.number);
           // for single selection
           radioInput.setAttribute('name', 'major');
 
