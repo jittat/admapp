@@ -158,6 +158,8 @@ LOGOUT_REDIRECT_URL = '/backoffice/'
 VERIFY_NATIONAL_ID = False
 FAKE_LOGIN = False
 
+BARCODE_DIR = '/tmp/'
+
 try:
     from .settings_local import *
 except ImportError:

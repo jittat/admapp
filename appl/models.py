@@ -307,11 +307,11 @@ class ProjectApplication(models.Model):
     cancelled_at = models.DateTimeField(blank=True,
                                         null=True)
 
-    def number(self):
+    def get_number(self):
         return 1003241 + self.id
 
-    def verification_number(self):
-        return 1000000 + (self.id * 952183) % 951361
+    def get_verification_number(self):
+        return str(1000000 + (self.id * 952183) % 951361)
     
     def is_active(self):
         return not self.is_canceled

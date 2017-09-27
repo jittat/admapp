@@ -1,5 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
+from django.conf import settings
+from django.http import HttpResponseForbidden, HttpResponse
 
 from regis.models import Applicant
 from regis.decorators import appl_login_required
@@ -9,6 +11,8 @@ from admapp.utils import number_to_thai_text
 from appl.models import AdmissionProject, ProjectUploadedDocument, AdmissionRound, Payment, ProjectApplication, AdmissionProjectRound
 
 from appl.views.upload import upload_form_for
+
+from appl.barcodes import generate
 
 def prepare_uploaded_document_forms(applicant, project_uploaded_documents):
     for d in project_uploaded_documents:
@@ -94,12 +98,19 @@ def apply_project(request, project_id, admission_round_id):
 
     application = applicant.apply_to_project(project, admission_round)
     return redirect(reverse('appl:index'))
-    
+
+
+def random_barcode_stub():
+    from random import randint
+    return str(1000000 + randint(1,8000000))
 
 @appl_login_required
 def payment(request, application_id):
     applicant = request.applicant
     application = get_object_or_404(ProjectApplication, pk=application_id)
+
+    if application.applicant_id != applicant.id:
+        return HttpResponseForbidden()
 
     admission_round = application.admission_round
     admission_project = application.admission_project
@@ -120,6 +131,8 @@ def payment(request, application_id):
         return redirect(reverse('appl:index'))
 
     deadline = project_round.payment_deadline
+
+    barcode_stub = random_barcode_stub()
         
     return render(request,
                   'appl/payments/payment.html',
@@ -134,5 +147,44 @@ def payment(request, application_id):
                     'payment_str': number_to_thai_text(int(additional_payment)) + 'บาทถ้วน',
 
                     'deadline': deadline,
+                    'barcode_stub': barcode_stub,
                   })
+
+@appl_login_required
+def payment_barcode(request, application_id, stub):
+    applicant = request.applicant
+    application = get_object_or_404(ProjectApplication, pk=application_id)
+
+    if application.applicant_id != applicant.id:
+        return HttpResponseForbidden()
+
+    admission_fee = application.admission_fee()
+    admission_round = application.admission_round
+
+    payments = Payment.find_for_applicant_in_round(applicant, admission_round)
+    paid_amount = sum([p.amount for p in payments])
+
+    if admission_fee > paid_amount:
+        additional_payment = admission_fee - paid_amount
+    else:
+        additional_payment = 0
+
+    import os.path
+    
+    img_filename = os.path.join(settings.BARCODE_DIR,
+                                applicant.national_id + '-' +
+                                str(application.id) + '-' +
+                                stub)
+
+    generate('12345',
+             applicant.national_id,
+             application.get_verification_number(),
+             additional_payment,
+             img_filename)
+
+    fp = open(img_filename + '.png', 'rb')
+    response = HttpResponse(fp)
+    response['Content-Type'] = 'image/png'
+    return response
+
 

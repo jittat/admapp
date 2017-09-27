@@ -14,8 +14,9 @@ urlpatterns = [
 
     url(r'^apply/(\d+)/(\d+)/$', views.apply_project, name='apply-project'),
 
-    url(r'^select/(\d+)/', major_selection.select, name='major-selection'),
+    url(r'^select/(\d+)/$', major_selection.select, name='major-selection'),
 
-    url(r'^payment/(\d+)/', views.payment, name='payment'),
+    url(r'^payment/(\d+)/$', views.payment, name='payment'),
+    url(r'^payment/(\d+)/barcode/(\d+)\.png$', views.payment_barcode, name='payment-barcode'),
 ]
 

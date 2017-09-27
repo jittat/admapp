@@ -3,7 +3,7 @@
   <div class="top-header">
     <div class="acenter top-right-box">
       <small><?= $rcpt ?></small><br>
-      เลขที่ใบสมัคร {{ application.number }}<br>
+      เลขที่ใบสมัคร {{ application.get_number }}<br>
       <b>ใบแจ้งการชำระเงินค่าสมัคร KU Admission</b>
     </div>
     <div class="title-box acenter">
@@ -47,7 +47,7 @@
       COMP CODE: 28200<br>
       ชื่อ-นามสกุล {{ applicant.get_full_name }}<br>
       Ref No1.: {{ applicant.national_id }}<br>
-      Ref No2.: {{ application.verification_number }}<br>
+      Ref No2.: {{ application.get_verification_number }}<br>
     </div>
     <div style="clear:both"></div>
   </div>
