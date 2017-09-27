@@ -45,7 +45,7 @@ def select(request, admission_round_id):
         return HttpResponseForbidden()
 
     project = application.admission_project
-
+    
     try:
         major_selection = application.major_selection
     except MajorSelection.DoesNotExist:
@@ -76,7 +76,7 @@ def select(request, admission_round_id):
                   if f.id in majors_dic]
 
     return render(request,
-                  'appl/major_selection.html',
+                  'appl/major_multiple_selection.html',
                   { 'applicant': applicant,
                     'admission_project': project,
                     'admission_round': admission_round,
