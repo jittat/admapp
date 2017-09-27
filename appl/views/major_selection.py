@@ -3,12 +3,15 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.http import HttpResponseForbidden, HttpResponseServerError
+from django.core import serializers
 
 from regis.models import Applicant
-from appl.models import AdmissionProject, AdmissionRound, Major, MajorSelection
+from appl.models import AdmissionProject, AdmissionRound, Major, MajorSelection, Faculty
 
 from regis.decorators import appl_login_required
 
+# def get_all_majors(request):
+#     return 
 
 def process_selection_form(request,
                            applicant,
@@ -31,7 +34,6 @@ def process_selection_form(request,
     major_selection.save()
     return (False, '')
 
-
 @appl_login_required
 def select(request, admission_round_id):
     applicant = request.applicant
@@ -41,7 +43,6 @@ def select(request, admission_round_id):
         return HttpResponseForbidden()
 
     application = applicant.get_active_application(admission_round)
-
     if not application:
         return HttpResponseForbidden()
 
@@ -75,7 +76,10 @@ def select(request, admission_round_id):
             major = None
 
     majors = project.major_set.all()
-        
+    majors_dic = dict([(m.faculty_id, True) for m in majors])
+    faculties = [f for f in Faculty.objects.all()
+                  if f.id in majors_dic]
+
     return render(request,
                   'appl/major_selection.html',
                   { 'applicant': applicant,
@@ -83,5 +87,6 @@ def select(request, admission_round_id):
                     'admission_round': admission_round,
                     'application': application,
                     'major': major,
-                    'all_majors': majors })
+                    'faculties': faculties,
+                    'all_majors': majors})
     

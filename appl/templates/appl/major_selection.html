@@ -7,11 +7,19 @@
     <form action="{% url 'appl:major-selection' admission_round.id %}" method="post">
       {% csrf_token %}
       <div class="form-group">
-        <select name="major">
+        <select name="falculty" onchange="changeFalcuty(this)">
+          {% for f in faculties %}
+          <option value="{{ f.id }}">{{ f.title }}</option>
+          {% endfor %}
+        </select>
+        <div id="major-selected-list">
+            <h1>fsfs</h1>
+        </div>
+        <!-- <select name="majoer">
           {% for m in all_majors %}
             <option value="{{ m.number }}" {% if major and m.id == major.id %}selected{% endif %}>{{ m.faculty }} - สาขา{{ m.title }}</option>
           {% endfor %}
-        </select>
+        </select> -->
       </div>
       <div class="form-group">
         <input type="submit" name="save" class="btn btn-success" value="จัดเก็บ" />
@@ -19,5 +27,39 @@
       </div>
     </form>
   </div>
+  <style>
+    #major-selected-list {
+      display: flex;
+      flex-direction: column;
+    }
+  </style>
+  <script>
+    var majors = [];
+    {% for m in all_majors %}
+      majors[{{ m.number }}] = {
+        id: "{{ m.id }}",
+        title: "{{ m.title }}",
+        faculty_id: "{{ m.faculty_id }}"
+      };
+    {% endfor %}
+    function changeFalcuty(selected) {
+      var majorsList = document.getElementById("major-selected-list");
+      majorsList.innerHTML = "";
+      majors.forEach(function(m) {
+        if (selected.value === m.faculty_id) {
+          var majorWrapper = document.createElement('div')
+          var radioInput = document.createElement('input');
+          radioInput.setAttribute('type', 'radio');
+
+          var textNode = document.createTextNode(m.title);
+          
+          majorWrapper.appendChild(radioInput);
+          majorWrapper.appendChild(textNode);
+
+          majorsList.appendChild(majorWrapper);
+        }
+      })
+    }
+  </script>
 </div>
 {% endblock %}
