@@ -8,12 +8,12 @@
       {% csrf_token %}
       <div class="form-group">
         <select name="falculty" onchange="changeFalcuty(this)">
+          <option value="">เลือกคณะ</option>            
           {% for f in faculties %}
           <option value="{{ f.id }}">{{ f.title }}</option>
           {% endfor %}
         </select>
         <div id="major-selected-list">
-            <h1>fsfs</h1>
         </div>
         <!-- <select name="majoer">
           {% for m in all_majors %}
@@ -50,6 +50,8 @@
           var majorWrapper = document.createElement('div')
           var radioInput = document.createElement('input');
           radioInput.setAttribute('type', 'radio');
+          // for single selection
+          radioInput.setAttribute('name', 'major');
 
           var textNode = document.createTextNode(m.title);
           
