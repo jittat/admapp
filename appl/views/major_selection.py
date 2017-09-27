@@ -62,8 +62,7 @@ def select(request, admission_round_id):
             return redirect(reverse('appl:index'))
         error, error_message = process_selection_form(request,
                                                       applicant,
-                                                      application,
-                                                      major_selection)
+                                                      application,                                             major_selection)
         if not error:
             return redirect(reverse('appl:index'))
 
@@ -84,5 +83,6 @@ def select(request, admission_round_id):
                     'application': application,
                     'major': major,
                     'faculties': faculties,
-                    'all_majors': majors})
+                    'all_majors': majors,
+                    'error_message': error_message })
     
