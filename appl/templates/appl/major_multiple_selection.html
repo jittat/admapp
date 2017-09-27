@@ -52,18 +52,34 @@
                 }
             })
         }
+        function renderSelectedList() {
+            var selectedListElement = document.getElementById('selected-list');
+            selectedListElement.innerHTML = '';
+            selectedList.forEach(function(s) {
+                var selectedMajor = document.createElement('li');
+                selectedMajor.innerHTML = s.title + '  ';
+                var removeButton = document.createElement('button');
+                removeButton.innerHTML = 'delete';
+                removeButton.value = s.number;
+                removeButton.onclick = function(e) {
+                    removeMajorInList(e.target.value);
+                }
+                selectedMajor.appendChild(removeButton);
+                selectedListElement.appendChild(selectedMajor);
+            })
+        }
         function addMajorToList(index) {
             var major = majors[index];
             if (!selectedList.includes(major) && selectedList.length < 5) {
                 selectedList.push(major);
             }
-            var selectedListElement = document.getElementById('selected-list');
-            selectedListElement.innerHTML = '';
-            selectedList.forEach(function(s) {
-                var selectedMajor = document.createElement('li');
-                selectedMajor.innerHTML = s.title;
-                selectedListElement.appendChild(selectedMajor);
-            })
+            renderSelectedList();
+        }
+        function removeMajorInList(number) {
+            selectedList = selectedList.filter(function(s) {
+                return s.number !== number;
+            });
+            renderSelectedList();
         }
     </script>
 </div>
