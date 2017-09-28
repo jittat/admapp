@@ -23,13 +23,6 @@ class Applicant(models.Model):
                                  self.last_name,
                                  self.national_id)
 
-    @staticmethod
-    def find_by_national_id(national_id):
-        try:
-            applicant = Applicant.objects.get(national_id=national_id)
-            return applicant
-        except Applicant.DoesNotExist:
-            return None
 
     def get_full_name(self):
         return "{0}{1} {2}".format(self.prefix, self.first_name, self.last_name)
@@ -58,3 +51,19 @@ class Applicant(models.Model):
         
         return application
         
+    @staticmethod
+    def find_by_national_id(national_id):
+        try:
+            applicant = Applicant.objects.get(national_id=national_id)
+            return applicant
+        except Applicant.DoesNotExist:
+            return None
+
+    @staticmethod
+    def find_by_passport_number(number):
+        applicants = Applicant.objects.filter(passport_number=number).all()
+        if len(applicants) != 0:
+            return applicants[0]
+        else:
+            return None
+

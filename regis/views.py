@@ -15,7 +15,7 @@ from .validators import is_valid_national_id
 from .models import Applicant
 
 class LoginForm(forms.Form):
-    national_id = forms.CharField(label='รหัสประจำตัวประชาชน',
+    national_id = forms.CharField(label='รหัสประจำตัวประชาชนหรือหมายเลขพาสปอร์ต',
                                   max_length=20)
     password = forms.CharField(label='รหัสผ่าน',
                                max_length=100,
@@ -167,7 +167,9 @@ def login(request):
 
         applicant = Applicant.find_by_national_id(national_id)
         if not applicant:
-            return redirect(reverse('main-index') + '?error=wrong-password')
+            applicant = Applicant.find_by_passport_number(national_id)
+            if not applicant:
+                return redirect(reverse('main-index') + '?error=wrong-password')
 
         if ((settings.FAKE_LOGIN and settings.DEBUG)
             or applicant.check_password(password)):
