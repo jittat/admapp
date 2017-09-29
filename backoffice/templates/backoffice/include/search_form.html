@@ -1,0 +1,5 @@
+<form class="d-inline" method="post" action="{% url 'backoffice:search' %}">
+  {% csrf_token %}
+  <input name="q"/>
+  <input name="ok" class="btn btn-secondary" type="submit" value="ค้นผู้สมัคร" />
+</form>

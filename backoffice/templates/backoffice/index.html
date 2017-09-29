@@ -1,22 +1,37 @@
 {% extends 'backoffice/base.html' %}
 {% block content %}
-<div class="row">
-  <div class="col-md-12">
-    <h1>ระบบจัดการผู้สมัคร</h1>
-    {% if is_admission_admin %}
-      คุณเป็นผู้ดูแลจากฝ่ายรับเข้า สามารถดูแลได้ทุกสาขาในโครงการรับสมัครที่รับผิดชอบ
-    {% else %}
-      {% if faculty %}
-        คุณเป็นผู้ดูแลจาก {{ faculty }} สามารถดูแลได้ทุกสาขาจากคณะในโครงการรับสมัครที่รับผิดชอบ
-      {% endif %}
-    {% endif %}
-    ด้านล่างเป็นรายการโครงการรับสมัครที่คุณรับผิดชอบ
-
-    <ul>
-      {% for project in admission_projects %}
-        <li>{{ project }}</li>
-      {% endfor %}
-    </ul>
+  <div class="row">
+    <div class="col-md-12">
+      <h1>ระบบจัดการผู้สมัคร</h1>
+    </div>
   </div>
-</div>
+
+  {% if is_application_admin %}
+    <div class="row">
+      <div class="col-md-12 mb10 bborder-a0">
+        {% include "backoffice/include/all_applicant_summary.html" %}
+      </div>
+    </div>
+  {% endif %}
+  
+  <div class="row">
+    <div class="col-md-12 mb10 bborder-a0">
+      <h2>ผู้สมัครในโครงการ</h2>
+      {% if is_admission_admin %}
+        คุณเป็นผู้ดูแลจากฝ่ายรับเข้า สามารถดูแลได้ทุกสาขาในโครงการรับสมัครที่รับผิดชอบ
+      {% else %}
+        {% if faculty %}
+          คุณเป็นผู้ดูแลจาก {{ faculty }} สามารถดูแลได้ทุกสาขาจากคณะในโครงการรับสมัครที่รับผิดชอบ
+        {% endif %}
+      {% endif %}
+      
+      ด้านล่างเป็นรายการโครงการรับสมัครที่คุณรับผิดชอบที่เปิดรับสมัครตอนนี้
+      
+      <ul>
+        {% for project in admission_projects %}
+          <li>{{ project }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
 {% endblock %}

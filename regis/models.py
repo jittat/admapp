@@ -67,3 +67,29 @@ class Applicant(models.Model):
         else:
             return None
 
+
+    @staticmethod
+    def find_by_query(query):
+        items = query.split()
+        if len(items) == 0:
+            return []
+        
+        if (len(items) == 1) and (len(items[0]) == 13):
+            a = Applicant.find_by_national_id(items[0])
+            if a:
+                return [a]
+            else:
+                return []
+
+        results = []
+        if len(items) == 2:
+            results += Applicant.objects.filter(first_name__contains=items[0],
+                                                last_name__contains=items[1]).all()
+
+        else:
+            q = items[0]
+            results += Applicant.objects.filter(first_name__contains=q).all()
+            results += Applicant.objects.filter(last_name__contains=q).all()
+            results += Applicant.objects.filter(passport_number__contains=q).all()
+
+        return results
