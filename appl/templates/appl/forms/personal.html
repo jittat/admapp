@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+  <div class="row">
+    <div class="col-md-12">
+      <h2>กรอกข้อมูลส่วนตัว</h2>
+      <form method="POST" action="{% url 'appl:personal-profile' %}" method="post">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <input type="submit" value="จัดเก็บ" class="btn btn-default" />
+      </form>
+    </div>
+  </div>
+{% endblock %}

@@ -338,6 +338,13 @@ class ProjectApplication(models.Model):
         return fee
 
 
+class PersonalProfile(models.Model):
+    applicant = models.ForeignKey(Applicant)
+    mobile_phone = models.CharField(max_length=20,
+                                    verbose_name='เบอร์โทรศัพท์มือถือ',
+                                    blank=True)
+
+    
 class MajorSelection(models.Model):
     applicant = models.ForeignKey(Applicant)
     project_application = models.OneToOneField(ProjectApplication,

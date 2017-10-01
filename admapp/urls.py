@@ -19,7 +19,6 @@ from django.contrib import admin
 from django.contrib.auth import views as auth_views
 
 import main.views
-from personaldata.views import personeldata
 
 urlpatterns = [
     url(r'^$', main.views.index, name='main-index'),
@@ -27,7 +26,6 @@ urlpatterns = [
     url(r'^appl/', include('appl.urls')),
     url(r'^backoffice/', include('backoffice.urls')),
     url(r'^admin/', admin.site.urls),
-    url(r'^personal-data/$', personeldata, name='personaldata'),
 
     url(r'^accounts/login/$',
         auth_views.LoginView.as_view(template_name='backoffice/accounts/login.html'),

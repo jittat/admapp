@@ -10,7 +10,8 @@ urlpatterns = [
     url(r'^$', views.index, name='index'),
     url(r'^upload/(\d+)/$', upload_views.upload, name='upload'),
 
-    url(r'^education/$', general_forms.education, name='education'),
+    url(r'^personal/$', general_forms.personal_profile, name='personal-profile'),
+    url(r'^education/$', general_forms.education_profile, name='education-profile'),
 
     url(r'^apply/(\d+)/(\d+)/$', views.apply_project, name='apply-project'),
 
