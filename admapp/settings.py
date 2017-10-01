@@ -41,8 +41,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_extensions',
     'personaldata',
     'crispy_forms',
+    'mailer',
 ]
 
 MIDDLEWARE = [
@@ -130,18 +132,44 @@ STATIC_URL = '/static/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
+# EMAILS
+
+EMAIL_BACKEND = "mailer.backend.DbBackend"
+
+MAILER_EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# Use these in production
+# MAILER_EMAIL_BACKEND = 'django_ses.SESBackend'
+#
+# AWS_ACCESS_KEY_ID = 'YOUR-ACCESS-KEY-ID'
+# AWS_SECRET_ACCESS_KEY = 'YOUR-SECRET-ACCESS-KEY'
+# AWS_SES_REGION_NAME = 'us-west-2'
+# AWS_SES_REGION_ENDPOINT = 'email.us-west-2.amazonaws.com'
+
 # Crispy forms
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
+# login/logout urls for backoffice
+
+LOGOUT_REDIRECT_URL = '/backoffice/'
+
 # Admission App Configs
 
 VERIFY_NATIONAL_ID = False
+FAKE_LOGIN = False
 
-# login/logout urls
-LOGOUT_REDIRECT_URL = '/backoffice/'
+BARCODE_DIR = '/tmp/'
 
 try:
     from .settings_local import *
 except ImportError:
     pass 
+
+import sys
+if 'test' in sys.argv:
+    DATABASES['default'] = {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'TEST_CHARSET': 'UTF8',
+        'NAME': ':memory:', 
+    }

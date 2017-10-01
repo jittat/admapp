@@ -1,0 +1,87 @@
+.aright {
+    text-align: right;
+}
+.acenter {
+    text-align: center;
+}
+
+td.withframe {
+    border: solid 1px black;
+}
+
+.payin-content {
+    font-family: "TH Sarabun", "TH Sarabun New", "Angsana New", sans-serif;
+    font-size: 105%;
+    line-height: 100%;
+}
+
+.payin-content .outside-frame {
+    border: solid 1px black;
+    margin: 10px;
+    border-collapse: collapse;
+    padding-top: 5px;
+}
+
+.payin-content .top-header {
+    border-bottom: 1px solid black;
+}
+
+.payin-content .top-header .title-box {
+    width: 60%;
+    margin: 0;
+}
+
+.payin-content .top-header .top-right-box {
+    float: right;
+    width: 40%;
+    margin: 0;
+    border-left: 1px solid black;
+}
+
+.payin-content .bank-section {
+    border-bottom: 1px solid black;
+}
+
+.payin-content .bank-section .bank-info {
+    float: left;
+    width: 60%;
+    padding: 10px;
+}
+
+.payin-content .bank-section .payment-info {
+    float: left;
+    width: 30%;
+    border-left: 1px solid black;
+    padding-left: 10px;
+}
+
+.payin-content .payment-section .payment-tab {
+    text-align: center;
+}
+
+.payin-content .payment-section .payment-tab table {
+    margin-left: 2%;
+    margin-right: 2%;
+    width: 95%;
+}
+
+.payin-content #cut-sept {
+    border-top: 1px dashed black;
+    margin: 15px 0px;
+}
+
+.payin-content .barcode {
+    margin: 5px;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+.payment-tab td {
+    border: 1px solid black;
+}
+
+.small-warning {
+    font-size: 55%;
+}

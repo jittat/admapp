@@ -17,11 +17,26 @@
   </div>
   <div class="col-md-6">
     <div class="all-document-upload-forms">
-      {% for project_uploaded_document in project_uploaded_documents %}
+      {% for project_uploaded_document in common_uploaded_documents %}
         {% include 'appl/include/document_upload_form.html' %}
       {% endfor %}
     </div>
   </div>
 </div>
+
+{% if active_application %}
+  <div class="row">
+    <div class="col-md-12">
+      {% include 'appl/include/active_application.html' %}
+    </div>
+  </div>
+{% else %}
+  <div class="row">
+    <div class="col-md-12">
+      {% include 'appl/include/project_list.html' %}
+    </div>
+  </div>
+{% endif %}
+
 {% include 'appl/include/document_upload_js.html' %}
 {% endblock %}

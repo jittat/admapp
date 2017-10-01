@@ -1,8 +1,42 @@
 body {
-  padding-top: 5rem;
+    padding-top: 5rem;
 }
-.starter-template {
-  padding: 3rem 1.5rem;
-  text-align: center;
+
+p.invalid-feedback {
+    font-style: normal;
+    font-weight: lighter;
+    font-size: 75% ;
+    color: rgba(206, 60, 55, 0.87) ;
+    float: right ;
+    margin-top: 4px ;
+    margin-left: 3px;
 }
+
+.bg-warn {
+    background: #fff3cd;
+}
+
+/* spaces & borders */
+
+.mb5 {
+    margin-bottom: 5px;
+}
+
+.mb10 {
+    margin-bottom: 10px;
+}
+
+.p10 {
+    padding: 10px;
+}
+
+.border-a0 {
+    border: 1px solid #a0a0a0;
+    border-radius: 5px;
+}
+
+.bborder-a0 {
+    border-bottom: 1px solid #a0a0a0;
+}
+
 

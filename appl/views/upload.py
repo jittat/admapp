@@ -29,7 +29,7 @@ def upload(request, document_id):
     form = UploadedDocumentForm(request.POST, request.FILES)
     if form.is_valid():
         if not project_uploaded_document.can_have_multiple_files:
-            old_uploaded_documents = project_uploaded_document.uploaded_document_for_applicant(applicant)
+            old_uploaded_documents = project_uploaded_document.get_uploaded_documents_for_applicant(applicant)
             for odoc in old_uploaded_documents:
                 odoc.uploaded_file.delete()
                 odoc.delete()
@@ -48,7 +48,7 @@ def upload(request, document_id):
         template = loader.get_template('appl/include/document_upload_form.html')
 
         project_uploaded_document.form = upload_form_for(project_uploaded_document)
-        project_uploaded_document.applicant_uploaded_documents = project_uploaded_document.uploaded_document_for_applicant(applicant)
+        project_uploaded_document.applicant_uploaded_documents = project_uploaded_document.get_uploaded_documents_for_applicant(applicant)
         
         result = {'result': 'OK',
                   'html': template.render({ 'project_uploaded_document': project_uploaded_document },
