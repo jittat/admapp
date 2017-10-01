@@ -134,11 +134,11 @@ MEDIA_URL = '/media/'
 
 # EMAILS
 
-EMAIL_BACKEND = "mailer.backend.DbBackend"
-
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 MAILER_EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # Use these in production
+# EMAIL_BACKEND = "mailer.backend.DbBackend"
 # MAILER_EMAIL_BACKEND = 'django_ses.SESBackend'
 #
 # AWS_ACCESS_KEY_ID = 'YOUR-ACCESS-KEY-ID'
@@ -156,10 +156,15 @@ LOGOUT_REDIRECT_URL = '/backoffice/'
 
 # Admission App Configs
 
+ADMISSION_TITLE = "โครงการรับสมัครนักเรียนเข้าศึกษาในมหาวิทยาลัยเกษตรศาสตร์ ปีการศึกษา 2561"
+ADMISSION_SHORT_TITLE = "KU-TCAS'61"
+
 VERIFY_NATIONAL_ID = False
 FAKE_LOGIN = False
 
 BARCODE_DIR = '/tmp/'
+
+ADM_EMAIL_FROM = 'admission@ku.ac.th'
 
 try:
     from .settings_local import *
