@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+  <div class="row">
+    <div class="col-md-12">
+      <h2>ขอรหัสผ่านบัญชีผู้สมัครเข้าศึกษาใหม่</h2>
+      {% if error_message %}
+        <div class="alert alert-danger">
+          <strong>ไม่สามารถขอรหัสผ่านใหม่ได้</strong>
+          เนื่องจาก{{ error_message }}
+        </div>
+      {% endif %}
+      {% if form %}
+        <form action="{% url 'regis:forget' %}" method="post">
+          {% csrf_token %}
+          {{ form|crispy }}
+          <input type="submit" class="btn btn-lg btn-primary" value="ขอรหัสผ่านใหม่" />
+        </form>
+      {% endif %}
+      {% if update_success %}
+        <div class="alert alert-success">
+          <h4>กำหนดรหัสผ่านใหม่ให้กับผู้สมัครแล้ว</h4>
+
+          <p>
+            รหัสผ่านใหม่จะถูกส่งให้กับผู้สมัครทางอีเมล {{ email }} 
+            ผู้สมัครน่าจะได้รับอีเมลภายในเวลาประมาณ 5 นาที หลังจากนั้นจะสามารถเข้าใช้งานระบบด้วยรหัสผ่านใหม่ได้
+          </p>
+          
+          <a class="btn btn-success btn-lg" href="{% url 'main-index' %}">กลับไปหน้าแรกเพื่อเข้าใช้ระบบ</a>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}

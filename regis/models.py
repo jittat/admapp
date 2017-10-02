@@ -1,3 +1,5 @@
+from random import choice
+
 from django.db import models
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.hashers import check_password as check_hashed_password
@@ -29,7 +31,13 @@ class Applicant(models.Model):
         
     def set_password(self, password):
         self.hashed_password = make_password(password)
-        
+
+    def random_password(self):
+        alpha = '0123456789abcdefghijklmnopqrstuvwxyz'
+        new_password = ''.join([choice(alpha) for i in range(6)])
+        self.set_password(new_password)
+        return new_password
+
     def check_password(self, password):
         return check_hashed_password(password, self.hashed_password)
 
