@@ -16,9 +16,11 @@ def process_selection_form(request,
                            applicant,
                            application,
                            major_selection):
+    print(request.POST)
     if 'major' not in request.POST:
         return (True, 'คุณยังไม่ได้เลือกสาขา')
     number = request.POST['major']
+    print('number', number)
     major = Major.get_by_project_number(application.admission_project,
                                         number)
     if not major:
@@ -74,7 +76,7 @@ def select(request, admission_round_id):
     majors_dic = dict([(m.faculty_id, True) for m in majors])
     faculties = [f for f in Faculty.objects.all()
                   if f.id in majors_dic]
-
+    project.max_num_selections = 5
     return render(request,
                   'appl/major_multiple_selection.html',
                   { 'applicant': applicant,
