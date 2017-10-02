@@ -26,7 +26,7 @@ class EducationForm(forms.Form):
 class PersonalProfileForm(ModelForm):
     class Meta:
         model = PersonalProfile
-        fields = ['mobile_phone']
+        exclude = ['applicant']
 
 
 @appl_login_required        
@@ -49,13 +49,21 @@ def education_profile(request):
 
 @appl_login_required        
 def personal_profile(request):
-    if request.method == 'POST':
-        form = PersonalProfileForm(request.POST)
-        if form.is_valid():
-            return redirect('/thanks/')
+    applicant = request.applicant
+    try:
+        profile = applicant.personalprofile
+    except PersonalProfile.DoesNotExist:
+        profile = None
 
+    if request.method == 'POST':
+        form = PersonalProfileForm(request.POST, instance=profile)
+        if form.is_valid():
+            new_personal_profile = form.save(commit=False)
+            new_personal_profile.applicant = applicant
+            new_personal_profile.save()
+            return redirect('/appl/')
     else:
-        form = PersonalProfileForm()
+        form = PersonalProfileForm(instance=profile)
 
     return render(request, 'appl/forms/personal.html',
                   { 'form': form })

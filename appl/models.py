@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+import os, sys
 import io
 import csv
 from datetime import datetime
@@ -339,10 +339,62 @@ class ProjectApplication(models.Model):
 
 
 class PersonalProfile(models.Model):
-    applicant = models.ForeignKey(Applicant)
+    TITLE_CHOICES = (
+        ('Mr.', 'Mr.'),
+        ('Mrs.', 'Mrs.'),
+        ('Miss', 'Miss'),
+    )
+    applicant = models.OneToOneField(Applicant)
+    prefix_english = models.CharField(max_length=4,
+                                      choices=TITLE_CHOICES,
+                                      default='Mr.')
+    first_name_english = models.CharField(max_length=100,
+                                          verbose_name='ชื่อ(อังกฤษ)')
+    middle_name_english = models.CharField(max_length=100,
+                                           verbose_name='ชื่อกลาง(ถ้ามี)',
+                                           blank=True )
+    last_name_english = models.CharField(max_length=200,
+                                         verbose_name='นามสกุล(อังกฤษ)')
+    passport_number = models.CharField(max_length=20,
+                                       verbose_name='หมายเลข Passport (ถ้ามี)',
+                                       blank=True)
+    birthday = models.DateField(verbose_name='วันเดือนปีเกิด')
+    father_prefix = models.CharField(max_length=10,
+                                    verbose_name='คำนำหน้าชื่อบิดา')
+    father_first_name = models.CharField(max_length=100,
+                                         verbose_name='ชื่อบิดา')
+    father_last_name = models.CharField(max_length=200,
+                                        verbose_name='นามสกุลบิดา')
+    mother_prefix = models.CharField(max_length=10,
+                                     verbose_name='คำนำหน้าชื่อมารดา')
+    mother_first_name = models.CharField(max_length=100,
+                                         verbose_name='ชื่อมารดา')
+    mother_last_name = models.CharField(max_length=200,
+                                        verbose_name='นามสกุลมารดา')
+    house_number = models.CharField(max_length=10,
+                                    verbose_name='บ้านเลขที่')
+    village_number = models.CharField(max_length=10,
+                                      verbose_name='หมู่')
+    avenue = models.CharField(max_length=100,
+                              verbose_name='ซอย')
+    road = models.CharField(max_length=100,
+                            verbose_name='ถนน')
+    sub_district = models.CharField(max_length=100,
+                                    verbose_name='ตำบล/แขวง')
+    district = models.CharField(max_length=100,
+                                verbose_name='อำเภอ/เขต')
+    province = models.CharField(max_length=100,
+                                verbose_name='จังหวัด')
+    postal_code = models.CharField(max_length=10,
+                                   verbose_name='รหัสไปรษณีย์')
+
+    contact_phone = models.CharField(max_length=20,
+                                    verbose_name='เบอร์โทรศัพท์ที่ติดต่อได้',
+                                    blank=True)
     mobile_phone = models.CharField(max_length=20,
                                     verbose_name='เบอร์โทรศัพท์มือถือ',
                                     blank=True)
+    
 
     
 class MajorSelection(models.Model):
