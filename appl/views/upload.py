@@ -28,20 +28,20 @@ def upload(request, document_id):
     size_limit = project_uploaded_document.size_limit
     form = UploadedDocumentForm(request.POST, request.FILES)
     if form.is_valid():
-        print(size_limit, form.cleaned_data['uploaded_file'].size)
-        if not project_uploaded_document.can_have_multiple_files:
-            old_uploaded_documents = project_uploaded_document.get_uploaded_documents_for_applicant(applicant)
-            for odoc in old_uploaded_documents:
-                odoc.uploaded_file.delete()
-                odoc.delete()
+        if 10 >= form.cleaned_data['uploaded_file'].size:
+            if not project_uploaded_document.can_have_multiple_files:
+                old_uploaded_documents = project_uploaded_document.get_uploaded_documents_for_applicant(applicant)
+                for odoc in old_uploaded_documents:
+                    odoc.uploaded_file.delete()
+                    odoc.delete()
 
-        uploaded_document = form.save(commit=False)
-        uploaded_document.applicant = request.applicant
-        uploaded_document.project_uploaded_document = project_uploaded_document
-        uploaded_document.admission_project = project_uploaded_document.admission_project
-        uploaded_document.rank = 0
-        uploaded_document.orginal_filename = uploaded_document.uploaded_file.name
-        uploaded_document.save()
+            uploaded_document = form.save(commit=False)
+            uploaded_document.applicant = request.applicant
+            uploaded_document.project_uploaded_document = project_uploaded_document
+            uploaded_document.admission_project = project_uploaded_document.admission_project
+            uploaded_document.rank = 0
+            uploaded_document.orginal_filename = uploaded_document.uploaded_file.name
+            uploaded_document.save()
 
         from django.template import loader
 
@@ -49,10 +49,11 @@ def upload(request, document_id):
 
         project_uploaded_document.form = upload_form_for(project_uploaded_document)
         project_uploaded_document.applicant_uploaded_documents = project_uploaded_document.get_uploaded_documents_for_applicant(applicant)
-
         result = {'result': 'OK',
-                  'html': template.render({ 'project_uploaded_document': project_uploaded_document },
-                                          request) }
+                    'html': template.render({ 'project_uploaded_document': project_uploaded_document },
+                                          request),
+                    'size_error': size_limit < form.cleaned_data['uploaded_file'].size,
+                }
     else:
         result = {'result': 'ERROR'}
     return HttpResponse(json.dumps(result),
