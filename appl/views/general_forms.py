@@ -19,7 +19,9 @@ class EducationForm(forms.Form):
                                                 ('อื่นๆ','อื่นๆ')])
     gpa = forms.CharField(label='GPA',max_length=10)
 
-    province_title = forms.CharField(label='จังหวัด', max_length=30)
+    province_title = forms.ModelChoiceField(label='จังหวัด',
+                                        queryset=Province.objects,
+                                        empty_label=None)
     school_titile = forms.CharField(label='ชื่อโรงเรียน', max_length=80)
 
 

@@ -280,7 +280,7 @@ class Province(models.Model):
     title = models.CharField(max_length=30)
 
     def __str__(self):
-    	return "%s" % (self.name,)
+    	return "%s" % (self.title,)
 
 
 class School(models.Model):
@@ -291,7 +291,7 @@ class School(models.Model):
                                  on_delete=models.CASCADE)
 
     def __str__(self):
-        return "%s" % (self.name,)
+        return "%s" % (self.title,)
 
 
 class ProjectApplication(models.Model):
