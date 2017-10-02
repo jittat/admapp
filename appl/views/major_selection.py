@@ -19,14 +19,15 @@ def process_selection_form(request,
     print(request.POST)
     if 'major' not in request.POST:
         return (True, 'คุณยังไม่ได้เลือกสาขา')
-    number = request.POST['major']
-    print('number', number)
-    major = Major.get_by_project_number(application.admission_project,
-                                        number)
-    if not major:
-        return (True, 'สาขาที่คุณเลือกผิดพลาด')
-
-    major_selection.set_majors([major])
+    numbers = request.POST.getlist('major')
+    majors = []
+    for number in numbers:
+        major = Major.get_by_project_number(application.admission_project,
+                                            number)
+        if not major:
+            return (True, 'สาขาที่คุณเลือกผิดพลาด')
+        majors.append(major)
+    major_selection.set_majors(majors)
     major_selection.applicant = applicant
     major_selection.project_application = application
     major_selection.admission_project = application.admission_project

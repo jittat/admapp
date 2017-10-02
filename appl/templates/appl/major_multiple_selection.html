@@ -14,9 +14,6 @@
                 {% for f in faculties %}
                     <option 
                         value="{{ f.id }}"
-                        {% if major and f.id == major.faculty_id %}
-                            selected
-                        {% endif %}
                     >
                     {{ f.title }}
                     </option>
@@ -70,7 +67,7 @@
             var selectedMajor = document.createElement('li');
             var inputElement = document.createElement('input');
             inputElement.setAttribute('type', 'hidden');
-            inputElement.setAttribute('name', 'majors');
+            inputElement.setAttribute('name', 'major');
             inputElement.setAttribute('value', s.number);
             selectedMajor.innerHTML = s.title + '  ';
             var removeButton = document.createElement('button');
