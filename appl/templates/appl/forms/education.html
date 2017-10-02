@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+<div class="row">
+  <div class="col-md-12">
+    <h2>กรอกข้อมูลการศึกษา</h2>
+    <form action="{% url 'main-index' %}" method="post">
+      {% csrf_token %}
+      {{ form|crispy }}
+      <input type="submit" class="btn btn-lg btn-primary" value="กดกลับหน้า home" />
+    </form>
+
+  </div>
+</div>
+{% endblock %}
