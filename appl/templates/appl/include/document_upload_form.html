@@ -12,6 +12,7 @@
       <small>{{ doc.specifications }}</small>
       {% if doc.applicant_uploaded_documents %}
         <ul>
+            Oh yes
           {% for d in doc.applicant_uploaded_documents %}
             <li><a href="{{ d.uploaded_file.url }}">{{ d.uploaded_file.name }}</a></li>
           {% endfor %}
