@@ -14,6 +14,7 @@ from django.conf import settings
 from admapp.emails import send_registration_email, send_forget_password_email
 
 from .validators import is_valid_national_id
+from .validators import is_valid_passport_number
 from .models import Applicant
 
 class LoginForm(forms.Form):
@@ -109,6 +110,21 @@ class RegistrationForm(forms.Form):
         self.check_confirm_and_raise_error('national_id', 'national_id_confirm',
                                            'รหัสประจำตัวประชาชนที่ยืนยันไม่ตรงกัน')
         return self.cleaned_data['national_id_confirm']
+
+    def clean_passport_number(self):
+        if not is_valid_national_id(self.cleaned_data['passport_number']):
+            del self.cleaned_data['passport_number']
+            raise ValidationError('เลขที่หนังสือเดินทางผิดรูปแบบ', code='invalid')
+        return self.cleaned_data['passport_number']
+
+    def clean_passport_number_confirm(self):
+        if not is_valid_national_id(self.cleaned_data['passport_number_confirm']):
+            del self.cleaned_data['passport_number_confirm']
+            raise ValidationError('เลขที่หนังสือเดินทางผิดรูปแบบ', code='invalid')
+
+        self.check_confirm_and_raise_error('passport_number', 'passport_number_confirm',
+                                           'เลขที่หนังสือเดินทางที่ยืนยันไม่ตรงกัน')
+        return self.cleaned_data['passport_number_confirm']
 
     def clean_email_confirm(self):
         self.check_confirm_and_raise_error('email', 'email_confirm',

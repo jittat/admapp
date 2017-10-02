@@ -14,3 +14,13 @@ def is_valid_national_id(national_id):
 
     return national_id[-1] == str(checkdigit)
     
+def is_valid_passport_number(passport_number):
+    for c in passport_number:
+        if c == ' ':
+            return False
+        elif c >= '0' and c <= '9':
+            continue
+        elif (c >= 'A' and c <= 'Z') or (c >= 'a' and c <= 'z'):
+            continue
+
+    return True
