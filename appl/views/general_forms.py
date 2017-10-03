@@ -1,6 +1,9 @@
+import json
+
 from django.shortcuts import render, redirect
 from django import forms
 from django.forms import ModelForm
+from django.http import HttpResponse
 
 from regis.decorators import appl_login_required
 
@@ -10,15 +13,30 @@ from appl.models import PersonalProfile
 
 
 class EducationForm(forms.Form):
-    province_name = forms.CharField(label='จังหวัด', max_length=30)
+    province = forms.ModelChoiceField(label='จังหวัด',
+                                      queryset=Province.objects)
     school_name = forms.CharField(label='ชื่อโรงเรียน', max_length=80)
 
+    
 class PersonalProfileForm(ModelForm):
     class Meta:
         model = PersonalProfile
         exclude = ['applicant']
 
 
+@appl_login_required
+def ajax_school_search(request):
+    province = request.GET['province']
+    term = request.GET['term']
+    results = [ term + name for name in [
+        'สาธิตเกษตร',
+        'สารวิทยา',
+        'สนุกดีวิทยา',
+        'ชื่นชอบวิทยา',
+    ]]
+    return HttpResponse(json.dumps(results))
+
+        
 @appl_login_required        
 def education_profile(request):
     if request.method == 'POST':

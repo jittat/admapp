@@ -278,7 +278,7 @@ class Province(models.Model):
     title = models.CharField(max_length=30)
 
     def __str__(self):
-    	return "%s" % (self.name,)
+    	return "%s" % (self.title,)
 
 
 class School(models.Model):
