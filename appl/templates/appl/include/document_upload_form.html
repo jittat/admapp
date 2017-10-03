@@ -10,6 +10,9 @@
       <input type="submit" class="btn btn-success upload-form-submit-buttons" value="อัพโหลด" />
       <br />
       <small>{{ doc.specifications }}</small>
+      {% if size_error %}
+  </br><small style="color:red"><b>ไฟล์ที่ทำการอัพโหลดมีขนาดใหญ่กว่าที่กำหนด</b><small>
+      {% endif %}
       {% if doc.applicant_uploaded_documents %}
         <ul>
           {% for d in doc.applicant_uploaded_documents %}
