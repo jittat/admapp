@@ -28,7 +28,7 @@ def upload(request, document_id):
     size_limit = project_uploaded_document.size_limit
     form = UploadedDocumentForm(request.POST, request.FILES)
     if form.is_valid():
-        if 10 >= form.cleaned_data['uploaded_file'].size:
+        if size_limit >= form.cleaned_data['uploaded_file'].size:
             if not project_uploaded_document.can_have_multiple_files:
                 old_uploaded_documents = project_uploaded_document.get_uploaded_documents_for_applicant(applicant)
                 for odoc in old_uploaded_documents:
@@ -54,7 +54,7 @@ def upload(request, document_id):
             'size_error': size_limit < form.cleaned_data['uploaded_file'].size
         }
         result = {'result': 'OK',
-                    'html': template.render(context,request),                    
+                    'html': template.render(context,request),
                 }
     else:
         result = {'result': 'ERROR'}
