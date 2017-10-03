@@ -49,10 +49,12 @@ def upload(request, document_id):
 
         project_uploaded_document.form = upload_form_for(project_uploaded_document)
         project_uploaded_document.applicant_uploaded_documents = project_uploaded_document.get_uploaded_documents_for_applicant(applicant)
+        context = {
+            'project_uploaded_document': project_uploaded_document,
+            'size_error': size_limit < form.cleaned_data['uploaded_file'].size
+        }
         result = {'result': 'OK',
-                    'html': template.render({ 'project_uploaded_document': project_uploaded_document },
-                                          request),
-                    'size_error': size_limit < form.cleaned_data['uploaded_file'].size,
+                    'html': template.render(context,request),                    
                 }
     else:
         result = {'result': 'ERROR'}
