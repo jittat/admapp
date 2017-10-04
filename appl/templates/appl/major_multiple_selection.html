@@ -88,7 +88,6 @@
         },
         update: function(e, ui) {
             swapSelectedList(dragIndex, ui.item.index())
-            console.log(selectedList)
         }
     });
     // initial all majors
@@ -108,7 +107,6 @@
             faculty_id: "{{ m.faculty_id }}"
         });
     {% endfor %}
-    console.log(selectedList)
 
     function changeFalcuty(selected) {
         var majorsList = document.getElementById('major-selected-list');
@@ -177,7 +175,6 @@
         renderSelectedList();
     }
     function removeMajorInList(number) {
-        console.log(number)
         selectedList = selectedList.filter(function(s) {
             return s.number !== number;
         });
