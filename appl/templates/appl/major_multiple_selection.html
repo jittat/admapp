@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row">
+    <form action="{% url 'appl:major-selection' admission_round.id %}" method="post">                
+        {% csrf_token %}            
+        <div class="form-group">
+            <h1>เลือกสาขาโครงการ{{ admission_project }}</h1>
+            ผู้สมัคร: {{ applicant }} จำนวนสาขาที่เลือกได้ {{ admission_project.max_num_selections }}
+            <p>รายชื่อที่เลือก</p>
+            <ul id='selected-list'>
+            </ul>  
+            <select name="falculty" onchange="changeFalcuty(this)">
+                <option value="">เลือกคณะ</option>            
+                {% for f in faculties %}
+                    <option 
+                        value="{{ f.id }}"
+                    >
+                    {{ f.title }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <div name="major" id="major-selected-list">
+            </div>        
+        </div>
+        <div class="form-group">
+            <input type="submit" name="save" class="btn btn-success" value="จัดเก็บ" />
+            <input type="submit" name="cancel" class="btn btn-danger" value="ยกเลิก" />
+        </div>
+    </form>
+</div>
+<script>
+    var selectedList = [];
+    var majors = [];
+    {% for m in all_majors %}
+      majors[{{ m.number }}] = {
+        number: "{{ m.number }}",
+        title: "{{ m.title }}",
+        faculty_id: "{{ m.faculty_id }}"
+      };
+    {% endfor %}
+    function changeFalcuty(selected) {
+        var majorsList = document.getElementById('major-selected-list');
+        majorsList.innerHTML = '';
+        majors.forEach(function(m, index) {
+            if (selected.value === m.faculty_id) {
+                var majorWrapper = document.createElement('div');
+                var majorButton = document.createElement('button');
+                majorButton.innerHTML = 'เพิ่ม';
+                majorButton.value = index;
+                majorButton.name = 'major'
+                majorButton.onclick = function(e) {
+                    e.preventDefault();
+                    addMajorToList(e.target.value);
+                }
+                var textNode = document.createTextNode(m.title);
+                majorWrapper.appendChild(majorButton);
+                majorWrapper.appendChild(textNode);
+                majorsList.appendChild(majorWrapper);
+            }
+        })
+    }
+    function renderSelectedList() {
+        var selectedListElement = document.getElementById('selected-list');
+        selectedListElement.innerHTML = '';
+        selectedList.forEach(function(s) {
+            var selectedMajor = document.createElement('li');
+            var inputElement = document.createElement('input');
+            inputElement.setAttribute('type', 'hidden');
+            inputElement.setAttribute('name', 'major');
+            inputElement.setAttribute('value', s.number);
+            selectedMajor.innerHTML = s.title + '  ';
+            var removeButton = document.createElement('button');
+            removeButton.innerHTML = 'delete';
+            removeButton.value = s.number;
+            removeButton.onclick = function(e) {
+                removeMajorInList(e.target.value);
+            }
+            selectedMajor.appendChild(removeButton);
+            selectedMajor.appendChild(inputElement);
+            selectedListElement.appendChild(selectedMajor);
+        })
+    }
+    function addMajorToList(index) {
+        var major = majors[index];
+        if (!selectedList.includes(major) && selectedList.length < Number("{{ admission_project.max_num_selections }}")) {
+            selectedList.push(major);
+        }
+        renderSelectedList();
+    }
+    function removeMajorInList(number) {
+        selectedList = selectedList.filter(function(s) {
+            return s.number !== number;
+        });
+        renderSelectedList();
+    }
+</script>
+{% endblock %}

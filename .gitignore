@@ -4,4 +4,4 @@ settings_local.py
 /data/*
 /media/*
 db.sqlite3
-
+.DS_Store
