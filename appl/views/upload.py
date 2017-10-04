@@ -53,10 +53,10 @@ def upload(request, document_id):
                 file_error = 'none'
             else:
                 result = 304
-                file_error = 'size'
+                file_error = 'ext'
         else:
             result = 304
-            file_error = 'ext'
+            file_error = 'size'
         from django.template import loader
 
         template = loader.get_template('appl/include/document_upload_form.html')
