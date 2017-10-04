@@ -42,7 +42,9 @@ def upload(request, document_id):
             uploaded_document.rank = 0
             uploaded_document.orginal_filename = uploaded_document.uploaded_file.name
             uploaded_document.save()
-
+            result = 'OK'
+        else:
+            result = 'ERROR'
         from django.template import loader
 
         template = loader.get_template('appl/include/document_upload_form.html')
@@ -57,6 +59,7 @@ def upload(request, document_id):
                     'html': template.render(context,request),
                 }
     else:
+        print(form.errors)
         result = {'result': 'ERROR'}
     return HttpResponse(json.dumps(result),
                         content_type='application/json')

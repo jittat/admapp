@@ -268,7 +268,7 @@ class UploadedDocument(models.Model):
     rank = models.IntegerField()
     original_filename = models.CharField(max_length=200)
 
-    uploaded_file = models.ImageField(upload_to=applicant_document_path)
+    uploaded_file = models.FileField(upload_to=applicant_document_path)
 
 
     def __str__(self):
