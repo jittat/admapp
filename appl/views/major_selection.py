@@ -71,7 +71,9 @@ def select(request, admission_round_id):
 
     else:
         if major_selection.num_selected == 1:
-            major = major_selection.get_majors()[0]
+            selected_majors = major_selection.get_majors()[0]
+        else:
+            selected_majors = major_selection.get_majors()
 
     majors = project.major_set.all()
     majors_dic = dict([(m.faculty_id, True) for m in majors])
@@ -84,7 +86,7 @@ def select(request, admission_round_id):
                     'admission_project': project,
                     'admission_round': admission_round,
                     'application': application,
-                    'major': major,
+                    'selected_majors': selected_majors,
                     'faculties': faculties,
                     'all_majors': majors,
                     'error_message': error_message })

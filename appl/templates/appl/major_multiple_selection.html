@@ -8,6 +8,13 @@
             ผู้สมัคร: {{ applicant }} จำนวนสาขาที่เลือกได้ {{ admission_project.max_num_selections }}
             <p>รายชื่อที่เลือก</p>
             <ul id='selected-list'>
+                {% for major in selected_majors %}
+                    <li>
+                        {{ major.title }}
+                        <button value="{{ major.number }}">delete</button>
+                        <input type="hidden" name="major" value="{{ major.number }}">
+                    </li>
+                {% endfor %}
             </ul>  
             <select name="falculty" onchange="changeFalcuty(this)">
                 <option value="">เลือกคณะ</option>            
@@ -29,16 +36,28 @@
         </div>
     </form>
 </div>
-<script>
-    var selectedList = [];
+<script type="text/javascript">
     var majors = [];
+    var selectedList = [];
+    
+    // initial all majors
     {% for m in all_majors %}
-      majors[{{ m.number }}] = {
-        number: "{{ m.number }}",
-        title: "{{ m.title }}",
-        faculty_id: "{{ m.faculty_id }}"
-      };
+        majors[{{ m.number }}] = {
+            number: "{{ m.number }}",
+            title: "{{ m.title }}",
+            faculty_id: "{{ m.faculty_id }}"
+        };
     {% endfor %}
+        
+    // initial selected majors
+    {% for m in selected_majors %}
+        selectedList.push({
+            number: "{{ m.number }}",
+            title: "{{ m.title }}",
+            faculty_id: "{{ m.faculty_id }}"
+        });
+    {% endfor %}
+
     function changeFalcuty(selected) {
         var majorsList = document.getElementById('major-selected-list');
         majorsList.innerHTML = '';
@@ -60,6 +79,7 @@
             }
         })
     }
+
     function renderSelectedList() {
         var selectedListElement = document.getElementById('selected-list');
         selectedListElement.innerHTML = '';
@@ -69,13 +89,20 @@
             inputElement.setAttribute('type', 'hidden');
             inputElement.setAttribute('name', 'major');
             inputElement.setAttribute('value', s.number);
-            selectedMajor.innerHTML = s.title + '  ';
             var removeButton = document.createElement('button');
             removeButton.innerHTML = 'delete';
             removeButton.value = s.number;
             removeButton.onclick = function(e) {
                 removeMajorInList(e.target.value);
             }
+            selectedMajor.innerHTML = s.title + '  ';
+            selectedMajor.setAttribute('draggable', true);
+            // selectedMajor.ondragenter = function(e) {
+                
+            // }
+            // selectedMajor.ondragstart = function(e) {
+            //     console.log(e.target)
+            // }
             selectedMajor.appendChild(removeButton);
             selectedMajor.appendChild(inputElement);
             selectedListElement.appendChild(selectedMajor);
