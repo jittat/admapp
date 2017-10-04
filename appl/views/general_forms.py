@@ -9,9 +9,10 @@ from regis.decorators import appl_login_required
 
 from regis.models import Applicant
 from appl.models import Province, School
-from appl.models import PersonalProfile
+from appl.models import PersonalProfile, EducationalProfile
 
 
+"""
 class EducationForm(forms.Form):
     education_level = forms.ChoiceField(label='ระดับการศึกษา', 
                                         choices=[('กำลังศึกษาชั้นมัธยมศึกษาปีที่ 6','กำลังศึกษาชั้นมัธยมศึกษาปีที่ 6'),
@@ -26,7 +27,12 @@ class EducationForm(forms.Form):
                                         queryset=Province.objects,
                                         empty_label=None)
     school_title = forms.CharField(label='ชื่อโรงเรียน', max_length=80)
+"""
 
+class EducationForm(ModelForm):
+    class Meta:
+        model = EducationalProfile
+        exclude = ['applicant']
 
     
 class PersonalProfileForm(ModelForm):
@@ -44,22 +50,22 @@ def ajax_school_search(request):
     return HttpResponse(json.dumps(results))
 
         
-@appl_login_required        
-def education_profile(request):
-    if request.method == 'POST':
-        form = EducationForm(request.POST)
-        if form.is_valid():
-            return render(request,'form/test.html',
-			  { 'province_title': form.cleaned_data['province_title'],
-                'school_title': form.cleaned_data['school_title'],
-                'education_level': form.cleaned_data['education_level'],
-                'education_plan': form.cleaned_data['education_plan'],
-                'gpa': form.cleaned_data['gpa'] })
-    else:
-        form = EducationForm()
+# @appl_login_required        
+# def education_profile(request):
+#     if request.method == 'POST':
+#         form = EducationForm(request.POST)
+#         if form.is_valid():
+#             return render(request,'form/test.html',
+# 			  { 'province_title': form.cleaned_data['province_title'],
+#                 'school_title': form.cleaned_data['school_title'],
+#                 'education_level': form.cleaned_data['education_level'],
+#                 'education_plan': form.cleaned_data['education_plan'],
+#                 'gpa': form.cleaned_data['gpa'] })
+#     else:
+#         form = EducationForm()
             
-    return render(request, 'appl/forms/education.html',
-                  { 'form':form })
+#     return render(request, 'appl/forms/education.html',
+#                   { 'form':form })
 
 
 @appl_login_required        
@@ -81,4 +87,25 @@ def personal_profile(request):
         form = PersonalProfileForm(instance=profile)
 
     return render(request, 'appl/forms/personal.html',
+                  { 'form': form })
+
+@appl_login_required        
+def education_profile(request):
+    applicant = request.applicant
+    try:
+        profile = applicant.educationalprofile
+    except EducationalProfile.DoesNotExist:
+        profile = None
+
+    if request.method == 'POST':
+        form = EducationForm(request.POST, instance=profile)
+        if form.is_valid():
+            new_educational_profile = form.save(commit=False)
+            new_educational_profile.applicant = applicant
+            new_educational_profile.save()
+            return redirect('/appl/')
+    else:
+        form = EducationForm(instance=profile)
+
+    return render(request, 'appl/forms/education.html',
                   { 'form': form })
