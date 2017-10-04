@@ -7,11 +7,22 @@
             <h1>เลือกสาขาโครงการ{{ admission_project }}</h1>
             ผู้สมัคร: {{ applicant }} จำนวนสาขาที่เลือกได้ {{ admission_project.max_num_selections }}
             <p>รายชื่อที่เลือก</p>
-            <ul id='selected-list'>
+            <ul id="selected-list" class="list-group">
                 {% for major in selected_majors %}
-                    <li>
+                    <li 
+                        id="selected_{{ major.id }}"
+  
+
+                        class="list-group-item"
+                        value="{{ major.id }}"
+                    >
                         {{ major.title }}
-                        <button value="{{ major.number }}">delete</button>
+                        <button 
+                            value="{{ major.number }}"
+                            onclick="removeMajorInList(this.value)"
+                        >
+                            delete
+                        </button>
                         <input type="hidden" name="major" value="{{ major.number }}">
                     </li>
                 {% endfor %}
@@ -39,7 +50,8 @@
 <script type="text/javascript">
     var majors = [];
     var selectedList = [];
-    
+    var source;
+    $( "#selected-list" ).sortable();
     // initial all majors
     {% for m in all_majors %}
         majors[{{ m.number }}] = {
@@ -116,10 +128,12 @@
         renderSelectedList();
     }
     function removeMajorInList(number) {
+        console.log(number)
         selectedList = selectedList.filter(function(s) {
             return s.number !== number;
         });
         renderSelectedList();
     }
 </script>
+<!-- <script>$('#selected_32').sortable();</script> -->
 {% endblock %}
