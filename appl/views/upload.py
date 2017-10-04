@@ -4,6 +4,7 @@ from django.forms import ModelForm
 from django.http import HttpResponseForbidden, HttpResponse
 
 import json
+import os
 
 from regis.models import Applicant
 from regis.decorators import appl_login_required
@@ -26,25 +27,36 @@ def upload(request, document_id):
     if request.method != 'POST':
         return HttpResponseForbidden()
     size_limit = project_uploaded_document.size_limit
+    allowed_extentions = project_uploaded_document.allowed_extentions.split(',')
+
     form = UploadedDocumentForm(request.POST, request.FILES)
     if form.is_valid():
-        if size_limit >= form.cleaned_data['uploaded_file'].size:
-            if not project_uploaded_document.can_have_multiple_files:
-                old_uploaded_documents = project_uploaded_document.get_uploaded_documents_for_applicant(applicant)
-                for odoc in old_uploaded_documents:
-                    odoc.uploaded_file.delete()
-                    odoc.delete()
+        cleaned_data = form.cleaned_data['uploaded_file']
+        if size_limit >= cleaned_data.size:
+            name, extension = os.path.splitext(cleaned_data.name)
+            extension = extension[1:]
+            if extension in allowed_extentions:
+                if not project_uploaded_document.can_have_multiple_files:
+                    old_uploaded_documents = project_uploaded_document.get_uploaded_documents_for_applicant(applicant)
+                    for odoc in old_uploaded_documents:
+                        odoc.uploaded_file.delete()
+                        odoc.delete()
 
-            uploaded_document = form.save(commit=False)
-            uploaded_document.applicant = request.applicant
-            uploaded_document.project_uploaded_document = project_uploaded_document
-            uploaded_document.admission_project = project_uploaded_document.admission_project
-            uploaded_document.rank = 0
-            uploaded_document.orginal_filename = uploaded_document.uploaded_file.name
-            uploaded_document.save()
-            result = 'OK'
+                uploaded_document = form.save(commit=False)
+                uploaded_document.applicant = request.applicant
+                uploaded_document.project_uploaded_document = project_uploaded_document
+                uploaded_document.admission_project = project_uploaded_document.admission_project
+                uploaded_document.rank = 0
+                uploaded_document.orginal_filename = uploaded_document.uploaded_file.name
+                uploaded_document.save()
+                result = 201
+                file_error = 'none'
+            else:
+                result = 304
+                file_error = 'size'
         else:
-            result = 'ERROR'
+            result = 304
+            file_error = 'ext'
         from django.template import loader
 
         template = loader.get_template('appl/include/document_upload_form.html')
@@ -53,7 +65,7 @@ def upload(request, document_id):
         project_uploaded_document.applicant_uploaded_documents = project_uploaded_document.get_uploaded_documents_for_applicant(applicant)
         context = {
             'project_uploaded_document': project_uploaded_document,
-            'size_error': size_limit < form.cleaned_data['uploaded_file'].size
+            'file_error': file_error
         }
         result = {'result': 'OK',
                     'html': template.render(context,request),
