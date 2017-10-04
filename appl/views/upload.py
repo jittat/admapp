@@ -50,28 +50,27 @@ def upload(request, document_id):
                 uploaded_document.rank = 0
                 uploaded_document.orginal_filename = uploaded_document.uploaded_file.name
                 uploaded_document.save()
-                result = 201
-                file_error = 'none'
+
+                from django.template import loader
+
+                template = loader.get_template('appl/include/document_upload_form.html')
+
+                project_uploaded_document.form = upload_form_for(project_uploaded_document)
+                project_uploaded_document.applicant_uploaded_documents = project_uploaded_document.get_uploaded_documents_for_applicant(applicant)
+                context = {
+                    'project_uploaded_document': project_uploaded_document,
+                }
+                result = {'result': 'OK',
+                                    'html': template.render(context,request),
+                }
             else:
-                result = 304
+                result = 'ext_error'
                 file_error = 'ext'
         else:
-            result = 304
-            file_error = 'size'
-        from django.template import loader
-
-        template = loader.get_template('appl/include/document_upload_form.html')
-
-        project_uploaded_document.form = upload_form_for(project_uploaded_document)
-        project_uploaded_document.applicant_uploaded_documents = project_uploaded_document.get_uploaded_documents_for_applicant(applicant)
-        context = {
-            'project_uploaded_document': project_uploaded_document,
-            'file_error': file_error
-        }
-        result = {'result': 'OK',
-                    'html': template.render(context,request),
-                }
+            result = 'size_error'
     else:
-        result = {'result': 'ERROR'}
+        result = 'ERROR'
+
+    result = {'result': result}
     return HttpResponse(json.dumps(result),
                         content_type='application/json')
