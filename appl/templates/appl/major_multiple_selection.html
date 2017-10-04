@@ -9,25 +9,25 @@
             <p>รายชื่อที่เลือก</p>
             <ul id="selected-list" class="list-group">
                 {% for major in selected_majors %}
-                    <li 
-                        id="selected_{{ major.id }}"
-  
-
-                        class="list-group-item"
-                        value="{{ major.id }}"
-                    >
+                    <li class="list-group-item d-flex justify-content-between">
                         {{ major.title }}
-                        <button 
+                        <button
+                            class="btn btn-danger"
                             value="{{ major.number }}"
                             onclick="removeMajorInList(this.value)"
                         >
-                            delete
+                            Delete
                         </button>
                         <input type="hidden" name="major" value="{{ major.number }}">
                     </li>
                 {% endfor %}
-            </ul>  
-            <select name="falculty" onchange="changeFalcuty(this)">
+            </ul>
+            <br>
+            <select
+                class="form-control" 
+                name="falculty" 
+                onchange="changeFalcuty(this)"
+            >
                 <option value="">เลือกคณะ</option>            
                 {% for f in faculties %}
                     <option 
@@ -37,9 +37,9 @@
                     </option>
                 {% endfor %}
             </select>
-
-            <div name="major" id="major-selected-list">
-            </div>        
+            <br>
+            <ul name="major" class="list-group" id="major-selected-list">
+            </ul>        
         </div>
         <div class="form-group">
             <input type="submit" name="save" class="btn btn-success" value="จัดเก็บ" />
@@ -75,18 +75,20 @@
         majorsList.innerHTML = '';
         majors.forEach(function(m, index) {
             if (selected.value === m.faculty_id) {
-                var majorWrapper = document.createElement('div');
+                var majorWrapper = document.createElement('li');
+                majorWrapper.innerHTML = m.title;
+                majorWrapper.setAttribute('class', 'list-group-item d-flex justify-content-between');
+
                 var majorButton = document.createElement('button');
-                majorButton.innerHTML = 'เพิ่ม';
-                majorButton.value = index;
-                majorButton.name = 'major'
+                majorButton.innerHTML = 'Add';
+                majorButton.setAttribute('value', index);
+                majorButton.setAttribute('class', 'btn btn-success')
                 majorButton.onclick = function(e) {
                     e.preventDefault();
                     addMajorToList(e.target.value);
                 }
-                var textNode = document.createTextNode(m.title);
+
                 majorWrapper.appendChild(majorButton);
-                majorWrapper.appendChild(textNode);
                 majorsList.appendChild(majorWrapper);
             }
         })
@@ -97,24 +99,22 @@
         selectedListElement.innerHTML = '';
         selectedList.forEach(function(s) {
             var selectedMajor = document.createElement('li');
+            selectedMajor.innerHTML = s.title;
+            selectedMajor.setAttribute('class', 'list-group-item d-flex justify-content-between');
+
             var inputElement = document.createElement('input');
             inputElement.setAttribute('type', 'hidden');
             inputElement.setAttribute('name', 'major');
             inputElement.setAttribute('value', s.number);
+
             var removeButton = document.createElement('button');
             removeButton.innerHTML = 'delete';
-            removeButton.value = s.number;
+            removeButton.setAttribute('value', s.number);
+            removeButton.setAttribute('class', 'btn btn-danger');
             removeButton.onclick = function(e) {
                 removeMajorInList(e.target.value);
             }
-            selectedMajor.innerHTML = s.title + '  ';
-            selectedMajor.setAttribute('draggable', true);
-            // selectedMajor.ondragenter = function(e) {
-                
-            // }
-            // selectedMajor.ondragstart = function(e) {
-            //     console.log(e.target)
-            // }
+            
             selectedMajor.appendChild(removeButton);
             selectedMajor.appendChild(inputElement);
             selectedListElement.appendChild(selectedMajor);
@@ -135,5 +135,4 @@
         renderSelectedList();
     }
 </script>
-<!-- <script>$('#selected_32').sortable();</script> -->
 {% endblock %}
