@@ -1,57 +1,76 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="row">
-    <form action="{% url 'appl:major-selection' admission_round.id %}" method="post">                
-        {% csrf_token %}            
-        <div class="form-group">
-            <h1>เลือกสาขาโครงการ{{ admission_project }}</h1>
-            ผู้สมัคร: {{ applicant }} จำนวนสาขาที่เลือกได้ {{ admission_project.max_num_selections }}
-            <p>รายชื่อที่เลือก</p>
-            <ul id="selected-list" class="list-group">
-                {% for major in selected_majors %}
-                    <li class="list-group-item d-flex justify-content-between">
-                        {{ major.title }}
-                        <button
-                            class="btn btn-danger"
+<div class="row" style="padding: 20px">
+    <form style="width: 100%" action="{% url 'appl:major-selection' admission_round.id %}" method="post">                
+        {% csrf_token %}
+        <div class="form-row">
+            <div class="form-group col-md-12">
+                <h1>เลือกสาขาโครงการ{{ admission_project }}</h1>
+                ผู้สมัคร: {{ applicant }} จำนวนสาขาที่เลือกได้ {{ admission_project.max_num_selections }}             
+            </div>
+            <div class="form-group col-md-6">
+                <p>รายชื่อที่เลือก</p>
+                <ul id="selected-list" class="list-group">
+                    {% for major in selected_majors %}
+                        <li 
+                            class="list-group-item d-flex justify-content-between"
                             value="{{ major.number }}"
-                            onclick="removeMajorInList(this.value)"
                         >
-                            Delete
-                        </button>
-                        <input type="hidden" name="major" value="{{ major.number }}">
-                    </li>
-                {% endfor %}
-            </ul>
-            <br>
-            <select
-                class="form-control" 
-                name="falculty" 
-                onchange="changeFalcuty(this)"
-            >
-                <option value="">เลือกคณะ</option>            
-                {% for f in faculties %}
-                    <option 
-                        value="{{ f.id }}"
-                    >
-                    {{ f.title }}
-                    </option>
-                {% endfor %}
-            </select>
-            <br>
-            <ul name="major" class="list-group" id="major-selected-list">
-            </ul>        
-        </div>
-        <div class="form-group">
-            <input type="submit" name="save" class="btn btn-success" value="จัดเก็บ" />
-            <input type="submit" name="cancel" class="btn btn-danger" value="ยกเลิก" />
+                            {{ major.title }}
+                            <button
+                                class="btn btn-danger"
+                                value="{{ major.number }}"
+                                onclick="removeMajorInList(this.value)"
+                            >
+                                ลบออก
+                            </button>
+                            <input type="hidden" name="major" value="{{ major.number }}">
+                        </li>
+                    {% endfor %}
+                </ul>
+                <br>
+            </div>
+            <div class="form-group col-md-6">
+                <select
+                    class="form-control" 
+                    name="falculty" 
+                    onchange="changeFalcuty(this)"
+                >
+                    <option value="">เลือกคณะ</option>            
+                    {% for f in faculties %}
+                        <option 
+                            value="{{ f.id }}"
+                        >
+                        {{ f.title }}
+                        </option>
+                    {% endfor %}
+                </select>
+                <br>
+                <div style="max-height: 300px; overflow: scroll;">
+                    <ul name="major" class="list-group" id="major-selected-list">
+                    </ul>      
+                </div>  
+            </div>
+            <div class="form-group col-md-12">
+                    <input type="submit" name="save" class="btn btn-success" value="จัดเก็บ" />
+                    <input type="submit" name="cancel" class="btn btn-danger" value="ยกเลิก" />
+            </div>
         </div>
     </form>
 </div>
 <script type="text/javascript">
     var majors = [];
     var selectedList = [];
-    var source;
-    $( "#selected-list" ).sortable();
+    var dragIndex;
+    $( "#selected-list" ).sortable({
+        start: function(e, ui) {
+            dragIndex = ui.item.index()
+        },
+        update: function(e, ui) {
+            swapSelectedList(dragIndex, ui.item.index())
+            console.log(selectedList)
+        }
+    });
     // initial all majors
     {% for m in all_majors %}
         majors[{{ m.number }}] = {
@@ -80,7 +99,7 @@
                 majorWrapper.setAttribute('class', 'list-group-item d-flex justify-content-between');
 
                 var majorButton = document.createElement('button');
-                majorButton.innerHTML = 'Add';
+                majorButton.innerHTML = 'เพิ่ม';
                 majorButton.setAttribute('value', index);
                 majorButton.setAttribute('class', 'btn btn-success')
                 majorButton.onclick = function(e) {
@@ -108,7 +127,7 @@
             inputElement.setAttribute('value', s.number);
 
             var removeButton = document.createElement('button');
-            removeButton.innerHTML = 'delete';
+            removeButton.innerHTML = 'ลบออก';
             removeButton.setAttribute('value', s.number);
             removeButton.setAttribute('class', 'btn btn-danger');
             removeButton.onclick = function(e) {
@@ -134,5 +153,12 @@
         });
         renderSelectedList();
     }
+
+    function swapSelectedList(a, b) {
+        var temp = selectedList[a];
+        selectedList[a] = selectedList[b];
+        selectedList[b] = temp;
+    }
+
 </script>
 {% endblock %}
