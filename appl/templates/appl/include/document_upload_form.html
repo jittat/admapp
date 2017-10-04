@@ -11,7 +11,13 @@
       <br />
       <small>{{ doc.specifications }}</small>
 
-  <br /><small style="color:red"><b>{{ file_error }}</b></small>
+  <br /><small style="color:red">
+      {% if file_error == 'size' %}
+        ขนาดไฟล์ใหญ่กว่าที่กำหนด</b>
+        {% elif file_error == 'ext' %}
+          นามสกุลของไฟล์ไม่ถูกต้อง</b>
+          {% endif %}
+    </small>
       {% if doc.applicant_uploaded_documents %}
         <ul>
           {% for d in doc.applicant_uploaded_documents %}
