@@ -64,12 +64,12 @@ def upload(request, document_id):
                                     'html': template.render(context,request),
                 }
             else:
-                result = 'ext_error'
+                result = 'EXT_ERROR'
                 file_error = 'ext'
         else:
-            result = 'size_error'
+            result = 'SIZE_ERROR'
     else:
-        result = 'ERROR'
+        result = 'FORM_ERROR'
 
     result = {'result': result}
     return HttpResponse(json.dumps(result),
