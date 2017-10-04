@@ -22,5 +22,7 @@ def is_valid_passport_number(passport_number):
             continue
         elif (c >= 'A' and c <= 'Z') or (c >= 'a' and c <= 'z'):
             continue
+        else:
+            return False
 
     return True

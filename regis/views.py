@@ -112,13 +112,13 @@ class RegistrationForm(forms.Form):
         return self.cleaned_data['national_id_confirm']
 
     def clean_passport_number(self):
-        if not is_valid_national_id(self.cleaned_data['passport_number']):
+        if not is_valid_passport_number(self.cleaned_data['passport_number']):
             del self.cleaned_data['passport_number']
             raise ValidationError('เลขที่หนังสือเดินทางผิดรูปแบบ', code='invalid')
         return self.cleaned_data['passport_number']
 
     def clean_passport_number_confirm(self):
-        if not is_valid_national_id(self.cleaned_data['passport_number_confirm']):
+        if not is_valid_passport_number(self.cleaned_data['passport_number_confirm']):
             del self.cleaned_data['passport_number_confirm']
             raise ValidationError('เลขที่หนังสือเดินทางผิดรูปแบบ', code='invalid')
 
@@ -146,17 +146,23 @@ class RegistrationForm(forms.Form):
                                            'รหัสผ่านที่ยืนยันไม่ตรงกัน')
         return self.cleaned_data['password_confirm']
 
-
 def create_applicant(form):
     applicant = Applicant(national_id=form.cleaned_data['national_id'],
+                          passport_number=form.cleaned_data['passport_number'],
                           prefix=form.cleaned_data['prefix'],
                           first_name=form.cleaned_data['first_name'],
                           last_name=form.cleaned_data['last_name'],
                           email=form.cleaned_data['email'])
     applicant.set_password(form.cleaned_data['password'])
     try:
-        applicant.save()
-        return applicant
+        if form.cleaned_data['has_national_id'] == '1':
+            applicant.save()
+            return applicant
+        else:
+            if applicant.generate_random_national_id_and_save():
+                return applicant
+            else:
+                return None
     except:
         return None
     
