@@ -42,6 +42,7 @@ def upload(request, document_id):
                         odoc.uploaded_file.delete()
                         odoc.delete()
 
+
                 uploaded_document = form.save(commit=False)
                 uploaded_document.applicant = request.applicant
                 uploaded_document.project_uploaded_document = project_uploaded_document
@@ -71,7 +72,6 @@ def upload(request, document_id):
                     'html': template.render(context,request),
                 }
     else:
-        print(form.errors)
         result = {'result': 'ERROR'}
     return HttpResponse(json.dumps(result),
                         content_type='application/json')
