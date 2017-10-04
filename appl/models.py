@@ -32,7 +32,6 @@ class Faculty(models.Model):
         return self.title
 
 
-
 class AdmissionRound(models.Model):
     number = models.IntegerField()
     subround_number = models.IntegerField(default=0)

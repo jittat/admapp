@@ -1,17 +1,55 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="row">
+  {% if error_message %}
+    <div class="col-md-12 ">
+      <div class="alert alert-danger alert-dismissible" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <strong>{{ error_message }}!</strong>
+      </div>
+    </div>
+  {% endif %}
   <div class="col-md-12">
     <h1>เลือกสาขาโครงการ{{ admission_project }}</h1>
     ผู้สมัคร: {{ applicant }} จำนวนสาขาที่เลือกได้ {{ admission_project.max_num_selections }}
     <form action="{% url 'appl:major-selection' admission_round.id %}" method="post">
       {% csrf_token %}
       <div class="form-group">
-        <select name="major">
+        <select name="falculty" onchange="changeFalcuty(this)">
+          <option value="">เลือกคณะ</option>            
+          {% for f in faculties %}
+            <option 
+              value="{{ f.id }}"
+              {% if major and f.id == major.faculty_id %}
+                selected
+              {% endif %}
+            >
+              {{ f.title }}
+            </option>
+          {% endfor %}
+        </select>
+        <div id="major-selected-list">
+          {% for m in all_majors %}
+            {% if major and major.faculty_id == m.faculty_id %}
+              <div>
+                <input
+                  type="radio" 
+                  value="{{ m.number }}" 
+                  name="major"
+                  {% if major.id == m.id  %}
+                    checked
+                  {% endif %}
+                />
+                {{ m.title }}
+              </div>
+            {% endif %}  
+          {% endfor %}
+        </div>
+        <!-- <select name="majoer">
           {% for m in all_majors %}
             <option value="{{ m.number }}" {% if major and m.id == major.id %}selected{% endif %}>{{ m.faculty }} - สาขา{{ m.title }}</option>
           {% endfor %}
-        </select>
+        </select> -->
       </div>
       <div class="form-group">
         <input type="submit" name="save" class="btn btn-success" value="จัดเก็บ" />
@@ -19,5 +57,42 @@
       </div>
     </form>
   </div>
+  <style>
+    #major-selected-list {
+      display: flex;
+      flex-direction: column;
+    }
+  </style>
+  <script>
+    var majors = [];
+    {% for m in all_majors %}
+      majors[{{ m.number }}] = {
+        number: "{{ m.number }}",
+        title: "{{ m.title }}",
+        faculty_id: "{{ m.faculty_id }}"
+      };
+    {% endfor %}
+    function changeFalcuty(selected) {
+      var majorsList = document.getElementById("major-selected-list");
+      majorsList.innerHTML = "";
+      majors.forEach(function(m) {
+        if (selected.value === m.faculty_id) {
+          var majorWrapper = document.createElement('div')
+          var radioInput = document.createElement('input');
+          radioInput.setAttribute('type', 'radio');
+          radioInput.setAttribute('value', m.number);
+          // for single selection
+          radioInput.setAttribute('name', 'major');
+
+          var textNode = document.createTextNode(m.title);
+          
+          majorWrapper.appendChild(radioInput);
+          majorWrapper.appendChild(textNode);
+
+          majorsList.appendChild(majorWrapper);
+        }
+      })
+    }
+  </script>
 </div>
 {% endblock %}
