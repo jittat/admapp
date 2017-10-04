@@ -1,7 +1,11 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="row" style="padding: 20px">
-    <form style="width: 100%" action="{% url 'appl:major-selection' admission_round.id %}" method="post">                
+<div class="row major-multiple-selection-container">
+    <form 
+        class="major-multiple-selection-form"
+        action="{% url 'appl:major-selection' admission_round.id %}" 
+        method="post"
+    >                
         {% csrf_token %}
         <div class="form-row">
             <div class="form-group col-md-12">
@@ -18,7 +22,7 @@
                         >
                             {{ major.title }}
                             <button
-                                class="btn btn-danger"
+                                class="btn btn-outline-danger"
                                 value="{{ major.number }}"
                                 onclick="removeMajorInList(this.value)"
                             >
@@ -46,7 +50,7 @@
                     {% endfor %}
                 </select>
                 <br>
-                <div style="max-height: 300px; overflow: scroll;">
+                <div class="major-multiple-selection-scollview">
                     <ul name="major" class="list-group" id="major-selected-list">
                     </ul>      
                 </div>  
@@ -58,6 +62,22 @@
         </div>
     </form>
 </div>
+
+<style>
+    .major-multiple-selection-form {
+        width: 100%;
+    }
+
+    .major-multiple-selection-container {
+        padding: 20px;
+    }
+
+    .major-multiple-selection-scollview {
+        max-height: 300px;
+        overflow: scroll;
+    }
+</style>
+
 <script type="text/javascript">
     var majors = [];
     var selectedList = [];
@@ -88,6 +108,7 @@
             faculty_id: "{{ m.faculty_id }}"
         });
     {% endfor %}
+    console.log(selectedList)
 
     function changeFalcuty(selected) {
         var majorsList = document.getElementById('major-selected-list');
@@ -101,7 +122,7 @@
                 var majorButton = document.createElement('button');
                 majorButton.innerHTML = 'เพิ่ม';
                 majorButton.setAttribute('value', index);
-                majorButton.setAttribute('class', 'btn btn-success')
+                majorButton.setAttribute('class', 'btn btn-outline-success')
                 majorButton.onclick = function(e) {
                     e.preventDefault();
                     addMajorToList(e.target.value);
@@ -129,7 +150,7 @@
             var removeButton = document.createElement('button');
             removeButton.innerHTML = 'ลบออก';
             removeButton.setAttribute('value', s.number);
-            removeButton.setAttribute('class', 'btn btn-danger');
+            removeButton.setAttribute('class', 'btn btn-outline-danger');
             removeButton.onclick = function(e) {
                 removeMajorInList(e.target.value);
             }
@@ -141,7 +162,16 @@
     }
     function addMajorToList(index) {
         var major = majors[index];
-        if (!selectedList.includes(major) && selectedList.length < Number("{{ admission_project.max_num_selections }}")) {
+        var notDuplicate = true;
+      
+        for (var selected of selectedList) {
+            if(selected.number === major.number) {
+                notDuplicate = false;
+            }
+        }
+
+        if (notDuplicate && 
+            selectedList.length < Number("{{ admission_project.max_num_selections }}")) {
             selectedList.push(major);
         }
         renderSelectedList();
