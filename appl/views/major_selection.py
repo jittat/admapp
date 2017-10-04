@@ -77,11 +77,7 @@ def select(request, admission_round_id):
     faculties = [f for f in Faculty.objects.all()
                   if f.id in majors_dic]
     
-    # for fake multiple selection
-    multiple  = True
-
-    if multiple:
-        project.max_num_selections = 5
+    if  project.max_num_selections > 1:
         template = 'appl/major_multiple_selection.html'
     else:
         selected_majors = selected_majors[0]
