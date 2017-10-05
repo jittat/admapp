@@ -1,17 +1,55 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="row">
+  {% if error_message %}
+    <div class="col-md-12 ">
+      <div class="alert alert-danger alert-dismissible" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <strong>{{ error_message }}!</strong>
+      </div>
+    </div>
+  {% endif %}
   <div class="col-md-12">
     <h1>เลือกสาขาโครงการ{{ admission_project }}</h1>
     ผู้สมัคร: {{ applicant }} จำนวนสาขาที่เลือกได้ {{ admission_project.max_num_selections }}
     <form action="{% url 'appl:major-selection' admission_round.id %}" method="post">
       {% csrf_token %}
       <div class="form-group">
-        <select name="major">
+        <select name="falculty" class="form-control" onchange="changeFalcuty(this)">
+          <option value="">เลือกคณะ</option>            
+          {% for f in faculties %}
+            <option 
+              value="{{ f.id }}"
+              {% if selected_majors and f.id == selected_majors.faculty_id %}
+                selected
+              {% endif %}
+            >
+              {{ f.title }}
+            </option>
+          {% endfor %}
+        </select>
+        <ul id="major-selected-list" class="list-group">
+          {% for m in all_majors %}
+            {% if selected_majors and selected_majors.faculty_id == m.faculty_id %}
+              <li class="list-group-item">
+                <input
+                  type="radio" 
+                  value="{{ m.number }}" 
+                  name="major"
+                  {% if selected_majors.id == m.id  %}
+                    checked
+                  {% endif %}
+                />
+                {{ m.title }}
+              </li>
+            {% endif %}  
+          {% endfor %}
+        </ul>
+        <!-- <select name="majoer">
           {% for m in all_majors %}
             <option value="{{ m.number }}" {% if major and m.id == major.id %}selected{% endif %}>{{ m.faculty }} - สาขา{{ m.title }}</option>
           {% endfor %}
-        </select>
+        </select> -->
       </div>
       <div class="form-group">
         <input type="submit" name="save" class="btn btn-success" value="จัดเก็บ" />
@@ -20,4 +58,36 @@
     </form>
   </div>
 </div>
+<script>
+  var majors = [];
+  {% for m in all_majors %}
+    majors[{{ m.number }}] = {
+      number: "{{ m.number }}",
+      title: "{{ m.title }}",
+      faculty_id: "{{ m.faculty_id }}"
+    };
+  {% endfor %}
+  function changeFalcuty(selected) {
+    var majorsList = document.getElementById("major-selected-list");
+    majorsList.innerHTML = "";
+    majors.forEach(function(m) {
+      if (selected.value === m.faculty_id) {
+        var majorWrapper = document.createElement('li')
+        majorWrapper.setAttribute('class', 'list-group-item')
+        var radioInput = document.createElement('input');
+        radioInput.setAttribute('type', 'radio');
+        radioInput.setAttribute('value', m.number);
+        // for single selection
+        radioInput.setAttribute('name', 'major');
+
+        var textNode = document.createTextNode(' ' + m.title);
+        
+        majorWrapper.appendChild(radioInput);
+        majorWrapper.appendChild(textNode);
+
+        majorsList.appendChild(majorWrapper);
+      }
+    })
+  }
+</script>
 {% endblock %}

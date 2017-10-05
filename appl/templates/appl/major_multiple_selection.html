@@ -1,0 +1,190 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row major-multiple-selection-container">
+    <form 
+        class="major-multiple-selection-form"
+        action="{% url 'appl:major-selection' admission_round.id %}" 
+        method="post"
+    >                
+        {% csrf_token %}
+        <div class="form-row">
+            <div class="form-group col-md-12">
+                <h1>เลือกสาขาโครงการ{{ admission_project }}</h1>
+                ผู้สมัคร: {{ applicant }} จำนวนสาขาที่เลือกได้ {{ admission_project.max_num_selections }}             
+            </div>
+            <div class="form-group col-md-6">
+                <p>รายชื่อที่เลือก</p>
+                <ul id="selected-list" class="list-group">
+                    {% for major in selected_majors %}
+                        <li 
+                            class="list-group-item d-flex justify-content-between"
+                            value="{{ major.number }}"
+                        >
+                            {{ major.title }}
+                            <button
+                                class="btn btn-outline-danger"
+                                value="{{ major.number }}"
+                                onclick="removeMajorInList(this.value)"
+                            >
+                                ลบออก
+                            </button>
+                            <input type="hidden" name="major" value="{{ major.number }}">
+                        </li>
+                    {% endfor %}
+                </ul>
+                <br>
+            </div>
+            <div class="form-group col-md-6">
+                <select
+                    class="form-control" 
+                    name="falculty" 
+                    onchange="changeFalcuty(this)"
+                >
+                    <option value="">เลือกคณะ</option>            
+                    {% for f in faculties %}
+                        <option 
+                            value="{{ f.id }}"
+                        >
+                        {{ f.title }}
+                        </option>
+                    {% endfor %}
+                </select>
+                <br>
+                <div class="major-multiple-selection-scollview">
+                    <ul name="major" class="list-group" id="major-selected-list">
+                    </ul>      
+                </div>  
+            </div>
+            <div class="form-group col-md-12">
+                    <input type="submit" name="save" class="btn btn-success" value="จัดเก็บ" />
+                    <input type="submit" name="cancel" class="btn btn-danger" value="ยกเลิก" />
+            </div>
+        </div>
+    </form>
+</div>
+
+<style>
+    .major-multiple-selection-form {
+        width: 100%;
+    }
+
+    .major-multiple-selection-container {
+        padding: 20px;
+    }
+
+    .major-multiple-selection-scollview {
+        max-height: 300px;
+        overflow: scroll;
+    }
+</style>
+
+<script type="text/javascript">
+    var majors = [];
+    var selectedList = [];
+    var dragIndex;
+    $( "#selected-list" ).sortable({
+        start: function(e, ui) {
+            dragIndex = ui.item.index()
+        },
+        update: function(e, ui) {
+            swapSelectedList(dragIndex, ui.item.index())
+        }
+    });
+    // initial all majors
+    {% for m in all_majors %}
+        majors[{{ m.number }}] = {
+            number: "{{ m.number }}",
+            title: "{{ m.title }}",
+            faculty_id: "{{ m.faculty_id }}"
+        };
+    {% endfor %}
+        
+    // initial selected majors
+    {% for m in selected_majors %}
+        selectedList.push({
+            number: "{{ m.number }}",
+            title: "{{ m.title }}",
+            faculty_id: "{{ m.faculty_id }}"
+        });
+    {% endfor %}
+
+    function changeFalcuty(selected) {
+        var majorsList = document.getElementById('major-selected-list');
+        majorsList.innerHTML = '';
+        majors.forEach(function(m, index) {
+            if (selected.value === m.faculty_id) {
+                var majorWrapper = document.createElement('li');
+                majorWrapper.innerHTML = m.title;
+                majorWrapper.setAttribute('class', 'list-group-item d-flex justify-content-between');
+
+                var majorButton = document.createElement('button');
+                majorButton.innerHTML = 'เพิ่ม';
+                majorButton.setAttribute('value', index);
+                majorButton.setAttribute('class', 'btn btn-outline-success')
+                majorButton.onclick = function(e) {
+                    e.preventDefault();
+                    addMajorToList(e.target.value);
+                }
+
+                majorWrapper.appendChild(majorButton);
+                majorsList.appendChild(majorWrapper);
+            }
+        })
+    }
+
+    function renderSelectedList() {
+        var selectedListElement = document.getElementById('selected-list');
+        selectedListElement.innerHTML = '';
+        selectedList.forEach(function(s) {
+            var selectedMajor = document.createElement('li');
+            selectedMajor.innerHTML = s.title;
+            selectedMajor.setAttribute('class', 'list-group-item d-flex justify-content-between');
+
+            var inputElement = document.createElement('input');
+            inputElement.setAttribute('type', 'hidden');
+            inputElement.setAttribute('name', 'major');
+            inputElement.setAttribute('value', s.number);
+
+            var removeButton = document.createElement('button');
+            removeButton.innerHTML = 'ลบออก';
+            removeButton.setAttribute('value', s.number);
+            removeButton.setAttribute('class', 'btn btn-outline-danger');
+            removeButton.onclick = function(e) {
+                removeMajorInList(e.target.value);
+            }
+            
+            selectedMajor.appendChild(removeButton);
+            selectedMajor.appendChild(inputElement);
+            selectedListElement.appendChild(selectedMajor);
+        })
+    }
+    function addMajorToList(index) {
+        var major = majors[index];
+        var notDuplicate = true;
+      
+        for (var selected of selectedList) {
+            if(selected.number === major.number) {
+                notDuplicate = false;
+            }
+        }
+
+        if (notDuplicate && 
+            selectedList.length < Number("{{ admission_project.max_num_selections }}")) {
+            selectedList.push(major);
+        }
+        renderSelectedList();
+    }
+    function removeMajorInList(number) {
+        selectedList = selectedList.filter(function(s) {
+            return s.number !== number;
+        });
+        renderSelectedList();
+    }
+
+    function swapSelectedList(a, b) {
+        var temp = selectedList[a];
+        selectedList[a] = selectedList[b];
+        selectedList[b] = temp;
+    }
+</script>
+{% endblock %}
