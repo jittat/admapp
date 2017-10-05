@@ -349,11 +349,9 @@ class EducationalProfile(models.Model):
     ]
 
     applicant = models.OneToOneField(Applicant)
-    education_level = models.IntegerField(max_length=3,
-                                          choices=EDUCATION_LEVEL_CHOICES,
+    education_level = models.IntegerField(choices=EDUCATION_LEVEL_CHOICES,
                                           verbose_name='ระดับการศึกษา')
-    education_plan = models.IntegerField(max_length=3,
-                                         choices=EDUCATION_PLAN_CHOICES,
+    education_plan = models.IntegerField(choices=EDUCATION_PLAN_CHOICES,
                                          verbose_name='แผนการศึกษา')
     gpa = models.FloatField(default=0,
                             verbose_name='GPA')
