@@ -64,13 +64,13 @@ def upload(request, document_id):
                                     'html': template.render(context,request),
                 }
             else:
-                result = 'EXT_ERROR'
+                result = {'result':'EXT_ERROR'}
                 file_error = 'ext'
         else:
-            result = 'SIZE_ERROR'
+            result = {'result':'SIZE_ERROR'}
     else:
-        result = 'FORM_ERROR'
+        result = {'result':'FORM_ERROR'}
 
-    result = {'result': result}
+    print(result)
     return HttpResponse(json.dumps(result),
                         content_type='application/json')
