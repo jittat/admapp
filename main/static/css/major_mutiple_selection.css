@@ -1,0 +1,12 @@
+.major-multiple-selection-form {
+  width: 100%;
+}
+
+.major-multiple-selection-container {
+  padding: 20px;
+}
+
+.major-multiple-selection-scollview {
+  max-height: 300px;
+  overflow: scroll;
+}
