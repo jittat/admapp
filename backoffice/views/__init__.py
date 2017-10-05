@@ -5,14 +5,12 @@ from django.http import HttpResponseForbidden
 
 from regis.models import Applicant
 from appl.models import AdmissionProject
+from backoffice.models import Profile
 
 @login_required
 def index(request):
     user = request.user
-    try:
-        profile = user.profile
-    except:
-        profile = None
+    profile = Profile.get_profile_for(user)
 
     is_admission_admin = False
     is_application_admin = False
@@ -75,3 +73,11 @@ def show(request, national_id, project_id=None):
                   'backoffice/show.html',
                   {'applicant': applicant })
     
+    
+
+    
+
+
+
+
+

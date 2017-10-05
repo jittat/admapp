@@ -30,6 +30,13 @@ class Profile(models.Model):
         else:
             return self.user.get_full_name()
 
+    @staticmethod
+    def get_profile_for(user):
+        try:
+            return user.profile
+        except:
+            return None
+
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
