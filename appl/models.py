@@ -31,6 +31,7 @@ class Faculty(models.Model):
     def __str__(self):
         return self.title
 
+
 class AdmissionRound(models.Model):
     number = models.IntegerField()
     subround_number = models.IntegerField(default=0)
@@ -44,11 +45,11 @@ class AdmissionRound(models.Model):
                                        verbose_name='กำหนดการ')
 
     is_available = models.BooleanField(default=False)
-    
+
     class Meta:
         ordering = ['rank']
 
-        
+
     def __str__(self):
         if self.subround_number == 0:
             return 'รอบที่ %d' % (self.number,)
@@ -66,7 +67,7 @@ class AdmissionRound(models.Model):
     def get_available_projects(self):
         return self.admissionproject_set.filter(is_available=True).all()
 
-    
+
 class AdmissionProject(models.Model):
     title = models.CharField(max_length=400)
     short_title = models.CharField(max_length=200)
@@ -75,7 +76,7 @@ class AdmissionProject(models.Model):
     campus = models.ForeignKey('Campus',
                                null=True,
                                blank=True)
-    
+
     general_conditions = models.TextField(blank=True)
     column_descriptions = models.TextField(blank=True)
 
@@ -86,7 +87,7 @@ class AdmissionProject(models.Model):
                                           verbose_name='รายละเอียดโครงการ (สั้น) แสดงในหน้าแรก')
     applying_confirmation_warning = models.TextField(blank=True,
                                                      verbose_name='รายละเอียดโครงการ แจ้งยืนยันก่อนสมัคร')
-    
+
     slots = models.IntegerField(default=0,
                                 verbose_name='จำนวนรับ')
 
@@ -100,7 +101,7 @@ class AdmissionProject(models.Model):
 
     base_fee = models.IntegerField(default=0,
                                    verbose_name='ค่าสมัคร')
-    
+
     def __str__(self):
         return self.title
 
@@ -131,7 +132,7 @@ class AdmissionProject(models.Model):
             return None
         else:
             return project_rounds[0]
-                    
+
 
 class AdmissionProjectRound(models.Model):
     admission_round = models.ForeignKey('AdmissionRound',
@@ -165,10 +166,10 @@ class AdmissionProjectRound(models.Model):
 
     def is_open(self):
         return self.is_started and (not self.is_deadline_passed())
-                
 
-    
-    
+
+
+
 class Major(models.Model):
     number = models.IntegerField()
     title = models.CharField(max_length=200)
@@ -184,10 +185,10 @@ class Major(models.Model):
                                                   verbose_name='ค่าสมัครเพิ่มเติม (ไม่คิดซ้ำ)')
     additional_fee_per_major = models.IntegerField(default=0,
                                                    verbose_name='ค่าสมัครเพิ่มเติม (คิดซ้ำสาขา)')
-    
+
     class Meta:
         ordering = ['number']
-    
+
     def __str__(self):
         return self.title
 
@@ -200,7 +201,7 @@ class Major(models.Model):
         else:
             return majors[0]
 
-        
+
     def get_detail_items(self):
         csv_io = io.StringIO(self.detail_items_csv)
         reader = csv.reader(csv_io)
@@ -239,7 +240,7 @@ class ProjectUploadedDocument(models.Model):
 
     def get_uploaded_documents_for_applicant(self, applicant):
         return self.uploaded_document_set.filter(applicant=applicant).all()
-    
+
 
 def applicant_document_path(instance, filename):
     try:
@@ -267,7 +268,7 @@ class UploadedDocument(models.Model):
     original_filename = models.CharField(max_length=200)
 
     uploaded_file = models.FileField(upload_to=applicant_document_path)
-    
+
 
     def __str__(self):
         return '%s (%s)' % (self.project_uploaded_document.title,
@@ -310,7 +311,7 @@ class ProjectApplication(models.Model):
 
     def get_verification_number(self):
         return str(1000000 + (self.id * 952183) % 951361)
-    
+
     def is_active(self):
         return not self.is_canceled
 
@@ -392,9 +393,9 @@ class PersonalProfile(models.Model):
     mobile_phone = models.CharField(max_length=20,
                                     verbose_name='เบอร์โทรศัพท์มือถือ',
                                     blank=True)
-    
 
-    
+
+
 class MajorSelection(models.Model):
     applicant = models.ForeignKey(Applicant)
     project_application = models.OneToOneField(ProjectApplication,
@@ -426,7 +427,7 @@ class MajorSelection(models.Model):
         self.majors = majors
         self.major_list = ','.join([str(m.number) for m in self.majors])
         self.num_selected = len(majors)
-                            
+
 
 class Payment(models.Model):
     applicant = models.ForeignKey(Applicant,
@@ -440,12 +441,12 @@ class Payment(models.Model):
 
     payment_name = models.CharField(max_length=100,
                                     blank=True)
-    
+
     amount = models.FloatField(default=0)
     paid_at = models.DateTimeField()
 
     has_payment_error = models.BooleanField(default=False)
-    
+
 
     def __str__(self):
         return '{0} ({1}/{2})'.format(self.amount, self.id, self.paid_at)
@@ -455,5 +456,3 @@ class Payment(models.Model):
     def find_for_applicant_in_round(applicant, admission_round):
         return Payment.objects.filter(applicant=applicant,
                                       admission_round=admission_round).all()
-
-    
