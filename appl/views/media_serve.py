@@ -2,7 +2,6 @@ from django.conf import settings
 from django.http import HttpResponseForbidden, HttpResponse, HttpResponseNotFound
 from appl.models import UploadedDocument,Applicant,ProjectUploadedDocument
 from django.core.exceptions import ObjectDoesNotExist
-from magic import Magic
 import os
 
 def document_view(request,document_id=0, applicant_id=0, admission_project_id=0):
@@ -17,6 +16,8 @@ def document_view(request,document_id=0, applicant_id=0, admission_project_id=0)
         return HttpResponseForbidden()
 
     doc_file = uploaded_document.uploaded_file
+
+    from magic import Magic
 
     doc_abs_path = os.path.join(settings.MEDIA_ROOT, doc_file.name)
     mime = Magic(mime=True).from_file(doc_abs_path)
