@@ -4,7 +4,6 @@ from appl import views
 from appl.views import upload as upload_views
 from appl.views import general_forms
 from appl.views import major_selection
-from appl.views import media_serve as media
 
 app_name = 'appl'
 urlpatterns = [
@@ -21,5 +20,5 @@ urlpatterns = [
 
     url(r'^payment/(\d+)/$', views.payment, name='payment'),
     url(r'^payment/(\d+)/barcode/(\d+)\.png$', views.payment_barcode, name='payment-barcode'),
-    url(r'^media/(?P<applicant_id>[0-9]+)/(?P<admission_project_id>[0-9]+)/(?P<document_id>[0-9]+)/$', media.document_view, name='document-view'),
+    url(r'^media/(?P<applicant_id>\d+)/(?P<admission_project_id>\d+)/(?P<document_id>\d+)/$', upload_views.document_download, name='document-download'),
 ]
