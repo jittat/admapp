@@ -24,15 +24,29 @@
                                 <b>{{ forloop.counter }}</b>
                                 {{ major.title }}
                             </div>
-                            <button
-                                type="button"
-                                class="close"
-                                aria-label="Close"
-                                value="{{ major.number }}"
-                                onclick="removeMajorInList(this.value)"
-                            >
-                                <span aria-hidden="true">&times;</span>
-                            </button>
+                            <div>
+                                <button 
+                                    type="button"
+                                    onclick="upOrder({{ forloop.counter }})"
+                                >
+                                    ขึ้น
+                                </button>
+                                <button 
+                                    type="button"
+                                    onclick="downOrder({{ forloop.counter }})"
+                                >
+                                    ลง
+                                </button>
+                                <button
+                                    type="button"
+                                    class="close"
+                                    aria-label="Close"
+                                    value="{{ major.number }}"
+                                    onclick="removeMajorInList(this.value)"
+                                >
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
                             <input type="hidden" name="major" value="{{ major.number }}">
                         </div>
                     {% endfor %}
@@ -96,7 +110,8 @@
             dragIndex = ui.item.index()
         },
         update: function(e, ui) {
-            swapSelectedList(dragIndex, ui.item.index())
+            swapSelectedList(dragIndex, ui.item.index());
+            renderSelectedList();
         }
     });
     // initial all majors
@@ -116,6 +131,20 @@
             faculty_id: "{{ m.faculty_id }}"
         });
     {% endfor %}
+    
+    function upOrder(index) {
+        if (index > 1) {
+            swapSelectedList(index - 2, index - 1);
+            renderSelectedList();
+        }
+    }
+
+    function downOrder(index) {
+        if (index < selectedList.length) {
+            swapSelectedList(index - 1, index);
+            renderSelectedList();
+        }
+    }
 
     function changeFalcuty(selected) {
         var majorsList = document.getElementById('major-selected-list');
@@ -154,6 +183,22 @@
             inputElement.setAttribute('name', 'major');
             inputElement.setAttribute('value', s.number);
 
+            var rightTab = document.createElement('div');
+
+            var upButton = document.createElement('button');
+            upButton.innerHTML = 'ขึ้น';
+            upButton.setAttribute('type', 'button');
+            upButton.onclick = function(e) {
+                upOrder(index + 1);
+            }
+
+            var downButton = document.createElement('button');
+            downButton.innerHTML = 'ลง';
+            downButton.setAttribute('type', 'button');
+            downButton.onclick = function(e) {
+                downOrder(index + 1);
+            }
+
             var removeButton = document.createElement('button');
             removeButton.innerHTML = '<span aria-hidden="true">&times;</span>';
             removeButton.setAttribute('class', 'close');
@@ -164,7 +209,10 @@
                 removeMajorInList(this.value);
             }
 
-            selectedMajor.appendChild(removeButton);
+            rightTab.appendChild(upButton);
+            rightTab.appendChild(downButton);
+            rightTab.appendChild(removeButton);
+            selectedMajor.appendChild(rightTab);
             selectedMajor.appendChild(inputElement);
             selectedListElement.appendChild(selectedMajor);
         })
