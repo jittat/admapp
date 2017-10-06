@@ -1,5 +1,22 @@
 {% extends 'base.html' %}
 {% block content %}
+<style>
+    .btn-block {
+        height: 42px;
+    }
+    .btn-block + .btn-block {
+        margin-top: 0;
+        margin-left: 5px;
+    }
+    .major-multiple-selection-form {
+        width: 100%;
+    }
+
+    .major-multiple-selection-container {
+        padding: 20px;
+    }
+
+</style>
 <div class="row major-multiple-selection-container">
     <form 
         class="major-multiple-selection-form"
@@ -24,27 +41,28 @@
                                 <b>{{ forloop.counter }}</b>
                                 {{ major.title }}
                             </div>
-                            <div>
+                            <div class="d-flex flex-nowrap"> 
                                 <button 
+                                    class="btn btn-dark btn-block"
                                     type="button"
                                     onclick="upOrder({{ forloop.counter }})"
                                 >
-                                    ขึ้น
+                                    <i class="fa fa-arrow-up" aria-hidden="true"></i>
                                 </button>
-                                <button 
+                                <button
+                                    class="btn btn-dark btn-block"
                                     type="button"
                                     onclick="downOrder({{ forloop.counter }})"
                                 >
-                                    ลง
+                                    <i class="fa fa-arrow-down" aria-hidden="true"></i>
                                 </button>
                                 <button
                                     type="button"
-                                    class="close"
-                                    aria-label="Close"
+                                    class="btn btn-danger btn-block"
                                     value="{{ major.number }}"
                                     onclick="removeMajorInList(this.value)"
                                 >
-                                    <span aria-hidden="true">&times;</span>
+                                    <i class="fa fa-times" aria-hidden="true"></i>
                                 </button>
                             </div>
                             <input type="hidden" name="major" value="{{ major.number }}">
@@ -85,21 +103,6 @@
         </div>
     </form>
 </div>
-
-<style>
-    .major-multiple-selection-form {
-        width: 100%;
-    }
-
-    .major-multiple-selection-container {
-        padding: 20px;
-    }
-
-    .major-multiple-selection-scollview {
-        max-height: 300px;
-        overflow: scroll;
-    }
-</style>
 
 <script type="text/javascript">
     var majors = [];
@@ -184,24 +187,27 @@
             inputElement.setAttribute('value', s.number);
 
             var rightTab = document.createElement('div');
+            rightTab.setAttribute('class', 'd-flex flex-nowrap');
 
             var upButton = document.createElement('button');
-            upButton.innerHTML = 'ขึ้น';
+            upButton.innerHTML = '<i class="fa fa-arrow-up" aria-hidden="true"></i>';
+            upButton.setAttribute('class', 'btn btn-dark btn-block');
             upButton.setAttribute('type', 'button');
             upButton.onclick = function(e) {
                 upOrder(index + 1);
             }
 
             var downButton = document.createElement('button');
-            downButton.innerHTML = 'ลง';
+            downButton.innerHTML = '<i class="fa fa-arrow-down" aria-hidden="true"></i>';
+            downButton.setAttribute('class', 'btn btn-dark btn-block');
             downButton.setAttribute('type', 'button');
             downButton.onclick = function(e) {
                 downOrder(index + 1);
             }
 
             var removeButton = document.createElement('button');
-            removeButton.innerHTML = '<span aria-hidden="true">&times;</span>';
-            removeButton.setAttribute('class', 'close');
+            removeButton.innerHTML = '<i class="fa fa-times" aria-hidden="true"></i>';
+            removeButton.setAttribute('class', 'btn btn-danger btn-block');
             removeButton.setAttribute('value', s.number);
             removeButton.setAttribute('type', 'button');
             removeButton.setAttribute('aria-label', 'Close');
