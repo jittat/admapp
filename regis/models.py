@@ -20,6 +20,9 @@ class Applicant(models.Model):
     hashed_password = models.CharField(max_length=128,
                                        blank=True)
     
+    class Meta:
+        unique_together = ('national_id', 'passport_number')
+
     def __str__(self):
         return "%s%s %s (%s)" % (self.prefix,
                                  self.first_name,
@@ -60,22 +63,27 @@ class Applicant(models.Model):
         return application
 
     def generate_random_national_id_and_save(self):
-        while True:
-            import random
+        applicants = Applicant.objects.filter(passport_number=self.passport_number).all()
+        if len(applicants) != 0:
+            return False
+        else:
+            while True:
+                import random
             
-            fake_national_id = '999'
-            number = random.randint(0, 9999999)
-            fake_national_id += str(number)
-            zero = '0' * (13 - len(fake_national_id))
-            fake_national_id += zero
+                fake_national_id = '999'
+                number = random.randint(0, 9999999)
+                fake_national_id += str(number)
+                zero = '0' * (13 - len(fake_national_id))
+                fake_national_id += zero
 
-            self.national_id = fake_national_id
-            print(self.national_id)
-            try:
-                self.save()
-                return True
-            except:
-                continue
+                self.national_id = fake_national_id
+                print(self.national_id)
+                print(self.passport_number)
+                try:
+                    self.save()
+                    return True
+                except:
+                    continue
         
     @staticmethod
     def find_by_national_id(national_id):
