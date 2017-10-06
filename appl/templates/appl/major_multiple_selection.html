@@ -86,6 +86,7 @@
                     {% endfor %}
                 </select>
                 <br>
+                <div id="error"></div>
                 <div>
                     <div 
                         name="major" 
@@ -226,21 +227,36 @@
     
     function addMajorToList(index) {
         var major = majors[index];
-        var notDuplicate = true;
+        var duplicate = false;
+        var errorElement = document.getElementById('error');
+        errorElement.innerHTML = '';
       
         for (var selected of selectedList) {
             if(selected.number === major.number) {
-                notDuplicate = false;
+                duplicate = true;
             }
         }
 
-        if (notDuplicate && 
-            selectedList.length < Number("{{ admission_project.max_num_selections }}")) {
-            selectedList.push(major);
+        var error = null;
+        if (selectedList.length >= Number("{{ admission_project.max_num_selections }}")) {
+            error = 'เลือกสาขาเกินจำนวนที่เลือกได้ !';
         }
-        renderSelectedList();
+
+        if (duplicate) {
+            error = 'สาขานี้ถูกเลือกแล้ว !';
+        }
+
+        if (error) {
+            errorElement.innerHTML = '<div class="alert alert-danger" role="alert">' + error + '</div>';
+        } else {
+            selectedList.push(major);
+            renderSelectedList();
+        }
+
     }
     function removeMajorInList(number) {
+        var errorElement = document.getElementById('error');
+        errorElement.innerHTML = '';
         selectedList = selectedList.filter(function(s) {
             return s.number !== number;
         });
