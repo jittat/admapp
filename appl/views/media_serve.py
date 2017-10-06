@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.http import HttpResponseForbidden, HttpResponse, HttpResponseNotFound
+from django.http import HttpResponse
 from appl.models import UploadedDocument,Applicant,ProjectUploadedDocument
 from django.core.exceptions import ObjectDoesNotExist
 from regis.decorators import appl_login_required
