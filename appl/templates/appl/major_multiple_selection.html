@@ -1,22 +1,5 @@
 {% extends 'base.html' %}
 {% block content %}
-<style>
-    .btn-block {
-        height: 42px;
-    }
-    .btn-block + .btn-block {
-        margin-top: 0;
-        margin-left: 5px;
-    }
-    .major-multiple-selection-form {
-        width: 100%;
-    }
-
-    .major-multiple-selection-container {
-        padding: 20px;
-    }
-
-</style>
 <div class="row major-multiple-selection-container">
     <form 
         class="major-multiple-selection-form"
@@ -86,7 +69,6 @@
                     {% endfor %}
                 </select>
                 <br>
-                <div id="error"></div>
                 <div>
                     <div 
                         name="major" 
@@ -228,8 +210,6 @@
     function addMajorToList(index) {
         var major = majors[index];
         var duplicate = false;
-        var errorElement = document.getElementById('error');
-        errorElement.innerHTML = '';
       
         for (var selected of selectedList) {
             if(selected.number === major.number) {
@@ -247,7 +227,11 @@
         }
 
         if (error) {
-            errorElement.innerHTML = '<div class="alert alert-danger" role="alert">' + error + '</div>';
+            swal(
+                error,
+                '',
+                'error'
+            )
         } else {
             selectedList.push(major);
             renderSelectedList();
@@ -255,8 +239,6 @@
 
     }
     function removeMajorInList(number) {
-        var errorElement = document.getElementById('error');
-        errorElement.innerHTML = '';
         selectedList = selectedList.filter(function(s) {
             return s.number !== number;
         });
