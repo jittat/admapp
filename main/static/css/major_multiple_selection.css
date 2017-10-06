@@ -1,12 +1,14 @@
+.btn-block {
+  height: 42px;
+}
+.btn-block + .btn-block {
+  margin-top: 0;
+  margin-left: 5px;
+}
 .major-multiple-selection-form {
   width: 100%;
 }
 
 .major-multiple-selection-container {
   padding: 20px;
-}
-
-.major-multiple-selection-scollview {
-  max-height: 300px;
-  overflow: scroll;
 }
