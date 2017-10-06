@@ -359,6 +359,9 @@ class EducationalProfile(models.Model):
                                  verbose_name='จังหวัด')
     school_title = models.CharField(max_length=80,
                                     verbose_name='โรงเรียน')
+    school_code = models.CharField(max_length=20,
+                                   blank=True,
+                                   default='')
 
     
 

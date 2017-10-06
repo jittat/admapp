@@ -12,27 +12,11 @@ from appl.models import Province, School
 from appl.models import PersonalProfile, EducationalProfile
 
 
-"""
-class EducationForm(forms.Form):
-    education_level = forms.ChoiceField(label='ระดับการศึกษา', 
-                                        choices=[('กำลังศึกษาชั้นมัธยมศึกษาปีที่ 6','กำลังศึกษาชั้นมัธยมศึกษาปีที่ 6'),
-                                                ('จบการศึกษาชั้นมัธยมศึกษาปีที่ 6','จบการศึกษาชั้นมัธยมศึกษาปีที่ 6'),
-                                                ('อื่นๆ','อื่นๆ')])
-    education_plan = forms.ChoiceField(label='แผนการศึกษา',
-                                        choices=[('วิทย์-คณิต','วิทย์-คณิต'),
-                                                ('อื่นๆ','อื่นๆ')])
-    gpa = forms.CharField(label='GPA',max_length=10)
-
-    province = forms.ModelChoiceField(label='จังหวัด',
-                                        queryset=Province.objects,
-                                        empty_label=None)
-    school_title = forms.CharField(label='ชื่อโรงเรียน', max_length=80)
-"""
-
 class EducationForm(ModelForm):
     class Meta:
         model = EducationalProfile
-        exclude = ['applicant']
+        exclude = ['applicant',
+                   'school_code']
 
     
 class PersonalProfileForm(ModelForm):
@@ -48,24 +32,6 @@ def ajax_school_search(request):
     schools = School.objects.filter(province=province,title__contains=term)
     results = [s.title for s in schools]
     return HttpResponse(json.dumps(results))
-
-        
-# @appl_login_required        
-# def education_profile(request):
-#     if request.method == 'POST':
-#         form = EducationForm(request.POST)
-#         if form.is_valid():
-#             return render(request,'form/test.html',
-# 			  { 'province_title': form.cleaned_data['province_title'],
-#                 'school_title': form.cleaned_data['school_title'],
-#                 'education_level': form.cleaned_data['education_level'],
-#                 'education_plan': form.cleaned_data['education_plan'],
-#                 'gpa': form.cleaned_data['gpa'] })
-#     else:
-#         form = EducationForm()
-            
-#     return render(request, 'appl/forms/education.html',
-#                   { 'form':form })
 
 
 @appl_login_required        
@@ -89,6 +55,7 @@ def personal_profile(request):
     return render(request, 'appl/forms/personal.html',
                   { 'form': form })
 
+
 @appl_login_required        
 def education_profile(request):
     applicant = request.applicant
@@ -102,6 +69,14 @@ def education_profile(request):
         if form.is_valid():
             new_educational_profile = form.save(commit=False)
             new_educational_profile.applicant = applicant
+            province = new_educational_profile.province
+            school_title = new_educational_profile.school_title
+            schools = School.objects.filter(province=province,
+                                            title=school_title).all()
+            if len(schools) >= 1:
+                school = schools[0]
+                new_educational_profile.school_code = school.code
+
             new_educational_profile.save()
             return redirect('/appl/')
     else:
