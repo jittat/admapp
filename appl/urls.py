@@ -20,5 +20,6 @@ urlpatterns = [
 
     url(r'^payment/(\d+)/$', views.payment, name='payment'),
     url(r'^payment/(\d+)/barcode/(\d+)\.png$', views.payment_barcode, name='payment-barcode'),
-    url(r'^media/(?P<applicant_id>\d+)/(?P<admission_project_id>\d+)/(?P<document_id>\d+)/$', upload_views.document_download, name='document-download'),
+    url(r'^doc/(?P<applicant_id>\d+)/(?P<admission_project_id>\d+)/(?P<document_id>\d+)/$', upload_views.document_download, name='document-download'),
+    url(r'^doc/(?P<applicant_id>\d+)/(?P<admission_project_id>\d+)/(?P<document_id>\d+)/delete/$', upload_views.document_delete, name='document-delete'),
 ]

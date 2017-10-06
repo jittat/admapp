@@ -118,3 +118,20 @@ def document_download(request,document_id=0, applicant_id=0, admission_project_i
     response['Content-Type'] = mime
 
     return response
+
+@appl_login_required
+def document_delete(request,document_id=0, applicant_id=0, admission_project_id=0):
+
+    uploaded_document = get_uploaded_documents_or_403(request, document_id, applicant_id, admission_project_id)
+
+    doc_file = uploaded_document.uploaded_file
+
+    from magic import Magic
+
+    doc_abs_path = os.path.join(settings.MEDIA_ROOT, doc_file.name)
+    mime = Magic(mime=True).from_file(doc_abs_path)
+
+    response = HttpResponse(doc_file)
+    response['Content-Type'] = mime
+
+    return response
