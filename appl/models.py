@@ -279,7 +279,7 @@ class Province(models.Model):
     title = models.CharField(max_length=30)
 
     def __str__(self):
-    	return "%s" % (self.title,)
+    	return "%s" % (self.title)
 
 
 class School(models.Model):
@@ -359,6 +359,8 @@ class EducationalProfile(models.Model):
                                  verbose_name='จังหวัด')
     school_title = models.CharField(max_length=80,
                                     verbose_name='โรงเรียน')
+
+    
 
 
 class PersonalProfile(models.Model):

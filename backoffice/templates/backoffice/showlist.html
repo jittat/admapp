@@ -2,24 +2,17 @@
 {% block content %}
   <div class="row">
     <div class="col-md-12">
-    {% for applicant in applicants %}
-      <h1>{{ applicant.national_id }} {{ applicant.get_full_name }}</h1>
-
       <table class="table table-striped table-sm bborder-a0">
         <tbody>
-          <tr>
-            <td>อีเมล</td>
-            <td>{{ applicant.email }}</td>
-          </tr>
-          {% if applicant.passport_number %}
+          {% for applicant in applicants %}
             <tr>
-              <td>พาสปอร์ต</td>
-              <td>{{ applicant.passport_number }}</td>
+              <td>{{ forloop.counter }}</td>
+              <td><a href="{% url 'backoffice:show-applicant' applicant.national_id %}">{{ applicant.national_id }}</a></td>
+              <td>{{ applicant.get_full_name }}</td>
             </tr>
-          {% endif %}
+          {% endfor %}
         </tbody>
       </table>
-      {% endfor %}
     </div>
   </div>
 {% endblock %}
