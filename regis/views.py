@@ -159,7 +159,8 @@ def create_applicant(form):
             applicant.save()
             return applicant
         else:
-            if applicant.generate_random_national_id_and_save():
+            result = applicant.generate_random_national_id_and_save()
+            if result:
                 return applicant
             else:
                 return None
@@ -178,6 +179,7 @@ def register(request):
             else:
                 return render(request,'regis/registration_error.html',
                               { 'national_id': form.cleaned_data['national_id'],
+                                'passport_number': form.cleaned_data['passport_number'],
                                 'first_name': form.cleaned_data['first_name'] })
     else:
         form = RegistrationForm()

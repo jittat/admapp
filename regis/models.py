@@ -77,8 +77,6 @@ class Applicant(models.Model):
                 fake_national_id += zero
 
                 self.national_id = fake_national_id
-                print(self.national_id)
-                print(self.passport_number)
                 try:
                     self.save()
                     return True
