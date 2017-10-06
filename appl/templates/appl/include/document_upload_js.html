@@ -15,12 +15,13 @@
                 processData: false,
                 type: 'POST',
                 success: function(data) {
+                    alert('Hello')
                     if (data.result == 'OK') {
                         $(div).replaceWith(data.html);
                     } else if (data.result == 'EXT_ERROR') {
                         $('#document-upload-error').html('นามสกุลของไฟล์ไม่ถูกต้อง</b>')
                     } else if (data.result == 'SIZE_ERROR') {
-                        $('#document-upload-error').html('ขนาดของไฟล์ใหญ่กว่าที่กำหนด</b>')    
+                        $('#document-upload-error').html('ขนาดของไฟล์ใหญ่กว่าที่กำหนด</b>')
                     }
                 }
             }).uploadProgress(function(e) {
