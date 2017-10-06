@@ -59,9 +59,10 @@ def select(request, admission_round_id):
     error_message = ''
 
     major = None
-    if request.method == 'POST':
+    if request.method == 'POST' and request.POST.get('major'):
         if 'cancel' in request.POST:
             return redirect(reverse('appl:index'))
+
         error, error_message = process_selection_form(request,
                                                       applicant,
                                                       application,                                             major_selection)
@@ -70,6 +71,7 @@ def select(request, admission_round_id):
 
     else:
         selected_majors = major_selection.get_majors()
+    
 
     majors = project.major_set.all()
     majors_dic = dict([(m.faculty_id, True) for m in majors])
