@@ -16,7 +16,6 @@ def process_selection_form(request,
                            applicant,
                            application,
                            major_selection):
-    print(request.POST)
     if 'major' not in request.POST:
         return (True, 'คุณยังไม่ได้เลือกสาขา')
     numbers = request.POST.getlist('major')
@@ -60,9 +59,10 @@ def select(request, admission_round_id):
     error_message = ''
 
     major = None
-    if request.method == 'POST':
+    if request.method == 'POST' and request.POST.get('major'):
         if 'cancel' in request.POST:
             return redirect(reverse('appl:index'))
+
         error, error_message = process_selection_form(request,
                                                       applicant,
                                                       application,                                             major_selection)
@@ -71,22 +71,15 @@ def select(request, admission_round_id):
 
     else:
         selected_majors = major_selection.get_majors()
+    
 
     majors = project.major_set.all()
     majors_dic = dict([(m.faculty_id, True) for m in majors])
     faculties = [f for f in Faculty.objects.all()
                   if f.id in majors_dic]
     
-    if  project.max_num_selections > 1:
-        template = 'appl/major_multiple_selection.html'
-    else:
-        selected_majors = selected_majors[0]
-        template = 'appl/major_selection.html'
-
-    
-    print(selected_majors)
     return render(request,
-                  template,
+                  'appl/major_multiple_selection.html',
                   { 'applicant': applicant,
                     'admission_project': project,
                     'admission_round': admission_round,
