@@ -279,7 +279,7 @@ class Province(models.Model):
     title = models.CharField(max_length=30)
 
     def __str__(self):
-    	return "%s" % (self.name,)
+    	return "%s" % (self.title,)
 
 
 class School(models.Model):
@@ -290,7 +290,7 @@ class School(models.Model):
                                  on_delete=models.CASCADE)
 
     def __str__(self):
-        return "%s" % (self.name,)
+        return "%s" % (self.title,)
 
 
 class ProjectApplication(models.Model):
@@ -335,6 +335,33 @@ class ProjectApplication(models.Model):
             fee += one_time_fee + acc_fee
 
         return fee
+
+
+class EducationalProfile(models.Model):
+    EDUCATION_LEVEL_CHOICES = [
+            (1,'กำลังศึกษาชั้นมัธยมศึกษาปีที่ 6'),
+            (2,'จบการศึกษาชั้นมัธยมศึกษาปีที่ 6'),
+            (3,'อื่นๆ'),
+    ]
+    EDUCATION_PLAN_CHOICES = [
+            (1,'วิทย์-คณิต'),
+            (2,'อื่นๆ'),
+    ]
+
+    applicant = models.OneToOneField(Applicant)
+    education_level = models.IntegerField(choices=EDUCATION_LEVEL_CHOICES,
+                                          verbose_name='ระดับการศึกษา')
+    education_plan = models.IntegerField(choices=EDUCATION_PLAN_CHOICES,
+                                         verbose_name='แผนการศึกษา')
+    gpa = models.FloatField(default=0,
+                            verbose_name='GPA')
+    province = models.ForeignKey(Province,
+                                 verbose_name='จังหวัด')
+    school_title = models.CharField(max_length=80,
+                                    verbose_name='โรงเรียน')
+    school_code = models.CharField(max_length=20,
+                                   blank=True,
+                                   default='')
 
 
 class PersonalProfile(models.Model):

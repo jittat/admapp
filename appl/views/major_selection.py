@@ -70,21 +70,28 @@ def select(request, admission_round_id):
             return redirect(reverse('appl:index'))
 
     else:
-        if major_selection.num_selected == 1:
-            major = major_selection.get_majors()[0]
+        selected_majors = major_selection.get_majors()
 
     majors = project.major_set.all()
     majors_dic = dict([(m.faculty_id, True) for m in majors])
     faculties = [f for f in Faculty.objects.all()
                   if f.id in majors_dic]
-    project.max_num_selections = 5
+    
+    if  project.max_num_selections > 1:
+        template = 'appl/major_multiple_selection.html'
+    else:
+        selected_majors = selected_majors[0]
+        template = 'appl/major_selection.html'
+
+    
+    print(selected_majors)
     return render(request,
-                  'appl/major_multiple_selection.html',
+                  template,
                   { 'applicant': applicant,
                     'admission_project': project,
                     'admission_round': admission_round,
                     'application': application,
-                    'major': major,
+                    'selected_majors': selected_majors,
                     'faculties': faculties,
                     'all_majors': majors,
                     'error_message': error_message })

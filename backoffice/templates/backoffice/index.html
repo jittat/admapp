@@ -29,7 +29,7 @@
       
       <ul>
         {% for project in admission_projects %}
-          <li>{{ project }}</li>
+          <li>{{ project }} {% for round in project.admission_rounds.all %}<a href="{% url 'backoffice:projects-index' project.id round.id %}">{{ round }}</a>{% endfor %}</li>
         {% endfor %}
       </ul>
     </div>
