@@ -519,6 +519,8 @@ class Eligibility(object):
         from supplements.models import TopSchool
         self.is_eligible = False
         self.is_hidden = True
+        if not hasattr(self._applicant, 'educationalprofile'):
+            return
         school_code = self._applicant.educationalprofile.school_code
         try:
             school = School.objects.get(code=school_code)
