@@ -176,7 +176,7 @@ def payment_barcode(request, application_id, stub):
                                 str(application.id) + '-' +
                                 stub)
 
-    generate('12345',
+    generate('099400015938201',
              applicant.national_id,
              application.get_verification_number(),
              additional_payment,

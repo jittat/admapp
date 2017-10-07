@@ -306,11 +306,23 @@ class ProjectApplication(models.Model):
     cancelled_at = models.DateTimeField(blank=True,
                                         null=True)
 
+    ID_OFFSET_MAGIC = 104341
+    
     def get_number(self):
-        return 1003241 + self.id
+        return self.ID_OFFSET_MAGIC + self.id
 
     def get_verification_number(self):
-        return str(1000000 + (self.id * 952183) % 951361)
+        project_round = self.admission_project.get_project_round_for(self.admission_round)
+        deadline = project_round.payment_deadline
+        deadline_str = "%d%02d%02d" % (deadline.year % 10,
+                                       deadline.month,
+                                       deadline.day)
+
+        from lib.lincodes import gen_verification
+        
+        return gen_verification(self.applicant.national_id,
+                                str(self.get_number()),
+                                deadline_str)
 
     def is_active(self):
         return not self.is_canceled
