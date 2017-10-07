@@ -154,6 +154,7 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 LOGOUT_REDIRECT_URL = '/backoffice/'
 
+
 # Admission App Configs
 
 ADMISSION_TITLE = "โครงการรับสมัครนักเรียนเข้าศึกษาในมหาวิทยาลัยเกษตรศาสตร์ ปีการศึกษา 2561"
@@ -165,6 +166,12 @@ FAKE_LOGIN = False
 BARCODE_DIR = '/tmp/'
 
 ADM_EMAIL_FROM = 'admission@ku.ac.th'
+
+ELIGIBILITY_CHECK = {
+    'ช้างเผือก': 'white_elephant',
+}
+
+# Manipulate Settings with Local Settings
 
 try:
     from .settings_local import *

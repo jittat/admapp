@@ -1,0 +1,26 @@
+<script>
+  $(function() {
+    $(".upload-form-delete-buttons").on("click", function() {
+      var url = $(this).attr('data-delete-url');
+      var div = $(this).parents('.project-document-upload-forms')[0];
+      if (confirm("คุณ้องการจะลบเอกสารดังกล่าวใช่หรือไม่?")) {
+        jQuery.ajax({
+          url: url,
+          type: 'POST',
+          data: {
+            csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value
+          },
+          success: function(data) {
+            if (data.result == 'OK') {
+              alert("OK")
+              $(div).replaceWith(data.html);
+            } else if (data.result == 'ERROR') {
+              alert("ERROR");
+            }
+          }
+        });
+      }
+      return false;
+    });
+  });
+</script>

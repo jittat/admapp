@@ -5,6 +5,9 @@ from django import forms
 from django.forms import ModelForm
 from django.http import HttpResponse
 
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, Fieldset, ButtonHolder, Submit
+
 from regis.decorators import appl_login_required
 
 from regis.models import Applicant
@@ -18,11 +21,54 @@ class EducationForm(ModelForm):
         exclude = ['applicant',
                    'school_code']
 
-    
+
 class PersonalProfileForm(ModelForm):
     class Meta:
         model = PersonalProfile
         exclude = ['applicant']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper(self)
+        self.helper.layout = Layout(
+            Fieldset(
+                'ข้อมูลส่วนตัว',
+                'prefix_english',
+                'first_name_english',
+                'middle_name_english',
+                'last_name_english',
+                'passport_number',
+                'birthday',
+            ),
+            Fieldset(
+                'ข้อมูลบิดา',
+                'father_prefix',
+                'father_first_name',
+                'father_last_name',
+            ),
+            Fieldset(
+                'ข้อมูลมารดา',
+                'mother_prefix',
+                'mother_first_name',
+                'mother_last_name',
+            ),
+            Fieldset(
+                'ข้อมูลที่อยู่',
+                'house_number',
+                'village_number',
+                'avenue',
+                'road',
+                'sub_district',
+                'district',
+                'province',
+                'postal_code',
+                'contact_phone',
+                'mobile_phone',
+            ),
+            ButtonHolder(
+                Submit('submit', 'จัดเก็บ', css_class='btn btn-primary')
+            )
+        )
 
 
 @appl_login_required
@@ -76,6 +122,8 @@ def education_profile(request):
             if len(schools) >= 1:
                 school = schools[0]
                 new_educational_profile.school_code = school.code
+            else:
+                new_educational_profile.school_code = ''
 
             new_educational_profile.save()
             return redirect('/appl/')
