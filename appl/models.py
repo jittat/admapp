@@ -5,6 +5,7 @@ import csv
 from datetime import datetime
 
 from django.db import models
+from django.core.exceptions import ObjectDoesNotExist
 
 from admapp import settings
 from regis.models import Applicant
@@ -503,4 +504,17 @@ class Eligibility(object):
             getattr(self, self._setting[self._project.title])()
 
     def white_elephant(self):
-        raise NotImplementedError
+        from supplements.models import TopSchool
+        self.is_eligible = False
+        self.is_hidden = True
+        school_code = self._applicant.educationalprofile.school_code
+        try:
+            school = School.objects.get(code=school_code)
+        except ObjectDoesNotExist:
+            return
+        try:
+            topschool = TopSchool.objects.get(school=school)
+        except ObjectDoesNotExist:
+            return
+        self.is_eligible = True
+        self.is_hidden = False
