@@ -43,10 +43,7 @@ def index(request):
     if admission_round:
         admission_projects = admission_round.get_available_projects()
         for project in admission_projects:
-            eligibility = Eligibility(project, applicant)
-            project.is_eligible = eligibility.is_eligible
-            project.is_hidden = eligibility.is_hidden
-            project.eligibility_text = eligibility.eligibility_text
+            project.eligibility = Eligibility.check(project, applicant)
 
         active_application, major_selection, payments = load_applicant_application(applicant, admission_round)
 

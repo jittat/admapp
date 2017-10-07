@@ -78,7 +78,6 @@ def upload(request, document_id):
             'applicant': applicant,
             'project_uploaded_document': project_uploaded_document,
         }
-        print(context['project_uploaded_document'])
         result = {'result': 'OK',
                             'html': template.render(context,request),
         }
@@ -90,7 +89,7 @@ def upload(request, document_id):
 
 import os
 
-def get_uploaded_documents_or_403(request, document_id, applicant_id, admission_project_id):
+def get_uploaded_document_or_403(request, document_id, applicant_id, admission_project_id):
 
     applicant = get_object_or_404(Applicant, pk=applicant_id)
     project_uploaded_document = get_object_or_404(ProjectUploadedDocument,pk=admission_project_id)
@@ -99,21 +98,29 @@ def get_uploaded_documents_or_403(request, document_id, applicant_id, admission_
     if uploaded_document.applicant != applicant \
     or uploaded_document.project_uploaded_document != project_uploaded_document \
     or uploaded_document.applicant != request.applicant:
-        raise PermissionDenied
+        raise PermissionDenied()
 
     return uploaded_document
+
+
+def get_file_mime_type(document):
+    try:
+        from magic import Magic
+
+        doc_abs_path = os.path.join(settings.MEDIA_ROOT, document.name)
+        mime_type = Magic(mime=True).from_file(doc_abs_path)
+        return mime_type
+    except:
+        return 'image/png'
 
 @appl_login_required
 def document_download(request,document_id=0, applicant_id=0, admission_project_id=0):
 
-    uploaded_document = get_uploaded_documents_or_403(request, document_id, applicant_id, admission_project_id)
+    uploaded_document = get_uploaded_document_or_403(request, document_id, applicant_id, admission_project_id)
 
     doc_file = uploaded_document.uploaded_file
 
-    from magic import Magic
-
-    doc_abs_path = os.path.join(settings.MEDIA_ROOT, doc_file.name)
-    mime = Magic(mime=True).from_file(doc_abs_path)
+    mime = get_file_mime_type(doc_file)
 
     response = HttpResponse(doc_file)
     response['Content-Type'] = mime

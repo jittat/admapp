@@ -502,18 +502,20 @@ class Payment(models.Model):
 
 
 class Eligibility(object):
-    def __init__(self, project, applicant):
+    def __init__(self, project=None, applicant=None):
         self.is_eligible = True
         self.is_hidden = False
-        self.eligibility_text = ''
+        self.notice_text = ''
         self._project = project
         self._applicant = applicant
         self._setting = getattr(settings, 'ELIGIBILITY_CHECK', {})
-        self._check()
 
-    def _check(self):
+    @classmethod
+    def check(cls, project, applicant):
+        self = cls(project, applicant)
         if self._project.title in self._setting:
             getattr(self, self._setting[self._project.title])()
+        return self
 
     def white_elephant(self):
         from supplements.models import TopSchool
