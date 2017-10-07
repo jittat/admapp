@@ -15,7 +15,6 @@
                 processData: false,
                 type: 'POST',
                 success: function(data) {
-                    alert('Hello')
                     if (data.result == 'OK') {
                         $(div).replaceWith(data.html);
                     } else if (data.result == 'EXT_ERROR') {
