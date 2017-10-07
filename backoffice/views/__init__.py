@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
 
 from regis.models import Applicant
-from appl.models import AdmissionProject,ProjectApplication,EducationalProfile
+from appl.models import AdmissionProject,ProjectApplication,EducationalProfile,PersonalProfile
 from backoffice.models import Profile
 
 @login_required
@@ -71,7 +71,17 @@ def show(request, national_id, project_id=None):
         return HttpResponseForbidden()
 
     applicant = get_object_or_404(Applicant, national_id=national_id)
-    
+
+    try:
+        education = EducationalProfile.objects.get(applicant=applicant)
+        return render(request,
+                  'backoffice/show.html',
+                  {'applicant': applicant,
+                    'education': education })
+    except EducationalProfile.DoesNotExist:
+        pass
+
+
     return render(request,
                   'backoffice/show.html',
                   {'applicant': applicant })
