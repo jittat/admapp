@@ -76,6 +76,8 @@ def education_profile(request):
             if len(schools) >= 1:
                 school = schools[0]
                 new_educational_profile.school_code = school.code
+            else:
+                new_educational_profile.school_code = ''
 
             new_educational_profile.save()
             return redirect('/appl/')

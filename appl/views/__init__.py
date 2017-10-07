@@ -8,7 +8,7 @@ from regis.decorators import appl_login_required
 
 from admapp.utils import number_to_thai_text
 
-from appl.models import AdmissionProject, ProjectUploadedDocument, AdmissionRound, Payment, ProjectApplication, AdmissionProjectRound
+from appl.models import AdmissionProject, ProjectUploadedDocument, AdmissionRound, Payment, ProjectApplication, AdmissionProjectRound, Eligibility
 
 from appl.views.upload import upload_form_for
 
@@ -30,8 +30,8 @@ def load_applicant_application(applicant, admission_round):
     payments = Payment.find_for_applicant_in_round(applicant, admission_round)
 
     return active_application, major_selection, payments
-    
-        
+
+
 @appl_login_required
 def index(request):
     applicant = request.applicant
@@ -42,6 +42,11 @@ def index(request):
     admission_round = AdmissionRound.get_available()
     if admission_round:
         admission_projects = admission_round.get_available_projects()
+        for project in admission_projects:
+            eligibility = Eligibility(project, applicant)
+            project.is_eligible = eligibility.is_eligible
+            project.is_hidden = eligibility.is_hidden
+            project.eligibility_text = eligibility.eligibility_text
 
         active_application, major_selection, payments = load_applicant_application(applicant, admission_round)
 
@@ -176,7 +181,7 @@ def payment_barcode(request, application_id, stub):
                                 str(application.id) + '-' +
                                 stub)
 
-    generate('12345',
+    generate('099400015938201',
              applicant.national_id,
              application.get_verification_number(),
              additional_payment,

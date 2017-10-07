@@ -5,7 +5,9 @@ import csv
 from datetime import datetime
 
 from django.db import models
+from django.core.exceptions import ObjectDoesNotExist
 
+from admapp import settings
 from regis.models import Applicant
 
 
@@ -279,7 +281,7 @@ class Province(models.Model):
     title = models.CharField(max_length=30)
 
     def __str__(self):
-    	return "%s" % (self.title,)
+    	return "%s" % (self.title)
 
 
 class School(models.Model):
@@ -306,11 +308,23 @@ class ProjectApplication(models.Model):
     cancelled_at = models.DateTimeField(blank=True,
                                         null=True)
 
+    ID_OFFSET_MAGIC = 104341
+    
     def get_number(self):
-        return 1003241 + self.id
+        return self.ID_OFFSET_MAGIC + self.id
 
     def get_verification_number(self):
-        return str(1000000 + (self.id * 952183) % 951361)
+        project_round = self.admission_project.get_project_round_for(self.admission_round)
+        deadline = project_round.payment_deadline
+        deadline_str = "%d%02d%02d" % (deadline.year % 10,
+                                       deadline.month,
+                                       deadline.day)
+
+        from lib.lincodes import gen_verification
+        
+        return gen_verification(self.applicant.national_id,
+                                str(self.get_number()),
+                                deadline_str)
 
     def is_active(self):
         return not self.is_canceled
@@ -362,6 +376,8 @@ class EducationalProfile(models.Model):
     school_code = models.CharField(max_length=20,
                                    blank=True,
                                    default='')
+
+    
 
 
 class PersonalProfile(models.Model):
@@ -483,3 +499,36 @@ class Payment(models.Model):
     def find_for_applicant_in_round(applicant, admission_round):
         return Payment.objects.filter(applicant=applicant,
                                       admission_round=admission_round).all()
+
+
+class Eligibility(object):
+    def __init__(self, project, applicant):
+        self.is_eligible = True
+        self.is_hidden = False
+        self.eligibility_text = ''
+        self._project = project
+        self._applicant = applicant
+        self._setting = getattr(settings, 'ELIGIBILITY_CHECK', {})
+        self._check()
+
+    def _check(self):
+        if self._project.title in self._setting:
+            getattr(self, self._setting[self._project.title])()
+
+    def white_elephant(self):
+        from supplements.models import TopSchool
+        self.is_eligible = False
+        self.is_hidden = True
+        if not hasattr(self._applicant, 'educationalprofile'):
+            return
+        school_code = self._applicant.educationalprofile.school_code
+        try:
+            school = School.objects.get(code=school_code)
+        except ObjectDoesNotExist:
+            return
+        try:
+            topschool = TopSchool.objects.get(school=school)
+        except ObjectDoesNotExist:
+            return
+        self.is_eligible = True
+        self.is_hidden = False
