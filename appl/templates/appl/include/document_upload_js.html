@@ -1,36 +1,38 @@
 <script>
-    $(function() {
-        $(".all-document-upload-forms").on("click", ".upload-form-submit-buttons", function() {
-            var div = $(this).parents('.project-document-upload-forms')[0];
-            var form = $(this).parents('form')[0];
-            var data = new FormData(form);
-            var progress = $(form).find(".progress-bars");
-            $(progress).show().text("0%");
-
-            jQuery.ajax({
-                url: form.action,
-                data: data,
-                cache: false,
-                contentType: false,
-                processData: false,
-                type: 'POST',
-                success: function(data) {
-                    alert('Hello')
-                    if (data.result == 'OK') {
-                        $(div).replaceWith(data.html);
-                    } else if (data.result == 'EXT_ERROR') {
-                        $('#document-upload-error').html('นามสกุลของไฟล์ไม่ถูกต้อง</b>')
-                    } else if (data.result == 'SIZE_ERROR') {
-                        $('#document-upload-error').html('ขนาดของไฟล์ใหญ่กว่าที่กำหนด</b>')
-                    }
-                }
-            }).uploadProgress(function(e) {
-                if (e.lengthComputable) {
-                    $(progress).show().text(Math.round((e.loaded * 100) / e.total) + "%");
-                }
-            });
-
-            return false;
-        });
-    });
+ $(function() {
+   $(".all-document-upload-forms").on("click", ".upload-form-submit-buttons", function() {
+     var div = $(this).parents('.project-document-upload-forms')[0];
+     var form = $(this).parents('form')[0];
+     var data = new FormData(form);
+     var progress = $(form).find(".progress-bars");
+     var uploadErrorDiv = $(form).find(".document-upload-errors");
+     $(uploadErrorDiv).hide();
+     $(progress).show().text("0%");
+     
+     jQuery.ajax({
+       url: form.action,
+       data: data,
+       cache: false,
+       contentType: false,
+       processData: false,
+       type: 'POST',
+       success: function(data) {
+         if (data.result == 'OK') {
+           $(div).replaceWith(data.html);
+         } else if (data.result == 'EXT_ERROR') {
+           $(uploadErrorDiv).show().html('นามสกุลของไฟล์ไม่ถูกต้อง</b>')
+         } else if (data.result == 'SIZE_ERROR') {
+           $(uploadErrorDiv).show().html('ขนาดของไฟล์ใหญ่กว่าที่กำหนด</b>')
+         }
+         $(progress).hide();
+       }
+     }).uploadProgress(function(e) {
+       if (e.lengthComputable) {
+         $(progress).show().text(Math.round((e.loaded * 100) / e.total) + "%");
+       }
+     });
+     
+     return false;
+   });
+ });
 </script>
