@@ -53,9 +53,6 @@ def select(request, admission_round_id):
     except MajorSelection.DoesNotExist:
         major_selection = MajorSelection(major_list='')
 
-    if project.max_num_selections != 1:
-        return HttpResponseServerError('Not implemented')
-
     error_message = ''
 
     major = None
@@ -65,7 +62,8 @@ def select(request, admission_round_id):
 
         error, error_message = process_selection_form(request,
                                                       applicant,
-                                                      application,                                             major_selection)
+                                                      application,
+                                                      major_selection)
         if not error:
             return redirect(reverse('appl:index'))
 

@@ -461,9 +461,10 @@ class MajorSelection(models.Model):
             pass
 
         self.majors = []
-        for num in self.major_list.split(','):
-            self.majors.append(Major.get_by_project_number(self.admission_project,
-                                                           num))
+        if self.admission_project_id != None:
+            for num in self.major_list.split(','):
+                self.majors.append(Major.get_by_project_number(self.admission_project,
+                                                               num))
         return self.majors
 
     def set_majors(self, majors):
@@ -521,8 +522,12 @@ class Eligibility(object):
         from supplements.models import TopSchool
         self.is_eligible = False
         self.is_hidden = True
+        
         if not hasattr(self._applicant, 'educationalprofile'):
+            self.is_hidden = False
+            self.notice_text = 'โครงการนี้ผู้สมัครต้องอยู่ในโรงเรียนที่เข้าข่าย กรุณากรอกข้อมูลการศึกษาก่อน'
             return
+        
         school_code = self._applicant.educationalprofile.school_code
         try:
             school = School.objects.get(code=school_code)
@@ -532,5 +537,6 @@ class Eligibility(object):
             topschool = TopSchool.objects.get(school=school)
         except ObjectDoesNotExist:
             return
+        
         self.is_eligible = True
         self.is_hidden = False
