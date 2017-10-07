@@ -4,6 +4,7 @@ from django.forms import ModelForm
 from django.http import HttpResponseForbidden, HttpResponse
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
+from django.db import transaction
 
 import json
 import os
@@ -131,26 +132,27 @@ def document_download(request, applicant_id=0, project_uploaded_document_id=0, d
 def document_delete(request, applicant_id=0, project_uploaded_document_id=0, document_id=0):
     if request.method != 'POST':
         return HttpResponseForbidden()
-    
+
     try:
-        uploaded_document = get_uploaded_document_or_403(request, applicant_id, project_uploaded_document_id, document_id)
-        uploaded_document.delete()
+        with transaction.atomic():
+            uploaded_document = get_uploaded_document_or_403(request, applicant_id, project_uploaded_document_id, document_id)
+            uploaded_document.delete()
 
-        from django.template import loader
-        template = loader.get_template('appl/include/document_upload_form.html')
-        print(document_id)
-        project_uploaded_document = get_object_or_404(ProjectUploadedDocument,pk=project_uploaded_document_id)
-        project_uploaded_document.form = upload_form_for(project_uploaded_document)
-        project_uploaded_document.applicant_uploaded_documents = project_uploaded_document.get_uploaded_documents_for_applicant(applicant_id)
+            from django.template import loader
+            template = loader.get_template('appl/include/document_upload_form.html')
+            print(document_id)
+            project_uploaded_document = get_object_or_404(ProjectUploadedDocument,pk=project_uploaded_document_id)
+            project_uploaded_document.form = upload_form_for(project_uploaded_document)
+            project_uploaded_document.applicant_uploaded_documents = project_uploaded_document.get_uploaded_documents_for_applicant(applicant_id)
 
-        context = {
-            'applicant': request.applicant,
-            'project_uploaded_document': project_uploaded_document,
-        }
-        result = {'result': 'OK',
+            context = {
+                'applicant': request.applicant,
+                'project_uploaded_document': project_uploaded_document,
+                }
+                result = {'result': 'OK',
                     'html': template.render(context,request),
-        }
-        print('suc')
+                    }
+                    print('suc')
     except Exception as ex:
         print(ex)
         print('error')
