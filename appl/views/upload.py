@@ -152,7 +152,7 @@ def document_delete(request, applicant_id=0, project_uploaded_document_id=0, doc
                 'result': 'OK',
                 'html': template.render(context,request),
                 }
-    except Exception as ex:
+    except:
         result = {'result': 'ERROR'}
 
     return HttpResponse(json.dumps(result),
