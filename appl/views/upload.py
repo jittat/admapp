@@ -75,6 +75,7 @@ def upload(request, document_id):
         project_uploaded_document.form = upload_form_for(project_uploaded_document)
         project_uploaded_document.applicant_uploaded_documents = project_uploaded_document.get_uploaded_documents_for_applicant(applicant)
         context = {
+            'applicant': applicant,
             'project_uploaded_document': project_uploaded_document,
         }
         print(context['project_uploaded_document'])
@@ -124,14 +125,6 @@ def document_delete(request,document_id=0, applicant_id=0, admission_project_id=
 
     uploaded_document = get_uploaded_documents_or_403(request, document_id, applicant_id, admission_project_id)
 
-    doc_file = uploaded_document.uploaded_file
+    uploaded_document.delete()
 
-    from magic import Magic
-
-    doc_abs_path = os.path.join(settings.MEDIA_ROOT, doc_file.name)
-    mime = Magic(mime=True).from_file(doc_abs_path)
-
-    response = HttpResponse(doc_file)
-    response['Content-Type'] = mime
-
-    return response
+    return redirect('appl:index')
