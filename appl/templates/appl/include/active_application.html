@@ -1,4 +1,15 @@
+<div class="float-right">
+  <a id="cancel_link_id" href="#" class="btn btn-sm btn-danger">ยกเลิกการสมัคร</a>
+</div>
 <h2>โครงการ{{ active_application.admission_project }} ({{ admission_round }})</h2>
+<div class="p10 border-a0 bg-warn canceling-confirmations" style="display:none;">
+  คุณแน่ใจที่จะยกเลิกการสมัครโครงการนี้
+  <form class="d-inline" method="post" action="{% url 'appl:cancel-project' active_application.admission_project.id active_application.admission_round.id %}">
+    {% csrf_token %}
+    <input type="submit" name="ok" class="btn btn-sm btn-danger" value="แน่ใจและยกเลิกการสมัคร" />
+    <input type="submit" name="cancel" class="btn btn-sm btn-secondary" value="ไม่ยกเลิก" />
+  </form>
+</div>
 <ul>
   <li>กรอกข้อมูลเพิ่มเติม</li>
   <li>
@@ -24,4 +35,11 @@
     </li>
   {% endif %}
 </ul>
-
+<script>
+  $(function(){
+    $("#cancel_link_id").click(function() {
+      $(".canceling-confirmations").slideDown();
+      $("#cancel_link_id").hide();
+    });
+  });
+</script>
