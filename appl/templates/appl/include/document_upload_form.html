@@ -18,7 +18,7 @@
         <a href="{% url 'appl:document-download' applicant.id doc.id d.id %}">
           {{ d.uploaded_file.name }}
         </a>
-        <a href="{% url 'appl:document-delete' applicant.id doc.id d.id %}">
+        <a data-delete-url="{% url 'appl:document-delete' applicant.id doc.id d.id %}" href="#" class="upload-form-delete-buttons">
           delete
         </a>
       </li>
@@ -28,4 +28,5 @@
     <div class="progress-bars" style="display:none; text-align: center; width: 200px; border: 1px solid #707070;"></div>
   </form>
   {% endwith %}
+  {% include 'appl/include/document_delete_js.html' %}
 </div>
