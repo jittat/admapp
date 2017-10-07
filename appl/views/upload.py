@@ -129,6 +129,9 @@ def document_download(request, applicant_id=0, project_uploaded_document_id=0, d
 
 @appl_login_required
 def document_delete(request, applicant_id=0, project_uploaded_document_id=0, document_id=0):
+    if request.method != 'POST':
+        return HttpResponseForbidden()
+    
     try:
         uploaded_document = get_uploaded_document_or_403(request, applicant_id, project_uploaded_document_id, document_id)
         uploaded_document.delete()
