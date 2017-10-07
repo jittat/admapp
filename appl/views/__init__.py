@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.conf import settings
@@ -102,9 +104,40 @@ def apply_project(request, project_id, admission_round_id):
     return redirect(reverse('appl:index'))
 
 
+@appl_login_required
+def cancel_project(request, project_id, admission_round_id):
+    if request.method != 'POST':
+        return HttpResponseForbidden()
+
+    if 'ok' not in request.POST:
+        return redirect(reverse('appl:index'))
+    
+    applicant = request.applicant
+    project = get_object_or_404(AdmissionProject, pk=project_id)
+    admission_round = get_object_or_404(AdmissionRound, pk=admission_round_id)
+
+    project_round = project.get_project_round_for(admission_round)
+    if not project_round:
+        return redirect(reverse('appl:index'))
+
+    active_application = applicant.get_active_application(admission_round)
+    
+    if ((not active_application) or
+        (active_application.admission_project.id != project.id) or
+        (active_application.admission_round.id != admission_round.id)):
+        return redirect(reverse('appl:index'))
+
+    active_application.is_canceled = True
+    active_application.cancelled_at = datetime.now()
+    active_application.save()
+    
+    return redirect(reverse('appl:index'))
+
+
 def random_barcode_stub():
     from random import randint
     return str(1000000 + randint(1,8000000))
+
 
 @appl_login_required
 def payment(request, application_id):
@@ -134,8 +167,6 @@ def payment(request, application_id):
 
     deadline = project_round.payment_deadline
 
-    barcode_stub = random_barcode_stub()
-        
     return render(request,
                   'appl/payments/payment.html',
                   { 'applicant': applicant,
@@ -149,7 +180,7 @@ def payment(request, application_id):
                     'payment_str': number_to_thai_text(int(additional_payment)) + 'บาทถ้วน',
 
                     'deadline': deadline,
-                    'barcode_stub': barcode_stub,
+                    'barcode_stub': random_barcode_stub(),
                   })
 
 @appl_login_required

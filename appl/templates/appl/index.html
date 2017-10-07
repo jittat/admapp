@@ -2,7 +2,7 @@
 {% block content %}
 <div class="row">
   <div class="col-md-12">
-    <h1>สวัสดีครับ {{ applicant }}</h1>
+    <h1>ยินดีต้อนรับ {{ applicant }}</h1>
     <a href="{% url 'regis:logout' %}">Log out</a>
   </div>
 </div>
@@ -26,7 +26,7 @@
 
 {% if active_application %}
   <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-12 tborder-a0 mt5 pt5">
       {% include 'appl/include/active_application.html' %}
     </div>
   </div>

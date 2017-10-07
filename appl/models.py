@@ -461,9 +461,10 @@ class MajorSelection(models.Model):
             pass
 
         self.majors = []
-        for num in self.major_list.split(','):
-            self.majors.append(Major.get_by_project_number(self.admission_project,
-                                                           num))
+        if self.admission_project_id != None:
+            for num in self.major_list.split(','):
+                self.majors.append(Major.get_by_project_number(self.admission_project,
+                                                               num))
         return self.majors
 
     def set_majors(self, majors):
