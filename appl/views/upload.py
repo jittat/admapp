@@ -4,6 +4,7 @@ from django.forms import ModelForm
 from django.http import HttpResponseForbidden, HttpResponse
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
+from django.db import transaction
 
 import json
 import os
@@ -89,10 +90,10 @@ def upload(request, document_id):
 
 import os
 
-def get_uploaded_document_or_403(request, document_id, applicant_id, admission_project_id):
+def get_uploaded_document_or_403(request, applicant_id, project_uploaded_document_id, document_id):
 
     applicant = get_object_or_404(Applicant, pk=applicant_id)
-    project_uploaded_document = get_object_or_404(ProjectUploadedDocument,pk=admission_project_id)
+    project_uploaded_document = get_object_or_404(ProjectUploadedDocument,pk=project_uploaded_document_id)
     uploaded_document = get_object_or_404(UploadedDocument,pk=document_id)
 
     if uploaded_document.applicant != applicant \
@@ -114,9 +115,9 @@ def get_file_mime_type(document):
         return 'image/png'
 
 @appl_login_required
-def document_download(request,document_id=0, applicant_id=0, admission_project_id=0):
+def document_download(request, applicant_id=0, project_uploaded_document_id=0, document_id=0):
 
-    uploaded_document = get_uploaded_document_or_403(request, document_id, applicant_id, admission_project_id)
+    uploaded_document = get_uploaded_document_or_403(request, applicant_id, project_uploaded_document_id, document_id)
 
     doc_file = uploaded_document.uploaded_file
 
@@ -126,3 +127,33 @@ def document_download(request,document_id=0, applicant_id=0, admission_project_i
     response['Content-Type'] = mime
 
     return response
+
+@appl_login_required
+def document_delete(request, applicant_id=0, project_uploaded_document_id=0, document_id=0):
+    if request.method != 'POST':
+        return HttpResponseForbidden()
+
+    try:
+        with transaction.atomic():
+            uploaded_document = get_uploaded_document_or_403(request, applicant_id, project_uploaded_document_id, document_id)
+            uploaded_document.delete()
+
+            from django.template import loader
+            template = loader.get_template('appl/include/document_upload_form.html')
+            project_uploaded_document = get_object_or_404(ProjectUploadedDocument,pk=project_uploaded_document_id)
+            project_uploaded_document.form = upload_form_for(project_uploaded_document)
+            project_uploaded_document.applicant_uploaded_documents = project_uploaded_document.get_uploaded_documents_for_applicant(applicant_id)
+
+            context = {
+                'applicant': request.applicant,
+                'project_uploaded_document': project_uploaded_document,
+                }
+            result = {
+                'result': 'OK',
+                'html': template.render(context,request),
+                }
+    except:
+        result = {'result': 'ERROR'}
+
+    return HttpResponse(json.dumps(result),
+                        content_type='application/json')
