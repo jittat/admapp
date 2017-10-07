@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row">
+  <div class="col-md-12">
+    <h1>ข้อมูลโครงการ {{ admission_project }}</h1>
+    สำหรับ {{ applicant }}<br />
+  </div>
+</div>
+
+{% for config in configs %}
+  <div class="row">
+    <div class="col-md-12">
+      {% include config.template_name %}
+    </div>
+  </div>
+{% endfor %}
+{% endblock %}

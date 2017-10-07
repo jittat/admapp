@@ -11,15 +11,29 @@
   </form>
 </div>
 <ul>
-  <li>กรอกข้อมูลเพิ่มเติม</li>
+  {% if supplement_configs %}
+    <li>
+      กรอกข้อมูลเพิ่มเติมสำหรับโครงการ{{ active_application.admission_project }}
+      <a class="btn btn-sm btn-primary" href="{% url 'supplements:index' active_application.admission_project.id  %}">กรอกข้อมูล</a>
+      <ul>
+        {% for config in supplement_configs %}
+          <li>{{ config.title }}</li>
+        {% endfor %}
+      </ul>
+    </li>
+  {% endif %}
   <li>
     {% if major_selection %}
       สาขาที่คุณเลือก<br />
       {% for m in major_selection.get_majors %}
         {{ forloop.counter }}. {{ m.faculty }} - {{ m.title }}<br />
       {% endfor %}
+      <a class="btn btn-sm btn-primary" href="{% url 'appl:major-selection' admission_round.id %}">แก้ไขสาขาที่เลือก</a>
+    {% else %}
+      คุณยังไม่ได้เลือกสาขาที่จะสมัคร<br>
+      <a class="btn btn-sm btn-primary" href="{% url 'appl:major-selection' admission_round.id %}">เลือกสาขา</a>
     {% endif %}
-    <a class="btn btn-sm btn-primary" href="{% url 'appl:major-selection' admission_round.id %}">เลือกสาขา</a><br />
+    <br />
   </li>
   {% if major_selection %}
     <li>

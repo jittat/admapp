@@ -42,12 +42,27 @@ def index(request):
     prepare_uploaded_document_forms(applicant, common_uploaded_documents)
 
     admission_round = AdmissionRound.get_available()
+
+    admission_projects = []
+    active_application = None
+    major_selection = None
+    payments = []
+    paid_amount = 0
+    additional_payment = 0
+    supplement_configs = []
+    
     if admission_round:
         admission_projects = admission_round.get_available_projects()
         for project in admission_projects:
             project.eligibility = Eligibility.check(project, applicant)
 
         active_application, major_selection, payments = load_applicant_application(applicant, admission_round)
+
+        if active_application:
+            from supplements.models import PROJECT_SUPPLEMENTS
+
+            if active_application.admission_project.title in PROJECT_SUPPLEMENTS:
+                supplement_configs = PROJECT_SUPPLEMENTS[active_application.admission_project.title]
 
         if active_application:
             admission_fee = active_application.admission_fee(major_selection)
@@ -61,13 +76,6 @@ def index(request):
             additional_payment = admission_fee - paid_amount
         else:
             additional_payment = 0
-    else:
-        admission_projects = []
-        active_application = None
-        major_selection = None
-        payments = []
-        paid_amount = 0
-        additional_payment = 0
         
     return render(request,
                   'appl/index.html',
@@ -77,6 +85,7 @@ def index(request):
                     'admission_round': admission_round,
                     'admission_projects': admission_projects,
                     'active_application': active_application,
+                    'supplement_configs': supplement_configs,
                     'major_selection': major_selection,
 
                     'payments': payments,

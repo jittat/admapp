@@ -295,62 +295,6 @@ class School(models.Model):
         return "%s" % (self.title,)
 
 
-class ProjectApplication(models.Model):
-    applicant = models.ForeignKey(Applicant,
-                                  on_delete=models.CASCADE,
-                                  related_name='project_applications')
-    admission_project = models.ForeignKey(AdmissionProject,
-                                          on_delete=models.CASCADE)
-    admission_round = models.ForeignKey(AdmissionRound)
-
-    is_canceled = models.BooleanField(default=False)
-    applied_at = models.DateTimeField()
-    cancelled_at = models.DateTimeField(blank=True,
-                                        null=True)
-
-    ID_OFFSET_MAGIC = 104341
-    
-    def get_number(self):
-        return self.ID_OFFSET_MAGIC + self.id
-
-    def get_verification_number(self):
-        project_round = self.admission_project.get_project_round_for(self.admission_round)
-        deadline = project_round.payment_deadline
-        deadline_str = "%d%02d%02d" % (deadline.year % 10,
-                                       deadline.month,
-                                       deadline.day)
-
-        from lib.lincodes import gen_verification
-        
-        return gen_verification(self.applicant.national_id,
-                                str(self.get_number()),
-                                deadline_str)
-
-    def is_active(self):
-        return not self.is_canceled
-
-    def admission_fee(self, major_selection=None):
-        fee = self.admission_project.base_fee
-        if not major_selection:
-            try:
-                major_selection = self.major_selection
-            except:
-                major_selection = None
-
-        if major_selection:
-            majors = major_selection.get_majors()
-            one_time_fee = 0
-            acc_fee = 0
-            for m in majors:
-                if m.additional_fee_one_time > one_time_fee:
-                    one_time_fee = m.additional_fee_one_time
-                acc_fee += m.additional_fee_per_major
-
-            fee += one_time_fee + acc_fee
-
-        return fee
-
-
 class EducationalProfile(models.Model):
     EDUCATION_LEVEL_CHOICES = [
             (1,'กำลังศึกษาชั้นมัธยมศึกษาปีที่ 6'),
@@ -377,9 +321,8 @@ class EducationalProfile(models.Model):
                                    blank=True,
                                    default='')
 
+
     
-
-
 class PersonalProfile(models.Model):
     TITLE_CHOICES = (
         ('Mr.', 'Mr.'),
@@ -439,6 +382,62 @@ class PersonalProfile(models.Model):
 
 
 
+class ProjectApplication(models.Model):
+    applicant = models.ForeignKey(Applicant,
+                                  on_delete=models.CASCADE,
+                                  related_name='project_applications')
+    admission_project = models.ForeignKey(AdmissionProject,
+                                          on_delete=models.CASCADE)
+    admission_round = models.ForeignKey(AdmissionRound)
+
+    is_canceled = models.BooleanField(default=False)
+    applied_at = models.DateTimeField()
+    cancelled_at = models.DateTimeField(blank=True,
+                                        null=True)
+
+    ID_OFFSET_MAGIC = 104341
+    
+    def get_number(self):
+        return self.ID_OFFSET_MAGIC + self.id
+
+    def get_verification_number(self):
+        project_round = self.admission_project.get_project_round_for(self.admission_round)
+        deadline = project_round.payment_deadline
+        deadline_str = "%d%02d%02d" % (deadline.year % 10,
+                                       deadline.month,
+                                       deadline.day)
+
+        from lib.lincodes import gen_verification
+        
+        return gen_verification(self.applicant.national_id,
+                                str(self.get_number()),
+                                deadline_str)
+
+    def is_active(self):
+        return not self.is_canceled
+
+    def admission_fee(self, major_selection=None):
+        fee = self.admission_project.base_fee
+        if not major_selection:
+            try:
+                major_selection = self.major_selection
+            except:
+                major_selection = None
+
+        if major_selection:
+            majors = major_selection.get_majors()
+            one_time_fee = 0
+            acc_fee = 0
+            for m in majors:
+                if m.additional_fee_one_time > one_time_fee:
+                    one_time_fee = m.additional_fee_one_time
+                acc_fee += m.additional_fee_per_major
+
+            fee += one_time_fee + acc_fee
+
+        return fee
+
+
 class MajorSelection(models.Model):
     applicant = models.ForeignKey(Applicant)
     project_application = models.OneToOneField(ProjectApplication,
@@ -473,6 +472,7 @@ class MajorSelection(models.Model):
         self.num_selected = len(majors)
 
 
+        
 class Payment(models.Model):
     applicant = models.ForeignKey(Applicant,
                                   null=True)

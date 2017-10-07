@@ -26,6 +26,7 @@ urlpatterns = [
     url(r'^$', main.views.index, name='main-index'),
     url(r'^regis/', include('regis.urls')),
     url(r'^appl/', include('appl.urls')),
+    url(r'^supp/', include('supplements.urls')),
     url(r'^backoffice/', include('backoffice.urls')),
     url(r'^admin/', admin.site.urls),
 
