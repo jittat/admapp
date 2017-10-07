@@ -140,7 +140,6 @@ def document_delete(request, applicant_id=0, project_uploaded_document_id=0, doc
 
             from django.template import loader
             template = loader.get_template('appl/include/document_upload_form.html')
-            print(document_id)
             project_uploaded_document = get_object_or_404(ProjectUploadedDocument,pk=project_uploaded_document_id)
             project_uploaded_document.form = upload_form_for(project_uploaded_document)
             project_uploaded_document.applicant_uploaded_documents = project_uploaded_document.get_uploaded_documents_for_applicant(applicant_id)
@@ -149,13 +148,11 @@ def document_delete(request, applicant_id=0, project_uploaded_document_id=0, doc
                 'applicant': request.applicant,
                 'project_uploaded_document': project_uploaded_document,
                 }
-                result = {'result': 'OK',
-                    'html': template.render(context,request),
-                    }
-                    print('suc')
+            result = {
+                'result': 'OK',
+                'html': template.render(context,request),
+                }
     except Exception as ex:
-        print(ex)
-        print('error')
         result = {'result': 'ERROR'}
 
     return HttpResponse(json.dumps(result),
