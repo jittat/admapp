@@ -1,14 +1,14 @@
 <h2>รายการโครงการรับสมัคร{% if admission_round %}{{ admission_round }}{% endif %}</h2>
 {% if admission_round %}
   {% for project in admission_projects %}
-    {% if not project.is_hidden %}
+    {% if not project.eligibility.is_hidden %}
       <div class="border-a0 p10 mb5 project-items">
         {% if project.is_deadline_passed %}
           <span class="badge badge-info">หมดเวลารับสมัคร</span>
         {% endif %}
         {{ project.title }}
         (เปิดรับสมัครวันที่ xxxxx)
-        {% if project.is_open and project.is_eligible %}
+        {% if project.is_open and project.eligibility.is_eligible %}
           <a class="btn btn-primary btn-sm applying-links" href="#">สมัครโครงการนี้</a>
           <div class="p10 border-a0 bg-warn applying-confirmations" style="display:none;">
             {% if project.applying_confirmation_warning %}
