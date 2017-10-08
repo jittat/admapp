@@ -16,6 +16,7 @@ from appl.views.upload import upload_form_for
 
 from appl.barcodes import generate
 
+
 def prepare_uploaded_document_forms(applicant, project_uploaded_documents):
     for d in project_uploaded_documents:
         d.form = upload_form_for(d)
@@ -29,19 +30,74 @@ def load_applicant_application(applicant, admission_round):
     except:
         major_selection = None
 
-    payments = Payment.find_for_applicant_in_round(applicant, admission_round)
+    return active_application, major_selection
 
-    return active_application, major_selection, payments
+
+def index_outside_round(request):
+    pass
+
+def index_with_active_application(request, active_application):
+    applicant = request.applicant
+    admission_round = AdmissionRound.get_available()
+    admission_project = active_application.admission_project
+    
+    common_uploaded_documents = ProjectUploadedDocument.get_common_documents()
+    project_uploaded_documents = admission_project.projectuploadeddocument_set.all()
+    
+    prepare_uploaded_document_forms(applicant, common_uploaded_documents)
+    prepare_uploaded_document_forms(applicant, project_uploaded_documents)
+
+    major_selection = active_application.get_major_selection()
+
+    from supplements.models import PROJECT_SUPPLEMENTS
+
+    supplement_configs = []
+    if admission_project.title in PROJECT_SUPPLEMENTS:
+        supplement_configs = PROJECT_SUPPLEMENTS[admission_project.title]
+
+    admission_fee = active_application.admission_fee(major_selection)
+    payments = Payment.find_for_applicant_in_round(applicant, admission_round)
+    paid_amount = sum([p.amount for p in payments])
+
+    if admission_fee > paid_amount:
+        additional_payment = admission_fee - paid_amount
+    else:
+        additional_payment = 0
+        
+    admission_projects = []
+
+    return render(request,
+                  'appl/index.html',
+                  { 'applicant': applicant,
+                    'common_uploaded_documents': common_uploaded_documents,
+
+                    'admission_round': admission_round,
+                    'admission_projects': admission_projects,
+                    'active_application': active_application,
+                    'supplement_configs': supplement_configs,
+                    'major_selection': major_selection,
+
+                    'payments': payments,
+                    'paid_amount': paid_amount,
+                    'additional_payment': additional_payment,
+                  })
 
 
 @appl_login_required
 def index(request):
     applicant = request.applicant
-    
+    admission_round = AdmissionRound.get_available()
+
+    if not admission_round:
+        return index_outside_round(request)
+        
+    active_application = applicant.get_active_application(admission_round)
+
+    if active_application:
+        return index_with_active_application(request, active_application)
+
     common_uploaded_documents = ProjectUploadedDocument.get_common_documents()
     prepare_uploaded_document_forms(applicant, common_uploaded_documents)
-
-    admission_round = AdmissionRound.get_available()
 
     admission_projects = []
     active_application = None
@@ -51,31 +107,14 @@ def index(request):
     additional_payment = 0
     supplement_configs = []
     
-    if admission_round:
-        admission_projects = admission_round.get_available_projects()
-        for project in admission_projects:
-            project.eligibility = Eligibility.check(project, applicant)
+    admission_projects = admission_round.get_available_projects()
+    for project in admission_projects:
+        project.eligibility = Eligibility.check(project, applicant)
 
-        active_application, major_selection, payments = load_applicant_application(applicant, admission_round)
-
-        if active_application:
-            from supplements.models import PROJECT_SUPPLEMENTS
-
-            if active_application.admission_project.title in PROJECT_SUPPLEMENTS:
-                supplement_configs = PROJECT_SUPPLEMENTS[active_application.admission_project.title]
-
-        if active_application:
-            admission_fee = active_application.admission_fee(major_selection)
-        else:
-            admission_fee = 0
-
-        payments = Payment.find_for_applicant_in_round(applicant, admission_round)
-        paid_amount = sum([p.amount for p in payments])
-
-        if admission_fee > paid_amount:
-            additional_payment = admission_fee - paid_amount
-        else:
-            additional_payment = 0
+    admission_fee = 0
+    payments = Payment.find_for_applicant_in_round(applicant, admission_round)
+    paid_amount = sum([p.amount for p in payments])
+    additional_payment = 0
         
     return render(request,
                   'appl/index.html',
@@ -102,13 +141,17 @@ def apply_project(request, project_id, admission_round_id):
 
     project_round = project.get_project_round_for(admission_round)
     if not project_round:
-        return redirect(reverse('appl:index'))
+        return HttpResponseForbidden()
 
     active_application = applicant.get_active_application(admission_round)
     
     if active_application:
-        return redirect(reverse('appl:index'))
+        return HttpResponseForbidden()
 
+    eligibility = Eligibility.check(project, applicant)
+    if not eligibility.is_eligible:
+        return HttpResponseForbidden()
+    
     application = applicant.apply_to_project(project, admission_round)
     return redirect(reverse('appl:index'))
 

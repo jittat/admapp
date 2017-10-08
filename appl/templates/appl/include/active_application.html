@@ -1,52 +1,12 @@
-<div class="float-right">
-  <a id="cancel_link_id" href="#" class="btn btn-sm btn-danger">ยกเลิกการสมัคร</a>
-</div>
+{% include 'appl/include/project_cancel_link.html' %}
 <h2>โครงการ{{ active_application.admission_project }} ({{ admission_round }})</h2>
-<div class="p10 border-a0 bg-warn canceling-confirmations" style="display:none;">
-  คุณแน่ใจที่จะยกเลิกการสมัครโครงการนี้
-  <form class="d-inline" method="post" action="{% url 'appl:cancel-project' active_application.admission_project.id active_application.admission_round.id %}">
-    {% csrf_token %}
-    <input type="submit" name="ok" class="btn btn-sm btn-danger" value="แน่ใจและยกเลิกการสมัคร" />
-    <input type="submit" name="cancel" class="btn btn-sm btn-secondary" value="ไม่ยกเลิก" />
-  </form>
-</div>
+{% include 'appl/include/project_cancel_div.html' %}
+
 <ul>
-  {% if supplement_configs %}
-    <li>
-      กรอกข้อมูลเพิ่มเติมสำหรับโครงการ{{ active_application.admission_project }}
-      <a class="btn btn-sm btn-primary" href="{% url 'supplements:index' active_application.admission_project.id active_application.admission_round.id %}">กรอกข้อมูล</a>
-      <ul>
-        {% for config in supplement_configs %}
-          <li>{{ config.title }}</li>
-        {% endfor %}
-      </ul>
-    </li>
-  {% endif %}
-  <li>
-    {% if major_selection %}
-      สาขาที่คุณเลือก<br />
-      {% for m in major_selection.get_majors %}
-        {{ forloop.counter }}. {{ m.faculty }} - {{ m.title }}<br />
-      {% endfor %}
-      <a class="btn btn-sm btn-primary" href="{% url 'appl:major-selection' admission_round.id %}">แก้ไขสาขาที่เลือก</a>
-    {% else %}
-      คุณยังไม่ได้เลือกสาขาที่จะสมัคร<br>
-      <a class="btn btn-sm btn-primary" href="{% url 'appl:major-selection' admission_round.id %}">เลือกสาขา</a>
-    {% endif %}
-    <br />
-  </li>
+  {% include 'appl/include/project_supplement_link.html' %}
+  {% include 'appl/include/major_selection_item.html' %}
   {% if major_selection %}
-    <li>
-      พิมพ์ใบชำระเงิน:
-      ค่าสมัคร {{ active_application.admission_fee }} บาท
-      ชำระแล้ว {{ paid_amount }} บาท
-      {% if active_application.admission_fee > paid_amount %}
-        ต้องชำระเพิ่ม {{ additional_payment }} บาท
-        <a target="_blank" class="btn btn-sm btn-success" href="{% url 'appl:payment' active_application.id %}">พิมพ์</a>
-      {% else %}
-        ไม่ต้องชำระเพิ่ม
-      {% endif %}
-    </li>
+    {% include 'appl/include/payment_item.html' %}
   {% endif %}
 </ul>
 <script>
@@ -54,6 +14,7 @@
     $("#cancel_link_id").click(function() {
       $(".canceling-confirmations").slideDown();
       $("#cancel_link_id").hide();
+      return false;
     });
   });
 </script>

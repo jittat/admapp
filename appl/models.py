@@ -437,6 +437,13 @@ class ProjectApplication(models.Model):
 
         return fee
 
+    def get_major_selection(self):
+        try:
+            ms = self.major_selection
+            return ms
+        except:
+            return None
+    
 
 class MajorSelection(models.Model):
     applicant = models.ForeignKey(Applicant)
