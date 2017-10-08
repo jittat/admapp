@@ -1,7 +1,3 @@
-<h2>ประเภทกีฬา</h2>
-กรุณาระบุประเภทกีฬา
-<select name="sport_type_type">
-  {% for t in sport_type.sport_choices %}
-    <option value="{{ t }}" {% if t == sport_type.current_type %}selected{% endif %}>{{ t }}</option>
-  {% endfor %}
-</select>
+{% load crispy_forms_tags %}
+<h2>ประเภทกีฬาและระดับการแข่งขัน</h2>
+{{ sport_type.form|crispy }}

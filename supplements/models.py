@@ -72,11 +72,17 @@ def load_project_supplements(applicant, admission_project, configs):
 PROJECT_SUPPLEMENTS = {
     'นักกีฬาทีมชาติและเยาวชนทีมชาติ': [
         ProjectSupplementConfig('sport_type',
-                                'ประเภทกีฬา',
+                                'ประเภทกีฬาและระดับ',
                                 'supplements/nat_sport/sport_type.html',
                                 'sport_type_',
-                                'supplements.views.forms.nat_sport.init_form',
-                                'supplements.views.forms.nat_sport.process_sport_type'),
+                                'supplements.views.forms.nat_sport.init_sport_type_form',
+                                'supplements.views.forms.nat_sport.process_sport_type_form'),
+        ProjectSupplementConfig('sport_history',
+                                'ผลการแข่งขัน',
+                                'supplements/nat_sport/sport_history.html',
+                                'sport_history_',
+                                'supplements.views.forms.nat_sport.init_sport_history_form',
+                                'supplements.views.forms.nat_sport.process_sport_history_form'),
     ],
 }
     
