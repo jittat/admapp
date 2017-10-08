@@ -71,20 +71,12 @@ def show(request, national_id, project_id=None):
         return HttpResponseForbidden()
 
     applicant = get_object_or_404(Applicant, national_id=national_id)
-
-    try:
-        education = EducationalProfile.objects.get(applicant=applicant)
-        return render(request,
-                  'backoffice/show.html',
-                  {'applicant': applicant,
-                    'education': education })
-    except EducationalProfile.DoesNotExist:
-        pass
-
+    education = applicant.get_educational_profile()
 
     return render(request,
                   'backoffice/show.html',
-                  {'applicant': applicant })
+                  { 'applicant': applicant,
+                    'education': education, })
 
 
     

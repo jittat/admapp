@@ -83,10 +83,7 @@ def ajax_school_search(request):
 @appl_login_required        
 def personal_profile(request):
     applicant = request.applicant
-    try:
-        profile = applicant.personalprofile
-    except PersonalProfile.DoesNotExist:
-        profile = None
+    profile = applicant.get_personal_profile()
 
     if request.method == 'POST':
         form = PersonalProfileForm(request.POST, instance=profile)
@@ -105,10 +102,7 @@ def personal_profile(request):
 @appl_login_required        
 def education_profile(request):
     applicant = request.applicant
-    try:
-        profile = applicant.educationalprofile
-    except EducationalProfile.DoesNotExist:
-        profile = None
+    profile = applicant.get_educational_profile()
 
     if request.method == 'POST':
         form = EducationForm(request.POST, instance=profile)

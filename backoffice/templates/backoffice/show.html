@@ -18,41 +18,24 @@
             </tr>
           {% endif %}
 
-          {% if education.education_level %}
-          <tr>
-            <td>ระดับการศึกษา</td>
-            <td>{{ education.get_education_level_display }}</td>
-          </tr>
+          {% if education %}
+            <tr>
+              <td>ข้อมูลการศึกษา</td>
+              <td>
+                <ul>
+                  <li>
+                    ระดับการศึกษา: {{ education.get_education_level_display }} |
+                    แผนการศึกษา: {{ education.get_education_plan_display }} |
+                    GPA: {{ education.gpa }}
+                  </li>
+                  <li>
+                    {{ education.school_title }}, 
+                    {{ education.province }}
+                  </li>
+                </ul>
+              </td>
+            </tr>
           {% endif %}
-
-          {% if education.education_plan %}
-          <tr>
-            <td>แผนการศึกษา</td>
-            <td>{{ education.get_education_plan_display }}</td>
-          </tr>
-          {% endif %}
-
-          {% if education.gpa %}
-          <tr>
-            <td>เกรด</td>
-            <td>{{ education.gpa }}</td>
-          </tr>
-          {% endif %}
-
-          {% if education.province %}
-          <tr>
-            <td>จังหวัด</td>
-            <td>{{ education.province }}</td>
-          </tr>
-          {% endif %}
-
-          {% if education.school_title %}
-          <tr>
-            <td>โรงเรียน</td>
-            <td>{{ education.school_title }}</td>
-          </tr>
-          {% endif %}
-
         </tbody>
       </table>
     </div>

@@ -44,6 +44,20 @@ class Applicant(models.Model):
     def check_password(self, password):
         return check_hashed_password(password, self.hashed_password)
 
+    def get_personal_profile(self):
+        try:
+            profile = self.personalprofile
+            return profile
+        except:
+            return None
+
+    def get_educational_profile(self):
+        try:
+            profile = self.educationalprofile
+            return profile
+        except:
+            return None
+
     def get_active_application(self, admission_round):
         applications = self.project_applications.filter(is_canceled=False, admission_round=admission_round).all()
         if len(applications) > 0:
