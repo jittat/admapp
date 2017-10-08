@@ -4,6 +4,7 @@ from django.shortcuts import render, redirect
 from django import forms
 from django.forms import ModelForm
 from django.http import HttpResponse
+from django.urls import reverse
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, ButtonHolder, Submit
@@ -91,7 +92,7 @@ def personal_profile(request):
             new_personal_profile = form.save(commit=False)
             new_personal_profile.applicant = applicant
             new_personal_profile.save()
-            return redirect('/appl/')
+            return redirect(reverse('appl:index'))
     else:
         form = PersonalProfileForm(instance=profile)
 
@@ -120,7 +121,7 @@ def education_profile(request):
                 new_educational_profile.school_code = ''
 
             new_educational_profile.save()
-            return redirect('/appl/')
+            return redirect(reverse('appl:index'))
     else:
         form = EducationForm(instance=profile)
 
