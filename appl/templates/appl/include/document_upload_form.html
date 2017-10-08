@@ -6,7 +6,7 @@
   <form class="upload-forms" action="{% url 'appl:upload' doc.id %}" method="post" enctype="multipart/form-data">
     {% csrf_token %}
     <input type="file" class="input-files" name="uploaded_file" required id="id_uploaded_file" />
-    <input type="submit" class="btn btn-success upload-form-submit-buttons" value="อัพโหลด" />
+    <input type="submit" class="btn btn-success btn-sm upload-form-submit-buttons" value="อัพโหลด" />
     <br />
     <small>{{ doc.specifications }}</small>
 
@@ -18,8 +18,8 @@
         <a href="{% url 'appl:document-download' applicant.id doc.id d.id %}">
           {{ d.uploaded_file.name }}
         </a>
-        <a data-delete-url="{% url 'appl:document-delete' applicant.id doc.id d.id %}" href="#" class="upload-form-delete-buttons btn btn-sm btn-danger">
-          delete
+        <a data-delete-url="{% url 'appl:document-delete' applicant.id doc.id d.id %}" href="#" class="upload-form-delete-buttons btn btn-sm btn-secondary">
+          ลบ
         </a>
       </li>
       {% endfor %}
