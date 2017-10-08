@@ -70,6 +70,7 @@ def index_with_active_application(request, active_application):
                   'appl/index.html',
                   { 'applicant': applicant,
                     'common_uploaded_documents': common_uploaded_documents,
+                    'project_uploaded_documents': project_uploaded_documents,
 
                     'admission_round': admission_round,
                     'admission_projects': admission_projects,

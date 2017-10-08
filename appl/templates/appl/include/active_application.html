@@ -2,6 +2,11 @@
 <h2>โครงการ{{ active_application.admission_project }} ({{ admission_round }})</h2>
 {% include 'appl/include/project_cancel_div.html' %}
 
+<div class="all-document-upload-forms">
+  {% for project_uploaded_document in project_uploaded_documents %}
+    {% include 'appl/include/document_upload_form.html' %}
+  {% endfor %}
+</div>
 <ul>
   {% include 'appl/include/project_supplement_link.html' %}
   {% include 'appl/include/major_selection_item.html' %}
