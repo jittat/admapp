@@ -15,6 +15,46 @@ def get_function(fname):
     f = getattr(mod, func_name)
     return f
 
+def process_supplement_forms(request,
+                             applicant, admission_project, admission_round,
+                             supplements, supplement_configs):
+    has_error = False
+    new_data = {}
+    for config in supplement_configs:
+        instance = supplements[config.name]
+        if instance:
+            data = instance.get_data()
+        else:
+            data = {}
+            
+        fname = config.form_processing_function
+        if fname != '':
+            f = get_function(fname)
+            form_result = f(request,
+                            applicant,
+                            admission_project,
+                            admission_round,
+                            config.form_prefix,
+                            data)
+            if not form_result[0]:
+                has_error = True
+            else:
+                new_data[config.name] = form_result[1]
+                    
+    if not has_error:
+        for config in supplement_configs:
+            instance = supplements[config.name]
+            if not instance:
+                instance = ProjectSupplement(applicant=applicant,
+                                                 admission_project=admission_project,
+                                                 name=config.name)
+            instance.set_data(new_data[config.name])
+            instance.save()
+        return True
+    else:
+        return False
+
+    
 @appl_login_required
 def index(request, project_id, round_id):
     applicant = request.applicant
@@ -31,40 +71,17 @@ def index(request, project_id, round_id):
     if request.method == 'POST':
         if 'ok' not in request.POST:
             return redirect(reverse('appl:index'))
-            
-        has_error = False
-        new_data = {}
-        for config in supplement_configs:
-            instance = supplements[config.name]
-            if instance:
-                data = instance.get_data()
-            else:
-                data = {}
-            
-            fname = config.form_processing_function
-            if fname != '':
-                f = get_function(fname)
-                form_result = f(request,
-                                applicant,
-                                admission_project,
-                                admission_round,
-                                config.form_prefix,
-                                data)
-                if not form_result[0]:
-                    has_error = True
-                else:
-                    new_data[config.name] = form_result[1]
-                    
-        if not has_error:
-            for config in supplement_configs:
-                instance = supplements[config.name]
-                if not instance:
-                    instance = ProjectSupplement(applicant=applicant,
-                                                 admission_project=admission_project,
-                                                 name=config.name)
-                instance.set_data(new_data[config.name])
-                instance.save()
+
+        result = process_supplement_forms(request,
+                                          applicant,
+                                          admission_project,
+                                          admission_round,
+                                          supplements,
+                                          supplement_configs)
+
+        if result:
             return redirect(reverse('appl:index'))
+        
 
     context = { 'applicant': applicant,
                 'admission_project': admission_project,
