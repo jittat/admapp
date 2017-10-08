@@ -7,11 +7,21 @@
   </div>
 </div>
 
-{% for config in configs %}
+<form method="post" action="{% url 'supplements:index' admission_project.id admission_round.id%}">
+  {% csrf_token %}
+  {% for config in configs %}
+    <div class="row">
+      <div class="col-md-12">
+        {% include config.template_name %}
+      </div>
+    </div>
+  {% endfor %}
+
   <div class="row">
-    <div class="col-md-12">
-      {% include config.template_name %}
+    <div class="col-md-12 mt5 pt5 tborder-a0">
+      <input type="submit" name="ok" class="btn btn-success" value="จัดเก็บ" />
+      <input type="submit" name="cancel" class="btn btn-danger" value="ยกเลิก" />
     </div>
   </div>
-{% endfor %}
+</form>
 {% endblock %}

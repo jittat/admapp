@@ -1,2 +1,7 @@
 <h2>ประเภทกีฬา</h2>
 กรุณาระบุประเภทกีฬา
+<select name="sport_type_type">
+  {% for t in sport_type.sport_choices %}
+    <option value="{{ t }}" {% if t == sport_type.current_type %}selected{% endif %}>{{ t }}</option>
+  {% endfor %}
+</select>

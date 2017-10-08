@@ -14,7 +14,7 @@
   {% if supplement_configs %}
     <li>
       กรอกข้อมูลเพิ่มเติมสำหรับโครงการ{{ active_application.admission_project }}
-      <a class="btn btn-sm btn-primary" href="{% url 'supplements:index' active_application.admission_project.id  %}">กรอกข้อมูล</a>
+      <a class="btn btn-sm btn-primary" href="{% url 'supplements:index' active_application.admission_project.id active_application.admission_round.id %}">กรอกข้อมูล</a>
       <ul>
         {% for config in supplement_configs %}
           <li>{{ config.title }}</li>
