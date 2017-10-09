@@ -160,6 +160,7 @@ def personal_profile(request):
             new_personal_profile = form.save(commit=False)
             new_personal_profile.applicant = applicant
             new_personal_profile.save()
+            request.session['notice'] = 'จัดเก็บข้อมูลส่วนตัวเรียบร้อย'
             return redirect(reverse('appl:index'))
     else:
         form = PersonalProfileForm(instance=profile)
@@ -189,6 +190,7 @@ def education_profile(request):
                 new_educational_profile.school_code = ''
 
             new_educational_profile.save()
+            request.session['notice'] = 'จัดเก็บข้อมูลการศึกษาเรียบร้อย'
             return redirect(reverse('appl:index'))
     else:
         form = EducationForm(instance=profile)

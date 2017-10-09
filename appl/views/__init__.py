@@ -101,6 +101,7 @@ def index_with_active_application(request, active_application):
 
 @appl_login_required
 def index(request):
+    notice = request.session.pop('notice', None)
     applicant = request.applicant
     admission_round = AdmissionRound.get_available()
 
@@ -143,7 +144,8 @@ def index(request):
 
     return render(request,
                   'appl/index.html',
-                  { 'applicant': applicant,
+                  { 'notice': notice,
+                    'applicant': applicant,
                     'personal_profile': personal_profile,
                     'educational_profile': educational_profile,
                     'common_uploaded_documents': common_uploaded_documents,
