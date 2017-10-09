@@ -14,47 +14,52 @@
             </div>
             <div class="form-group">
               <p>รายชื่อที่เลือก (สามารถลากเปลี่ยนอันดับได้)</p>
-              {% if not selected_majors %}              
-                <span id="select-badge" class="badge badge-warning">ยังไม่ได้เลือกสาขา สามารถเลือกได้ 1 สาขา</span>
-              {% endif %}
+              <span 
+                id="select-badge" class="badge badge-warning"
+                {% if selected_majors %} 
+                  style="display: none;" 
+                {% endif %}
+              >                                   
+                  ยังไม่ได้เลือกสาขา สามารถเลือกได้ 1 สาขา
+              </span>
               <ul id="selected-list" class="list-group d-flex">
-                  {% for major in selected_majors %}
-                      <div 
-                          class="list-group-item d-flex justify-content-between"
-                          value="{{ major.number }}"
-                      >
-                          <div>
-                              <b>{{ forloop.counter }}</b>
-                              {{ major.title }}
-                          </div>
-                          <div class="d-flex flex-nowrap"> 
-                              <button 
-                                  class="btn btn-dark btn-block"
-                                  type="button"
-                                  onclick="upOrder({{ forloop.counter }})"
-                              >
-                                  <i class="fa fa-arrow-up" aria-hidden="true"></i>
-                              </button>
-                              <button
-                                  class="btn btn-dark btn-block"
-                                  type="button"
-                                  onclick="downOrder({{ forloop.counter }})"
-                              >
-                                  <i class="fa fa-arrow-down" aria-hidden="true"></i>
-                              </button>
-                              <button
-                                  type="button"
-                                  class="btn btn-danger btn-block"
-                                  value="{{ major.number }}"
-                                  onclick="removeMajorInList(this.value)"
-                              >
-                                  <i class="fa fa-times" aria-hidden="true"></i>
-                              </button>
-                          </div>
-                          <input type="hidden" name="major" value="{{ major.number }}">
-                      </div>
-                  {% endfor %}
-                </ul>
+                {% for major in selected_majors %}
+                    <div 
+                        class="list-group-item d-flex justify-content-between"
+                        value="{{ major.number }}"
+                    >
+                        <div>
+                            <b>{{ forloop.counter }}</b>
+                            {{ major.title }}
+                        </div>
+                        <div class="d-flex flex-nowrap"> 
+                            <button 
+                                class="btn btn-dark btn-block"
+                                type="button"
+                                onclick="upOrder({{ forloop.counter }})"
+                            >
+                                <i class="fa fa-arrow-up" aria-hidden="true"></i>
+                            </button>
+                            <button
+                                class="btn btn-dark btn-block"
+                                type="button"
+                                onclick="downOrder({{ forloop.counter }})"
+                            >
+                                <i class="fa fa-arrow-down" aria-hidden="true"></i>
+                            </button>
+                            <button
+                                type="button"
+                                class="btn btn-danger btn-block"
+                                value="{{ major.number }}"
+                                onclick="removeMajorInList(this.value)"
+                            >
+                                <i class="fa fa-times" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                        <input type="hidden" name="major" value="{{ major.number }}">
+                    </div>
+                {% endfor %}
+              </ul>
             </div>
             <div class="form-group">
                 <select
@@ -99,72 +104,72 @@
             dragIndex = ui.item.index()
         },
         update: function(e, ui) {
-            swapSelectedList(dragIndex, ui.item.index());
-            renderSelectedList();
+          swapSelectedList(dragIndex, ui.item.index());
+          renderSelectedList();
         }
     });
     // initial all majors
     {% for m in all_majors %}
-        majors[{{ m.number }}] = {
-            number: "{{ m.number }}",
-            title: "{{ m.title }}",
-            faculty_id: "{{ m.faculty_id }}"
-        };
+      majors[{{ m.number }}] = {
+        number: "{{ m.number }}",
+        title: "{{ m.title }}",
+        faculty_id: "{{ m.faculty_id }}"
+      };
     {% endfor %}
         
     // initial selected majors
     {% for m in selected_majors %}
-        selectedList.push({
-            number: "{{ m.number }}",
-            title: "{{ m.title }}",
-            faculty_id: "{{ m.faculty_id }}"
-        });
+      selectedList.push({
+        number: "{{ m.number }}",
+        title: "{{ m.title }}",
+        faculty_id: "{{ m.faculty_id }}"
+      });
     {% endfor %}
     
     function upOrder(index) {
-        if (index > 1) {
-            swapSelectedList(index - 2, index - 1);
-            renderSelectedList();
-        }
+      if (index > 1) {
+        swapSelectedList(index - 2, index - 1);
+        renderSelectedList();
+      }
     }
 
     function downOrder(index) {
-        if (index < selectedList.length) {
-            swapSelectedList(index - 1, index);
-            renderSelectedList();
-        }
+      if (index < selectedList.length) {
+        swapSelectedList(index - 1, index);
+        renderSelectedList();
+      }
     }
 
     function changeFalcuty(selected) {
-        var majorsList = document.getElementById('major-selected-list');
-        majorsList.innerHTML = '';
-        majors.forEach(function(m, index) {
-            if (selected.value === m.faculty_id) {
-                var majorWrapper = document.createElement('div');
-                majorWrapper.innerHTML = m.title;
-                majorWrapper.setAttribute('class', 'list-group-item d-flex col col-lg-3 col-12 justify-content-between');
+      var majorsList = document.getElementById('major-selected-list');
+      majorsList.innerHTML = '';
+      majors.forEach(function(m, index) {
+        if (selected.value === m.faculty_id) {
+          var majorWrapper = document.createElement('div');
+          majorWrapper.innerHTML = m.title;
+          majorWrapper.setAttribute('class', 'list-group-item d-flex col col-lg-3 col-12 justify-content-between');
 
-                var majorButton = document.createElement('button');
-                majorButton.innerHTML = 'เพิ่ม';
-                majorButton.setAttribute('value', index);
-                majorButton.setAttribute('class', 'btn btn-outline-success')
-                majorButton.onclick = function(e) {
-                    e.preventDefault();
-                    addMajorToList(e.target.value);
-                }
+          var majorButton = document.createElement('button');
+          majorButton.innerHTML = 'เพิ่ม';
+          majorButton.setAttribute('value', index);
+          majorButton.setAttribute('class', 'btn btn-outline-success')
+          majorButton.onclick = function(e) {
+              e.preventDefault();
+              addMajorToList(e.target.value);
+          }
 
-                majorWrapper.appendChild(majorButton);
-                majorsList.appendChild(majorWrapper);
-            }
-        })
+          majorWrapper.appendChild(majorButton);
+          majorsList.appendChild(majorWrapper);
+        }
+      })
     }
 
     function renderSelectedList() {
       var badge = document.getElementById('select-badge');
       if (selectedList.length == 0) {
-        badge.innerHTML = 'ยังไม่ได้เลือกสาขา สามารถเลือกได้ 1 สาขา';
+        badge.style = '';
       } else {
-        badge.innerHTML = '';
+        badge.style = 'display: none';
       }
 
       var selectedListElement = document.getElementById('selected-list');
@@ -250,7 +255,7 @@
     }
     function removeMajorInList(number) {
         selectedList = selectedList.filter(function(s) {
-            return s.number !== number;
+          return s.number != number;
         });
         renderSelectedList();
     }

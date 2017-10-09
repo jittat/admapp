@@ -56,8 +56,11 @@ def select(request, admission_round_id):
     error_message = ''
 
     major = None
-    if request.method == 'POST' and request.POST.get('major'):
+    if request.method == 'POST':
         if 'cancel' in request.POST:
+            return redirect(reverse('appl:index'))
+
+        if not request.POST.get('major'):
             return redirect(reverse('appl:index'))
 
         error, error_message = process_selection_form(request,
