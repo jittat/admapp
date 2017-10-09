@@ -212,15 +212,16 @@ class Major(models.Model):
 
 
 class ProjectUploadedDocument(models.Model):
-    admission_project = models.ForeignKey(AdmissionProject,
-                                          on_delete=models.CASCADE,
-                                          blank=True,
-                                          null=True)
+    admission_projects = models.ManyToManyField(AdmissionProject,
+                                                blank=True)
     rank = models.IntegerField()
     title = models.CharField(max_length=200)
     descriptions = models.TextField()
     specifications = models.CharField(max_length=100)
 
+    notes = models.CharField(max_length=100,
+                             blank=True)
+    
     allowed_extentions = models.CharField(max_length=50)
 
     is_required = models.BooleanField(default=True)
@@ -234,11 +235,18 @@ class ProjectUploadedDocument(models.Model):
         ordering = ['rank']
 
     def __str__(self):
-        return self.title
+        if self.notes == '':
+            return self.title
+        else:
+            return '{0} ({1})'.format(self.title, self.notes)
 
     @staticmethod
     def get_common_documents():
-        return ProjectUploadedDocument.objects.filter(admission_project=None).all()
+        commons = []
+        for d in ProjectUploadedDocument.objects.all():
+            if d.admission_projects.count() == 0:
+                commons.append(d)
+        return commons
 
     def get_uploaded_documents_for_applicant(self, applicant):
         return self.uploaded_document_set.filter(applicant=applicant).all()
@@ -259,10 +267,6 @@ def applicant_document_path(instance, filename):
 class UploadedDocument(models.Model):
     applicant = models.ForeignKey(Applicant,
                                   on_delete=models.CASCADE)
-    admission_project = models.ForeignKey(AdmissionProject,
-                                          on_delete=models.CASCADE,
-                                          blank=True,
-                                          null=True)
     project_uploaded_document = models.ForeignKey(ProjectUploadedDocument,
                                                   on_delete=models.CASCADE,
                                                   related_name='uploaded_document_set')

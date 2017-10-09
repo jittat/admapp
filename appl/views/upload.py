@@ -64,7 +64,6 @@ def upload(request, document_id):
         uploaded_document = form.save(commit=False)
         uploaded_document.applicant = request.applicant
         uploaded_document.project_uploaded_document = project_uploaded_document
-        uploaded_document.admission_project = project_uploaded_document.admission_project
         uploaded_document.rank = 0
         uploaded_document.orginal_filename = uploaded_document.uploaded_file.name
         uploaded_document.save()
