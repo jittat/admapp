@@ -532,11 +532,10 @@ class Eligibility(object):
     def white_elephant(self):
         from supplements.models import TopSchool
         self.is_eligible = False
-        self.is_hidden = True
-        
+        self.is_hidden = False
+        self.notice_text = 'โครงการนี้ผู้สมัครต้องอยู่ในโรงเรียนที่เข้าข่าย กรุณากรอกข้อมูลการศึกษาก่อน'
+
         if not hasattr(self._applicant, 'educationalprofile'):
-            self.is_hidden = False
-            self.notice_text = 'โครงการนี้ผู้สมัครต้องอยู่ในโรงเรียนที่เข้าข่าย กรุณากรอกข้อมูลการศึกษาก่อน'
             return
         
         school_code = self._applicant.educationalprofile.school_code

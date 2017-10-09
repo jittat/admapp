@@ -1,19 +1,28 @@
-{% include 'appl/include/project_cancel_link.html' %}
-<h2>โครงการ{{ active_application.admission_project }} ({{ admission_round }})</h2>
-{% include 'appl/include/project_cancel_div.html' %}
-
-<div class="all-document-upload-forms">
-  {% for project_uploaded_document in project_uploaded_documents %}
-    {% include 'appl/include/document_upload_form.html' %}
-  {% endfor %}
+<div class="row">
+  <div class="col-md-12  tborder-a0 mt5 pt5">
+    {% include 'appl/include/project_cancel_link.html' %}
+    <h2>โครงการ{{ active_application.admission_project }} ({{ admission_round }})</h2>
+    {% include 'appl/include/project_cancel_div.html' %}
+  </div>
 </div>
-<ul>
-  {% include 'appl/include/project_supplement_link.html' %}
-  {% include 'appl/include/major_selection_item.html' %}
-  {% if major_selection %}
-    {% include 'appl/include/payment_item.html' %}
-  {% endif %}
-</ul>
+<div class="row">
+  <div class="col-md-6">
+    <ul>
+      {% include 'appl/include/project_supplement_link.html' %}
+      {% include 'appl/include/major_selection_item.html' %}
+      {% if major_selection %}
+        {% include 'appl/include/payment_item.html' %}
+      {% endif %}
+    </ul>
+  </div>
+  <div class="col-md-6">
+    <div class="all-document-upload-forms">
+      {% for project_uploaded_document in project_uploaded_documents %}
+        {% include 'appl/include/document_upload_form.html' %}
+      {% endfor %}
+    </div>
+  </div>
+</div>
 <script>
   $(function(){
     $("#cancel_link_id").click(function() {

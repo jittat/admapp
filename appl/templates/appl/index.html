@@ -13,7 +13,6 @@
       <li><a href="{% url 'appl:personal-profile' %}">กรอกข้อมูลส่วนตัว</a></li>
       <li><a href="{% url 'appl:education-profile' %}">กรอกข้อมูลการศึกษา</a></li>
     </ul>
-    </ul>
   </div>
   <div class="col-md-6">
     <div class="all-document-upload-forms">
@@ -25,11 +24,7 @@
 </div>
 
 {% if active_application %}
-  <div class="row">
-    <div class="col-md-12 tborder-a0 mt5 pt5">
-      {% include 'appl/include/active_application.html' %}
-    </div>
-  </div>
+  {% include 'appl/include/active_application.html' %}
 {% else %}
   <div class="row">
     <div class="col-md-12">

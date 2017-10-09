@@ -23,18 +23,16 @@ def prepare_uploaded_document_forms(applicant, project_uploaded_documents):
         d.applicant_uploaded_documents = d.get_uploaded_documents_for_applicant(applicant)
 
 
-def load_applicant_application(applicant, admission_round):
-    active_application = applicant.get_active_application(admission_round)
-    try:
-        major_selection = active_application.major_selection
-    except:
-        major_selection = None
-
-    return active_application, major_selection
-
+def prepare_project_eligibility_and_detes(projects,
+                                          admission_round,
+                                          applicant):
+    for project in projects:
+        project.eligibility = Eligibility.check(project, applicant)
+        project.project_round = project.get_project_round_for(admission_round)
+    
 
 def index_outside_round(request):
-    pass
+    return HttpResponseForbidden()
 
 def index_with_active_application(request, active_application):
     applicant = request.applicant
@@ -109,8 +107,9 @@ def index(request):
     supplement_configs = []
     
     admission_projects = admission_round.get_available_projects()
-    for project in admission_projects:
-        project.eligibility = Eligibility.check(project, applicant)
+    prepare_project_eligibility_and_detes(admission_projects,
+                                          admission_round,
+                                          applicant)
 
     admission_fee = 0
     payments = Payment.find_for_applicant_in_round(applicant, admission_round)

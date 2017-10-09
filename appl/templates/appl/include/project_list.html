@@ -7,7 +7,7 @@
           <span class="badge badge-info">หมดเวลารับสมัคร</span>
         {% endif %}
         {{ project.title }}
-        (เปิดรับสมัครวันที่ xxxxx)
+        (เปิดรับสมัครวันที่ {{ project.project_round.admission_dates }})
         {% if project.is_open and project.eligibility.is_eligible %}
           <a class="btn btn-primary btn-sm applying-links" href="#">สมัครโครงการนี้</a>
           <div class="p10 border-a0 bg-warn applying-confirmations" style="display:none;">
@@ -22,6 +22,11 @@
               <a href="#" class="btn btn-danger btn-sm cancel-links">ยกเลิก</a>
             </form>
           </div>
+        {% else %}
+          {% if not project.eligibility.is_eligible %}
+            <span class="badge badge-warning">ยังไม่สามารถสมัครได้</span>
+            <small>{{ project.eligibility.notice_text }}</small>
+          {% endif %}
         {% endif %}
       </div>
     {% endif %}
