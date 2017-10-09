@@ -6,7 +6,7 @@
   </div>
 </div>
 <div class="row">
-  <div class="col-md-6">
+  <div {% if project_uploaded_documents %} class="col-md-5" {% else %} class="col-md-12" {% endif %}>
     <ul>
       {% include 'appl/include/project_supplement_link.html' %}
       {% include 'appl/include/major_selection_item.html' %}
@@ -17,15 +17,24 @@
       {% else %}
         {% include 'appl/include/documents_incomplete.html' %}
       {% endif %}
+      {% if active_application.admission_project.id == 3 %}
+        <li>
+          <span class="badge badge-danger">การพิมพ์ใบสมัคร</span>
+          จะสามารถพิมพ์ใบสมัครได้ภายในเวลา 12:00 ของวันนี้
+        </li>
+      {% endif %}
     </ul>
   </div>
-  <div class="col-md-6">
-    <div class="all-document-upload-forms">
-      {% for project_uploaded_document in project_uploaded_documents %}
-        {% include 'appl/include/document_upload_form.html' %}
-      {% endfor %}
+  {% if project_uploaded_documents %}
+    <div class="col-md-7">
+      <h4>อัพโหลดเอกสาร</h4>
+      <div class="all-document-upload-forms">
+        {% for project_uploaded_document in project_uploaded_documents %}
+          {% include 'appl/include/document_upload_form.html' %}
+        {% endfor %}
+      </div>
     </div>
-  </div>
+  {% endif %}
 </div>
 <script>
   $(function(){

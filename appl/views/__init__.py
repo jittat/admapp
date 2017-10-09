@@ -29,18 +29,48 @@ def prepare_project_eligibility_and_detes(projects,
     for project in projects:
         project.eligibility = Eligibility.check(project, applicant)
         project.project_round = project.get_project_round_for(admission_round)
+
+
+def load_supplements(applicant, admission_project):
+    from supplements.models import PROJECT_SUPPLEMENTS, ProjectSupplement
+
+    all_supplements = ProjectSupplement.get_applicant_supplements_as_dict(applicant)
     
+    supplement_configs = []
+    if admission_project.title in PROJECT_SUPPLEMENTS:
+        supplement_configs = PROJECT_SUPPLEMENTS[admission_project.title]
+        for c in supplement_configs:
+            if c.name in all_supplements:
+                c.supplement_instance = all_supplements[c.name]
+            else:
+                c.supplement_instance = None
+
+    return supplement_configs
+        
 def check_project_documents(applicant,
                             admission_project,
                             supplement_configs,
                             project_uploaded_documents):
-    return {'status': True}
-    return {'status': False,
-            'errors': ['โน่น','นี่','นั่น']}
+    status = True
+    errors = []
+
+    for d in project_uploaded_documents:
+        if d.is_required and len(d.applicant_uploaded_documents) == 0:
+            status = False
+            errors.append('ยังไม่ได้อัพโหลด' + d.title)
+
+    for c in supplement_configs:
+        if c.is_required and (not c.supplement_instance):
+            status = False
+            errors.append('ยังไม่ได้ป้อนข้อมูล' + c.title)
+            
+    return { 'status': status,
+             'errors': errors }
 
         
 def index_outside_round(request):
     return HttpResponseForbidden()
+
 
 def index_with_active_application(request, active_application):
     applicant = request.applicant
@@ -55,11 +85,8 @@ def index_with_active_application(request, active_application):
 
     major_selection = active_application.get_major_selection()
 
-    from supplements.models import PROJECT_SUPPLEMENTS
-
-    supplement_configs = []
-    if admission_project.title in PROJECT_SUPPLEMENTS:
-        supplement_configs = PROJECT_SUPPLEMENTS[admission_project.title]
+    supplement_configs = load_supplements(applicant,
+                                          admission_project)
 
     admission_fee = active_application.admission_fee(major_selection)
     payments = Payment.find_for_applicant_in_round(applicant, admission_round)

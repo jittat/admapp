@@ -34,12 +34,22 @@ class ProjectSupplement(models.Model):
     def set_data(self, data):
         self.data = data
         self.json_data = json.dumps(data)
+
+
+    @staticmethod
+    def get_applicant_supplements_as_dict(applicant):
+        all_supplements = ProjectSupplement.objects.filter(applicant=applicant)
+        results = {}
+        for s in all_supplements:
+            results[s.name] = s
+        return results
         
 
 class ProjectSupplementConfig(object):
     def __init__(self,
                  name,
                  title,
+                 is_required,
                  template_name,
                  form_prefix,
                  form_init_function,
@@ -47,6 +57,7 @@ class ProjectSupplementConfig(object):
         
         self.name = name
         self.title = title
+        self.is_required = is_required
         self.template_name = template_name
         self.form_prefix = form_prefix
         self.form_init_function = form_init_function
@@ -73,12 +84,14 @@ PROJECT_SUPPLEMENTS = {
     'นักกีฬาทีมชาติและเยาวชนทีมชาติ': [
         ProjectSupplementConfig('sport_type',
                                 'ประเภทกีฬาและระดับ',
+                                True,
                                 'supplements/nat_sport/sport_type.html',
                                 'sport_type_',
                                 'supplements.views.forms.nat_sport.init_sport_type_form',
                                 'supplements.views.forms.nat_sport.process_sport_type_form'),
         ProjectSupplementConfig('sport_history',
                                 'ผลการแข่งขัน',
+                                True,
                                 'supplements/nat_sport/sport_history.html',
                                 'sport_history_',
                                 'supplements.views.forms.nat_sport.init_sport_history_form',

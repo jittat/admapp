@@ -1,11 +1,16 @@
 {% if supplement_configs %}
   <li>
     กรอกข้อมูลเพิ่มเติมสำหรับโครงการ{{ active_application.admission_project }}
-    <a class="btn btn-sm btn-primary" href="{% url 'supplements:index' active_application.admission_project.id active_application.admission_round.id %}">กรอกข้อมูล</a>
     <ul>
       {% for config in supplement_configs %}
-        <li>{{ config.title }}</li>
+        <li>
+          {% if config.supplement_instance %}
+            <i class="fa fa-check" aria-hidden="true"></i>
+          {% endif %}
+          {{ config.title }}
+        </li>
       {% endfor %}
     </ul>
+    <a class="btn btn-sm btn-primary" href="{% url 'supplements:index' active_application.admission_project.id active_application.admission_round.id %}">กรอกข้อมูลเพิ่มเติม</a>
   </li>
 {% endif %}
