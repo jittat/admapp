@@ -1,39 +1,47 @@
-<div style="background: #f0f0f0; border: 1px solid #e0e0e0; margin: 5px 0 5px 0; padding: 10px;" class="project-document-upload-forms">
+<div class="project-document-upload-forms" id="accordion" role="tablist" aria-multiselectable="true">
   {% load appl_tags %}
-
   {% with project_uploaded_document as doc %}
-  <p>
-    <b>{{ doc.title }}</b> &nbsp;&nbsp; {{ doc.descriptions|linebreaksbr }}
-  </p>
-  <form class="upload-forms" action="{% url 'appl:upload' doc.id %}" method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    <div class="form-group">
-      <small>คำอธิบาย</small>
-      <input type="text" class="form-control" name="detail" value="" />
-    </div>
-    <div class="form-group">
-      <input type="file" class="input-files form-control-file" name="uploaded_file" required id="id_uploaded_file" />
-    </div>
-    <input type="submit" class="btn btn-success btn-sm upload-form-submit-buttons" value="อัพโหลด" />
-    <br />
-    <small>{{ doc.specifications }}</small>
+	<div class="card">
+		<div class="card-header" role="tab" id="accordian-upload-header">
+			<b>{{ doc.title }}</b> &nbsp;&nbsp; {{ doc.descriptions|linebreaksbr }}
+      <a class="btn btn-outline-primary" data-toggle="collapse" data-parent="#accordian" href="#accordian-upload-form-{{ doc.id }}" aria-expanded="true" aria-controls="accordian-upload-form-{{ doc.id }}" role="button">
+        toggle
+      </a>
+		</div>
+		<div id="accordian-upload-form-{{ doc.id }}" class="collapse {% if toggle %}{{toggle}}{% elif doc.applicant_uploaded_documents %}hide{% else %}show{% endif %}" role="tabpanel" aria-labelledby="accordian-upload-header">
+      <div class="card-block p10">
+  			<form class="upload-forms" action="{% url 'appl:upload' doc.id %}" method="post" data-detail-required="{% if doc.is_detail_required %}true{% endif %}" enctype="multipart/form-data">
+  				{% csrf_token %}
+          <div class="form-group">
+            <small>คำอธิบาย</small>
+            <input type="text" class="form-control" name="detail" value="" />
 
-    <br />
-    <small style="color:red" class="document-upload-errors"></small> {% if doc.applicant_uploaded_documents %}
-    <ul>
-      {% for d in doc.applicant_uploaded_documents %}
-      <li>
-        <a href="{% url 'appl:document-download' applicant.id doc.id d.id %}">
-          {{ d|uploadeddocument_name }}
-        </a>
-        <a data-delete-url="{% url 'appl:document-delete' applicant.id doc.id d.id %}" href="#" class="upload-form-delete-buttons btn btn-sm btn-secondary">
-          ลบ
-        </a>
-      </li>
-      {% endfor %}
-    </ul>
-    {% endif %}
-    <div class="progress-bars" style="display:none; text-align: center; width: 200px; border: 1px solid #707070;"></div>
-  </form>
+          </div>
+
+  				<input type="file" class="input-files" name="uploaded_file" required id="id_uploaded_file" />
+  				<input type="submit" class="btn btn-success btn-sm upload-form-submit-buttons" value="อัพโหลด" />
+  				<br />
+  				<small>{{ doc.specifications }}</small>
+
+  				<br />
+  				<small style="color:red" class="document-upload-errors"></small> {% if doc.applicant_uploaded_documents %}
+  				<ul>
+  					{% for d in doc.applicant_uploaded_documents %}
+  					<li>
+  						<a href="{% url 'appl:document-download' applicant.id doc.id d.id %}">
+  							{{ d|uploadeddocument_name }}
+  						</a>
+  						<a data-delete-url="{% url 'appl:document-delete' applicant.id doc.id d.id %}" href="#" class="upload-form-delete-buttons btn btn-sm btn-secondary">
+  							ลบ
+  						</a>
+  					</li>
+  					{% endfor %}
+  				</ul>
+  				{% endif %}
+  				<div class="progress-bars" style="display:none; text-align: center; width: 200px; border: 1px solid #707070;"></div>
+  			</form>
+      </div>
+		</div>
   {% endwith %}
+	</div>
 </div>

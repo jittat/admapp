@@ -5,10 +5,15 @@ import csv
 from datetime import datetime
 
 from django.db import models
+from django.core.validators import MinValueValidator, MaxValueValidator, RegexValidator
 from django.core.exceptions import ObjectDoesNotExist
 
 from admapp import settings
 from regis.models import Applicant
+
+
+validate_phonenumber = RegexValidator(r'^\+?[0-9]+$',
+                                      'เบอร์โทรศัพท์สามารถประกอบด้วยตัวเลข 0-9 และอาจเริ่มต้นด้วยเครื่องหมาย +')
 
 
 class Campus(models.Model):
@@ -231,6 +236,8 @@ class ProjectUploadedDocument(models.Model):
                                    blank=True)
     size_limit = models.IntegerField(default=2000000)
 
+    is_detail_required = models.BooleanField(default=False)
+
     class Meta:
         ordering = ['rank']
 
@@ -318,7 +325,8 @@ class EducationalProfile(models.Model):
     education_plan = models.IntegerField(choices=EDUCATION_PLAN_CHOICES,
                                          verbose_name='แผนการศึกษา')
     gpa = models.FloatField(default=0,
-                            verbose_name='GPA')
+                            verbose_name='GPA',
+                            validators=[MinValueValidator(0.0), MaxValueValidator(4.0)])
     province = models.ForeignKey(Province,
                                  verbose_name='จังหวัด')
     school_title = models.CharField(max_length=80,
@@ -338,14 +346,15 @@ class PersonalProfile(models.Model):
     applicant = models.OneToOneField(Applicant)
     prefix_english = models.CharField(max_length=4,
                                       choices=TITLE_CHOICES,
+                                      verbose_name='คำนำหน้า (อังกฤษ)',
                                       default='Mr.')
     first_name_english = models.CharField(max_length=100,
-                                          verbose_name='ชื่อ(อังกฤษ)')
+                                          verbose_name='ชื่อ (อังกฤษ)')
     middle_name_english = models.CharField(max_length=100,
-                                           verbose_name='ชื่อกลาง(ถ้ามี)',
+                                           verbose_name='ชื่อกลาง (อังกฤษ, ถ้ามี)',
                                            blank=True )
     last_name_english = models.CharField(max_length=200,
-                                         verbose_name='นามสกุล(อังกฤษ)')
+                                         verbose_name='นามสกุล (อังกฤษ)')
     passport_number = models.CharField(max_length=20,
                                        verbose_name='หมายเลข Passport (ถ้ามี)',
                                        blank=True)
@@ -384,10 +393,11 @@ class PersonalProfile(models.Model):
 
     contact_phone = models.CharField(max_length=20,
                                     verbose_name='เบอร์โทรศัพท์ที่ติดต่อได้',
-                                    blank=True)
+                                    validators=[validate_phonenumber])
     mobile_phone = models.CharField(max_length=20,
                                     verbose_name='เบอร์โทรศัพท์มือถือ',
-                                    blank=True)
+                                    blank=True,
+                                    validators=[validate_phonenumber])
 
 
 
