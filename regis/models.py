@@ -139,3 +139,32 @@ class Applicant(models.Model):
             results += Applicant.objects.filter(passport_number__contains=q).all()
 
         return results
+
+
+class LogItem(models.Model):
+    applicant = models.ForeignKey(Applicant,
+                                  blank=True,
+                                  null=True)
+    message = models.CharField(max_length=200)
+    
+    request_ip = models.CharField(max_length=100)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    @staticmethod
+    def create(message, applicant=None, request=None):
+        log = LogItem(applicant=applicant,
+                      message=message)
+        if request and ('REMOTE_ADDR' in request.META):
+            log.request_ip = request.META['REMOTE_ADDR']
+
+        log.save()
+        return log
+    
+    def __str__(self):
+        return '(%s) %s' % (self.created_at, self.message)
+

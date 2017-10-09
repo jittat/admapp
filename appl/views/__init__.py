@@ -5,7 +5,7 @@ from django.urls import reverse
 from django.conf import settings
 from django.http import HttpResponseForbidden, HttpResponse
 
-from regis.models import Applicant
+from regis.models import Applicant, LogItem
 from regis.decorators import appl_login_required
 
 from admapp.utils import number_to_thai_text
@@ -34,6 +34,7 @@ def check_project_documents(applicant,
                             admission_project,
                             supplement_configs,
                             project_uploaded_documents):
+    return {'status': True}
     return {'status': False,
             'errors': ['โน่น','นี่','นั่น']}
 
@@ -179,6 +180,9 @@ def apply_project(request, project_id, admission_round_id):
         return HttpResponseForbidden()
     
     application = applicant.apply_to_project(project, admission_round)
+
+    LogItem.create('Applied to project %d' % (project.id,), applicant, request)
+    
     return redirect(reverse('appl:index'))
 
 
@@ -209,6 +213,8 @@ def cancel_project(request, project_id, admission_round_id):
     active_application.cancelled_at = datetime.now()
     active_application.save()
     
+    LogItem.create('Canceled application to project %d' % (project.id,), applicant, request)
+
     return redirect(reverse('appl:index'))
 
 
@@ -245,6 +251,9 @@ def payment(request, application_id):
 
     deadline = project_round.payment_deadline
 
+    LogItem.create('Printed payment form (amount: %d)' % (additional_payment,),
+                   applicant, request)
+    
     return render(request,
                   'appl/payments/payment.html',
                   { 'applicant': applicant,

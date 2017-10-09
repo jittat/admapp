@@ -4,7 +4,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.http import HttpResponseForbidden, HttpResponseServerError
 
-from regis.models import Applicant
+from regis.models import Applicant, LogItem
 from appl.models import AdmissionProject, AdmissionRound, Major, MajorSelection, Faculty
 
 from regis.decorators import appl_login_required
@@ -18,6 +18,7 @@ def process_selection_form(request,
                            major_selection):
     if 'major' not in request.POST:
         return (True, 'คุณยังไม่ได้เลือกสาขา')
+
     numbers = request.POST.getlist('major')
     majors = []
     for number in numbers:
@@ -26,12 +27,14 @@ def process_selection_form(request,
         if not major:
             return (True, 'สาขาที่คุณเลือกผิดพลาด')
         majors.append(major)
+
     major_selection.set_majors(majors)
     major_selection.applicant = applicant
     major_selection.project_application = application
     major_selection.admission_project = application.admission_project
     major_selection.admission_round = application.admission_round
     major_selection.save()
+
     return (False, '')
 
 @appl_login_required
@@ -68,6 +71,10 @@ def select(request, admission_round_id):
                                                       application,
                                                       major_selection)
         if not error:
+            LogItem.create('Major selection (%s)' % major_selection.major_list,
+                           applicant,
+                           request)
+
             return redirect(reverse('appl:index'))
 
     else:
@@ -80,11 +87,11 @@ def select(request, admission_round_id):
                   if f.id in majors_dic]
     
     if project.max_num_selections > 1:
-      template = 'appl/major_multiple_selection.html'
+        template = 'appl/major_multiple_selection.html'
     else:
-      template = 'appl/major_selection.html'
-      if len(selected_majors) == 1:
-        selected_majors = selected_majors[0]
+        template = 'appl/major_selection.html'
+        if len(selected_majors) == 1:
+            selected_majors = selected_majors[0]
 
     return render(request,
                   template,

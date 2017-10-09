@@ -15,7 +15,7 @@ from admapp.emails import send_registration_email, send_forget_password_email
 
 from .validators import is_valid_national_id
 from .validators import is_valid_passport_number
-from .models import Applicant
+from .models import Applicant, LogItem
 
 class LoginForm(forms.Form):
     national_id = forms.CharField(label='รหัสประจำตัวประชาชนหรือหมายเลขพาสปอร์ต',
@@ -174,6 +174,9 @@ def register(request):
         form = RegistrationForm(request.POST)
         if form.is_valid():
             applicant = create_applicant(form)
+
+            LogItem.create('Registered', applicant, request)
+
             if applicant:
                 send_registration_email(applicant)
                 return render(request, 'regis/regis_result.html',
@@ -211,6 +214,8 @@ def forget(request):
                 new_password = applicant.random_password()
                 applicant.save()
 
+                LogItem.create('New password requested', applicant, request)
+                
                 send_forget_password_email(applicant, new_password)
                 form = None
                 update_success = True
@@ -249,8 +254,13 @@ def login(request):
         if ((settings.FAKE_LOGIN and settings.DEBUG)
             or applicant.check_password(password)):
             login_applicant(request, applicant)
+
+            LogItem.create('Logged in', applicant, request)
+
             return redirect(reverse('appl:index'))
         else:
+            LogItem.create('Failed to log in (wrong password)', applicant, request)
+            
             return redirect(reverse('main-index') + '?error=wrong-password')
     else:
         return redirect(reverse('main-index') + '?error=invalid')
