@@ -1,4 +1,12 @@
 <script>
+  var refreshDocumentStatus = function() {
+    var url = "{% url 'appl:check-project-documents' %}";
+    jQuery.get(url,
+               function(html) {
+                 $('#project_status_div_id').html(html);
+               });
+  };
+  
   $(function() {
     $(".all-document-upload-forms").on("click", ".upload-form-submit-buttons", function() {
       var div = $(this).parents('.project-document-upload-forms')[0];
@@ -37,6 +45,7 @@
             $(uploadErrorDiv).show().html('โปรดระบุคำอธิบาย</b>');
           }
           $(progress).hide();
+          refreshDocumentStatus();
         }
       }).uploadProgress(function(e) {
         if (e.lengthComputable) {
@@ -63,6 +72,7 @@
             } else if (data.result == 'ERROR') {
               alert("ERROR");
             }
+            refreshDocumentStatus();
           }
         });
       }

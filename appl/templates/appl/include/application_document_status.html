@@ -1,0 +1,13 @@
+<ul>
+  {% if documents_complete_status.status %}
+    {% if major_selection %}
+      {% include 'appl/include/payment_item.html' %}
+    {% else %}
+      <li>
+        กรุณาเลือกสาขาก่อนพิมพ์ใบชำระเงินค่าสมัคร
+      </li>
+    {% endif %}
+  {% else %}
+    {% include 'appl/include/documents_incomplete.html' %}
+  {% endif %}
+</ul>
