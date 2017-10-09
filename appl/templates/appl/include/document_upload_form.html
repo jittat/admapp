@@ -1,4 +1,6 @@
 <div style="background: #f0f0f0; border: 1px solid #e0e0e0; margin: 5px 0 5px 0; padding: 10px;" class="project-document-upload-forms">
+  {% load appl_tags %}
+
   {% with project_uploaded_document as doc %}
   <p>
     <b>{{ doc.title }}</b> &nbsp;&nbsp; {{ doc.descriptions|linebreaksbr }}
@@ -6,6 +8,7 @@
   <form class="upload-forms" action="{% url 'appl:upload' doc.id %}" method="post" enctype="multipart/form-data">
     {% csrf_token %}
     <div class="form-group">
+      <small>คำอธิบาย</small>
       <input type="text" class="form-control" name="detail" value="" />
     </div>
     <div class="form-group">
@@ -21,7 +24,7 @@
       {% for d in doc.applicant_uploaded_documents %}
       <li>
         <a href="{% url 'appl:document-download' applicant.id doc.id d.id %}">
-          {{ d.uploaded_file.name }}
+          {{ d|uploadeddocument_name }}
         </a>
         <a data-delete-url="{% url 'appl:document-delete' applicant.id doc.id d.id %}" href="#" class="upload-form-delete-buttons btn btn-sm btn-secondary">
           ลบ
