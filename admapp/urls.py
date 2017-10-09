@@ -36,4 +36,4 @@ urlpatterns = [
     url(r'^accounts/logout/$',
         auth_views.LogoutView.as_view(),
         name='backoffice-logout'),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+]
