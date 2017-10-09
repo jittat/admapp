@@ -152,7 +152,8 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 # login/logout urls for backoffice
 
-LOGOUT_REDIRECT_URL = '/backoffice/'
+LOGOUT_REDIRECT_URL = 'backoffice:index'
+
 
 # Admission App Configs
 
@@ -165,6 +166,12 @@ FAKE_LOGIN = False
 BARCODE_DIR = '/tmp/'
 
 ADM_EMAIL_FROM = 'admission@ku.ac.th'
+
+ELIGIBILITY_CHECK = {
+    'ช้างเผือก': 'white_elephant',
+}
+
+# Manipulate Settings with Local Settings
 
 try:
     from .settings_local import *

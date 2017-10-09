@@ -10,10 +10,30 @@
             <td>อีเมล</td>
             <td>{{ applicant.email }}</td>
           </tr>
+          
           {% if applicant.passport_number %}
             <tr>
               <td>พาสปอร์ต</td>
               <td>{{ applicant.passport_number }}</td>
+            </tr>
+          {% endif %}
+
+          {% if education %}
+            <tr>
+              <td>ข้อมูลการศึกษา</td>
+              <td>
+                <ul>
+                  <li>
+                    ระดับการศึกษา: {{ education.get_education_level_display }} |
+                    แผนการศึกษา: {{ education.get_education_plan_display }} |
+                    GPA: {{ education.gpa }}
+                  </li>
+                  <li>
+                    {{ education.school_title }}, 
+                    {{ education.province }}
+                  </li>
+                </ul>
+              </td>
             </tr>
           {% endif %}
         </tbody>

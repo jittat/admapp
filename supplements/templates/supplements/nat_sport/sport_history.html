@@ -1,0 +1,70 @@
+<h2>ผลงานการแข่งขัน</h2>
+<table class="table table-striped sport-history-table">
+  <thead>
+    <tr>
+      <th></th>
+      <th>ชื่อรายการแข่งขัน</th>
+      <th>วันที่แข่งขัน</th>
+      <th>สถานที่/ประเทศ</th>
+      <th>ผลการแข่งขัน</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+  </tbody>
+</table>
+<a class="btn btn-small btn-secondary sport-history-add-row-buttons" href="#">เพิ่มข้อมูล</a>
+<script>
+  var formPrefix = '{{ sport_history.form_prefix }}';
+  var emptyRow = ('<tr class="history-rows">' + 
+                  '<td class="row-nums"></td>' +
+                  '<td><textarea class="form-control {{ sport_history.form_prefix }}history-title" name="{{ sport_history.form_prefix }}title[]" required></textarea></td>' +
+                  '<td><textarea class="form-control {{ sport_history.form_prefix }}history-dates" name="{{ sport_history.form_prefix }}dates[]" required></textarea></td>' +
+                  '<td><textarea class="form-control {{ sport_history.form_prefix }}history-location" name="{{ sport_history.form_prefix }}location[]" required></textarea></td>' +
+                  '<td><textarea class="form-control {{ sport_history.form_prefix }}history-result" name="{{ sport_history.form_prefix }}result[]" required></textarea></td>' +
+                  '<td class="row-controls">' +
+                  '<a href="#" class="btn btn-danger row-delete-links btn-sm">ลบ</a>' +
+                  '</td>' +
+                  '</tr>');
+
+  function rerowNumber()
+  {
+    var rcount = 0;
+    $(".history-rows").each(function(){
+      rcount++;
+      $(this).find(".row-nums").text(rcount);
+    });
+    if(rcount == 1) {
+      $(".row-delete-links").hide();
+    } else {
+      $(".row-delete-links").show();
+    }
+  }
+  
+  $(function(){
+    {% for h in sport_history.history_data %}
+      $(".sport-history-table tbody").append(emptyRow);
+      var rows = $(".sport-history-table tr.history-rows");
+      var lastRow = rows[rows.length - 1];
+      $(lastRow).find('textarea.{{ sport_history.form_prefix }}history-title').text('{{ h.title|escapejs }}');
+      $(lastRow).find('textarea.{{ sport_history.form_prefix }}history-dates').text('{{ h.dates|escapejs }}');
+      $(lastRow).find('textarea.{{ sport_history.form_prefix }}history-location').text('{{ h.location|escapejs }}');
+      $(lastRow).find('textarea.{{ sport_history.form_prefix }}history-result').text('{{ h.result|escapejs }}');
+    {% empty %}
+      $(".sport-history-table tbody").append(emptyRow);
+    {% endfor %}
+    rerowNumber();
+    $(".sport-history-add-row-buttons").click(function() {
+      $(".sport-history-table tbody").append(emptyRow);
+      rerowNumber();
+      return false;
+    });
+    $(".sport-history-table").on("click",".row-delete-links",
+                                 function() {
+                                   var row = $(this).parents('tr')[0];
+                                   $(row).detach();
+                                   rerowNumber();
+                                   return false;
+                                 });
+  });
+</script>

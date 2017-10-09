@@ -4,15 +4,13 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
 
 from regis.models import Applicant
-from appl.models import AdmissionProject
+from appl.models import AdmissionProject,ProjectApplication,EducationalProfile,PersonalProfile
+from backoffice.models import Profile
 
 @login_required
 def index(request):
     user = request.user
-    try:
-        profile = user.profile
-    except:
-        profile = None
+    profile = Profile.get_profile_for(user)
 
     is_admission_admin = False
     is_application_admin = False
@@ -28,6 +26,7 @@ def index(request):
         is_admission_admin = True
         is_application_admin = True
         admission_projects = AdmissionProject.objects.filter(is_available=True).all()
+        project_application = ProjectApplication.objects.filter(is_canceled=False).count()
         stats['applicant_count'] = Applicant.objects.count()
     
     return render(request,
@@ -36,7 +35,9 @@ def index(request):
                     'faculty': faculty,
                     'is_admission_admin': is_admission_admin,
                     'is_application_admin': is_application_admin,
-                    'applicant_stats': stats })
+                    'applicant_stats': stats,
+                    'project_application': project_application    
+                    })
 
 
 @login_required
@@ -62,7 +63,7 @@ def search(request, project_id=None):
                     'applicants': applicants,
                     'message': message })
 
-
+ 
 @login_required
 def show(request, national_id, project_id=None):
     user = request.user
@@ -70,8 +71,21 @@ def show(request, national_id, project_id=None):
         return HttpResponseForbidden()
 
     applicant = get_object_or_404(Applicant, national_id=national_id)
+    education = applicant.get_educational_profile()
 
     return render(request,
                   'backoffice/show.html',
-                  {'applicant': applicant })
+                  { 'applicant': applicant,
+                    'education': education, })
+
+
     
+    
+    
+
+    
+
+
+
+
+

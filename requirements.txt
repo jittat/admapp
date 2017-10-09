@@ -8,3 +8,4 @@ boto
 django-ses
 Pillow
 pyBarcode==0.8b1
+python-magic

@@ -5,7 +5,9 @@ import csv
 from datetime import datetime
 
 from django.db import models
+from django.core.exceptions import ObjectDoesNotExist
 
+from admapp import settings
 from regis.models import Applicant
 
 
@@ -210,14 +212,15 @@ class Major(models.Model):
 
 
 class ProjectUploadedDocument(models.Model):
-    admission_project = models.ForeignKey(AdmissionProject,
-                                          on_delete=models.CASCADE,
-                                          blank=True,
-                                          null=True)
+    admission_projects = models.ManyToManyField(AdmissionProject,
+                                                blank=True)
     rank = models.IntegerField()
     title = models.CharField(max_length=200)
     descriptions = models.TextField()
     specifications = models.CharField(max_length=100)
+
+    notes = models.CharField(max_length=100,
+                             blank=True)
 
     allowed_extentions = models.CharField(max_length=50)
 
@@ -228,15 +231,24 @@ class ProjectUploadedDocument(models.Model):
                                    blank=True)
     size_limit = models.IntegerField(default=2000000)
 
+    is_detail_required = models.BooleanField(default=False)
+
     class Meta:
         ordering = ['rank']
 
     def __str__(self):
-        return self.title
+        if self.notes == '':
+            return self.title
+        else:
+            return '{0} ({1})'.format(self.title, self.notes)
 
     @staticmethod
     def get_common_documents():
-        return ProjectUploadedDocument.objects.filter(admission_project=None).all()
+        commons = []
+        for d in ProjectUploadedDocument.objects.all():
+            if d.admission_projects.count() == 0:
+                commons.append(d)
+        return commons
 
     def get_uploaded_documents_for_applicant(self, applicant):
         return self.uploaded_document_set.filter(applicant=applicant).all()
@@ -257,10 +269,6 @@ def applicant_document_path(instance, filename):
 class UploadedDocument(models.Model):
     applicant = models.ForeignKey(Applicant,
                                   on_delete=models.CASCADE)
-    admission_project = models.ForeignKey(AdmissionProject,
-                                          on_delete=models.CASCADE,
-                                          blank=True,
-                                          null=True)
     project_uploaded_document = models.ForeignKey(ProjectUploadedDocument,
                                                   on_delete=models.CASCADE,
                                                   related_name='uploaded_document_set')
@@ -269,6 +277,7 @@ class UploadedDocument(models.Model):
 
     uploaded_file = models.FileField(upload_to=applicant_document_path)
 
+    detail = models.CharField(default='', blank=True, max_length=200)
 
     def __str__(self):
         return '%s (%s)' % (self.project_uploaded_document.title,
@@ -279,7 +288,7 @@ class Province(models.Model):
     title = models.CharField(max_length=30)
 
     def __str__(self):
-    	return "%s" % (self.title,)
+    	return "%s" % (self.title)
 
 
 class School(models.Model):
@@ -293,67 +302,22 @@ class School(models.Model):
         return "%s" % (self.title,)
 
 
-class ProjectApplication(models.Model):
-    applicant = models.ForeignKey(Applicant,
-                                  on_delete=models.CASCADE,
-                                  related_name='project_applications')
-    admission_project = models.ForeignKey(AdmissionProject,
-                                          on_delete=models.CASCADE)
-    admission_round = models.ForeignKey(AdmissionRound)
-
-    is_canceled = models.BooleanField(default=False)
-    applied_at = models.DateTimeField()
-    cancelled_at = models.DateTimeField(blank=True,
-                                        null=True)
-
-    def get_number(self):
-        return 1003241 + self.id
-
-    def get_verification_number(self):
-        return str(1000000 + (self.id * 952183) % 951361)
-
-    def is_active(self):
-        return not self.is_canceled
-
-    def admission_fee(self, major_selection=None):
-        fee = self.admission_project.base_fee
-        if not major_selection:
-            try:
-                major_selection = self.major_selection
-            except:
-                major_selection = None
-
-        if major_selection:
-            majors = major_selection.get_majors()
-            one_time_fee = 0
-            acc_fee = 0
-            for m in majors:
-                if m.additional_fee_one_time > one_time_fee:
-                    one_time_fee = m.additional_fee_one_time
-                acc_fee += m.additional_fee_per_major
-
-            fee += one_time_fee + acc_fee
-
-        return fee
-
-
 class EducationalProfile(models.Model):
     EDUCATION_LEVEL_CHOICES = [
-            (1,'กำลังศึกษาชั้นมัธยมศึกษาปีที่ 6'),
-            (2,'จบการศึกษาชั้นมัธยมศึกษาปีที่ 6'),
-            (3,'อื่นๆ'),
+            (1,'กำลังศึกษาชั้นมัธยมศึกษาปีที่ 6 หรือเทียบเท่า'),
+            (2,'จบการศึกษาชั้นมัธยมศึกษาปีที่ 6 หรือเทียบเท่า'),
     ]
     EDUCATION_PLAN_CHOICES = [
             (1,'วิทย์-คณิต'),
-            (2,'อื่นๆ'),
+            (2,'ศิลป์-คำนวณ'),
+            (3,'ศิลป์-ภาษา'),
+            (4,'อาชีวศึกษา'),
     ]
 
     applicant = models.OneToOneField(Applicant)
-    education_level = models.IntegerField(max_length=3,
-                                          choices=EDUCATION_LEVEL_CHOICES,
+    education_level = models.IntegerField(choices=EDUCATION_LEVEL_CHOICES,
                                           verbose_name='ระดับการศึกษา')
-    education_plan = models.IntegerField(max_length=3,
-                                         choices=EDUCATION_PLAN_CHOICES,
+    education_plan = models.IntegerField(choices=EDUCATION_PLAN_CHOICES,
                                          verbose_name='แผนการศึกษา')
     gpa = models.FloatField(default=0,
                             verbose_name='GPA')
@@ -361,6 +325,10 @@ class EducationalProfile(models.Model):
                                  verbose_name='จังหวัด')
     school_title = models.CharField(max_length=80,
                                     verbose_name='โรงเรียน')
+    school_code = models.CharField(max_length=20,
+                                   blank=True,
+                                   default='')
+
 
 
 class PersonalProfile(models.Model):
@@ -399,11 +367,14 @@ class PersonalProfile(models.Model):
     house_number = models.CharField(max_length=10,
                                     verbose_name='บ้านเลขที่')
     village_number = models.CharField(max_length=10,
-                                      verbose_name='หมู่')
+                                      verbose_name='หมู่',
+                                      blank=True)
     avenue = models.CharField(max_length=100,
-                              verbose_name='ซอย')
+                              verbose_name='ซอย',
+                              blank=True)
     road = models.CharField(max_length=100,
-                            verbose_name='ถนน')
+                            verbose_name='ถนน',
+                            blank=True)
     sub_district = models.CharField(max_length=100,
                                     verbose_name='ตำบล/แขวง')
     district = models.CharField(max_length=100,
@@ -420,6 +391,69 @@ class PersonalProfile(models.Model):
                                     verbose_name='เบอร์โทรศัพท์มือถือ',
                                     blank=True)
 
+
+
+class ProjectApplication(models.Model):
+    applicant = models.ForeignKey(Applicant,
+                                  on_delete=models.CASCADE,
+                                  related_name='project_applications')
+    admission_project = models.ForeignKey(AdmissionProject,
+                                          on_delete=models.CASCADE)
+    admission_round = models.ForeignKey(AdmissionRound)
+
+    is_canceled = models.BooleanField(default=False)
+    applied_at = models.DateTimeField()
+    cancelled_at = models.DateTimeField(blank=True,
+                                        null=True)
+
+    ID_OFFSET_MAGIC = 104341
+
+    def get_number(self):
+        return self.ID_OFFSET_MAGIC + self.id
+
+    def get_verification_number(self):
+        project_round = self.admission_project.get_project_round_for(self.admission_round)
+        deadline = project_round.payment_deadline
+        deadline_str = "%d%02d%02d" % (deadline.year % 10,
+                                       deadline.month,
+                                       deadline.day)
+
+        from lib.lincodes import gen_verification
+
+        return gen_verification(self.applicant.national_id,
+                                str(self.get_number()),
+                                deadline_str)
+
+    def is_active(self):
+        return not self.is_canceled
+
+    def admission_fee(self, major_selection=None):
+        fee = self.admission_project.base_fee
+        if not major_selection:
+            try:
+                major_selection = self.major_selection
+            except:
+                major_selection = None
+
+        if major_selection:
+            majors = major_selection.get_majors()
+            one_time_fee = 0
+            acc_fee = 0
+            for m in majors:
+                if m.additional_fee_one_time > one_time_fee:
+                    one_time_fee = m.additional_fee_one_time
+                acc_fee += m.additional_fee_per_major
+
+            fee += one_time_fee + acc_fee
+
+        return fee
+
+    def get_major_selection(self):
+        try:
+            ms = self.major_selection
+            return ms
+        except:
+            return None
 
 
 class MajorSelection(models.Model):
@@ -444,15 +478,17 @@ class MajorSelection(models.Model):
             pass
 
         self.majors = []
-        for num in self.major_list.split(','):
-            self.majors.append(Major.get_by_project_number(self.admission_project,
-                                                           num))
+        if self.admission_project_id != None:
+            for num in self.major_list.split(','):
+                self.majors.append(Major.get_by_project_number(self.admission_project,
+                                                               num))
         return self.majors
 
     def set_majors(self, majors):
         self.majors = majors
         self.major_list = ','.join([str(m.number) for m in self.majors])
         self.num_selected = len(majors)
+
 
 
 class Payment(models.Model):
@@ -482,3 +518,42 @@ class Payment(models.Model):
     def find_for_applicant_in_round(applicant, admission_round):
         return Payment.objects.filter(applicant=applicant,
                                       admission_round=admission_round).all()
+
+
+class Eligibility(object):
+    def __init__(self, project=None, applicant=None):
+        self.is_eligible = True
+        self.is_hidden = False
+        self.notice_text = ''
+        self._project = project
+        self._applicant = applicant
+        self._setting = getattr(settings, 'ELIGIBILITY_CHECK', {})
+
+    @classmethod
+    def check(cls, project, applicant):
+        self = cls(project, applicant)
+        if self._project.title in self._setting:
+            getattr(self, self._setting[self._project.title])()
+        return self
+
+    def white_elephant(self):
+        from supplements.models import TopSchool
+        self.is_eligible = False
+        self.is_hidden = False
+        self.notice_text = 'โครงการนี้ผู้สมัครต้องอยู่ในโรงเรียนที่เข้าข่าย กรุณากรอกข้อมูลการศึกษาก่อน'
+
+        if not hasattr(self._applicant, 'educationalprofile'):
+            return
+
+        school_code = self._applicant.educationalprofile.school_code
+        try:
+            school = School.objects.get(code=school_code)
+        except ObjectDoesNotExist:
+            return
+        try:
+            topschool = TopSchool.objects.get(school=school)
+        except ObjectDoesNotExist:
+            return
+
+        self.is_eligible = True
+        self.is_hidden = False

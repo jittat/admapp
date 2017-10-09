@@ -1,10 +1,11 @@
 {% load static %}
+{% load appl_tags %}
 <div class="outside-frame">
   <div class="top-header">
     <div class="acenter top-right-box">
       <small><?= $rcpt ?></small><br>
       เลขที่ใบสมัคร {{ application.get_number }}<br>
-      <b>ใบแจ้งการชำระเงินค่าสมัคร KU Admission</b>
+      <b>ใบแจ้งการชำระเงินค่าสมัครและคัดเลือก</b>
     </div>
     <div class="title-box acenter">
       <table class="empty">
@@ -14,7 +15,7 @@
           </td>
           <td style="text-align: left">
             <b><span style="font-size: 130%">การรับนิสิตเข้าศึกษาต่อ มหาวิทยาลัยเกษตรศาสตร์</span></b><br>
-            <b>1. ชำระผ่านธนาคารกรุงเทพ</b> ชำระเงินผ่านเคาน์เตอร์ ATM และ Internet Banking ภายใน {{ deadline }} หรือ<br><b>2.ชำระผ่านบริการเคาน์เตอร์เซอร์วิส</b> ภายใน <?= $deadline ?>
+            <b>1. ชำระผ่านธนาคารกรุงเทพ</b> ชำระเงินผ่านเคาน์เตอร์ ATM และ Internet Banking ภายใน {{ deadline|thaidate }} หรือ<br><b>2.ชำระผ่านบริการเคาน์เตอร์เซอร์วิส</b> ภายใน {{ deadline|thaidate }}
           </td>
         </tr>
       </table>
@@ -65,7 +66,7 @@
           <td>1</td>
           <td style="text-align: left; padding-left: 10px;">
             ค่าสมัครโครงการรับเข้าศึกษาต่อมหาวิทยาลัยเกษตรศาสตร์<br>
-            <small>หมายเหตุ: สาขาที่ได้รับการพิจารณาจะใช้ข้อมูลล่าสุดในระบบรับสมัครออนไลน์</small>
+            <small>หมายเหตุ: สาขาและโครงการที่ได้รับการพิจารณาจะใช้ข้อมูลล่าสุดในระบบรับสมัครออนไลน์</small>
           </td>
           <td style="text-align: right; padding-right: 5px;">{{ payment_amount|floatformat:2 }}</td>
           <td>-</td>

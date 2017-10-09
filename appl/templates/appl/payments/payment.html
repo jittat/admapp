@@ -1,11 +1,12 @@
 {% extends 'payment_base.html' %}
 {% load static %}
+{% load appl_tags %}
 {% block content %}
   <div class="payin-content">
     {% with rcpt='สำหรับผู้สมัคร' %}
       {% include "appl/payments/include/box.html" %}
       {% if deadline %}
-        <div style="float:right"><b><small>ชำระภายในวันที่ {{ deadline }}</small></b></div>
+        <div style="float:right"><b><small>ชำระภายในวันที่ {{ deadline|thaidate }}</small></b></div>
       {% endif %}
     {% endwith %}
     <div id="cut-sept"></div>

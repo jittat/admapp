@@ -26,6 +26,7 @@ urlpatterns = [
     url(r'^$', main.views.index, name='main-index'),
     url(r'^regis/', include('regis.urls')),
     url(r'^appl/', include('appl.urls')),
+    url(r'^supp/', include('supplements.urls')),
     url(r'^backoffice/', include('backoffice.urls')),
     url(r'^admin/', admin.site.urls),
 
@@ -35,4 +36,4 @@ urlpatterns = [
     url(r'^accounts/logout/$',
         auth_views.LogoutView.as_view(),
         name='backoffice-logout'),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+]
