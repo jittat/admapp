@@ -7,7 +7,7 @@ from django.http import HttpResponse
 from django.urls import reverse
 
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Fieldset, ButtonHolder, Submit
+from crispy_forms.layout import Layout, Fieldset, ButtonHolder, Submit, MultiWidgetField
 
 from regis.decorators import appl_login_required
 
@@ -22,11 +22,10 @@ class EducationForm(ModelForm):
         exclude = ['applicant',
                    'school_code']
 
+
 class ThaiSelectDateWidget(forms.widgets.SelectDateWidget):
     def get_context(self, name, value, attrs):
-        context = super(ThaiSelectDateWidget, self).get_context(name,
-                                                                value,
-                                                                attrs)
+        context = super().get_context(name, value, attrs)
         date_context = {}
         year_choices = [(i, str(i+543)) for i in self.years]
         if self.is_required is False:
@@ -40,9 +39,9 @@ class ThaiSelectDateWidget(forms.widgets.SelectDateWidget):
             attrs=year_attrs,
         )
         context['widget']['subwidgets'][2] = date_context['year']['widget']
-
         return context
-        
+
+
 class PersonalProfileForm(ModelForm):
     class Meta:
         model = PersonalProfile
@@ -62,7 +61,10 @@ class PersonalProfileForm(ModelForm):
                 'middle_name_english',
                 'last_name_english',
                 'passport_number',
-                'birthday',
+                MultiWidgetField(
+                    'birthday',
+                    attrs=({'class': 'd-inline col-md-3'}
+                )),
             ),
             Fieldset(
                 'ข้อมูลบิดา',
