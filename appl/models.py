@@ -221,7 +221,7 @@ class ProjectUploadedDocument(models.Model):
 
     notes = models.CharField(max_length=100,
                              blank=True)
-    
+
     allowed_extentions = models.CharField(max_length=50)
 
     is_required = models.BooleanField(default=True)
@@ -275,6 +275,7 @@ class UploadedDocument(models.Model):
 
     uploaded_file = models.FileField(upload_to=applicant_document_path)
 
+    detail = models.CharField(default='', blank=True)
 
     def __str__(self):
         return '%s (%s)' % (self.project_uploaded_document.title,
@@ -327,7 +328,7 @@ class EducationalProfile(models.Model):
                                    default='')
 
 
-    
+
 class PersonalProfile(models.Model):
     TITLE_CHOICES = (
         ('Mr.', 'Mr.'),
@@ -404,7 +405,7 @@ class ProjectApplication(models.Model):
                                         null=True)
 
     ID_OFFSET_MAGIC = 104341
-    
+
     def get_number(self):
         return self.ID_OFFSET_MAGIC + self.id
 
@@ -416,7 +417,7 @@ class ProjectApplication(models.Model):
                                        deadline.day)
 
         from lib.lincodes import gen_verification
-        
+
         return gen_verification(self.applicant.national_id,
                                 str(self.get_number()),
                                 deadline_str)
@@ -451,7 +452,7 @@ class ProjectApplication(models.Model):
             return ms
         except:
             return None
-    
+
 
 class MajorSelection(models.Model):
     applicant = models.ForeignKey(Applicant)
@@ -487,7 +488,7 @@ class MajorSelection(models.Model):
         self.num_selected = len(majors)
 
 
-        
+
 class Payment(models.Model):
     applicant = models.ForeignKey(Applicant,
                                   null=True)
@@ -541,7 +542,7 @@ class Eligibility(object):
 
         if not hasattr(self._applicant, 'educationalprofile'):
             return
-        
+
         school_code = self._applicant.educationalprofile.school_code
         try:
             school = School.objects.get(code=school_code)
@@ -551,6 +552,6 @@ class Eligibility(object):
             topschool = TopSchool.objects.get(school=school)
         except ObjectDoesNotExist:
             return
-        
+
         self.is_eligible = True
         self.is_hidden = False
