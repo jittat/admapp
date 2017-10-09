@@ -27,7 +27,6 @@ class ThaiSelectDateWidget(forms.widgets.SelectDateWidget):
         context = super(ThaiSelectDateWidget, self).get_context(name,
                                                                 value,
                                                                 attrs)
-        print(context)
         date_context = {}
         year_choices = [(i, str(i+543)) for i in self.years]
         if self.is_required is False:
@@ -40,8 +39,6 @@ class ThaiSelectDateWidget(forms.widgets.SelectDateWidget):
             value=context['widget']['value']['year'],
             attrs=year_attrs,
         )
-
-        print(context)
         context['widget']['subwidgets'][2] = date_context['year']['widget']
 
         return context
