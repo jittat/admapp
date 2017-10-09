@@ -7,7 +7,7 @@ from django.http import HttpResponse
 from django.urls import reverse
 
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Fieldset, ButtonHolder, Submit, MultiWidgetField
+from crispy_forms.layout import Layout, Fieldset, ButtonHolder, Submit, MultiWidgetField, Div, Row
 
 from regis.decorators import appl_login_required
 
@@ -45,6 +45,18 @@ class ThaiSelectDateWidget(forms.widgets.SelectDateWidget):
 class PersonalProfileForm(ModelForm):
     class Meta:
         model = PersonalProfile
+        labels = {
+            'prefix_english': 'คำนำหน้า',
+            'first_name_english': 'ชื่อต้น',
+            'middle_name_english': 'ชื่อกลาง (ถ้ามี)',
+            'last_name_english': 'นามสกุล',
+            'father_prefix': 'คำนำหน้า',
+            'father_first_name': 'ชื่อต้น',
+            'father_last_name': 'นามสกุล',
+            'mother_prefix': 'คำนำหน้า',
+            'mother_first_name': 'ชื่อต้น',
+            'mother_last_name': 'นามสกุล',
+        }
         exclude = ['applicant']
         widgets = {
             'birthday': ThaiSelectDateWidget(years=range(1990,2010))
@@ -55,11 +67,16 @@ class PersonalProfileForm(ModelForm):
         self.helper = FormHelper(self)
         self.helper.layout = Layout(
             Fieldset(
+                'ข้อมูลผู้สมัครภาษาอังกฤษ',
+                Row(
+                    Div('prefix_english', css_class='col-md-2'),
+                    Div('first_name_english', css_class='col-md-3'),
+                    Div('middle_name_english', css_class='col-md-3'),
+                    Div('last_name_english', css_class='col-md-4'),
+                ),
+            ),
+            Fieldset(
                 'ข้อมูลส่วนตัว',
-                'prefix_english',
-                'first_name_english',
-                'middle_name_english',
-                'last_name_english',
                 'passport_number',
                 MultiWidgetField(
                     'birthday',
@@ -68,28 +85,40 @@ class PersonalProfileForm(ModelForm):
             ),
             Fieldset(
                 'ข้อมูลบิดา',
-                'father_prefix',
-                'father_first_name',
-                'father_last_name',
+                Row(
+                    Div('father_prefix', css_class='col-md-2'),
+                    Div('father_first_name', css_class='col-md-5'),
+                    Div('father_last_name', css_class='col-md-5'),
+                )
             ),
             Fieldset(
                 'ข้อมูลมารดา',
-                'mother_prefix',
-                'mother_first_name',
-                'mother_last_name',
+                Row(
+                    Div('mother_prefix', css_class='col-md-2'),
+                    Div('mother_first_name', css_class='col-md-5'),
+                    Div('mother_last_name', css_class='col-md-5'),
+                )
             ),
             Fieldset(
                 'ข้อมูลที่อยู่',
-                'house_number',
-                'village_number',
-                'avenue',
-                'road',
-                'sub_district',
-                'district',
-                'province',
-                'postal_code',
-                'contact_phone',
-                'mobile_phone',
+                Row(
+                    Div('house_number', css_class='col-md-2'),
+                    Div('village_number', css_class='col-md-2'),
+                    Div('avenue', css_class='col-md-2'),
+                    Div('road', css_class='col-md-6'),
+                ),
+                Row(
+                    Div('sub_district', css_class='col-md-6'),
+                    Div('district', css_class='col-md-6'),
+                ),
+                Row(
+                    Div('province', css_class='col-md-6'),
+                    Div('postal_code', css_class='col-md-6'),
+                ),
+                Row(
+                    Div('contact_phone', css_class='col-md-6'),
+                    Div('mobile_phone', css_class='col-md-6'),
+                ),
             ),
             ButtonHolder(
                 Submit('submit', 'จัดเก็บ', css_class='btn btn-primary')
