@@ -25,7 +25,20 @@ class EducationForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
-        self.helper.add_input(Submit('submit', 'จัดเก็บ', css_class='btn btn-primary'))
+        self.helper.layout = Layout(
+            'education_level',
+            Row(
+                Div('education_plan', css_class='col-md-6'),
+                Div('gpa', css_class='col-md-6'),
+            ),
+            Row(
+                Div('province', css_class='col-md-6'),
+                Div('school_title', css_class='col-md-6'),
+            ),
+            ButtonHolder(
+                Submit('submit', 'จัดเก็บ', css_class='btn btn-primary')
+            )
+        )
 
 
 class ThaiSelectDateWidget(forms.widgets.SelectDateWidget):
