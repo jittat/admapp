@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block navbar-additional %}
+  <div class="collapse navbar-collapse" id="navbarText">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'appl:index' %}">หน้าหลัก</a>
+      </li>
+    </ul>
+    {% if applicant %}
+      <a class="nav-link nav-item" href="{% url 'regis:logout' %}">ออกจากระบบ</a>
+    {% endif %}
+  </div>
+{% endblock %}

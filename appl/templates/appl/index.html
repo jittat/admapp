@@ -1,17 +1,35 @@
-{% extends 'base.html' %}
+{% extends 'appl/base.html' %}
 {% block content %}
 <div class="row">
   <div class="col-md-12">
     <h1>ยินดีต้อนรับ {{ applicant }}</h1>
-    <a href="{% url 'regis:logout' %}">Log out</a>
   </div>
 </div>
 
 <div class="row">
   <div class="col-md-6">
     <ul>
-      <li><a href="{% url 'appl:personal-profile' %}">กรอกข้อมูลส่วนตัว</a></li>
-      <li><a href="{% url 'appl:education-profile' %}">กรอกข้อมูลการศึกษา</a></li>
+      {% if personal_profile %}
+        <li>
+          เบอร์โทรศัพท์ติดต่อ: {{ personal_profile.contact_phone }} 
+          <a class="btn btn-sm btn-secondary" href="{% url 'appl:personal-profile' %}">แก้ไขข้อมูลส่วนตัว</a>
+        </li>
+      {% else %}
+        <li>
+          <a class="btn btn-sm btn-primary" href="{% url 'appl:personal-profile' %}">กรอกข้อมูลส่วนตัว</a>
+        </li>
+      {% endif %}
+      {% if educational_profile %}
+        <li>
+          โรงเรียน{{ educational_profile.school_title }}<br />
+          แผนการเรียน: {{ educational_profile.get_education_plan_display }}, GPA: {{ educational_profile.gpa|floatformat:"2" }}<br />
+          <a class="btn btn-sm btn-secondary" href="{% url 'appl:education-profile' %}">แก้ไขข้อมูลการศึกษา</a>
+        </li>
+      {% else %}
+        <li>
+          <a class="btn btn-sm btn-primary" href="{% url 'appl:education-profile' %}">กรอกข้อมูลการศึกษา</a>
+        </li>
+      {% endif %}
     </ul>
   </div>
   <div class="col-md-6">

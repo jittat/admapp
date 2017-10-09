@@ -67,6 +67,8 @@ def index_with_active_application(request, active_application):
     return render(request,
                   'appl/index.html',
                   { 'applicant': applicant,
+                    'personal_profile': applicant.get_personal_profile(),
+                    'educational_profile': applicant.get_educational_profile(),
                     'common_uploaded_documents': common_uploaded_documents,
                     'project_uploaded_documents': project_uploaded_documents,
 
@@ -89,7 +91,15 @@ def index(request):
 
     if not admission_round:
         return index_outside_round(request)
-        
+
+    personal_profile = applicant.get_personal_profile()
+    if not personal_profile:
+        return redirect(reverse('appl:personal-profile'))
+    
+    educational_profile = applicant.get_personal_profile()
+    if not educational_profile:
+        return redirect(reverse('appl:educational-profile'))
+    
     active_application = applicant.get_active_application(admission_round)
 
     if active_application:
@@ -119,6 +129,8 @@ def index(request):
     return render(request,
                   'appl/index.html',
                   { 'applicant': applicant,
+                    'personal_profile': personal_profile,
+                    'educational_profile': educational_profile,
                     'common_uploaded_documents': common_uploaded_documents,
 
                     'admission_round': admission_round,
