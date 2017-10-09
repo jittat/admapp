@@ -14,6 +14,8 @@ from regis.models import Applicant
 
 validate_phonenumber = RegexValidator(r'^\+?[0-9]+$',
                                       'เบอร์โทรศัพท์สามารถประกอบด้วยตัวเลข 0-9 และอาจเริ่มต้นด้วยเครื่องหมาย +')
+validate_gpa = RegexValidator(r'^[0-3]\.[0-9]{2}|4\.00$',
+                              'GPA มีค่าระหว่าง 0.00-4.00 กรุณาตรวจสอบว่าใส่ทศนิยมครบทั้งสองตำแหน่ง')
 
 
 class Campus(models.Model):
@@ -325,7 +327,8 @@ class EducationalProfile(models.Model):
     education_plan = models.IntegerField(choices=EDUCATION_PLAN_CHOICES,
                                          verbose_name='แผนการศึกษา')
     gpa = models.FloatField(default=0,
-                            verbose_name='GPA')
+                            verbose_name='GPA',
+                            validators=[validate_gpa])
     province = models.ForeignKey(Province,
                                  verbose_name='จังหวัด')
     school_title = models.CharField(max_length=80,
