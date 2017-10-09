@@ -5,10 +5,15 @@ import csv
 from datetime import datetime
 
 from django.db import models
+from django.core.validators import RegexValidator
 from django.core.exceptions import ObjectDoesNotExist
 
 from admapp import settings
 from regis.models import Applicant
+
+
+validate_phonenumber = RegexValidator(r'^\+?[0-9]+$',
+                                      'เบอร์โทรศัพท์สามารถประกอบด้วยตัวเลข 0-9 และอาจเริ่มต้นด้วยเครื่องหมาย +')
 
 
 class Campus(models.Model):
@@ -340,14 +345,15 @@ class PersonalProfile(models.Model):
     applicant = models.OneToOneField(Applicant)
     prefix_english = models.CharField(max_length=4,
                                       choices=TITLE_CHOICES,
+                                      verbose_name='คำนำหน้า (อังกฤษ)',
                                       default='Mr.')
     first_name_english = models.CharField(max_length=100,
-                                          verbose_name='ชื่อ(อังกฤษ)')
+                                          verbose_name='ชื่อ (อังกฤษ)')
     middle_name_english = models.CharField(max_length=100,
-                                           verbose_name='ชื่อกลาง(ถ้ามี)',
+                                           verbose_name='ชื่อกลาง (อังกฤษ, ถ้ามี)',
                                            blank=True )
     last_name_english = models.CharField(max_length=200,
-                                         verbose_name='นามสกุล(อังกฤษ)')
+                                         verbose_name='นามสกุล (อังกฤษ)')
     passport_number = models.CharField(max_length=20,
                                        verbose_name='หมายเลข Passport (ถ้ามี)',
                                        blank=True)
@@ -386,10 +392,11 @@ class PersonalProfile(models.Model):
 
     contact_phone = models.CharField(max_length=20,
                                     verbose_name='เบอร์โทรศัพท์ที่ติดต่อได้',
-                                    blank=True)
+                                    validators=[validate_phonenumber])
     mobile_phone = models.CharField(max_length=20,
                                     verbose_name='เบอร์โทรศัพท์มือถือ',
-                                    blank=True)
+                                    blank=True,
+                                    validators=[validate_phonenumber])
 
 
 
