@@ -79,8 +79,15 @@ def select(request, admission_round_id):
     faculties = [f for f in Faculty.objects.all()
                   if f.id in majors_dic]
     
+    if project.max_num_selections > 1:
+      template = 'appl/major_multiple_selection.html'
+    else:
+      template = 'appl/major_selection.html'
+      if len(selected_majors) == 1:
+        selected_majors = selected_majors[0]
+
     return render(request,
-                  'appl/major_multiple_selection.html',
+                  template,
                   { 'applicant': applicant,
                     'admission_project': project,
                     'admission_round': admission_round,
