@@ -151,6 +151,7 @@ def document_delete(request, applicant_id=0, project_uploaded_document_id=0, doc
             context = {
                 'applicant': request.applicant,
                 'project_uploaded_document': project_uploaded_document,
+                'toggle': 'show'
                 }
             result = {
                 'result': 'OK',
