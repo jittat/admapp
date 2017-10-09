@@ -24,7 +24,7 @@ class UploadedDocumentForm(ModelForm):
 def upload_form_for(project_uploaded_document):
     return UploadedDocumentForm()
 
-def upload_check(form, size_limit, allowed_extentions):
+def upload_check(form, size_limit, allowed_extentions, is_detail_required):
     if not form.is_valid():
         return (False, 'FORM_ERROR')
 
@@ -37,6 +37,10 @@ def upload_check(form, size_limit, allowed_extentions):
     if not extension in allowed_extentions:
         return (False, 'EXT_ERROR')
 
+    if is_detail_required:
+        if len(form.cleaned_data['detail']) == 0:
+            return (False, 'DETAIL_REQUIRE')
+
     return (True, 'OK')
 
 
@@ -48,10 +52,11 @@ def upload(request, document_id):
     if request.method != 'POST':
         return HttpResponseForbidden()
     size_limit = project_uploaded_document.size_limit
+    is_detail_required = project_uploaded_document.is_detail_required
     allowed_extentions = project_uploaded_document.allowed_extentions.split(',')
     form = UploadedDocumentForm(request.POST, request.FILES)
 
-    is_valid, result_code = upload_check(form, size_limit, allowed_extentions)
+    is_valid, result_code = upload_check(form, size_limit, allowed_extentions, is_detail_required)
     if is_valid:
         if not project_uploaded_document.can_have_multiple_files:
             old_uploaded_documents = project_uploaded_document.get_uploaded_documents_for_applicant(applicant)
@@ -76,6 +81,7 @@ def upload(request, document_id):
         context = {
             'applicant': applicant,
             'project_uploaded_document': project_uploaded_document,
+            'toggle': 'show'
         }
         result = {'result': 'OK',
                             'html': template.render(context,request),
@@ -145,6 +151,7 @@ def document_delete(request, applicant_id=0, project_uploaded_document_id=0, doc
             context = {
                 'applicant': request.applicant,
                 'project_uploaded_document': project_uploaded_document,
+                'toggle': 'show'
                 }
             result = {
                 'result': 'OK',
