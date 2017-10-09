@@ -20,12 +20,14 @@
             สาขาที่เลือกคือ: {{ selected_majors.faculty.title }} - {{ selected_majors.title }}
           </div>
         {% else %}
-          <div class="alert alert-warning">ยังไม่ได้เลือกสาขา สามารถเลือกได้ 1 สาขา</span>          
+          <div class="alert alert-warning">
+            ยังไม่ได้เลือกสาขา สามารถเลือกได้ 1 สาขา
+          </div>          
         {% endif %}
       </div>
       <div class="form-group">
         เลือกคณะเพื่อเลือกสาขา
-        <select name="falculty" class="form-control" onchange="changeFalcuty(this)">
+        <select name="falculty" class="form-control" onchange="changeFaculty(this)">
           <option value="">เลือกคณะ</option>            
           {% for f in faculties %}
             <option 
@@ -68,7 +70,7 @@
   {% for m in all_majors %}
     majors[{{ m.number }}] = {
       number: "{{ m.number }}",
-      title: "{{ m.title }}",
+      title: "{{ m.title|escapejs }}",
       faculty_id: "{{ m.faculty_id }}"
     };
   {% endfor %}
@@ -80,7 +82,7 @@
     }
   {% endfor %}
   
-  function changeFalcuty(selected) {
+  function changeFaculty(selected) {
     var majorsList = document.getElementById("major-selected-list");
     majorsList.innerHTML = "";
     majors.forEach(function(m, index) {
@@ -111,7 +113,7 @@
 
     var selectedElement = document.getElementById('selected');
     var major = majors[target.value];
-    selectedElement.innerHTML = '<div class="alert alert-info" role="alert">' + 'สาขาที่เลือกคือ: ' + faculties[major.faculty_id].title + ' - ' + majors[target.value].title; + '</div>';
+    selectedElement.innerHTML = '<div class="alert alert-info" role="alert">' + 'สาขาที่เลือกคือ: ' + faculties[major.faculty_id].title + ' - ' + majors[target.value].title + '</div>';
     var inputElement = document.createElement('input');
     inputElement.setAttribute('type', 'hidden');
     inputElement.setAttribute('name', 'major');
