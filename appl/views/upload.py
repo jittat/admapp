@@ -81,6 +81,7 @@ def upload(request, document_id):
         context = {
             'applicant': applicant,
             'project_uploaded_document': project_uploaded_document,
+            'toggle': 'show'
         }
         result = {'result': 'OK',
                             'html': template.render(context,request),
