@@ -28,7 +28,7 @@
   					{% for d in doc.applicant_uploaded_documents %}
   					<li>
   						<a href="{% url 'appl:document-download' applicant.id doc.id d.id %}">
-  							{{ d.uploaded_file.name }}
+  							{{ d|uploadeddocument_name }}
   						</a>
   						<a data-delete-url="{% url 'appl:document-delete' applicant.id doc.id d.id %}" href="#" class="upload-form-delete-buttons btn btn-sm btn-secondary">
   							ลบ
