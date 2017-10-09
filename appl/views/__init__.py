@@ -96,7 +96,7 @@ def index(request):
     if not personal_profile:
         return redirect(reverse('appl:personal-profile'))
     
-    educational_profile = applicant.get_personal_profile()
+    educational_profile = applicant.get_educational_profile()
     if not educational_profile:
         return redirect(reverse('appl:educational-profile'))
     
@@ -125,7 +125,7 @@ def index(request):
     payments = Payment.find_for_applicant_in_round(applicant, admission_round)
     paid_amount = sum([p.amount for p in payments])
     additional_payment = 0
-        
+
     return render(request,
                   'appl/index.html',
                   { 'applicant': applicant,
