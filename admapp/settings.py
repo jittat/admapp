@@ -152,7 +152,7 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 # login/logout urls for backoffice
 
-LOGOUT_REDIRECT_URL = '/backoffice/'
+LOGOUT_REDIRECT_URL = 'backoffice:index'
 
 
 # Admission App Configs
