@@ -5,8 +5,12 @@
   </p>
   <form class="upload-forms" action="{% url 'appl:upload' doc.id %}" method="post" enctype="multipart/form-data">
     {% csrf_token %}
-    <input type="text" name="detail" value="" />
-    <input type="file" class="input-files" name="uploaded_file" required id="id_uploaded_file" />
+    <div class="form-group">
+      <input type="text" class="form-control" name="detail" value="" />
+    </div>
+    <div class="form-group">
+      <input type="file" class="input-files form-control-file" name="uploaded_file" required id="id_uploaded_file" />
+    </div>
     <input type="submit" class="btn btn-success btn-sm upload-form-submit-buttons" value="อัพโหลด" />
     <br />
     <small>{{ doc.specifications }}</small>
