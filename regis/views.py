@@ -11,6 +11,9 @@ from django.contrib.auth.password_validation import validate_password
 
 from django.conf import settings
 
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, Submit, ButtonHolder, Row, Div
+
 from admapp.emails import send_registration_email, send_forget_password_email
 
 from .validators import is_valid_national_id
@@ -85,6 +88,37 @@ class RegistrationForm(forms.Form):
                                        max_length=100,
                                        widget=forms.PasswordInput)
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Row(
+                Div('national_id', css_class='col-md-6'),
+                Div('national_id_confirm', css_class='col-md-6'),
+            ),
+            'has_national_id',
+            Row(
+                Div('passport_number', css_class='col-md-6'),
+                Div('passport_number_confirm', css_class='col-md-6'),
+            ),
+            Row(
+                Div('email', css_class='col-md-6'),
+                Div('email_confirm', css_class='col-md-6'),
+            ),
+            Row(
+                Div('prefix', css_class='col-md-2'),
+                Div('first_name', css_class='col-md-5'),
+                Div('last_name', css_class='col-md-5'),
+            ),
+            Row(
+                Div('password', css_class='col-md-6'),
+                Div('password_confirm', css_class='col-md-6'),
+            ),
+            ButtonHolder(
+                Submit('submit', 'ลงทะเบียน', css_class='lbtn btn-primary')
+            ),
+        )
+
     def check_confirm_and_raise_error(self,
                                       field_name, confirm_field_name,
                                       error_message):
@@ -146,6 +180,7 @@ class RegistrationForm(forms.Form):
         self.check_confirm_and_raise_error('password', 'password_confirm',
                                            'รหัสผ่านที่ยืนยันไม่ตรงกัน')
         return self.cleaned_data['password_confirm']
+
 
 def create_applicant(form):
     applicant = Applicant(national_id=form.cleaned_data['national_id'],
