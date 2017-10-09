@@ -17,13 +17,14 @@
       <div id="selected" class="form-group">
         {% if selected_majors %}
           <div class="alert alert-info">
-              สาขาที่คุณเลือกคือ: {{ selected_majors.title }}
+            สาขาที่เลือกคือ: {{ selected_majors.faculty.title }} - {{ selected_majors.title }}
           </div>
         {% else %}
-          <span class="badge badge-warning">ยังไม่ได้เลือกสาขา สามารถเลือกได้ 1 สาขา</span>          
+          <div class="alert alert-warning">ยังไม่ได้เลือกสาขา สามารถเลือกได้ 1 สาขา</span>          
         {% endif %}
       </div>
       <div class="form-group">
+        เลือกคณะเพื่อเลือกสาขา
         <select name="falculty" class="form-control" onchange="changeFalcuty(this)">
           <option value="">เลือกคณะ</option>            
           {% for f in faculties %}
@@ -72,6 +73,13 @@
     };
   {% endfor %}
 
+  faculties = [];
+  {% for f in faculties %}
+    faculties[{{ f.id }}] = {
+      title: "{{ f.title|escapejs }}"
+    }
+  {% endfor %}
+  
   function changeFalcuty(selected) {
     var majorsList = document.getElementById("major-selected-list");
     majorsList.innerHTML = "";
@@ -102,13 +110,13 @@
     target.setAttribute('class', 'btn btn-success');
 
     var selectedElement = document.getElementById('selected');
-    selectedElement.innerHTML = '<div class="alert alert-info" role="alert">' + 'สาขาที่คุณเลือกคือ: ' + majors[target.value].title; + '</div>';
+    var major = majors[target.value];
+    selectedElement.innerHTML = '<div class="alert alert-info" role="alert">' + 'สาขาที่เลือกคือ: ' + faculties[major.faculty_id].title + ' - ' + majors[target.value].title; + '</div>';
     var inputElement = document.createElement('input');
     inputElement.setAttribute('type', 'hidden');
     inputElement.setAttribute('name', 'major');
     inputElement.setAttribute('value', majors[target.value].number);
     selectedElement.appendChild(inputElement);
   }
-
 </script>
 {% endblock %}

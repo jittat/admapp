@@ -1,269 +1,294 @@
 {% extends 'appl/base.html' %}
 {% block content %}
-<div class="row major-multiple-selection-container">
-    <form 
-        class="major-multiple-selection-form"
-        action="{% url 'appl:major-selection' admission_round.id %}" 
-        method="post"
-    >                
-        {% csrf_token %}
-        <div class="form">
-            <div class="form-group col-md-12">
-                <h1>เลือกสาขาโครงการ{{ admission_project }}</h1>
-                ผู้สมัคร: {{ applicant }} จำนวนสาขาที่เลือกได้ {{ admission_project.max_num_selections }}             
-            </div>
-            <div class="form-group">
-              <p>รายชื่อที่เลือก (สามารถลากเปลี่ยนอันดับได้)</p>
-              <span 
-                id="select-badge" class="badge badge-warning"
-                {% if selected_majors %} 
-                  style="display: none;" 
-                {% endif %}
-              >                                   
-                  ยังไม่ได้เลือกสาขา สามารถเลือกได้ 1 สาขา
-              </span>
-              <ul id="selected-list" class="list-group d-flex">
-                {% for major in selected_majors %}
-                    <div 
-                        class="list-group-item d-flex justify-content-between"
-                        value="{{ major.number }}"
-                    >
-                        <div>
-                            <b>{{ forloop.counter }}</b>
-                            {{ major.title }}
-                        </div>
-                        <div class="d-flex flex-nowrap"> 
-                            <button 
-                                class="btn btn-dark btn-block"
-                                type="button"
-                                onclick="upOrder({{ forloop.counter }})"
-                            >
-                                <i class="fa fa-arrow-up" aria-hidden="true"></i>
-                            </button>
-                            <button
-                                class="btn btn-dark btn-block"
-                                type="button"
-                                onclick="downOrder({{ forloop.counter }})"
-                            >
-                                <i class="fa fa-arrow-down" aria-hidden="true"></i>
-                            </button>
-                            <button
-                                type="button"
-                                class="btn btn-danger btn-block"
-                                value="{{ major.number }}"
-                                onclick="removeMajorInList(this.value)"
-                            >
-                                <i class="fa fa-times" aria-hidden="true"></i>
-                            </button>
-                        </div>
-                        <input type="hidden" name="major" value="{{ major.number }}">
-                    </div>
-                {% endfor %}
-              </ul>
-            </div>
-            <div class="form-group">
-                <select
-                    class="form-control" 
-                    name="falculty" 
-                    onchange="changeFalcuty(this)"
-                >
-                    <option value="">เลือกคณะ</option>            
-                    {% for f in faculties %}
-                        <option 
-                            value="{{ f.id }}"
-                        >
-                        {{ f.title }}
-                        </option>
-                    {% endfor %}
-                </select>
-                <br>
-                <div>
-                    <div 
-                        name="major" 
-                        class="list-group d-flex flex-row flex-wrap" 
-                        id="major-selected-list"
-                        style="font-size: small"
-                    >
-                    </div>      
-                </div>  
-            </div>
-            <div class="form-group col-md-12">
-                <input type="submit" name="save" class="btn btn-success" value="จัดเก็บ" />
-                <input type="submit" name="cancel" class="btn btn-danger" value="ยกเลิก" />
-            </div>
+<div class="major-multiple-selection-container">
+  <form 
+    class="major-multiple-selection-form"
+    action="{% url 'appl:major-selection' admission_round.id %}" 
+    method="post"
+  >                
+    {% csrf_token %}
+    <div class="form">
+      <div class="row">
+        <div class="form-group col-md-12">
+          <h1>เลือกสาขาโครงการ{{ admission_project }}</h1>
+          <b>ผู้สมัคร: {{ applicant }} จำนวนสาขาที่เลือกได้ {{ admission_project.max_num_selections }}</b>
         </div>
-    </form>
+      </div>
+      <div class="row">
+        <div class="form-group col-md-12">
+          <p>รายชื่อที่เลือก (สามารถลากเปลี่ยนอันดับได้)</p>
+          <div  
+            id="select-badge" class="alert alert-warning"
+            {% if selected_majors %}
+            style="display: none;"
+            {% endif %}
+          >                                   
+            ยังไม่ได้เลือกสาขา สามารถเลือกได้ {{ admission_project.max_num_selections }} สาขา
+          </div>
+          <ul id="selected-list" class="list-group d-flex">
+            {% for major in selected_majors %}
+              <div 
+                class="list-group-item d-flex justify-content-between"
+                value="{{ major.number }}"
+              >
+                <div>
+                  <b>{{ forloop.counter }}</b>
+                  {{ major.faculty }} - {{ major.title }}
+                </div>
+                <div class="d-flex flex-nowrap"> 
+                  <button 
+                    class="btn btn-dark btn-block"
+                    type="button"
+                    onclick="upOrder({{ forloop.counter }})"
+                  >
+                    <i class="fa fa-arrow-up" aria-hidden="true"></i>
+                  </button>
+                  <button
+                    class="btn btn-dark btn-block"
+                    type="button"
+                    onclick="downOrder({{ forloop.counter }})"
+                  >
+                    <i class="fa fa-arrow-down" aria-hidden="true"></i>
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-danger btn-block"
+                    value="{{ major.number }}"
+                    onclick="removeMajorInList(this.value)"
+                  >
+                    <i class="fa fa-times" aria-hidden="true"></i>
+                  </button>
+                </div>
+                <input type="hidden" name="major" value="{{ major.number }}">
+              </div>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-group col-md-12">
+          เลือกคณะเพื่อเลือกสาขา
+          <select
+            class="form-control" 
+            name="falculty" 
+            onchange="changeFaculty(this)"
+          >
+            <option value="">เลือกคณะ</option>            
+            {% for f in faculties %}
+              <option 
+                value="{{ f.id }}"
+              >
+                {{ f.title }} ({{ f.campus }})
+              </option>
+            {% endfor %}
+          </select>
+          <br>
+          <div>
+            <div 
+              name="major" 
+              class="list-group d-flex flex-row flex-wrap" 
+              id="major-selected-list"
+              style="font-size: small"
+            >
+            </div>      
+          </div>  
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-group col-md-12">
+          <input id="form_save_id" type="submit" name="save" class="btn btn-success" value="จัดเก็บ" />
+          <input type="submit" name="cancel" class="btn btn-danger" value="ยกเลิก" />
+        </div>
+      </div>
+    </div>
+  </form>
 </div>
 
 <script type="text/javascript">
-    var majors = [];
-    var selectedList = [];
-    var dragIndex;
-    $( "#selected-list" ).sortable({
-        start: function(e, ui) {
-            dragIndex = ui.item.index()
-        },
-        update: function(e, ui) {
-          swapSelectedList(dragIndex, ui.item.index());
-          renderSelectedList();
-        }
+  var majors = [];
+  var faculties = [];
+  var selectedList = [];
+  var dragIndex;
+  $( "#selected-list" ).sortable({
+    start: function(e, ui) {
+      dragIndex = ui.item.index()
+    },
+    update: function(e, ui) {
+      swapSelectedList(dragIndex, ui.item.index());
+      renderSelectedList();
+    }
+  });
+  // initial all majors
+  {% for m in all_majors %}
+    majors[{{ m.number }}] = {
+      number: "{{ m.number }}",
+      title: "{{ m.title|escapejs }}",
+      faculty_id: "{{ m.faculty_id }}"
+    };
+  {% endfor %}
+  
+  {% for f in faculties %}
+    faculties[{{ f.id }}] = {
+      title: "{{ f.title|escapejs }}"
+    }
+  {% endfor %}
+
+  // initial selected majors
+  {% for m in selected_majors %}
+    selectedList.push({
+      number: "{{ m.number }}",
+      title: "{{ m.title }}",
+      faculty_id: "{{ m.faculty_id }}"
     });
-    // initial all majors
-    {% for m in all_majors %}
-      majors[{{ m.number }}] = {
-        number: "{{ m.number }}",
-        title: "{{ m.title }}",
-        faculty_id: "{{ m.faculty_id }}"
-      };
-    {% endfor %}
+  {% endfor %}
+  
+  function upOrder(index) {
+    if (index > 1) {
+      swapSelectedList(index - 2, index - 1);
+      renderSelectedList();
+    }
+  }
+  
+  function downOrder(index) {
+    if (index < selectedList.length) {
+      swapSelectedList(index - 1, index);
+      renderSelectedList();
+    }
+  }
+
+  function changeFaculty(selected) {
+    var majorsList = document.getElementById('major-selected-list');
+    majorsList.innerHTML = '';
+    majors.forEach(function(m, index) {
+      if (selected.value === m.faculty_id) {
+        var majorWrapper = document.createElement('div');
+        majorWrapper.innerHTML = m.title;
+        majorWrapper.setAttribute('class', 'list-group-item d-flex col col-lg-3 col-12 justify-content-between');
         
-    // initial selected majors
-    {% for m in selected_majors %}
-      selectedList.push({
-        number: "{{ m.number }}",
-        title: "{{ m.title }}",
-        faculty_id: "{{ m.faculty_id }}"
-      });
-    {% endfor %}
-    
-    function upOrder(index) {
-      if (index > 1) {
-        swapSelectedList(index - 2, index - 1);
-        renderSelectedList();
+        var majorButton = document.createElement('button');
+        majorButton.innerHTML = 'เพิ่ม';
+        majorButton.setAttribute('value', index);
+        majorButton.setAttribute('class', 'btn btn-outline-success')
+        majorButton.onclick = function(e) {
+          e.preventDefault();
+          addMajorToList(e.target.value);
+        }
+        
+        majorWrapper.appendChild(majorButton);
+        majorsList.appendChild(majorWrapper);
       }
-    }
-
-    function downOrder(index) {
-      if (index < selectedList.length) {
-        swapSelectedList(index - 1, index);
-        renderSelectedList();
-      }
-    }
-
-    function changeFalcuty(selected) {
-      var majorsList = document.getElementById('major-selected-list');
-      majorsList.innerHTML = '';
-      majors.forEach(function(m, index) {
-        if (selected.value === m.faculty_id) {
-          var majorWrapper = document.createElement('div');
-          majorWrapper.innerHTML = m.title;
-          majorWrapper.setAttribute('class', 'list-group-item d-flex col col-lg-3 col-12 justify-content-between');
-
-          var majorButton = document.createElement('button');
-          majorButton.innerHTML = 'เพิ่ม';
-          majorButton.setAttribute('value', index);
-          majorButton.setAttribute('class', 'btn btn-outline-success')
-          majorButton.onclick = function(e) {
-              e.preventDefault();
-              addMajorToList(e.target.value);
-          }
-
-          majorWrapper.appendChild(majorButton);
-          majorsList.appendChild(majorWrapper);
-        }
-      })
-    }
-
-    function renderSelectedList() {
-      var badge = document.getElementById('select-badge');
-      if (selectedList.length == 0) {
-        badge.style = '';
-      } else {
-        badge.style = 'display: none';
-      }
-
-      var selectedListElement = document.getElementById('selected-list');
-      selectedListElement.innerHTML = '';
-      selectedList.forEach(function(s, index) {
-        var selectedMajor = document.createElement('li');
-        selectedMajor.innerHTML = '<div><b>' + (index+1) + '</b> ' + s.title; + '</div>';
-        selectedMajor.setAttribute('class', 'list-group-item d-flex justify-content-between');
-
-        var inputElement = document.createElement('input');
-        inputElement.setAttribute('type', 'hidden');
-        inputElement.setAttribute('name', 'major');
-        inputElement.setAttribute('value', s.number);
-
-        var rightTab = document.createElement('div');
-        rightTab.setAttribute('class', 'd-flex flex-nowrap');
-
-        var upButton = document.createElement('button');
-        upButton.innerHTML = '<i class="fa fa-arrow-up" aria-hidden="true"></i>';
-        upButton.setAttribute('class', 'btn btn-dark btn-block');
-        upButton.setAttribute('type', 'button');
-        upButton.onclick = function(e) {
-            upOrder(index + 1);
-        }
-
-        var downButton = document.createElement('button');
-        downButton.innerHTML = '<i class="fa fa-arrow-down" aria-hidden="true"></i>';
-        downButton.setAttribute('class', 'btn btn-dark btn-block');
-        downButton.setAttribute('type', 'button');
-        downButton.onclick = function(e) {
-            downOrder(index + 1);
-        }
-
-        var removeButton = document.createElement('button');
-        removeButton.innerHTML = '<i class="fa fa-times" aria-hidden="true"></i>';
-        removeButton.setAttribute('class', 'btn btn-danger btn-block');
-        removeButton.setAttribute('value', s.number);
-        removeButton.setAttribute('type', 'button');
-        removeButton.setAttribute('aria-label', 'Close');
-        removeButton.onclick = function(e) {
-            removeMajorInList(this.value);
-        }
-
-        rightTab.appendChild(upButton);
-        rightTab.appendChild(downButton);
-        rightTab.appendChild(removeButton);
-        selectedMajor.appendChild(rightTab);
-        selectedMajor.appendChild(inputElement);
-        selectedListElement.appendChild(selectedMajor);
-      })
+    })
+  }
+  
+  function renderSelectedList() {
+    var badge = document.getElementById('select-badge');
+    if (selectedList.length == 0) {
+      badge.style = '';
+    } else {
+      badge.style = 'display: none';
     }
     
-    function addMajorToList(index) {
-        var major = majors[index];
-        var duplicate = false;
+    var selectedListElement = document.getElementById('selected-list');
+    selectedListElement.innerHTML = '';
+    selectedList.forEach(function(s, index) {
+      var selectedMajor = document.createElement('li');
+      selectedMajor.innerHTML = '<div><b>' + (index+1) + '</b> ' + faculties[s.faculty_id].title + ' - ' + s.title + '</div>';
+      selectedMajor.setAttribute('class', 'list-group-item d-flex justify-content-between');
       
-        for (var selected of selectedList) {
-            if(selected.number === major.number) {
-                duplicate = true;
-            }
-        }
-
-        var error = null;
-        if (selectedList.length >= Number("{{ admission_project.max_num_selections }}")) {
-            error = 'เลือกสาขาเกินจำนวนที่เลือกได้ !';
-        }
-
-        if (duplicate) {
-            error = 'สาขานี้ถูกเลือกแล้ว !';
-        }
-
-        if (error) {
-            swal(
-                error,
-                '',
-                'error'
-            )
-        } else {
-            selectedList.push(major);
-            renderSelectedList();
-        }
-
+      var inputElement = document.createElement('input');
+      inputElement.setAttribute('type', 'hidden');
+      inputElement.setAttribute('name', 'major');
+      inputElement.setAttribute('value', s.number);
+      
+      var rightTab = document.createElement('div');
+      rightTab.setAttribute('class', 'd-flex flex-nowrap');
+      
+      var upButton = document.createElement('button');
+      upButton.innerHTML = '<i class="fa fa-arrow-up" aria-hidden="true"></i>';
+      upButton.setAttribute('class', 'btn btn-dark btn-block');
+      upButton.setAttribute('type', 'button');
+      upButton.onclick = function(e) {
+        upOrder(index + 1);
+      }
+      
+      var downButton = document.createElement('button');
+      downButton.innerHTML = '<i class="fa fa-arrow-down" aria-hidden="true"></i>';
+      downButton.setAttribute('class', 'btn btn-dark btn-block');
+      downButton.setAttribute('type', 'button');
+      downButton.onclick = function(e) {
+        downOrder(index + 1);
+      }
+      
+      var removeButton = document.createElement('button');
+      removeButton.innerHTML = '<i class="fa fa-times" aria-hidden="true"></i>';
+      removeButton.setAttribute('class', 'btn btn-danger btn-block');
+      removeButton.setAttribute('value', s.number);
+      removeButton.setAttribute('type', 'button');
+      removeButton.setAttribute('aria-label', 'Close');
+      removeButton.onclick = function(e) {
+        removeMajorInList(this.value);
+      }
+      
+      rightTab.appendChild(upButton);
+      rightTab.appendChild(downButton);
+      rightTab.appendChild(removeButton);
+      selectedMajor.appendChild(rightTab);
+      selectedMajor.appendChild(inputElement);
+      selectedListElement.appendChild(selectedMajor);
+    })
+  }
+  
+  function addMajorToList(index) {
+    var major = majors[index];
+    var duplicate = false;
+    
+    for (var selected of selectedList) {
+      if(selected.number === major.number) {
+        duplicate = true;
+      }
     }
-    function removeMajorInList(number) {
-        selectedList = selectedList.filter(function(s) {
-          return s.number != number;
-        });
-        renderSelectedList();
+    
+    var error = null;
+    if (selectedList.length >= Number("{{ admission_project.max_num_selections }}")) {
+      error = 'เลือกสาขาเกินจำนวนที่เลือกได้ !';
     }
+    
+    if (duplicate) {
+      error = 'สาขานี้ถูกเลือกแล้ว !';
+    }
+    
+    if (error) {
+      swal(
+        error,
+        '',
+        'error'
+      )
+    } else {
+      selectedList.push(major);
+      renderSelectedList();
+    }
+    
+  }
+  function removeMajorInList(number) {
+    selectedList = selectedList.filter(function(s) {
+      return s.number != number;
+    });
+    renderSelectedList();
+  }
+  
+  function swapSelectedList(a, b) {
+    var temp = selectedList[a];
+    selectedList[a] = selectedList[b];
+    selectedList[b] = temp;
+  }
 
-    function swapSelectedList(a, b) {
-        var temp = selectedList[a];
-        selectedList[a] = selectedList[b];
-        selectedList[b] = temp;
-    }
+  $(function(){
+    $("#form_save_id").click(function(){
+      if(selectedList.length == 0) {
+        alert('ไม่สามารถจัดเก็บได้ เนื่องจากยังไม่เลือกสาขา');
+        return false;
+      }
+    });
+  });
 </script>
 {% endblock %}
