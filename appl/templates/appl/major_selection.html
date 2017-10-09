@@ -84,7 +84,7 @@
         var majorButton = document.createElement('button');
         majorButton.innerHTML = 'เลือกสาขานี้';
         majorButton.setAttribute('value', index);
-        majorButton.setAttribute('class', 'btn btn-outline-success')
+        majorButton.setAttribute('class', 'btn btn-outline-success major-button')
         majorButton.onclick = function(e) {
           e.preventDefault();
           selectMajor(e.target);
@@ -96,6 +96,11 @@
   }
   
   function selectMajor(target) {
+    $('#major-selected-list').children().children().each(function() {
+      $(this).removeClass('btn-success').addClass('btn-outline-success')
+    });
+    target.setAttribute('class', 'btn btn-success');
+
     var selectedElement = document.getElementById('selected');
     selectedElement.innerHTML = '<div class="alert alert-info" role="alert">' + 'สาขาที่คุณเลือกคือ: ' + majors[target.value].title; + '</div>';
     var inputElement = document.createElement('input');
