@@ -77,9 +77,12 @@ def index_with_active_application(request, active_application):
         
     admission_projects = []
 
+    notice = request.session.pop('notice', None)
+
     return render(request,
                   'appl/index.html',
-                  { 'applicant': applicant,
+                  { 'notice': notice,
+                    'applicant': applicant,
                     'personal_profile': applicant.get_personal_profile(),
                     'educational_profile': applicant.get_educational_profile(),
                     'common_uploaded_documents': common_uploaded_documents,
@@ -101,7 +104,6 @@ def index_with_active_application(request, active_application):
 
 @appl_login_required
 def index(request):
-    notice = request.session.pop('notice', None)
     applicant = request.applicant
     admission_round = AdmissionRound.get_available()
 
@@ -141,6 +143,8 @@ def index(request):
     payments = Payment.find_for_applicant_in_round(applicant, admission_round)
     paid_amount = sum([p.amount for p in payments])
     additional_payment = 0
+
+    notice = request.session.pop('notice', None)
 
     return render(request,
                   'appl/index.html',
