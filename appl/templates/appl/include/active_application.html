@@ -10,8 +10,12 @@
     <ul>
       {% include 'appl/include/project_supplement_link.html' %}
       {% include 'appl/include/major_selection_item.html' %}
-      {% if major_selection %}
-        {% include 'appl/include/payment_item.html' %}
+      {% if documents_complete_status.status %}
+        {% if major_selection %}
+          {% include 'appl/include/payment_item.html' %}
+        {% endif %}
+      {% else %}
+        {% include 'appl/include/documents_incomplete.html' %}
       {% endif %}
     </ul>
   </div>

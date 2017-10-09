@@ -30,7 +30,14 @@ def prepare_project_eligibility_and_detes(projects,
         project.eligibility = Eligibility.check(project, applicant)
         project.project_round = project.get_project_round_for(admission_round)
     
+def check_project_documents(applicant,
+                            admission_project,
+                            supplement_configs,
+                            project_uploaded_documents):
+    return {'status': False,
+            'errors': ['โน่น','นี่','นั่น']}
 
+        
 def index_outside_round(request):
     return HttpResponseForbidden()
 
@@ -61,6 +68,11 @@ def index_with_active_application(request, active_application):
         additional_payment = admission_fee - paid_amount
     else:
         additional_payment = 0
+
+    documents_complete_status = check_project_documents(applicant,
+                                                        admission_project,
+                                                        supplement_configs,
+                                                        list(common_uploaded_documents) + list(project_uploaded_documents))
         
     admission_projects = []
 
@@ -78,6 +90,8 @@ def index_with_active_application(request, active_application):
                     'supplement_configs': supplement_configs,
                     'major_selection': major_selection,
 
+                    'documents_complete_status': documents_complete_status,
+                    
                     'payments': payments,
                     'paid_amount': paid_amount,
                     'additional_payment': additional_payment,
