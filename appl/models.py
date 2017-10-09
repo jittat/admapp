@@ -363,11 +363,14 @@ class PersonalProfile(models.Model):
     house_number = models.CharField(max_length=10,
                                     verbose_name='บ้านเลขที่')
     village_number = models.CharField(max_length=10,
-                                      verbose_name='หมู่')
+                                      verbose_name='หมู่',
+                                      blank=True)
     avenue = models.CharField(max_length=100,
-                              verbose_name='ซอย')
+                              verbose_name='ซอย',
+                              blank=True)
     road = models.CharField(max_length=100,
-                            verbose_name='ถนน')
+                            verbose_name='ถนน',
+                            blank=True)
     sub_district = models.CharField(max_length=100,
                                     verbose_name='ตำบล/แขวง')
     district = models.CharField(max_length=100,

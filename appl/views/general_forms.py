@@ -22,11 +22,37 @@ class EducationForm(ModelForm):
         exclude = ['applicant',
                    'school_code']
 
+class ThaiSelectDateWidget(forms.widgets.SelectDateWidget):
+    def get_context(self, name, value, attrs):
+        context = super(ThaiSelectDateWidget, self).get_context(name,
+                                                                value,
+                                                                attrs)
+        print(context)
+        date_context = {}
+        year_choices = [(i, str(i+543)) for i in self.years]
+        if self.is_required is False:
+            year_choices.insert(0, self.year_none_value)
+        year_attrs = context['widget']['attrs'].copy()
+        year_name = self.year_field % name
+        year_attrs['id'] = 'id_%s' % year_name
+        date_context['year'] = self.select_widget(attrs, choices=year_choices).get_context(
+            name=year_name,
+            value=context['widget']['value']['year'],
+            attrs=year_attrs,
+        )
 
+        print(context)
+        context['widget']['subwidgets'][2] = date_context['year']['widget']
+
+        return context
+        
 class PersonalProfileForm(ModelForm):
     class Meta:
         model = PersonalProfile
         exclude = ['applicant']
+        widgets = {
+            'birthday': ThaiSelectDateWidget(years=range(1990,2010))
+        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
