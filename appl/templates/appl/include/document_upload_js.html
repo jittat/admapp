@@ -6,8 +6,17 @@
       var data = new FormData(form);
       var progress = $(form).find(".progress-bars");
       var uploadErrorDiv = $(form).find(".document-upload-errors");
-      $(uploadErrorDiv).hide();
+      var isDetailRequired = $(form).attr('data-detail-required')
+
+      //$(uploadErrorDiv).hide();
       $(progress).show().text("0%");
+
+      if(isDetailRequired && data.get('detail').length==0) {
+        $(uploadErrorDiv).show().html('โปรดระบุคำอธิบาย</b>');
+        return false;
+      } else {
+        $(uploadErrorDiv).hide();
+      }
 
       jQuery.ajax({
         url: form.action,
@@ -20,11 +29,11 @@
           if (data.result == 'OK') {
             $(div).replaceWith(data.html);
           } else if (data.result == 'EXT_ERROR') {
-            $(uploadErrorDiv).show().html('นามสกุลของไฟล์ไม่ถูกต้อง</b>')
+            $(uploadErrorDiv).show().html('นามสกุลของไฟล์ไม่ถูกต้อง</b>');
           } else if (data.result == 'SIZE_ERROR') {
-            $(uploadErrorDiv).show().html('ขนาดของไฟล์ใหญ่กว่าที่กำหนด</b>')
+            $(uploadErrorDiv).show().html('ขนาดของไฟล์ใหญ่กว่าที่กำหนด</b>');
           } else if (data.result == 'DETAIL_REQUIRE') {
-            $(uploadErrorDiv).show().html('โปรดระบุคำอธิบาย</b>')
+            $(uploadErrorDiv).show().html('โปรดระบุคำอธิบาย</b>');
           }
           $(progress).hide();
         }

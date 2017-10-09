@@ -10,11 +10,12 @@
 		</div>
 		<div id="accordian-upload-form-{{ doc.id }}" class="collapse {% if doc.applicant_uploaded_documents %}hide{% else %}show{% endif %}" role="tabpanel" aria-labelledby="accordian-upload-header">
       <div class="card-block p10">
-  			<form class="upload-forms" action="{% url 'appl:upload' doc.id %}" method="post" enctype="multipart/form-data">
+  			<form class="upload-forms" action="{% url 'appl:upload' doc.id %}" method="post" data-detail-required="{% if doc.is_detail_required %}true{% endif %}" enctype="multipart/form-data">
   				{% csrf_token %}
           <div class="form-group">
             <small>คำอธิบาย</small>
             <input type="text" class="form-control" name="detail" value="" />
+
           </div>
 
   				<input type="file" class="input-files" name="uploaded_file" required id="id_uploaded_file" />
