@@ -13,48 +13,47 @@
                 ผู้สมัคร: {{ applicant }} จำนวนสาขาที่เลือกได้ {{ admission_project.max_num_selections }}             
             </div>
             <div class="form-group">
-                <p>รายชื่อที่เลือก (สามารถลากเปลี่ยนอันดับได้)</p>
-                <ul id="selected-list" class="list-group d-flex">
-                  {% if selected_majors %}
-                    {% for major in selected_majors %}
-                        <div 
-                            class="list-group-item d-flex justify-content-between"
-                            value="{{ major.number }}"
-                        >
-                            <div>
-                                <b>{{ forloop.counter }}</b>
-                                {{ major.title }}
-                            </div>
-                            <div class="d-flex flex-nowrap"> 
-                                <button 
-                                    class="btn btn-dark btn-block"
-                                    type="button"
-                                    onclick="upOrder({{ forloop.counter }})"
-                                >
-                                    <i class="fa fa-arrow-up" aria-hidden="true"></i>
-                                </button>
-                                <button
-                                    class="btn btn-dark btn-block"
-                                    type="button"
-                                    onclick="downOrder({{ forloop.counter }})"
-                                >
-                                    <i class="fa fa-arrow-down" aria-hidden="true"></i>
-                                </button>
-                                <button
-                                    type="button"
-                                    class="btn btn-danger btn-block"
-                                    value="{{ major.number }}"
-                                    onclick="removeMajorInList(this.value)"
-                                >
-                                    <i class="fa fa-times" aria-hidden="true"></i>
-                                </button>
-                            </div>
-                            <input type="hidden" name="major" value="{{ major.number }}">
-                        </div>
-                    {% endfor %}
-                  {% else %}
-                    <h1>ยังไม่ได้เลือกสาขา สามารถเลือกได้ 1 สาขา</h1>
-                  {% endif %}
+              <p>รายชื่อที่เลือก (สามารถลากเปลี่ยนอันดับได้)</p>
+              {% if not selected_majors %}              
+                <span id="select-badge" class="badge badge-warning">ยังไม่ได้เลือกสาขา สามารถเลือกได้ 1 สาขา</span>
+              {% endif %}
+              <ul id="selected-list" class="list-group d-flex">
+                  {% for major in selected_majors %}
+                      <div 
+                          class="list-group-item d-flex justify-content-between"
+                          value="{{ major.number }}"
+                      >
+                          <div>
+                              <b>{{ forloop.counter }}</b>
+                              {{ major.title }}
+                          </div>
+                          <div class="d-flex flex-nowrap"> 
+                              <button 
+                                  class="btn btn-dark btn-block"
+                                  type="button"
+                                  onclick="upOrder({{ forloop.counter }})"
+                              >
+                                  <i class="fa fa-arrow-up" aria-hidden="true"></i>
+                              </button>
+                              <button
+                                  class="btn btn-dark btn-block"
+                                  type="button"
+                                  onclick="downOrder({{ forloop.counter }})"
+                              >
+                                  <i class="fa fa-arrow-down" aria-hidden="true"></i>
+                              </button>
+                              <button
+                                  type="button"
+                                  class="btn btn-danger btn-block"
+                                  value="{{ major.number }}"
+                                  onclick="removeMajorInList(this.value)"
+                              >
+                                  <i class="fa fa-times" aria-hidden="true"></i>
+                              </button>
+                          </div>
+                          <input type="hidden" name="major" value="{{ major.number }}">
+                      </div>
+                  {% endfor %}
                 </ul>
             </div>
             <div class="form-group">
@@ -161,54 +160,61 @@
     }
 
     function renderSelectedList() {
-        var selectedListElement = document.getElementById('selected-list');
-        selectedListElement.innerHTML = '';
-        selectedList.forEach(function(s, index) {
-            var selectedMajor = document.createElement('li');
-            selectedMajor.innerHTML = '<div><b>' + (index+1) + '</b> ' + s.title; + '</div>';
-            selectedMajor.setAttribute('class', 'list-group-item d-flex justify-content-between');
+      var badge = document.getElementById('select-badge');
+      if (selectedList.length == 0) {
+        badge.innerHTML = 'ยังไม่ได้เลือกสาขา สามารถเลือกได้ 1 สาขา';
+      } else {
+        badge.innerHTML = '';
+      }
 
-            var inputElement = document.createElement('input');
-            inputElement.setAttribute('type', 'hidden');
-            inputElement.setAttribute('name', 'major');
-            inputElement.setAttribute('value', s.number);
+      var selectedListElement = document.getElementById('selected-list');
+      selectedListElement.innerHTML = '';
+      selectedList.forEach(function(s, index) {
+        var selectedMajor = document.createElement('li');
+        selectedMajor.innerHTML = '<div><b>' + (index+1) + '</b> ' + s.title; + '</div>';
+        selectedMajor.setAttribute('class', 'list-group-item d-flex justify-content-between');
 
-            var rightTab = document.createElement('div');
-            rightTab.setAttribute('class', 'd-flex flex-nowrap');
+        var inputElement = document.createElement('input');
+        inputElement.setAttribute('type', 'hidden');
+        inputElement.setAttribute('name', 'major');
+        inputElement.setAttribute('value', s.number);
 
-            var upButton = document.createElement('button');
-            upButton.innerHTML = '<i class="fa fa-arrow-up" aria-hidden="true"></i>';
-            upButton.setAttribute('class', 'btn btn-dark btn-block');
-            upButton.setAttribute('type', 'button');
-            upButton.onclick = function(e) {
-                upOrder(index + 1);
-            }
+        var rightTab = document.createElement('div');
+        rightTab.setAttribute('class', 'd-flex flex-nowrap');
 
-            var downButton = document.createElement('button');
-            downButton.innerHTML = '<i class="fa fa-arrow-down" aria-hidden="true"></i>';
-            downButton.setAttribute('class', 'btn btn-dark btn-block');
-            downButton.setAttribute('type', 'button');
-            downButton.onclick = function(e) {
-                downOrder(index + 1);
-            }
+        var upButton = document.createElement('button');
+        upButton.innerHTML = '<i class="fa fa-arrow-up" aria-hidden="true"></i>';
+        upButton.setAttribute('class', 'btn btn-dark btn-block');
+        upButton.setAttribute('type', 'button');
+        upButton.onclick = function(e) {
+            upOrder(index + 1);
+        }
 
-            var removeButton = document.createElement('button');
-            removeButton.innerHTML = '<i class="fa fa-times" aria-hidden="true"></i>';
-            removeButton.setAttribute('class', 'btn btn-danger btn-block');
-            removeButton.setAttribute('value', s.number);
-            removeButton.setAttribute('type', 'button');
-            removeButton.setAttribute('aria-label', 'Close');
-            removeButton.onclick = function(e) {
-                removeMajorInList(this.value);
-            }
+        var downButton = document.createElement('button');
+        downButton.innerHTML = '<i class="fa fa-arrow-down" aria-hidden="true"></i>';
+        downButton.setAttribute('class', 'btn btn-dark btn-block');
+        downButton.setAttribute('type', 'button');
+        downButton.onclick = function(e) {
+            downOrder(index + 1);
+        }
 
-            rightTab.appendChild(upButton);
-            rightTab.appendChild(downButton);
-            rightTab.appendChild(removeButton);
-            selectedMajor.appendChild(rightTab);
-            selectedMajor.appendChild(inputElement);
-            selectedListElement.appendChild(selectedMajor);
-        })
+        var removeButton = document.createElement('button');
+        removeButton.innerHTML = '<i class="fa fa-times" aria-hidden="true"></i>';
+        removeButton.setAttribute('class', 'btn btn-danger btn-block');
+        removeButton.setAttribute('value', s.number);
+        removeButton.setAttribute('type', 'button');
+        removeButton.setAttribute('aria-label', 'Close');
+        removeButton.onclick = function(e) {
+            removeMajorInList(this.value);
+        }
+
+        rightTab.appendChild(upButton);
+        rightTab.appendChild(downButton);
+        rightTab.appendChild(removeButton);
+        selectedMajor.appendChild(rightTab);
+        selectedMajor.appendChild(inputElement);
+        selectedListElement.appendChild(selectedMajor);
+      })
     }
     
     function addMajorToList(index) {
