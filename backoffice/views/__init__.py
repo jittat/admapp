@@ -72,11 +72,13 @@ def show(request, national_id, project_id=None):
 
     applicant = get_object_or_404(Applicant, national_id=national_id)
     education = applicant.get_educational_profile()
+    personal = applicant.get_personal_profile()
 
     return render(request,
                   'backoffice/show.html',
                   { 'applicant': applicant,
-                    'education': education, })
+                    'education': education,
+                    'personal': personal })
 
 
     

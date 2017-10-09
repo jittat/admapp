@@ -3,7 +3,14 @@
   <div class="row">
     <div class="col-md-12">
       <h1>{{ applicant.national_id }} {{ applicant.get_full_name }}</h1>
-
+      <script>
+        $(document).ready(function(){
+                $(".list").hide();
+            $("button").click(function(){
+                $(".list").toggle();
+            });
+        });
+        </script>
       <table class="table table-striped table-sm bborder-a0">
         <tbody>
           <tr>
@@ -32,6 +39,30 @@
                     {{ education.school_title }}, 
                     {{ education.province }}
                   </li>
+                </ul>
+              </td>
+            </tr>
+          {% endif %}
+
+          {% if personal %}
+             <tr>
+              <td>ข้อมูลส่วนตัว</td>
+              <td>
+                <ul>
+                  <li>
+                    เบอร์โทรศัพท์ที่ติดต่อได้: {{ personal.contact_phone }} |
+                    เบอร์โทรศัพท์มือถือ: {{ personal.mobile_phone }}
+                  </li>
+                
+                    <button class="btn btn-inf">ข้อมูลเพิ่มเติม</button>
+                    
+                    <li class="list">ชื่อ(อังกฤษ): {{ personal.get_prefix_english_display }} {{ personal.first_name_english }} {{ personal.last_name_english }}</li>
+                    <li class="list">วันเดือนปีเกิด: {{ personal.birthday }} </li>
+                    <li class="list">ชื่อบิดา: {{ personal.father_prefix }} {{ personal.father_first_name }} {{ personal.father_last_name }} 
+                      | ชื่อมารดา: {{ personal.mother_prefix }} {{ personal.mother_first_name }} {{ personal.mother_last_name }}</li>
+                    <li class="list">ที่อยู่: {{ personal.house_number }} {{ personal.village_number }} {{ personal.avenue }} {{ personal.road }} {{ personal.sub_district }} {{ personal.province }} {{ personal.postal_code }}</li>
+                    
+                  
                 </ul>
               </td>
             </tr>
