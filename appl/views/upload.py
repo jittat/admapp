@@ -19,7 +19,7 @@ import os
 class UploadedDocumentForm(ModelForm):
     class Meta:
         model = UploadedDocument
-        fields = ['uploaded_file']
+        fields = ['uploaded_file','detail']
 
 def upload_form_for(project_uploaded_document):
     return UploadedDocumentForm()
@@ -49,7 +49,6 @@ def upload(request, document_id):
         return HttpResponseForbidden()
     size_limit = project_uploaded_document.size_limit
     allowed_extentions = project_uploaded_document.allowed_extentions.split(',')
-
     form = UploadedDocumentForm(request.POST, request.FILES)
 
     is_valid, result_code = upload_check(form, size_limit, allowed_extentions)
