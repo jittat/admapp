@@ -231,6 +231,8 @@ class ProjectUploadedDocument(models.Model):
                                    blank=True)
     size_limit = models.IntegerField(default=2000000)
 
+    is_detail_required = models.BooleanField(default=False)
+
     class Meta:
         ordering = ['rank']
 
