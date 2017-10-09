@@ -307,7 +307,10 @@ class EducationalProfile(models.Model):
     ]
     EDUCATION_PLAN_CHOICES = [
             (1,'วิทย์-คณิต'),
-            (2,'อื่นๆ'),
+            (2,'ศิลป์-คำนวณ'),
+            (3,'ศิลป์-ภาษา'),
+            (4,'อาชีวศึกษา'),
+            (5,'อื่นๆ'),
     ]
 
     applicant = models.OneToOneField(Applicant)
