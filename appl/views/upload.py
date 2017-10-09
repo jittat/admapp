@@ -66,7 +66,7 @@ def upload(request, document_id):
         uploaded_document.rank = 0
         uploaded_document.orginal_filename = uploaded_document.uploaded_file.name
         uploaded_document.save()
-        print(uploaded_document.detail)
+
         from django.template import loader
 
         template = loader.get_template('appl/include/document_upload_form.html')
