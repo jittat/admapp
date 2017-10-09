@@ -1,6 +1,6 @@
 <li>
   {% if major_selection %}
-    สามารถเลือกได้ {{ active_application.admission_project.max_num_selections }} สาขาที่คุณเลือก<br />
+    สามารถเลือกได้ {{ active_application.admission_project.max_num_selections }} สาขา สาขาที่คุณเลือกคือ<br />
     {% for m in major_selection.get_majors %}
       {{ forloop.counter }}. {{ m.faculty }} - {{ m.title }}<br />
     {% endfor %}

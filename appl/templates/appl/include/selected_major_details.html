@@ -1,0 +1,9 @@
+{% if major_selection %}
+  {% with major_selection.get_majors.0 as major %}
+    <li>
+      <b>รายละเอียดสาขาที่สมัคร</b> <small>กรุณาพิจารณาเกณฑ์และรายการเอกสารเพิ่มเติมที่ต้องอัพโหลด</small><br />
+      <b>สาขาที่สมัคร:</b> {{ major.faculty }} - สาขา{{ major.title }}<br />
+      {{ major.get_detail_items_as_list_display|safe }}
+    </li>
+  {% endwith %}
+{% endif %}

@@ -140,7 +140,12 @@ class AdmissionProject(models.Model):
         else:
             return project_rounds[0]
 
+    def get_major_description_list_template(self):
+        from .header_utils import table_header_as_list_template
+        
+        return table_header_as_list_template(self.column_descriptions)
 
+        
 class AdmissionProjectRound(models.Model):
     admission_round = models.ForeignKey('AdmissionRound',
                                         on_delete=models.CASCADE)
@@ -215,7 +220,11 @@ class Major(models.Model):
         for row in reader:
             return row
 
-
+    def get_detail_items_as_list_display(self):
+        items = [item.replace("\n","<br />") for item in self.get_detail_items()]
+        return self.admission_project.get_major_description_list_template().format(*items)
+    
+        
 class ProjectUploadedDocument(models.Model):
     admission_projects = models.ManyToManyField(AdmissionProject,
                                                 blank=True)

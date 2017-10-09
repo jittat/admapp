@@ -9,14 +9,28 @@
   <div {% if project_uploaded_documents %} class="col-md-5" {% else %} class="col-md-12" {% endif %}>
     <ul>
       {% include 'appl/include/project_supplement_link.html' %}
+
       {% include 'appl/include/major_selection_item.html' %}
+
+      {% if active_application.admission_project.max_num_selections == 1 %}
+        {% with active_application.admission_project as project %}
+          {% include 'appl/include/selected_major_details.html' %}
+        {% endwith %}
+      {% endif %}
+      
       {% if documents_complete_status.status %}
         {% if major_selection %}
           {% include 'appl/include/payment_item.html' %}
+        {% else %}
+          <li>
+            กรุณาเลือกสาขาก่อนพิมพ์ใบชำระเงินค่าสมัคร
+          </li>
         {% endif %}
       {% else %}
         {% include 'appl/include/documents_incomplete.html' %}
       {% endif %}
+
+      <!-- COMPLETE HACK FOR NAT-SPORT -->
       {% if active_application.admission_project.id == 3 %}
         <li>
           <span class="badge badge-danger">การพิมพ์ใบสมัคร</span>
