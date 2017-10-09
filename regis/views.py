@@ -43,7 +43,7 @@ PASSWORD_THAI_ERROR_MESSAGES = {
 }
 
 HAS_NATIONAL_ID_CHOICES = [
-    ('1','เลขประจำตัวประชาชน'),
+    ('1','รหัสประจำตัวประชาชน'),
     ('0','เลขที่หนังสือเดินทาง (Passport)'),
 ]
 
@@ -57,7 +57,7 @@ class RegistrationForm(forms.Form):
                                           required=False)
 
     has_national_id = forms.ChoiceField(label='วิธีการสมัคร',
-                                        help_text='หากมีเลขประจำตัวประชาชน กรุณาเลือกสมัครด้วยเลขประจำตัวประชาชน',
+                                        help_text='หากมีรหัสประจำตัวประชาชน กรุณาเลือกสมัครด้วยรหัสประจำตัวประชาชน',
                                         choices=HAS_NATIONAL_ID_CHOICES, 
                                         widget=forms.Select(), 
                                         initial=1)
@@ -84,7 +84,7 @@ class RegistrationForm(forms.Form):
 
     password = forms.CharField(label='รหัสผ่าน',
                                max_length=100,
-                               help_text='ต้องมีความยาวไม่น้อยกว่า 8 ตัวอักษร ไม่สามารถใช้เพียงตัวเลขอย่างเดียวได้',
+                               help_text='ต้องมีความยาวไม่น้อยกว่า 8 ตัวอักษร ไม่สามารถประกอบขึ้นจากตัวเลขเพียงอย่างเดียวได้',
                                widget=forms.PasswordInput)
     password_confirm = forms.CharField(label='ยืนยันรหัสผ่าน',
                                        max_length=100,
