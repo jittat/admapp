@@ -1,4 +1,7 @@
 {% extends 'base.html' %}
+{% block navbar-brand %}
+  <a class="navbar-brand" href="{% url 'appl:index' %}">KU-TCAS'61</a>
+{% endblock %}
 {% block navbar-additional %}
   <div class="collapse navbar-collapse" id="navbarText">
     <ul class="navbar-nav mr-auto">
@@ -7,7 +10,11 @@
       </li>
     </ul>
     {% if applicant %}
-      <a class="nav-link nav-item" href="{% url 'regis:logout' %}">ออกจากระบบ</a>
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="btn btn-sm btn-secondary" href="{% url 'regis:logout' %}">ออกจากระบบ</a>
+        </li>
+      </ul>
     {% endif %}
   </div>
 {% endblock %}
