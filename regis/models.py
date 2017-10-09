@@ -24,10 +24,14 @@ class Applicant(models.Model):
         unique_together = ('national_id', 'passport_number')
 
     def __str__(self):
+        if self.passport_number:
+            handle = self.passport_number
+        else:
+            handle = self.national_id
         return "%s%s %s (%s)" % (self.prefix,
                                  self.first_name,
                                  self.last_name,
-                                 self.national_id)
+                                 handle)
 
     def get_full_name(self):
         return "{0}{1} {2}".format(self.prefix, self.first_name, self.last_name)

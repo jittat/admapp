@@ -67,6 +67,11 @@ class PersonalProfileForm(ModelForm):
             'birthday': ThaiSelectDateWidget(years=range(1990,2010))
         }
 
+    def _show_passport_field(self):
+        if self.instance.applicant.passport_number:
+            return None
+        return 'passport_number'
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
@@ -82,7 +87,7 @@ class PersonalProfileForm(ModelForm):
             ),
             Fieldset(
                 'ข้อมูลส่วนตัว',
-                'passport_number',
+                self._show_passport_field(),
                 MultiWidgetField(
                     'birthday',
                     attrs=({'class': 'd-inline col-md-3'}
@@ -153,6 +158,9 @@ def ajax_school_search(request):
 def personal_profile(request):
     applicant = request.applicant
     profile = applicant.get_personal_profile()
+    if profile is None:
+        profile = PersonalProfile()
+        profile.applicant = applicant
 
     if request.method == 'POST':
         form = PersonalProfileForm(request.POST, instance=profile)
