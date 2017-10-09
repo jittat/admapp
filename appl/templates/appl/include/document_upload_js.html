@@ -8,7 +8,7 @@
       var uploadErrorDiv = $(form).find(".document-upload-errors");
       $(uploadErrorDiv).hide();
       $(progress).show().text("0%");
-      
+
       jQuery.ajax({
         url: form.action,
         data: data,
@@ -23,6 +23,8 @@
             $(uploadErrorDiv).show().html('นามสกุลของไฟล์ไม่ถูกต้อง</b>')
           } else if (data.result == 'SIZE_ERROR') {
             $(uploadErrorDiv).show().html('ขนาดของไฟล์ใหญ่กว่าที่กำหนด</b>')
+          } else if (data.result == 'DETAIL_REQUIRE') {
+            $(uploadErrorDiv).show().html('โปรดระบุคำอธิบาย</b>')
           }
           $(progress).hide();
         }
@@ -31,7 +33,7 @@
           $(progress).show().text(Math.round((e.loaded * 100) / e.total) + "%");
         }
       });
-      
+
       return false;
     });
 
