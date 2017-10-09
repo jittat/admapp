@@ -101,6 +101,15 @@ def ajax_school_search(request):
     term = request.GET['term']
     schools = School.objects.filter(province=province,title__contains=term)
     results = [s.title for s in schools]
+
+    common_prefixes = ['โรงเรียน']
+    for p in common_prefixes:
+        if term.startswith(p):
+            trancated_term = term[len(p):]
+            schools = School.objects.filter(province=province,
+                                            title__contains=trancated_term)
+            results += [s.title for s in schools]
+    
     return HttpResponse(json.dumps(results))
 
 
