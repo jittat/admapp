@@ -7,7 +7,7 @@
 ติดตั้ง
 ----
 
-หลังจากลง Django เรียบร้อยแล้ว จึงติดตั้ง requirement เพิ่ีมเติมของ project นี้ด้วย pip
+หลังจากลง Django เรียบร้อยแล้ว จึงติดตั้ง requirement เพิ่มเติมของ project นี้ด้วย pip
 
     pip install -r requirements.txt
 
