@@ -5,7 +5,7 @@ import csv
 from datetime import datetime
 
 from django.db import models
-from django.core.validators import RegexValidator
+from django.core.validators import MinValueValidator, MaxValueValidator, RegexValidator
 from django.core.exceptions import ObjectDoesNotExist
 
 from admapp import settings
@@ -14,8 +14,6 @@ from regis.models import Applicant
 
 validate_phonenumber = RegexValidator(r'^\+?[0-9]+$',
                                       'เบอร์โทรศัพท์สามารถประกอบด้วยตัวเลข 0-9 และอาจเริ่มต้นด้วยเครื่องหมาย +')
-validate_gpa = RegexValidator(r'^[0-3]\.[0-9]{2}|4\.00$',
-                              'GPA มีค่าระหว่าง 0.00-4.00 กรุณาตรวจสอบว่าใส่ทศนิยมครบทั้งสองตำแหน่ง')
 
 
 class Campus(models.Model):
@@ -328,7 +326,7 @@ class EducationalProfile(models.Model):
                                          verbose_name='แผนการศึกษา')
     gpa = models.FloatField(default=0,
                             verbose_name='GPA',
-                            validators=[validate_gpa])
+                            validators=[MinValueValidator(0.0), MaxValueValidator(4.0)])
     province = models.ForeignKey(Province,
                                  verbose_name='จังหวัด')
     school_title = models.CharField(max_length=80,
