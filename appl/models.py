@@ -275,7 +275,7 @@ class UploadedDocument(models.Model):
 
     uploaded_file = models.FileField(upload_to=applicant_document_path)
 
-    detail = models.CharField(default='', blank=True)
+    detail = models.CharField(default='', blank=True, max_length=200)
 
     def __str__(self):
         return '%s (%s)' % (self.project_uploaded_document.title,
