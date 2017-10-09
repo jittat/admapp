@@ -22,6 +22,11 @@ class EducationForm(ModelForm):
         exclude = ['applicant',
                    'school_code']
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.add_input(Submit('submit', 'จัดเก็บ', css_class='btn btn-primary'))
+
 
 class ThaiSelectDateWidget(forms.widgets.SelectDateWidget):
     def get_context(self, name, value, attrs):
@@ -64,7 +69,7 @@ class PersonalProfileForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.helper = FormHelper(self)
+        self.helper = FormHelper()
         self.helper.layout = Layout(
             Fieldset(
                 'ข้อมูลผู้สมัครภาษาอังกฤษ',
