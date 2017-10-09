@@ -5,6 +5,7 @@
   </p>
   <form class="upload-forms" action="{% url 'appl:upload' doc.id %}" method="post" enctype="multipart/form-data">
     {% csrf_token %}
+    <input type="text" name="detail" value="" />
     <input type="file" class="input-files" name="uploaded_file" required id="id_uploaded_file" />
     <input type="submit" class="btn btn-success btn-sm upload-form-submit-buttons" value="อัพโหลด" />
     <br />
