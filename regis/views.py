@@ -176,7 +176,8 @@ def register(request):
             applicant = create_applicant(form)
             if applicant:
                 send_registration_email(applicant)
-                return redirect(reverse('main-index'))
+                return render(request, 'regis/regis_result.html',
+                              { 'email': form.cleaned_data['email'] })
             else:
                 return render(request,'regis/registration_error.html',
                               { 'national_id': form.cleaned_data['national_id'],
