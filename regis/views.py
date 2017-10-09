@@ -12,7 +12,7 @@ from django.contrib.auth.password_validation import validate_password
 from django.conf import settings
 
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Submit, ButtonHolder, Row, Div
+from crispy_forms.layout import Layout, Fieldset, Submit, ButtonHolder, Row, Div
 
 from admapp.emails import send_registration_email, send_forget_password_email
 
@@ -92,27 +92,33 @@ class RegistrationForm(forms.Form):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.layout = Layout(
-            Row(
-                Div('national_id', css_class='col-md-6'),
-                Div('national_id_confirm', css_class='col-md-6'),
+            Fieldset(
+                'ข้อมูลสำหรับการเข้าสู่ระบบ',
+                'has_national_id',
+                Row(
+                    Div('national_id', css_class='col-md-6'),
+                    Div('national_id_confirm', css_class='col-md-6'),
+                ),
+                Row(
+                    Div('passport_number', css_class='col-md-6'),
+                    Div('passport_number_confirm', css_class='col-md-6'),
+                ),
+                Row(
+                    Div('password', css_class='col-md-6'),
+                    Div('password_confirm', css_class='col-md-6'),
+                ),
             ),
-            'has_national_id',
-            Row(
-                Div('passport_number', css_class='col-md-6'),
-                Div('passport_number_confirm', css_class='col-md-6'),
-            ),
-            Row(
-                Div('email', css_class='col-md-6'),
-                Div('email_confirm', css_class='col-md-6'),
-            ),
-            Row(
-                Div('prefix', css_class='col-md-2'),
-                Div('first_name', css_class='col-md-5'),
-                Div('last_name', css_class='col-md-5'),
-            ),
-            Row(
-                Div('password', css_class='col-md-6'),
-                Div('password_confirm', css_class='col-md-6'),
+            Fieldset(
+                'ข้อมูลพื้นฐานของผู้สมัคร',
+                Row(
+                    Div('prefix', css_class='col-md-2'),
+                    Div('first_name', css_class='col-md-5'),
+                    Div('last_name', css_class='col-md-5'),
+                ),
+                Row(
+                    Div('email', css_class='col-md-6'),
+                    Div('email_confirm', css_class='col-md-6'),
+                ),
             ),
             ButtonHolder(
                 Submit('submit', 'ลงทะเบียน', css_class='lbtn btn-primary')
