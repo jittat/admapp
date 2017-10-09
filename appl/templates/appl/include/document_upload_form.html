@@ -2,38 +2,38 @@
   {% with project_uploaded_document as doc %}
 	<div class="card">
 		<div class="card-header" role="tab" id="accordian-upload-header">
-			<h5 class="mb-0">
-				<a data-toggle="collapse" data-parent="#accordian" href="#accordian-upload-form" aria-expanded="true" aria-controls="accordian-upload-form">
-					<b>{{ doc.title }}</b> &nbsp;&nbsp; {{ doc.descriptions|linebreaksbr }}
-				</a>
-			</h5>
+			<b>{{ doc.title }}</b> &nbsp;&nbsp; {{ doc.descriptions|linebreaksbr }}
+      <a class="btn btn-outline-primary" data-toggle="collapse" data-parent="#accordian" href="#accordian-upload-form" aria-expanded="true" aria-controls="accordian-upload-form" role="button">
+        อัพโหลด
+      </a>
 		</div>
-
 		<div id="accordian-upload-form" class="collapse show" role="tabpanel" aria-labelledby="accordian-upload-header">
-			<form class="upload-forms" action="{% url 'appl:upload' doc.id %}" method="post" enctype="multipart/form-data">
-				{% csrf_token %}
-				<input type="file" class="input-files" name="uploaded_file" required id="id_uploaded_file" />
-				<input type="submit" class="btn btn-success btn-sm upload-form-submit-buttons" value="อัพโหลด" />
-				<br />
-				<small>{{ doc.specifications }}</small>
+      <div class="card-block">
+  			<form class="upload-forms" action="{% url 'appl:upload' doc.id %}" method="post" enctype="multipart/form-data">
+  				{% csrf_token %}
+  				<input type="file" class="input-files" name="uploaded_file" required id="id_uploaded_file" />
+  				<input type="submit" class="btn btn-success btn-sm upload-form-submit-buttons" value="อัพโหลด" />
+  				<br />
+  				<small>{{ doc.specifications }}</small>
 
-				<br />
-				<small style="color:red" class="document-upload-errors"></small> {% if doc.applicant_uploaded_documents %}
-				<ul>
-					{% for d in doc.applicant_uploaded_documents %}
-					<li>
-						<a href="{% url 'appl:document-download' applicant.id doc.id d.id %}">
-							{{ d.uploaded_file.name }}
-						</a>
-						<a data-delete-url="{% url 'appl:document-delete' applicant.id doc.id d.id %}" href="#" class="upload-form-delete-buttons btn btn-sm btn-secondary">
-							ลบ
-						</a>
-					</li>
-					{% endfor %}
-				</ul>
-				{% endif %}
-				<div class="progress-bars" style="display:none; text-align: center; width: 200px; border: 1px solid #707070;"></div>
-			</form>
+  				<br />
+  				<small style="color:red" class="document-upload-errors"></small> {% if doc.applicant_uploaded_documents %}
+  				<ul>
+  					{% for d in doc.applicant_uploaded_documents %}
+  					<li>
+  						<a href="{% url 'appl:document-download' applicant.id doc.id d.id %}">
+  							{{ d.uploaded_file.name }}
+  						</a>
+  						<a data-delete-url="{% url 'appl:document-delete' applicant.id doc.id d.id %}" href="#" class="upload-form-delete-buttons btn btn-sm btn-secondary">
+  							ลบ
+  						</a>
+  					</li>
+  					{% endfor %}
+  				</ul>
+  				{% endif %}
+  				<div class="progress-bars" style="display:none; text-align: center; width: 200px; border: 1px solid #707070;"></div>
+  			</form>
+      </div>
 		</div>
   {% endwith %}
 	</div>
