@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+import os, sys
 from django.db import models
 
 from django.contrib.auth.models import User
@@ -29,6 +29,13 @@ class Profile(models.Model):
             return self.user.get_full_name() + ' (ADMADMIN)'
         else:
             return self.user.get_full_name()
+
+    @staticmethod
+    def get_profile_for(user):
+        try:
+            return user.profile
+        except:
+            return None
 
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):

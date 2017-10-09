@@ -1,5 +1,5 @@
 <div class="barcode">
   <p style="text-align: center; margin: 0; padding: 0;">
-    <img width="50%" src="<?= url('apply/submissions/paymentbarcode.png?id='.$submission->id) ?>">
+    <img width="50%" src="{% url 'appl:payment-barcode' application.id barcode_stub %}">
   </p>
 </div>

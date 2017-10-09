@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+import os, sys
 from django import forms
 from django.forms import ValidationError
 
@@ -10,16 +10,27 @@ from django.http import HttpResponseForbidden
 from django.contrib.auth.password_validation import validate_password
 
 from django.conf import settings
- 
+
+from admapp.emails import send_registration_email, send_forget_password_email
+
 from .validators import is_valid_national_id
+from .validators import is_valid_passport_number
 from .models import Applicant
 
 class LoginForm(forms.Form):
-    national_id = forms.CharField(label='รหัสประจำตัวประชาชน',
+    national_id = forms.CharField(label='รหัสประจำตัวประชาชนหรือหมายเลขพาสปอร์ต',
                                   max_length=20)
     password = forms.CharField(label='รหัสผ่าน',
                                max_length=100,
                                widget=forms.PasswordInput)
+
+
+class ForgetForm(forms.Form):
+    national_id = forms.CharField(label='รหัสประจำตัวประชาชนหรือหมายเลขพาสปอร์ต',
+                                  max_length=20)
+    email = forms.CharField(label='อีเมลที่ลงทะเบียน',
+                            max_length=100)
+
 
 
 PASSWORD_THAI_ERROR_MESSAGES = {
@@ -100,6 +111,21 @@ class RegistrationForm(forms.Form):
                                            'รหัสประจำตัวประชาชนที่ยืนยันไม่ตรงกัน')
         return self.cleaned_data['national_id_confirm']
 
+    def clean_passport_number(self):
+        if not is_valid_passport_number(self.cleaned_data['passport_number']):
+            del self.cleaned_data['passport_number']
+            raise ValidationError('เลขที่หนังสือเดินทางผิดรูปแบบ', code='invalid')
+        return self.cleaned_data['passport_number']
+
+    def clean_passport_number_confirm(self):
+        if not is_valid_passport_number(self.cleaned_data['passport_number_confirm']):
+            del self.cleaned_data['passport_number_confirm']
+            raise ValidationError('เลขที่หนังสือเดินทางผิดรูปแบบ', code='invalid')
+
+        self.check_confirm_and_raise_error('passport_number', 'passport_number_confirm',
+                                           'เลขที่หนังสือเดินทางที่ยืนยันไม่ตรงกัน')
+        return self.cleaned_data['passport_number_confirm']
+
     def clean_email_confirm(self):
         self.check_confirm_and_raise_error('email', 'email_confirm',
                                            'อีเมลที่ยืนยันไม่ตรงกัน')
@@ -120,30 +146,40 @@ class RegistrationForm(forms.Form):
                                            'รหัสผ่านที่ยืนยันไม่ตรงกัน')
         return self.cleaned_data['password_confirm']
 
-
 def create_applicant(form):
     applicant = Applicant(national_id=form.cleaned_data['national_id'],
+                          passport_number=form.cleaned_data['passport_number'],
                           prefix=form.cleaned_data['prefix'],
                           first_name=form.cleaned_data['first_name'],
                           last_name=form.cleaned_data['last_name'],
                           email=form.cleaned_data['email'])
     applicant.set_password(form.cleaned_data['password'])
     try:
-        applicant.save()
-        return True
+        if form.cleaned_data['has_national_id'] == '1':
+            applicant.save()
+            return applicant
+        else:
+            result = applicant.generate_random_national_id_and_save()
+            if result:
+                return applicant
+            else:
+                return None
     except:
-        return False
+        return None
     
 
 def register(request):
     if request.method == 'POST':
         form = RegistrationForm(request.POST)
         if form.is_valid():
-            if create_applicant(form):
+            applicant = create_applicant(form)
+            if applicant:
+                send_registration_email(applicant)
                 return redirect(reverse('main-index'))
             else:
                 return render(request,'regis/registration_error.html',
                               { 'national_id': form.cleaned_data['national_id'],
+                                'passport_number': form.cleaned_data['passport_number'],
                                 'first_name': form.cleaned_data['first_name'] })
     else:
         form = RegistrationForm()
@@ -151,6 +187,43 @@ def register(request):
     return render(request,
                   'regis/register.html',
                   { 'form': form })
+
+
+def forget(request):
+    error_message = None
+    update_success = False
+    email = None
+    
+    if request.method == 'POST':
+        form = ForgetForm(request.POST)
+        if form.is_valid():
+            national_id = form.cleaned_data['national_id']
+            email = form.cleaned_data['email']
+            applicant = Applicant.find_by_national_id(national_id)
+            if not applicant:
+                applicant = Applicant.find_by_passport_number(national_id)
+
+            if (not applicant) or (applicant.email.upper() != email.strip().upper()):
+                error_message = 'ไม่พบข้อมูลผู้สมัครที่ระบุหรืออีเมลที่ระบุไม่ถูกต้อง'
+            else:
+                new_password = applicant.random_password()
+                applicant.save()
+
+                send_forget_password_email(applicant, new_password)
+                form = None
+                update_success = True
+                email = applicant.email
+                
+    else:
+        form = ForgetForm()
+
+    return render(request,
+                  'regis/forget.html',
+                  { 'form': form,
+                    'error_message': error_message,
+                    'update_success': update_success,
+                    'email': email })
+
 
 def login_applicant(request, applicant):
     request.session['applicant_id'] = applicant.id
@@ -167,7 +240,9 @@ def login(request):
 
         applicant = Applicant.find_by_national_id(national_id)
         if not applicant:
-            return redirect(reverse('main-index') + '?error=wrong-password')
+            applicant = Applicant.find_by_passport_number(national_id)
+            if not applicant:
+                return redirect(reverse('main-index') + '?error=wrong-password')
 
         if ((settings.FAKE_LOGIN and settings.DEBUG)
             or applicant.check_password(password)):

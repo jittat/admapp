@@ -12,12 +12,30 @@ p.invalid-feedback {
     margin-left: 3px;
 }
 
+.bg-warn {
+    background: #fff3cd;
+}
+
+/* spaces & borders */
+
 .mb5 {
     margin-bottom: 5px;
 }
 
+.mt5 {
+    margin-top: 5px;
+}
+
+.mb10 {
+    margin-bottom: 10px;
+}
+
 .p10 {
     padding: 10px;
+}
+
+.pt5 {
+    padding-top: 5px;
 }
 
 .border-a0 {
@@ -25,9 +43,11 @@ p.invalid-feedback {
     border-radius: 5px;
 }
 
-.bg-warn {
-    background: #fff3cd;
+.bborder-a0 {
+    border-bottom: 1px solid #a0a0a0;
 }
 
-
+.tborder-a0 {
+    border-top: 1px solid #a0a0a0;
+}
 
