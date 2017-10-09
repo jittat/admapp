@@ -8,7 +8,7 @@
         toggle
       </a>
 		</div>
-		<div id="accordian-upload-form-{{ doc.id }}" class="collapse show" role="tabpanel" aria-labelledby="accordian-upload-header">
+		<div id="accordian-upload-form-{{ doc.id }}" class="collapse {% if doc.applicant_uploaded_documents %}hide{% else %}show{% endif %}" role="tabpanel" aria-labelledby="accordian-upload-header">
       <div class="card-block p10">
   			<form class="upload-forms" action="{% url 'appl:upload' doc.id %}" method="post" enctype="multipart/form-data">
   				{% csrf_token %}
