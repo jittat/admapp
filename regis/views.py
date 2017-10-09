@@ -45,10 +45,6 @@ HAS_NATIONAL_ID_CHOICES = [
 ]
 
 class RegistrationForm(forms.Form):
-    has_national_id = forms.ChoiceField(label='มีรหัสประจำตัวประชาชนหรือไม่?', 
-                                        choices=HAS_NATIONAL_ID_CHOICES, 
-                                        widget=forms.RadioSelect(), 
-                                        initial=1)
 
     national_id = forms.CharField(label='รหัสประจำตัวประชาชน',
                                   max_length=20, 
@@ -56,6 +52,11 @@ class RegistrationForm(forms.Form):
     national_id_confirm = forms.CharField(label='ยืนยันรหัสประจำตัวประชาชน',
                                           max_length=20,
                                           required=False)
+
+    has_national_id = forms.ChoiceField(label='หากไม่มีรหัสประจำตัวประชาชน ให้เลือก "ไม่มี" และกรอกเลขที่หนังสือเดินทาง', 
+                                        choices=HAS_NATIONAL_ID_CHOICES, 
+                                        widget=forms.Select(), 
+                                        initial=1)
 
     passport_number = forms.CharField(label='เลขที่หนังสือเดินทาง (Passport No.)', 
                                       max_length=20,

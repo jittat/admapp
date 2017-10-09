@@ -13,34 +13,49 @@
 </div>
 
 <script>
-var disableInputs = function(ids) {
+var disableNationalIdInputs = function(ids) {
 	jQuery.each(ids, function(idx, elt) {
-		$(elt).hide();
+		elt += " :input";
+        $(elt).prop("disabled", true);
 		$(elt).find("input").prop('required',false);
 	});
 };
-var enableInputs = function(ids) {
+var disablePassportInputs = function(ids) {
 	jQuery.each(ids, function(idx, elt) {
-		$(elt).show();
+        $(elt).slideUp("slow");
+		$(elt).find("input").prop('required',false);
+	});
+};
+var enableNationalIdInputs = function(ids) {
+	jQuery.each(ids, function(idx, elt) {
+		elt += " :input";
+		$(elt).prop("disabled", false);
+		$(elt).find("input").prop('required',true);
+	});
+};
+var enablePassportInputs = function(ids) {
+	jQuery.each(ids, function(idx, elt) {
+		$(elt).slideDown("slow");
 		$(elt).find("input").prop('required',true);
 	});
 };
 var passportInputIds = ["#div_id_passport_number", "#div_id_passport_number_confirm"];
 var nationalIdInputsIds = ["#div_id_national_id", "#div_id_national_id_confirm"]; 
 var handleHasNationalIdChange = function() {
-	var hasNatId = $("#id_has_national_id_1").prop("checked");
-	if(hasNatId) {
-		disableInputs(passportInputIds);
-		enableInputs(nationalIdInputsIds);
+	var hasNatId = $("#id_has_national_id").val();
+	if(hasNatId == 1) {
+		disablePassportInputs(passportInputIds);
+		enableNationalIdInputs(nationalIdInputsIds);
 	} else {
-		disableInputs(nationalIdInputsIds);
-		enableInputs(passportInputIds);
+		disableNationalIdInputs(nationalIdInputsIds);
+		enablePassportInputs(passportInputIds);
 	}
 };
-$(function(){
+$(function() {
+	$("#div_id_passport_number").hide();
+	$("#div_id_passport_number_confirm").hide();
 	handleHasNationalIdChange();
-	$("#id_has_national_id_1").click(handleHasNationalIdChange);
-	$("#id_has_national_id_2").click(handleHasNationalIdChange);
+	$("#id_has_national_id").change(handleHasNationalIdChange);
 });
 </script>
 {% endblock %}

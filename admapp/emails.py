@@ -16,6 +16,10 @@ def send_mail_to_applicant(applicant, subject, body):
 
 
 def send_registration_email(applicant):
+    if applicant.national_id[0:3] == '999':
+      data_message = "เลขที่หนังสือเดินทาง {passport_number}".format(passport_number=applicant.passport_number)
+    else:
+      data_message = "รหัสประชาชน {national_id}".format(national_id=applicant.national_id)
     subject = 'แจ้งการลงทะเบียนสมัคร ' + ADMISSION_SHORT_TITLE
     body = """
 เรียนผู้สมัคร {full_name}
@@ -23,8 +27,8 @@ def send_registration_email(applicant):
 อีเมลนี้แจ้งการลงทะเบียนเข้าใช้ระบบรับสมัคร {admission_title} ของ {full_name}
 ในการลงทะเบียนใช้อีเมล {email}
 
-ผู้สมัครสามารถเข้าใช้ระบบเพื่อสมัครโครงการคัดเลือกนักเรียนเข้าศึกษาต่อโครงการต่างๆ โดยป้อน
-รหัสประชาชน {national_id}
+ผู้สมัครสามารถเข้าใช้ระบบเพื่อสมัครโครงการคัดเลือกนักเรียนเข้าศึกษาต่อโครงการต่าง โดยป้อน
+{data_message}
 และใช้รหัสเข้าระบบตามที่ได้ลงทะเบียนไว้
 
 ขอขอบคุณที่ให้ความสนใจสมัครเข้าศึกษาต่อในมหาวิทยาลัยเกษตรศาสตร์
@@ -32,7 +36,9 @@ def send_registration_email(applicant):
 """.format(full_name=applicant.get_full_name(),
            admission_title=ADMISSION_TITLE,
            email=applicant.email,
-           national_id=applicant.national_id)
+           national_id=applicant.national_id,
+           passport_number=applicant.passport_number,
+           data_message=data_message)
 
     send_mail_to_applicant(applicant,
                            subject,
