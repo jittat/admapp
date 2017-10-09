@@ -98,7 +98,7 @@ def index(request):
     
     educational_profile = applicant.get_educational_profile()
     if not educational_profile:
-        return redirect(reverse('appl:educational-profile'))
+        return redirect(reverse('appl:education-profile'))
     
     active_application = applicant.get_active_application(admission_round)
 
