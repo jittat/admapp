@@ -27,6 +27,9 @@ def upload_check(form, size_limit, allowed_extentions, is_detail_required):
         return (False, 'FORM_ERROR')
 
     cleaned_data = form.cleaned_data['uploaded_file']
+    if not cleaned_data:
+        return (False, 'FORM_ERROR')
+    
     if size_limit <= cleaned_data.size:
         return (False, 'SIZE_ERROR')
 

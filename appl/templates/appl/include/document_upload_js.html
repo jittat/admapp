@@ -37,6 +37,8 @@
         success: function(data) {
           if (data.result == 'OK') {
             $(div).replaceWith(data.html);
+          } else if (data.result == 'FORM_ERROR') {
+            $(uploadErrorDiv).show().html('ไม่ได้ระบุไฟล์ที่อัพโหลด</b>');
           } else if (data.result == 'EXT_ERROR') {
             $(uploadErrorDiv).show().html('นามสกุลของไฟล์ไม่ถูกต้อง</b>');
           } else if (data.result == 'SIZE_ERROR') {
@@ -46,17 +48,17 @@
           } else if (data.result == 'URL_INVALID') {
             $(uploadErrorDiv).show().html('URL ที่ระบุไม่ถูกต้อง</b>');
           }
-        $(progress).hide();
-        refreshDocumentStatus();
-      }
-    }).uploadProgress(function(e) {
-      if (e.lengthComputable) {
-        $(progress).show().text(Math.round((e.loaded * 100) / e.total) + "%");
-      }
-    });
-
+          $(progress).hide();
+          refreshDocumentStatus();
+        }
+      }).uploadProgress(function(e) {
+        if (e.lengthComputable) {
+          $(progress).show().text(Math.round((e.loaded * 100) / e.total) + "%");
+        }
+      });
+      
       return false;
-  });
+    });
 
     $(".all-document-upload-forms").on("click", ".upload-form-delete-buttons", function() {
       var url = $(this).attr('data-delete-url');
