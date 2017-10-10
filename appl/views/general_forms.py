@@ -107,7 +107,7 @@ class PersonalProfileForm(ModelForm):
                 )),
             ),
             Fieldset(
-                'ข้อมูลบิดา',
+                'ข้อมูลบิดา (ภาษาไทย)',
                 Row(
                     Div('father_prefix', css_class='col-md-2'),
                     Div('father_first_name', css_class='col-md-5'),
@@ -115,7 +115,7 @@ class PersonalProfileForm(ModelForm):
                 )
             ),
             Fieldset(
-                'ข้อมูลมารดา',
+                'ข้อมูลมารดา (ภาษาไทย)',
                 Row(
                     Div('mother_prefix', css_class='col-md-2'),
                     Div('mother_first_name', css_class='col-md-5'),
