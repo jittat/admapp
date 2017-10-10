@@ -490,6 +490,19 @@ class ProjectApplication(models.Model):
         except:
             return None
 
+    @staticmethod
+    def find_for_project_and_round(admission_project,
+                                   admission_round,
+                                   with_selection=False):
+        results = (ProjectApplication.objects
+                   .filter(admission_project=admission_project, 
+                           admission_round=admission_round, 
+                           is_canceled=False))
+        if with_selection:
+            results = results.select_related('major_selection')
+
+        return results.all()
+        
 
 class MajorSelection(models.Model):
     applicant = models.ForeignKey(Applicant)
@@ -501,7 +514,6 @@ class MajorSelection(models.Model):
     num_selected = models.IntegerField(default=0)
     major_list = models.CharField(max_length=50,
                                   blank=True)
-
 
     def __str__(self):
         return self.major_list
@@ -524,7 +536,12 @@ class MajorSelection(models.Model):
         self.major_list = ','.join([str(m.number) for m in self.majors])
         self.num_selected = len(majors)
 
-
+    def get_major_numbers(self):
+        if self.major_list:
+            return [int(num) for num in self.major_list.split(',')]
+        else:
+            return []
+        
 
 class Payment(models.Model):
     applicant = models.ForeignKey(Applicant,
