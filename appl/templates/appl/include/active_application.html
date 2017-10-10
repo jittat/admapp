@@ -5,6 +5,13 @@
     {% include 'appl/include/project_cancel_div.html' %}
   </div>
 </div>
+{% if active_application.admission_project.descriptions %}
+  <div class="row">
+    <div class="col-md-12 border-a0 p5 mb5">
+      {{ active_application.admission_project.descriptions|safe }}
+    </div>
+  </div>
+{% endif %}
 <div class="row">
   <div {% if project_uploaded_documents %} class="col-md-5" {% else %} class="col-md-12" {% endif %}>
     <ul>

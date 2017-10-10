@@ -32,6 +32,8 @@ def check_digit(str):
     """
     >>> check_digit("11234671152070131")
     3
+    >>> check_digit("11234765431070131")
+    1
     """
     coeffs = [13, 12, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 5, 4, 3, 2, 1]
     s = sum([coeffs[i] * int(str[i]) for i in range(17)])
