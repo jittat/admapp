@@ -12,8 +12,8 @@ from admapp import settings
 from regis.models import Applicant
 
 
-validate_phonenumber = RegexValidator(r'^\+?[0-9]+$',
-                                      'เบอร์โทรศัพท์สามารถประกอบด้วยตัวเลข 0-9 และอาจเริ่มต้นด้วยเครื่องหมาย +')
+validate_phonenumber = RegexValidator(r'^\+?[0-9#-]+$',
+                                      'เบอร์โทรศัพท์สามารถประกอบด้วยตัวเลข 0-9 สามารถใช้เครื่องหมาย - เพื่อแบ่งกลุ่มตัวเลข และอาจเริ่มต้นด้วยเครื่องหมาย +')
 
 
 class Campus(models.Model):
@@ -402,6 +402,7 @@ class PersonalProfile(models.Model):
 
     contact_phone = models.CharField(max_length=20,
                                     verbose_name='เบอร์โทรศัพท์ที่ติดต่อได้',
+                                    help_text='หากเป็นเบอร์ติดต่อภายใน ให้ใช้ # คั่น เช่น 034-567-890#111',
                                     validators=[validate_phonenumber])
     mobile_phone = models.CharField(max_length=20,
                                     verbose_name='เบอร์โทรศัพท์มือถือ',
