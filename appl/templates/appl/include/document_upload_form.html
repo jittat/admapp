@@ -2,6 +2,7 @@
   {% load appl_tags %}
   {% with project_uploaded_document as doc %}
     <div class="card">
+
       <div class="card-header p10" role="tab" id="accordian-upload-header">
 	<b>{{ doc.title }}{% if doc.is_required %}*{% endif %}</b>
         <small>{{ doc.descriptions|linebreaksbr }}</small>
@@ -9,6 +10,7 @@
           รายละเอียด
         </a>
       </div>
+
       <div id="accordian-upload-form-{{ doc.id }}" class="collapse {% if toggle %}{{toggle}}{% elif doc.applicant_uploaded_documents %}hide{% else %}show{% endif %}" role="tabpanel" aria-labelledby="accordian-upload-header">
         <div class="card-block p10">
   	  <form class="upload-forms" action="{% url 'appl:upload' doc.id %}" method="post" data-detail-required="{% if doc.is_detail_required %}true{% endif %}" enctype="multipart/form-data">
@@ -20,25 +22,37 @@
                 <small>ชื่อหรือคำอธิบายเอกสาร (สามารถละไว้ได้)</small>
               {% endif %}
               <input type="text" class="form-control" name="detail" value="" />
-              
+              {% if doc.is_url_document %}
+  	        <small><b>{{ doc.specifications }}</b></small>
+  	        <br />
+                <input type="text" class="form-control col-md-8 d-inline" name="document_url" value="" />
+  	        <input type="submit" class="btn btn-success btn-sm upload-form-submit-buttons" value="จัดเก็บ" />
+              {% endif %}
             </div>
+
+            {% if not doc.is_url_document %}
+  	      <input type="file" class="input-files" name="uploaded_file" required id="id_uploaded_file" />
+  	      <input type="submit" class="btn btn-success btn-sm upload-form-submit-buttons" value="อัพโหลด" />
+  	      <br />
+  	      <small>{{ doc.specifications }}</small>
+  	      <br />
+            {% endif %}
             
-  	    <input type="file" class="input-files" name="uploaded_file" required id="id_uploaded_file" />
-  	    <input type="submit" class="btn btn-success btn-sm upload-form-submit-buttons" value="อัพโหลด" />
-  	    <br />
-  	    <small>{{ doc.specifications }}</small>
-            
-  	    <br />
   	    <small style="color:red" class="document-upload-errors"></small> {% if doc.applicant_uploaded_documents %}
   	      <ul>
   		{% for d in doc.applicant_uploaded_documents %}
   		  <li>
-  		    <a href="{% url 'appl:document-download' applicant.id doc.id d.id %}" target="_blank">
-  		      {{ d|uploadeddocument_name }}
-  		    </a>
-  		    <a data-delete-url="{% url 'appl:document-delete' applicant.id doc.id d.id %}" href="#" class="upload-form-delete-buttons btn btn-sm btn-secondary">
-  		      ลบ
-  		    </a>
+                    {% if not doc.is_url_document %}
+  		      <a href="{% url 'appl:document-download' applicant.id doc.id d.id %}" target="_blank">
+  		        {{ d|uploadeddocument_name }}
+  		      </a>
+                    {% else %}
+                      {{ d.detail }}
+                      &nbsp;
+                      <a href="{{ d.document_url }}" class="btn btn-sm btn-info" target="_blank">ดูลิงก์</a>
+                    {% endif %}
+                    &nbsp;
+  		    <a data-delete-url="{% url 'appl:document-delete' applicant.id doc.id d.id %}" href="#" class="upload-form-delete-buttons btn btn-sm btn-secondary">ลบ</a>
   		  </li>
   		{% endfor %}
   	      </ul>

@@ -242,7 +242,6 @@ class ProjectUploadedDocument(models.Model):
     size_limit = models.IntegerField(default=2000000)
 
     is_url_document = models.BooleanField(default=False)
-    document_url = models.URLField(blank=True)
     
     is_required = models.BooleanField(default=True)
     is_detail_required = models.BooleanField(default=False)
@@ -288,11 +287,14 @@ class UploadedDocument(models.Model):
                                                   on_delete=models.CASCADE,
                                                   related_name='uploaded_document_set')
     rank = models.IntegerField()
-    original_filename = models.CharField(max_length=200)
-
-    uploaded_file = models.FileField(upload_to=applicant_document_path)
-
     detail = models.CharField(default='', blank=True, max_length=200)
+
+    uploaded_file = models.FileField(upload_to=applicant_document_path,
+                                     blank=True)
+    original_filename = models.CharField(max_length=200,
+                                         blank=True)
+    
+    document_url = models.URLField(blank=True)
 
     def __str__(self):
         return '%s (%s)' % (self.project_uploaded_document.title,
