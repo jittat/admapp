@@ -29,15 +29,16 @@
     <div id="project_status_div_id">
       {% include 'appl/include/application_document_status.html' %}
     </div>
-    
-    <!-- COMPLETE HACK FOR NAT-SPORT -->
-    {% if active_application.admission_project.id == 3 %}
-      <ul>
-        <li>
-          <span class="badge badge-danger">การพิมพ์ใบสมัคร</span>
-          จะสามารถพิมพ์ใบสมัครได้ภายในเวลา 12:00 ของวันนี้
-        </li>
-      </ul>
+
+    {% if documents_complete_status.status and major_selection %}
+      {% if active_application.admission_project.id == 3 %}
+        <ul>
+          <li>
+            คุณกรอกข้อมูลครบถ้วนแล้ว<br />
+            <a href="{% url 'appl:natsport-print' %}" target="_blank" class="btn btn-sm btn-success">พิมพ์ใบสมัคร</a>
+          </li>
+        </ul>
+      {% endif %}
     {% endif %}
   </div>
   {% if project_uploaded_documents %}

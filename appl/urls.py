@@ -4,6 +4,7 @@ from appl import views
 from appl.views import upload as upload_views
 from appl.views import general_forms
 from appl.views import major_selection
+from appl.views import print_views
 
 app_name = 'appl'
 urlpatterns = [
@@ -26,4 +27,6 @@ urlpatterns = [
     url(r'^doc/(?P<applicant_id>\d+)/(?P<project_uploaded_document_id>\d+)/(?P<document_id>\d+)/delete/$', upload_views.document_delete, name='document-delete'),
 
     url(r'^status/$', views.check_application_documents, name='check-project-documents'),
+
+    url(r'^natsport/print/$', print_views.sport_print, name='natsport-print'),
 ]

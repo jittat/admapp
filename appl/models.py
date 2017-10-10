@@ -344,6 +344,17 @@ class EducationalProfile(models.Model):
                                    blank=True,
                                    default='')
 
+    def get_education_level_display(self):
+        try:
+            return dict(self.EDUCATION_LEVEL_CHOICES)[self.education_level]
+        except:
+            return ''
+
+    def get_education_plan_display(self):
+        try:
+            return dict(self.EDUCATION_PLAN_CHOICES)[self.education_plan]
+        except:
+            return ''
 
 
 class PersonalProfile(models.Model):
