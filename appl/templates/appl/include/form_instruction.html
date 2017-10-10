@@ -1,0 +1,13 @@
+{% if instruction_step %}
+  <div class="col-md-12">
+    <div class="alert alert-info" role="alert">
+      <span>โปรดกรอกข้อมูลต่างๆ ให้ครบ ก่อนที่จะเลือกสมัครโครงการที่ต้องการ</span>
+      <ol>
+        <li>ข้อมูลพื้นฐาน ✓</li>
+        <li>ข้อมูลส่วนตัว {% if instruction_step > 2%}✓{% elif instruction_step == 2 %}(หน้าปัจจุบัน){% endif %}</li>
+        <li>ข้อมูลการศึกษา {% if instruction_step > 3%}✓{% elif instruction_step == 3 %}(หน้าปัจจุบัน){% endif %}</li>
+        <li>เลือกโครงการ</li>
+      </ol>
+    </div>
+  </div>
+{% endif %}

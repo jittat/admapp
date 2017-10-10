@@ -172,8 +172,11 @@ def personal_profile(request):
     applicant = request.applicant
     profile = applicant.get_personal_profile()
     if profile is None:
+        instruction_step = 2
         profile = PersonalProfile()
         profile.applicant = applicant
+    else:
+        instruction_step = None
 
     if request.method == 'POST':
         form = PersonalProfileForm(request.POST, instance=profile)
@@ -186,14 +189,21 @@ def personal_profile(request):
     else:
         form = PersonalProfileForm(instance=profile)
 
-    return render(request, 'appl/forms/personal.html',
-                  { 'form': form })
+    return render(request,
+                  'appl/forms/personal.html',
+                  { 'form': form,
+                    'instruction_step': instruction_step,
+                  })
 
 
 @appl_login_required        
 def education_profile(request):
     applicant = request.applicant
     profile = applicant.get_educational_profile()
+    if profile is None:
+        instruction_step = 3
+    else:
+        instruction_step = None
 
     if request.method == 'POST':
         form = EducationForm(request.POST, instance=profile)
@@ -216,5 +226,8 @@ def education_profile(request):
     else:
         form = EducationForm(instance=profile)
 
-    return render(request, 'appl/forms/education.html',
-                  { 'form': form })
+    return render(request,
+                  'appl/forms/education.html',
+                  { 'form': form,
+                    'instruction_step': instruction_step,
+                  })
