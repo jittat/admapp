@@ -152,6 +152,10 @@ class PersonalProfileForm(ModelForm):
 @appl_login_required
 def ajax_school_search(request):
     province = request.GET['province']
+
+    if province == '':
+        return HttpResponse(json.dumps([]))
+        
     term = request.GET['term']
     schools = School.objects.filter(province=province,title__contains=term)
     results = [s.title for s in schools]
