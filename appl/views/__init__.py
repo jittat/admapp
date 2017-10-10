@@ -341,3 +341,50 @@ def payment_barcode(request, application_id, stub):
     return response
 
 
+@appl_login_required
+def check_application_documents(request):
+    applicant = request.applicant
+    admission_round = AdmissionRound.get_available()
+    active_application = applicant.get_active_application(admission_round)
+
+    if not active_application:
+        return HttpResponseForbidden()
+    
+    admission_project = active_application.admission_project
+    
+    common_uploaded_documents = ProjectUploadedDocument.get_common_documents()
+    project_uploaded_documents = admission_project.projectuploadeddocument_set.all()
+    
+    prepare_uploaded_document_forms(applicant, common_uploaded_documents)
+    prepare_uploaded_document_forms(applicant, project_uploaded_documents)
+
+    major_selection = active_application.get_major_selection()
+
+    supplement_configs = load_supplements(applicant,
+                                          admission_project)
+
+    documents_complete_status = check_project_documents(applicant,
+                                                        admission_project,
+                                                        supplement_configs,
+                                                        list(common_uploaded_documents) + list(project_uploaded_documents))
+        
+    admission_fee = active_application.admission_fee(major_selection)
+
+    payments = Payment.find_for_applicant_in_round(applicant, admission_round)
+    paid_amount = sum([p.amount for p in payments])
+
+    if admission_fee > paid_amount:
+        additional_payment = admission_fee - paid_amount
+    else:
+        additional_payment = 0
+
+    return render(request,
+                  'appl/include/application_document_status.html',
+                  { 'documents_complete_status': documents_complete_status,
+                    'active_application': active_application,
+                    'major_selection': major_selection,
+                    
+                    'payments': payments,
+                    'paid_amount': paid_amount,
+                    'additional_payment': additional_payment,
+                    })

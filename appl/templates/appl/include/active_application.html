@@ -9,21 +9,29 @@
   <div {% if project_uploaded_documents %} class="col-md-5" {% else %} class="col-md-12" {% endif %}>
     <ul>
       {% include 'appl/include/project_supplement_link.html' %}
+
       {% include 'appl/include/major_selection_item.html' %}
-      {% if documents_complete_status.status %}
-        {% if major_selection %}
-          {% include 'appl/include/payment_item.html' %}
-        {% endif %}
-      {% else %}
-        {% include 'appl/include/documents_incomplete.html' %}
+
+      {% if active_application.admission_project.max_num_selections == 1 %}
+        {% with active_application.admission_project as project %}
+          {% include 'appl/include/selected_major_details.html' %}
+        {% endwith %}
       {% endif %}
-      {% if active_application.admission_project.id == 3 %}
+    </ul>
+
+    <div id="project_status_div_id">
+      {% include 'appl/include/application_document_status.html' %}
+    </div>
+    
+    <!-- COMPLETE HACK FOR NAT-SPORT -->
+    {% if active_application.admission_project.id == 3 %}
+      <ul>
         <li>
           <span class="badge badge-danger">การพิมพ์ใบสมัคร</span>
           จะสามารถพิมพ์ใบสมัครได้ภายในเวลา 12:00 ของวันนี้
         </li>
-      {% endif %}
-    </ul>
+      </ul>
+    {% endif %}
   </div>
   {% if project_uploaded_documents %}
     <div class="col-md-7">
