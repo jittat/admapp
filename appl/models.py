@@ -237,16 +237,17 @@ class ProjectUploadedDocument(models.Model):
                              blank=True)
 
     allowed_extentions = models.CharField(max_length=50)
-
-    is_required = models.BooleanField(default=True)
-    can_have_multiple_files = models.BooleanField(default=False)
-
     file_prefix = models.CharField(max_length=50,
                                    blank=True)
     size_limit = models.IntegerField(default=2000000)
 
+    is_url_document = models.BooleanField(default=False)
+    document_url = models.URLField(blank=True)
+    
+    is_required = models.BooleanField(default=True)
     is_detail_required = models.BooleanField(default=False)
-
+    can_have_multiple_files = models.BooleanField(default=False)
+    
     class Meta:
         ordering = ['rank']
 
@@ -434,6 +435,9 @@ class ProjectApplication(models.Model):
     applied_at = models.DateTimeField()
     cancelled_at = models.DateTimeField(blank=True,
                                         null=True)
+
+    verification_number = models.CharField(max_length=20,
+                                           blank=True)
 
     ID_OFFSET_MAGIC = 104341
 
