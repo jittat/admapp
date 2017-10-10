@@ -43,8 +43,8 @@ PASSWORD_THAI_ERROR_MESSAGES = {
 }
 
 HAS_NATIONAL_ID_CHOICES = [
-    ('1','รหัสประจำตัวประชาชน'),
-    ('0','เลขที่หนังสือเดินทาง (Passport)'),
+    ('1','มีรหัสประจำตัวประชาชน'),
+    ('0','ไม่มีรหัสประจำตัวประชาชน (ใช้เลขที่หนังสือเดินทางในการสมัคร)'),
 ]
 
 class RegistrationForm(forms.Form):
@@ -56,8 +56,8 @@ class RegistrationForm(forms.Form):
                                           max_length=20,
                                           required=False)
 
-    has_national_id = forms.ChoiceField(label='วิธีการสมัคร',
-                                        help_text='หากมีรหัสประจำตัวประชาชน กรุณาเลือกสมัครด้วยรหัสประจำตัวประชาชน',
+    has_national_id = forms.ChoiceField(label='ผู้สมัครที่มีรหัสประจำตัวประชาชน ต้องสมัครด้วยรหัสประจำตัวประชาชนเท่านั้น',
+                                        help_text='หากเคยสมัครแล้วแต่ไม่สามารถเข้าสู่ระบบได้ กรุณากดขอรหัสผ่านใหม่',
                                         choices=HAS_NATIONAL_ID_CHOICES, 
                                         widget=forms.Select(), 
                                         initial=1)
@@ -96,11 +96,11 @@ class RegistrationForm(forms.Form):
         self.helper.layout = Layout(
             Fieldset(
                 'ข้อมูลสำหรับการเข้าสู่ระบบ',
-                'has_national_id',
                 Row(
                     Div('national_id', css_class='col-md-6'),
                     Div('national_id_confirm', css_class='col-md-6'),
                 ),
+                'has_national_id',
                 Row(
                     Div('passport_number', css_class='col-md-6'),
                     Div('passport_number_confirm', css_class='col-md-6'),
