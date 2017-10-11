@@ -1,4 +1,7 @@
 <li>
+  {% if paid_amount >= active_application.admission_fee %}
+    <i style="color: green" class="fa fa-check" aria-hidden="true"></i>
+  {% endif %}
   <b>การชำระค่าสมัคร:</b>
   ค่าสมัคร {{ active_application.admission_fee }} บาท
   ชำระแล้ว {{ paid_amount }} บาท
