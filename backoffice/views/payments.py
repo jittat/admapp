@@ -1,11 +1,7 @@
 from django.shortcuts import render, redirect
 from django.urls import reverse
-from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
 from django import forms
-
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Fieldset, ButtonHolder, Submit, MultiWidgetField, Div, Row
 
 from regis.models import Applicant
 from appl.models import Payment, AdmissionRound, ProjectApplication
@@ -13,7 +9,8 @@ from backoffice.models import Profile
 
 from admapp.emails import send_payment_email
 
-from .permissions import is_super_admin
+from backoffice.decorators import super_admin_login_required
+
 
 class PaymentForm(forms.Form):
     payment_file = forms.FileField()
@@ -94,11 +91,11 @@ def process_payment_file(f):
         all_counter += 1
     return 'สามารถนำเข้าได้ {0} ใบ จากทั้งหมด {1} ใบ (มีปัญหา {2} ใบ)'.format(imported_counter, all_counter, all_counter - imported_counter)
     
-@login_required
+@super_admin_login_required
 def index(request):
     user = request.user
-    if not is_super_admin(user):
-        return HttpResponseForbidden()
+    if not user.is_super_admin:
+        return redirect(reverse('backoffice:index'))
 
     if request.method == 'POST':
         form = PaymentForm(request.POST, request.FILES)
@@ -110,17 +107,17 @@ def index(request):
     else:
         form = PaymentForm()
 
+    all_payment_count = Payment.objects.count()
     error_payments = Payment.objects.filter(applicant=None).all()
         
     notice = request.session.pop('notice', None)
         
     return render(request,
                   'backoffice/payments/index.html',
-                  { 'is_super_admin': is_super_admin(user),
-
-                    'notice': notice,
-
+                  { 'notice': notice,
+                
                     'form': form,
 
+                    'all_payment_count': all_payment_count,
                     'error_payments': error_payments,
                   })

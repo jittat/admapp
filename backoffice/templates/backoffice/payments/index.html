@@ -22,7 +22,15 @@
         </div>
       </form>
 
-      <h2>รายการที่มีปัญหา</h2>
+      <hr />
+      
+      <h3>รายการที่มีปัญหา</h3>
+      <div class="alert alert-info">
+        <b>สถิติพื้นฐาน:</b>
+        จำนวนรายการชำระเงินทั้งหมด {{ all_payment_count }} รายการ
+        จำนวนรายการที่มีปัญหา {{ error_payments|length }} รายการ
+      </div>
+      
       <table class="table table-striped">
         {% for p in error_payments %}
           <tr>
@@ -32,6 +40,10 @@
             <td>{{ p.paid_at }}</td>
             <td>{{ p.payment_name }}</td>
             <td>{{ p.amount|floatformat:"2" }}</td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td>ไม่มีรายการที่มีปัญหา</td>
           </tr>
         {% endfor %}
       </table>

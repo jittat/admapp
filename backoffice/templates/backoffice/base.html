@@ -12,9 +12,12 @@
       <li class="nav-item">
         <a class="nav-link" href="{% url 'backoffice:index' %}">หน้าหลัก</a>
       </li>
-      {% if is_super_admin %}
+      {% if user.is_super_admin %}
         <li class="nav-item">
           <a class="nav-link" href="{% url 'backoffice:payment-index' %}">ระบบชำระเงิน</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'backoffice:users-index' %}">จัดการผู้ใช้</a>
         </li>
       {% endif %}
     </ul>

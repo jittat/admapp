@@ -1,0 +1,61 @@
+<tr>
+  <td>อีเมล</td>
+  <td>{{ applicant.email }}</td>
+</tr>
+
+{% if applicant.passport_number %}
+  <tr>
+    <td>พาสปอร์ต</td>
+    <td>{{ applicant.passport_number }}</td>
+  </tr>
+{% endif %}
+
+{% if education %}
+  <tr>
+    <td>ข้อมูลการศึกษา</td>
+    <td>
+      <ul>
+        <li>
+          ระดับการศึกษา: {{ education.get_education_level_display }} |
+          แผนการศึกษา: {{ education.get_education_plan_display }} |
+          GPA: {{ education.gpa }}
+        </li>
+        <li>
+          {{ education.school_title }}, 
+          {{ education.province }}
+        </li>
+      </ul>
+    </td>
+  </tr>
+{% endif %}
+
+{% if personal %}
+  <tr>
+    <td>ข้อมูลส่วนตัว</td>
+    <td>
+      <ul>
+        <li>
+          เบอร์โทรศัพท์ที่ติดต่อได้: {{ personal.contact_phone }} |
+          เบอร์โทรศัพท์มือถือ: {{ personal.mobile_phone }}
+          <button class="btn btn-info btn-sm personal-toggle-buttons">แสดงข้อมูลเพิ่มเติม</button>
+        </li>
+        
+        <li class="personal-list" style="display: none;">ชื่อ(อังกฤษ): {{ personal.get_prefix_english_display }} {{ personal.first_name_english }} {{ personal.last_name_english }}</li>
+        <li class="personal-list" style="display: none;">วันเดือนปีเกิด: {{ personal.birthday }} </li>
+        <li class="personal-list" style="display: none;">ชื่อบิดา: {{ personal.father_prefix }} {{ personal.father_first_name }} {{ personal.father_last_name }} 
+          | ชื่อมารดา: {{ personal.mother_prefix }} {{ personal.mother_first_name }} {{ personal.mother_last_name }}</li>
+        <li class="personal-list" style="display: none;">ที่อยู่: {{ personal.house_number }} {{ personal.village_number }} {{ personal.avenue }} {{ personal.road }} {{ personal.sub_district }} {{ personal.province }} {{ personal.postal_code }}</li>
+        
+        
+      </ul>
+    </td>
+  </tr>
+  <script>
+    $(function(){
+      $(".personal-toggle-buttons").click(function(){
+        $(".personal-list").toggle();
+        return false;
+      });
+    });
+  </script>
+{% endif %}

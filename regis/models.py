@@ -69,6 +69,9 @@ class Applicant(models.Model):
         else:
             return None
 
+    def get_all_active_applications(self):
+        return self.project_applications.filter(is_canceled=False).all()
+
     def apply_to_project(self, admission_project, admission_round):
         from appl.models import ProjectApplication
 

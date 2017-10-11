@@ -3,6 +3,7 @@ from django.conf.urls import url, include
 from . import views
 from backoffice.views import projects
 from backoffice.views import payments
+from backoffice.views import users
 
 app_name = 'backoffice'
 
@@ -18,5 +19,7 @@ urlpatterns = [
     url(r'^search/(\d+)/$', views.search, name='search-project'),
 
     url(r'^projects/(\d+)/(\d+)/$', projects.index, name='projects-index'),
+
+    url(r'^users/$', users.index, name='users-index'),
 ]
 

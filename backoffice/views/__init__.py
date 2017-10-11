@@ -1,15 +1,15 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
-from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
 
 from regis.models import Applicant
 from appl.models import AdmissionProject,ProjectApplication,EducationalProfile,PersonalProfile, Payment
 from backoffice.models import Profile
 
-from .permissions import is_super_admin
+from backoffice.decorators import user_login_required
+from .permissions import can_user_view_project
 
-@login_required
+@user_login_required
 def index(request):
     user = request.user
     profile = Profile.get_profile_for(user)
@@ -24,12 +24,12 @@ def index(request):
         faculty = profile.faculty
         is_admission_admin = profile.is_admission_admin
         admission_projects = profile.admission_projects.filter(is_available=True).all()
-    if is_super_admin(user):
+    if user.is_super_admin:
         is_admission_admin = True
         is_application_admin = True
         admission_projects = AdmissionProject.objects.filter(is_available=True).all()
-        project_application = ProjectApplication.objects.filter(is_canceled=False).count()
         stats['applicant_count'] = Applicant.objects.count()
+        stats['project_application_count'] = ProjectApplication.objects.filter(is_canceled=False).count()
     
     return render(request,
                   'backoffice/index.html',
@@ -40,13 +40,10 @@ def index(request):
                     'is_application_admin': is_application_admin,
 
                     'applicant_stats': stats,
-                    'project_application': project_application,
-
-                    'is_super_admin': is_super_admin(user),
                   })
 
 
-@login_required
+@user_login_required
 def search(request, project_id=None):
     user = request.user
     if (project_id==None) and (not is_super_admin(user)):
@@ -68,18 +65,32 @@ def search(request, project_id=None):
                   { 'query': query,
                     'applicants': applicants,
                     'message': message,
-
-                    'is_super_admin': is_super_admin(user),
                   })
 
  
-@login_required
+@user_login_required
 def show(request, national_id, project_id=None):
     user = request.user
-    if (project_id==None) and (not is_super_admin(user)):
-        return HttpResponseForbidden()
+    project = get_object_or_404(AdmissionProject, pk=project_id)
+    
+    if not user.is_super_admin:
+        if project_id==None:
+            return HttpResponseForbidden()
+
+        if not can_user_view_project(user, project):
+            return redirect(reverse('backoffice:index'))
 
     applicant = get_object_or_404(Applicant, national_id=national_id)
+    all_applications = applicant.get_all_active_applications()
+
+    applications = []
+    for a in all_applications:
+        if user.is_super_admin or a.admission_project_id == int(project_id):
+            applications.append(a)
+            
+    if len(applications)==0:
+        return redirect(reverse('backoffice:index'))
+    
     education = applicant.get_educational_profile()
     personal = applicant.get_personal_profile()
     payments = Payment.objects.filter(applicant=applicant)
@@ -90,9 +101,8 @@ def show(request, national_id, project_id=None):
                     'education': education,
                     'personal': personal,
 
+                    'applications': applications,
                     'payments': payments,
-                    
-                    'is_super_admin': is_super_admin(user),
                   })
 
 
