@@ -35,7 +35,7 @@ def upload_check(form, size_limit, allowed_extentions, is_detail_required):
 
     name, extension = os.path.splitext(cleaned_data.name)
     extension = extension[1:]
-    if not extension in allowed_extentions:
+    if not extension.upper() in allowed_extentions:
         return (False, 'EXT_ERROR')
 
     if is_detail_required:
@@ -75,7 +75,8 @@ def upload(request, document_id):
         is_valid, result_code = url_check(form, is_detail_required)
     else:
         size_limit = project_uploaded_document.size_limit
-        allowed_extentions = project_uploaded_document.allowed_extentions.split(',')
+        allowed_extentions = [ext.upper() for ext in
+                              project_uploaded_document.allowed_extentions.split(',')]
 
         is_valid, result_code = upload_check(form, size_limit, allowed_extentions, is_detail_required)
 
