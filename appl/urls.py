@@ -11,8 +11,10 @@ urlpatterns = [
     url(r'^$', views.index, name='index'),
 
     url(r'^personal/$', general_forms.personal_profile, name='personal-profile'),
+
     url(r'^education/$', general_forms.education_profile, name='education-profile'),
     url(r'^school_search/$', general_forms.ajax_school_search, name='ajax-school-search'),
+    url(r'^topschool_list/$', general_forms.ajax_topschool_list, name='ajax-topschool-list'),
 
     url(r'^apply/(\d+)/(\d+)/$', views.apply_project, name='apply-project'),
     url(r'^cancel/(\d+)/(\d+)/$', views.cancel_project, name='cancel-project'),
