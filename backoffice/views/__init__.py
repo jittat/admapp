@@ -46,7 +46,7 @@ def index(request):
 @user_login_required
 def search(request, project_id=None):
     user = request.user
-    if (project_id==None) and (not is_super_admin(user)):
+    if not user.is_super_admin:
         return HttpResponseForbidden()
 
     query = request.POST['q']
