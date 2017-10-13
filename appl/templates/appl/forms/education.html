@@ -73,6 +73,7 @@
                  var actualData = eval(data);
                  $("#id_topschool_select option").detach();
                  jQuery.each(actualData, function(i, title) {
+                   title = title.replace(/\"/g,'&quot;')
                    var optionStr = ('<option value="' + title + '">' +
                                     title + '</option>');
                    $("#id_topschool_select").append(optionStr);
