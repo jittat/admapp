@@ -193,6 +193,8 @@ def ajax_school_search(request):
 @appl_login_required
 def ajax_topschool_list(request):
     province = request.GET['province']
+    if province == '':
+        return HttpResponse(json.dumps([]))
 
     schools = School.objects.filter(province=province,
                                     topschool__isnull=False)
