@@ -34,6 +34,14 @@ p.invalid-feedback {
     margin-bottom: 10px;
 }
 
+.ml10 {
+    margin-left: 10px;
+}
+
+.mr10 {
+    margin-right: 10px;
+}
+
 .p5 {
     padding: 5px;
 }
@@ -48,6 +56,14 @@ p.invalid-feedback {
 
 .pt10 {
     padding-top: 10px;
+}
+
+.pl10 {
+    padding-left: 10px;
+}
+
+.pr10 {
+    padding-right: 10px;
 }
 
 .border-a0 {
