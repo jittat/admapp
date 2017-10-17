@@ -1,0 +1,26 @@
+<tr class="table-success">
+  <td colspan="100">สำหรับฝ่ายรับเข้า</td>
+</tr>
+<tr>
+  <td>
+    บันทึกการใช้งาน
+  </td>
+  <td>
+    <table>
+      <thead class="table-inverse">
+        <tr>
+          <th>เมื่อ</th>
+          <th>จาก</th>
+          <th>เหตุการณ์</th>
+        </tr>
+      </thead>
+      {% for item in logs %}
+        <tr>
+          <td>{{ item.created_at|date:"d M Y H:i" }}</td>
+          <td>{{ item.request_ip }}</td>
+          <td>{{ item.message }}</td>
+        </tr>
+      {% endfor %}
+    </table>
+  </td>
+</tr>

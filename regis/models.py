@@ -166,8 +166,11 @@ class LogItem(models.Model):
     def create(message, applicant=None, request=None):
         log = LogItem(applicant=applicant,
                       message=message)
-        if request and ('REMOTE_ADDR' in request.META):
-            log.request_ip = request.META['REMOTE_ADDR']
+        if request:
+            if ('REMOTE_ADDR' in request.META) and (request.META['REMOTE_ADDR'] != b''):
+                log.request_ip = request.META['REMOTE_ADDR']
+            elif 'HTTP_X_FORWARDED_FOR' in request:
+                log.request_ip = request.META['HTTP_X_FORWARDED_FOR']
 
         log.save()
         return log

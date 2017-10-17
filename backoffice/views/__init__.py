@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.http import HttpResponseForbidden
 
-from regis.models import Applicant
+from regis.models import Applicant, LogItem
 from appl.models import AdmissionProject,ProjectApplication,EducationalProfile,PersonalProfile, Payment
 from backoffice.models import Profile
 
@@ -95,6 +95,11 @@ def show(request, national_id, project_id=None):
     personal = applicant.get_personal_profile()
     payments = Payment.objects.filter(applicant=applicant)
 
+    if user.is_super_admin:
+        logs = applicant.logitem_set.all()
+    else:
+        logs = []
+    
     return render(request,
                   'backoffice/show.html',
                   { 'applicant': applicant,
@@ -103,6 +108,8 @@ def show(request, national_id, project_id=None):
 
                     'applications': applications,
                     'payments': payments,
+
+                    'logs': logs,
                   })
 
 
