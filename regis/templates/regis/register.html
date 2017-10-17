@@ -9,49 +9,49 @@
 </div>
 
 <script>
-var disableNationalIdInputs = function(ids) {
-	jQuery.each(ids, function(idx, elt) {
-		elt += " :input";
-        $(elt).prop("disabled", true);
-		$(elt).find("input").prop('required',false);
-	});
-};
-var disablePassportInputs = function(ids) {
-	jQuery.each(ids, function(idx, elt) {
-        $(elt).slideUp("slow");
-		$(elt).find("input").prop('required',false);
-	});
-};
-var enableNationalIdInputs = function(ids) {
-	jQuery.each(ids, function(idx, elt) {
-		elt += " :input";
-		$(elt).prop("disabled", false);
-		$(elt).find("input").prop('required',true);
-	});
-};
-var enablePassportInputs = function(ids) {
-	jQuery.each(ids, function(idx, elt) {
-		$(elt).slideDown("slow");
-		$(elt).find("input").prop('required',true);
-	});
-};
-var passportInputIds = ["#div_id_passport_number", "#div_id_passport_number_confirm"];
-var nationalIdInputsIds = ["#div_id_national_id", "#div_id_national_id_confirm"]; 
-var handleHasNationalIdChange = function() {
-	var hasNatId = $("#id_has_national_id").val();
-	if(hasNatId == 1) {
-		disablePassportInputs(passportInputIds);
-		enableNationalIdInputs(nationalIdInputsIds);
-	} else {
-		disableNationalIdInputs(nationalIdInputsIds);
-		enablePassportInputs(passportInputIds);
-	}
-};
-$(function() {
-	$("#div_id_passport_number").hide();
-	$("#div_id_passport_number_confirm").hide();
-	handleHasNationalIdChange();
-	$("#id_has_national_id").change(handleHasNationalIdChange);
-});
+  var disableNationalIdInputs = function(ids) {
+    jQuery.each(ids, function(idx, elt) {
+      elt += " :input";
+      $(elt).prop("disabled", true);
+      $(elt).find("input").prop('required',false);
+    });
+  };
+  var disablePassportInputs = function(ids) {
+    jQuery.each(ids, function(idx, elt) {
+      $(elt).slideUp("slow");
+      $(elt).find("input").prop('required',false);
+    });
+  };
+  var enableNationalIdInputs = function(ids) {
+    jQuery.each(ids, function(idx, elt) {
+      elt += " :input";
+      $(elt).prop("disabled", false);
+      $(elt).find("input").prop('required',true);
+    });
+  };
+  var enablePassportInputs = function(ids) {
+    jQuery.each(ids, function(idx, elt) {
+      $(elt).slideDown("slow");
+      $(elt).find("input").prop('required',true);
+    });
+  };
+  var passportInputIds = ["#div_id_passport_number", "#div_id_passport_number_confirm"];
+  var nationalIdInputsIds = ["#div_id_national_id", "#div_id_national_id_confirm"]; 
+  var handleHasNationalIdChange = function() {
+    var hasNatId = $("#id_has_national_id").val();
+    if(hasNatId == 1) {
+      disablePassportInputs(passportInputIds);
+      enableNationalIdInputs(nationalIdInputsIds);
+    } else {
+      disableNationalIdInputs(nationalIdInputsIds);
+      enablePassportInputs(passportInputIds);
+    }
+  };
+  $(function() {
+    $("#div_id_passport_number").hide();
+    $("#div_id_passport_number_confirm").hide();
+    handleHasNationalIdChange();
+    $("#id_has_national_id").change(handleHasNationalIdChange);
+  });
 </script>
 {% endblock %}

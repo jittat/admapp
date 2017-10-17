@@ -49,17 +49,17 @@ HAS_NATIONAL_ID_CHOICES = [
 
 class RegistrationForm(forms.Form):
 
+    has_national_id = forms.ChoiceField(label='หากไม่มีรหัสประจำตัวประชาชน ให้เลือก "ไม่มี" และกรอกเลขที่หนังสือเดินทาง', 
+                                        choices=HAS_NATIONAL_ID_CHOICES, 
+                                        widget=forms.Select(), 
+                                        initial=1)
+
     national_id = forms.CharField(label='รหัสประจำตัวประชาชน',
                                   max_length=20, 
                                   required=False)
     national_id_confirm = forms.CharField(label='ยืนยันรหัสประจำตัวประชาชน',
                                           max_length=20,
                                           required=False)
-
-    has_national_id = forms.ChoiceField(label='หากไม่มีรหัสประจำตัวประชาชน ให้เลือก "ไม่มี" และกรอกเลขที่หนังสือเดินทาง', 
-                                        choices=HAS_NATIONAL_ID_CHOICES, 
-                                        widget=forms.Select(), 
-                                        initial=1)
 
     passport_number = forms.CharField(label='เลขที่หนังสือเดินทาง (Passport No.)', 
                                       max_length=20,
@@ -130,6 +130,9 @@ class RegistrationForm(forms.Form):
     def clean_national_id(self):
         if not settings.VERIFY_NATIONAL_ID:
             return self.cleaned_data['national_id']
+
+        if self.cleaned_data['has_national_id'] == '0':
+            return ''
         
         if not is_valid_national_id(self.cleaned_data['national_id']):
             del self.cleaned_data['national_id']
@@ -137,6 +140,9 @@ class RegistrationForm(forms.Form):
         return self.cleaned_data['national_id']
 
     def clean_national_id_confirm(self):
+        if self.cleaned_data['has_national_id'] == '0':
+            return ''
+        
         if ((settings.VERIFY_NATIONAL_ID) and
             (not is_valid_national_id(self.cleaned_data['national_id_confirm']))):
             del self.cleaned_data['national_id_confirm']
@@ -147,12 +153,18 @@ class RegistrationForm(forms.Form):
         return self.cleaned_data['national_id_confirm']
 
     def clean_passport_number(self):
+        if self.cleaned_data['has_national_id'] == '1':
+            return ''
+        
         if not is_valid_passport_number(self.cleaned_data['passport_number']):
             del self.cleaned_data['passport_number']
             raise ValidationError('เลขที่หนังสือเดินทางผิดรูปแบบ', code='invalid')
         return self.cleaned_data['passport_number']
 
     def clean_passport_number_confirm(self):
+        if self.cleaned_data['has_national_id'] == '1':
+            return ''
+        
         if not is_valid_passport_number(self.cleaned_data['passport_number_confirm']):
             del self.cleaned_data['passport_number_confirm']
             raise ValidationError('เลขที่หนังสือเดินทางผิดรูปแบบ', code='invalid')

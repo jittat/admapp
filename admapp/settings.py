@@ -160,7 +160,7 @@ LOGOUT_REDIRECT_URL = 'backoffice:index'
 ADMISSION_TITLE = "โครงการรับสมัครนักเรียนเข้าศึกษาในมหาวิทยาลัยเกษตรศาสตร์ ปีการศึกษา 2561"
 ADMISSION_SHORT_TITLE = "KU-TCAS'61"
 
-VERIFY_NATIONAL_ID = False
+VERIFY_NATIONAL_ID = True
 FAKE_LOGIN = False
 
 BARCODE_DIR = '/tmp/'
