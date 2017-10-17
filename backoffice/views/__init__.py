@@ -9,6 +9,8 @@ from backoffice.models import Profile
 from backoffice.decorators import user_login_required
 from .permissions import can_user_view_project
 
+from admapp.emails import send_forget_password_email
+
 @user_login_required
 def index(request):
     user = request.user
@@ -103,7 +105,9 @@ def show(request, national_id, project_id=None):
         logs = applicant.logitem_set.all()
     else:
         logs = []
-    
+
+    notice = request.session.pop('notice', None)
+        
     return render(request,
                   'backoffice/show.html',
                   { 'applicant': applicant,
@@ -114,11 +118,27 @@ def show(request, national_id, project_id=None):
                     'payments': payments,
 
                     'logs': logs,
+                    'notice': notice,
                   })
 
 
+@user_login_required
+def new_password(request, national_id):
+    user = request.user
     
-    
+    if not user.is_super_admin:
+        return HttpResponseForbidden()
+
+    applicant = get_object_or_404(Applicant, national_id=national_id)
+    new_password = applicant.random_password()
+    applicant.save()
+
+    LogItem.create('Admin new password requested ({0})'.format(user.username), applicant, request)
+                
+    send_forget_password_email(applicant, new_password)
+
+    request.session['notice'] = 'เปลี่ยนรหัสผ่านและส่งให้ผู้สมัครแล้ว รหัสผ่านคือ {0} (สามารถส่งให้ผู้สมัครทางเมลได้)'.format(new_password)
+    return redirect(reverse('backoffice:show-applicant', args=[applicant.national_id]))
     
 
     

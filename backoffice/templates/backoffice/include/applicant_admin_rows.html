@@ -2,6 +2,15 @@
   <td colspan="100">สำหรับฝ่ายรับเข้า</td>
 </tr>
 <tr>
+  <td>ข้อมูลบัญชี</td>
+  <td>
+    <form class="d-inline" method="post" action="{% url 'backoffice:new-password' applicant.national_id %}">
+      {% csrf_token %}
+      <button id="new_password_id" class="btn btn-secondary btn-sm">ขอรหัสผ่านใหม่</button>
+    </form>
+  </td>
+</tr>
+<tr>
   <td>
     บันทึกการใช้งาน
   </td>
@@ -24,3 +33,10 @@
     </table>
   </td>
 </tr>
+<script>
+  $(function(){
+    $("#new_password_id").click(function(){
+      return confirm('คุณแน่ใจที่จะขอรหัสผ่านใหม่ให้ผู้สมัคร\nเหตุการณ์นี้จะถูกบันทึกในบันทึกการใช้งาน');
+    });
+  });
+</script>
