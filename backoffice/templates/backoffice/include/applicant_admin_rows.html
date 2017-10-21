@@ -1,3 +1,4 @@
+{%load crispy_forms_tags %}
 <tr class="table-success">
   <td colspan="100">สำหรับฝ่ายรับเข้า</td>
 </tr>
@@ -7,6 +8,12 @@
     <form class="d-inline" method="post" action="{% url 'backoffice:new-password' applicant.national_id %}">
       {% csrf_token %}
       <button id="new_password_id" class="btn btn-secondary btn-sm">ขอรหัสผ่านใหม่</button>
+    </form>
+    <button id="change_info_id" class="btn btn-secondary btn-sm">แก้ชื่อและอีเมล</button>
+    <form id="change_info_form_id" class="form mt5" style="display: none"; method="post" action="{% url 'backoffice:update-applicant' applicant.national_id %}">
+      {% csrf_token %}
+      {{ applicant_form|crispy }}
+      <input type="submit" class="btn btn-primary btn-sm" value="จัดเก็บการแก้ไข"/>
     </form>
   </td>
 </tr>
@@ -37,6 +44,10 @@
   $(function(){
     $("#new_password_id").click(function(){
       return confirm('คุณแน่ใจที่จะขอรหัสผ่านใหม่ให้ผู้สมัคร\nเหตุการณ์นี้จะถูกบันทึกในบันทึกการใช้งาน');
+    });
+
+    $("#change_info_id").click(function(){
+      $("#change_info_form_id").slideToggle();
     });
   });
 </script>

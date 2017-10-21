@@ -16,6 +16,7 @@ urlpatterns = [
     url(r'^applicants/(\d+)/(\d+)/$', views.show, name='show-applicant-in-project'),
 
     url(r'^new_password/(\d+)/$', views.new_password, name='new-password'),
+    url(r'^update/(\d+)/$', views.update_applicant, name='update-applicant'),
 
     url(r'^search/$', views.search, name='search'),
     url(r'^search/(\d+)/$', views.search, name='search-project'),
