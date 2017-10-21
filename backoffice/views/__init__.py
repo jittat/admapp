@@ -74,6 +74,11 @@ def search(request, project_id=None):
 def show(request, national_id, project_id=None):
     user = request.user
     
+    if project_id:
+        project = get_object_or_404(AdmissionProject, pk=project_id)
+    else:
+        project = None
+        
     if not user.is_super_admin:
         if project_id==None:
             return HttpResponseForbidden()
@@ -81,11 +86,6 @@ def show(request, national_id, project_id=None):
         if not can_user_view_project(user, project):
             return redirect(reverse('backoffice:index'))
 
-    if project_id:
-        project = get_object_or_404(AdmissionProject, pk=project_id)
-    else:
-        project = None
-        
     applicant = get_object_or_404(Applicant, national_id=national_id)
     all_applications = applicant.get_all_active_applications()
 
