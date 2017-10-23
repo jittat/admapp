@@ -16,6 +16,10 @@
 {% endif %}
 <div class="row">
   <div {% if project_uploaded_documents %} class="col-md-5" {% else %} class="col-md-12" {% endif %}>
+    {% if supplement_blocks %}
+      {% include 'appl/include/supplement_blocks.html' %}
+    {% endif %}
+    
     {% include 'appl/include/project_supplement_link.html' %}
 
     {% include 'appl/include/major_selection_item.html' %}

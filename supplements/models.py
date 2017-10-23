@@ -29,7 +29,12 @@ class AdvancedPlacementResult(models.Model):
     subject_id = models.CharField(max_length=10)
     section_id = models.IntegerField()
     grade = models.CharField(max_length=5)
-    
+
+    def get_course_title_display(self):
+        if self.subject_id in AdvancedPlacementResult.SUBJECT_TITLE:
+            return AdvancedPlacementResult.SUBJECT_TITLE[self.subject_id]
+        else:
+            return ''
 
 class ProjectSupplement(models.Model):
     applicant = models.ForeignKey(Applicant)
@@ -101,6 +106,20 @@ def load_project_supplements(applicant, admission_project, configs):
             supplements[config.name] = None
     return supplements
 
+
+class ProjectBlockConfig(object):
+    def __init__(self,
+                 name,
+                 title,
+                 template_name,
+                 context_init_function):
+        
+        self.name = name
+        self.title = title
+        self.template_name = template_name
+        self.context_init_function = context_init_function
+
+
     
 PROJECT_SUPPLEMENTS = {
     'นักกีฬาทีมชาติและเยาวชนทีมชาติ': [
@@ -120,4 +139,13 @@ PROJECT_SUPPLEMENTS = {
                                 'supplements.views.forms.nat_sport.process_sport_history_form'),
     ],
 }
-    
+
+
+PROJECT_ADDITIONAL_BLOCKS = {
+    'เรียนล่วงหน้า': [
+        ProjectBlockConfig('ap_course_results',
+                           'ผลการเรียนจากโครงการเรียนล่วงหน้า',
+                           'supplements/ap/course_results.html',
+                           'supplements.views.blocks.load_ap_course_results'),
+    ],
+}

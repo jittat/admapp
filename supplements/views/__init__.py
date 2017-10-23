@@ -7,13 +7,29 @@ from supplements.models import ProjectSupplement, ProjectSupplementConfig
 
 from supplements.models import PROJECT_SUPPLEMENTS
 from supplements.models import load_project_supplements
+from .utils import get_function
 
-def get_function(fname):
-    import importlib
-    mod_name, func_name = fname.rsplit('.',1)
-    mod = importlib.import_module(mod_name)
-    f = getattr(mod, func_name)
-    return f
+def render_supplement_block(request,
+                            applicant,
+                            admission_project,
+                            admission_round,
+                            block_config):
+    loader = get_function(block_config.context_init_function)
+
+    block_context = loader(applicant,
+                           admission_project,
+                           admission_round)
+    
+    from django.template.loader import get_template
+
+    template = get_template(block_config.template_name)
+    
+    html = template.render({ 'applicant': applicant,
+                             'admission_project': admission_project,
+                             'admission_round': admission_round,
+                             'block_config': block_config,
+                             'block_context': block_context, })
+    return html
 
 def process_supplement_forms(request,
                              applicant, admission_project, admission_round,

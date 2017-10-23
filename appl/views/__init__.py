@@ -47,6 +47,20 @@ def load_supplements(applicant, admission_project):
 
     return supplement_configs
         
+def load_supplement_blocks(request, applicant, admission_project, admission_round):
+    from supplements.models import PROJECT_ADDITIONAL_BLOCKS
+    from supplements.views import render_supplement_block
+    
+    supplement_blocks = []
+    if admission_project.title in PROJECT_ADDITIONAL_BLOCKS:
+        for config in PROJECT_ADDITIONAL_BLOCKS[admission_project.title]:
+            supplement_blocks.append(render_supplement_block(request,
+                                                             applicant,
+                                                             admission_project,
+                                                             admission_round,
+                                                             config))
+    return supplement_blocks    
+
 def check_project_documents(applicant,
                             admission_project,
                             supplement_configs,
@@ -88,6 +102,11 @@ def index_with_active_application(request, active_application):
     supplement_configs = load_supplements(applicant,
                                           admission_project)
 
+    supplement_blocks = load_supplement_blocks(request,
+                                               applicant,
+                                               admission_project,
+                                               admission_round)
+    
     admission_fee = active_application.admission_fee(major_selection)
     payments = Payment.find_for_applicant_in_round(applicant, admission_round)
     paid_amount = sum([p.amount for p in payments])
@@ -119,6 +138,8 @@ def index_with_active_application(request, active_application):
                     'admission_projects': admission_projects,
                     'active_application': active_application,
                     'supplement_configs': supplement_configs,
+                    'supplement_blocks': supplement_blocks,
+                    
                     'major_selection': major_selection,
 
                     'documents_complete_status': documents_complete_status,
