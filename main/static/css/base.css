@@ -12,6 +12,11 @@ p.invalid-feedback {
     margin-left: 3px;
 }
 
+.project-appl-sections {
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+}
+
 .bg-warn {
     background: #fff3cd;
 }
@@ -73,6 +78,10 @@ p.invalid-feedback {
 
 .bborder-a0 {
     border-bottom: 1px solid #a0a0a0;
+}
+
+.bborder-superlight {
+    border-bottom: 1px solid #e0e0e0;
 }
 
 .tborder-a0 {

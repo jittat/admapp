@@ -1,4 +1,5 @@
-<li>
+<div class="project-appl-sections bborder-superlight">
+  <h4>สาขาที่สมัคร</h4>
   {% if major_selection %}
     สามารถเลือกได้ {{ active_application.admission_project.max_num_selections }} สาขา สาขาที่คุณเลือกคือ<br />
     {% for m in major_selection.get_majors %}
@@ -9,7 +10,7 @@
           <div id="major_info_{{ m.number }}_id" style="display: none;" class="bg-light border rounded mt5">
             {{ m.get_detail_items_as_list_display|safe }}
           </div>
-          {% endif %}
+        {% endif %}
       </div>
     {% endfor %}
     <div class="mt5">
@@ -19,7 +20,7 @@
     คุณยังไม่ได้เลือกสาขาที่จะสมัคร (เลือกได้ {{ active_application.admission_project.max_num_selections }} สาขา)<br />
     <a class="btn btn-sm btn-primary" href="{% url 'appl:major-selection' admission_round.id %}">เลือกสาขา</a>
   {% endif %}
-</li>
+</div>
 <script>
   $(function(){
     $(".major-info-toggle-links").click(function(){

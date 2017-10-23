@@ -1,13 +1,12 @@
-<ul>
+<div class="project-appl-sections">
+  <h4>สถานะการสมัครและค่าสมัคร</h4>
   {% if documents_complete_status.status %}
     {% if major_selection %}
       {% include 'appl/include/payment_item.html' %}
     {% else %}
-      <li>
-        กรุณาเลือกสาขาก่อนพิมพ์ใบชำระเงินค่าสมัคร
-      </li>
+      กรุณาเลือกสาขาก่อนพิมพ์ใบชำระเงินค่าสมัคร
     {% endif %}
   {% else %}
     {% include 'appl/include/documents_incomplete.html' %}
   {% endif %}
-</ul>
+</div>
