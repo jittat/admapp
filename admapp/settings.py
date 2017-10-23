@@ -169,6 +169,7 @@ ADM_EMAIL_FROM = 'admission@ku.ac.th'
 
 ELIGIBILITY_CHECK = {
     'ช้างเผือก': 'white_elephant',
+    'เรียนล่วงหน้า': 'advanced_placement',
 }
 
 # Manipulate Settings with Local Settings
