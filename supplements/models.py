@@ -9,6 +9,28 @@ class TopSchool(models.Model):
     school = models.OneToOneField(School, on_delete=models.CASCADE)
 
 
+class AdvancedPlacementApplicant(models.Model):
+    national_id = models.CharField(max_length=16,
+                                   unique=True)
+    student_id = models.CharField(max_length=12,
+                                  unique=True)
+
+
+class AdvancedPlacementResult(models.Model):
+    SUBJECT_TITLE = {
+        '01403000': 'เคมี',
+        '01417000': 'คณิตศาสตร์',
+        '01420000': 'ฟิสิกส์',
+        '01424000': 'ชีววิทยา',
+    }
+    
+    ap_applicant = models.ForeignKey(AdvancedPlacementApplicant,
+                                     related_name='results')
+    subject_id = models.CharField(max_length=10)
+    section_id = models.IntegerField()
+    grade = models.CharField(max_length=5)
+    
+
 class ProjectSupplement(models.Model):
     applicant = models.ForeignKey(Applicant)
     admission_project = models.ForeignKey(AdmissionProject)
