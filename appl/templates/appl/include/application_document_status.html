@@ -1,10 +1,18 @@
 <div class="project-appl-sections">
-  <h4>สถานะการสมัครและค่าสมัคร</h4>
+  {% if active_application.admission_fee != 0 %}
+    <h4>สถานะการสมัครและค่าสมัคร</h4>
+  {% else %}
+    <h4>สถานะการสมัคร</h4>
+  {% endif %}
   {% if documents_complete_status.status %}
     {% if major_selection %}
       {% include 'appl/include/payment_item.html' %}
     {% else %}
-      กรุณาเลือกสาขาก่อนพิมพ์ใบชำระเงินค่าสมัคร
+      {% if active_application.admission_fee != 0 %}
+        กรุณาเลือกสาขาก่อนพิมพ์ใบชำระเงินค่าสมัคร
+      {% else %}
+        ยังไม่ได้เลือกสาขา
+      {% endif %}
     {% endif %}
   {% else %}
     {% include 'appl/include/documents_incomplete.html' %}
