@@ -2,6 +2,10 @@ body {
     padding-top: 5rem;
 }
 
+h1, h2, h3, h4 {
+    font-family: 'Maitree', serif;
+}
+
 p.invalid-feedback {
     font-style: normal;
     font-weight: lighter;
