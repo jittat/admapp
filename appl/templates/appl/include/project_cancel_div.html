@@ -1,4 +1,4 @@
-<div class="p10 border-a0 bg-warn canceling-confirmations" style="display:none;">
+<div class="p10 border-a0 bg-warn canceling-confirmations mb5" style="display:none;">
   คุณแน่ใจที่จะยกเลิกการสมัครโครงการนี้
   <form class="d-inline" method="post" action="{% url 'appl:cancel-project' active_application.admission_project.id active_application.admission_round.id %}">
     {% csrf_token %}
