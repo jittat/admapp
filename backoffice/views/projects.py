@@ -9,6 +9,19 @@ from appl.models import ProjectApplication, Payment
 from backoffice.views.permissions import can_user_view_project
 from backoffice.decorators import user_login_required
 
+def load_applicant_round_paid_amount(admission_round):
+    round_payments = Payment.objects.select_related('applicant').filter(admission_round=admission_round)
+
+    paid_amount = {}
+    for p in round_payments:
+        if hasattr(p,'applicant'):
+            if p.applicant.national_id not in paid_amount:
+                paid_amount[p.applicant.national_id] = 0
+            paid_amount[p.applicant.national_id] += p.amount
+
+    return paid_amount
+        
+
 @user_login_required
 def index(request, project_id, round_id):
     user = request.user
@@ -18,6 +31,8 @@ def index(request, project_id, round_id):
     if not can_user_view_project(user, project):
         return redirect(reverse('backoffice:index'))
 
+    applicant_paid_amount = load_applicant_round_paid_amount(admission_round)
+    
     project_applications = ProjectApplication.find_for_project_and_round(project,
                                                                          admission_round,
                                                                          True)
@@ -43,7 +58,7 @@ def index(request, project_id, round_id):
             applicant.majors = []
             applicant.major_number = 1000000000
 
-        applicant.has_paid = app.has_paid()
+        applicant.has_paid = applicant_paid_amount.get(applicant.national_id,0) >= app.admission_fee()
             
         applicants.append(applicant)
 
