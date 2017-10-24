@@ -51,7 +51,7 @@ def read_payment_file(f):
 
 def find_applicant(national_id, verification_number, admission_round):
     applicants = Applicant.objects.filter(national_id=national_id)
-    if len(applicants) >= 0:
+    if len(applicants) >= 1:
         applicant = applicants[0]
     else:
         return None
@@ -71,6 +71,8 @@ def process_payment_file(f):
 
     all_counter = 0
     imported_counter = 0
+    duplicated_counter = 0
+    
     for p in payments:
         payment = Payment(admission_round=admission_round,
                           verification_number=p['ver_num'],
@@ -80,16 +82,27 @@ def process_payment_file(f):
                           paid_at=p['paid_at'])
 
         applicant = find_applicant(p['nat_id'], p['ver_num'], admission_round)
+
+        is_duplicated = False
         if applicant:
             payment.applicant = applicant
 
-            send_payment_email(applicant, '%.2f' % (p['amount'],),  str(p['paid_at']))
+            for old_payment in applicant.payment_set.all():
+                if (payment.amount == old_payment.amount) and (payment.paid_at == old_payment.paid_at):
+                    is_duplicated = True
+
+            if not is_duplicated:
+                send_payment_email(applicant, '%.2f' % (p['amount'],),  str(p['paid_at']))
+                
+                imported_counter += 1
+            else:
+                duplicated_counter += 1
+
+        if not is_duplicated:
+            payment.save()
             
-            imported_counter += 1
-            
-        payment.save()
         all_counter += 1
-    return 'สามารถนำเข้าได้ {0} ใบ จากทั้งหมด {1} ใบ (มีปัญหา {2} ใบ)'.format(imported_counter, all_counter, all_counter - imported_counter)
+    return 'สามารถนำเข้าได้ {0} ใบ จากทั้งหมด {1} ใบ (มีปัญหา {2} ใบ, ซ้ำ {3} ใบ)'.format(imported_counter, all_counter, all_counter - imported_counter - duplicated_counter, duplicated_counter)
     
 @super_admin_login_required
 def index(request):
