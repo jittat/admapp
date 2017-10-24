@@ -179,6 +179,12 @@ try:
 except ImportError:
     pass 
 
+# for django debug toolbar
+if DEBUG:
+    INTERNAL_IPS = ['127.0.0.1']
+    INSTALLED_APPS.append('debug_toolbar')
+    MIDDLEWARE.append('debug_toolbar.middleware.DebugToolbarMiddleware')
+    
 import sys
 if 'test' in sys.argv:
     DATABASES['default'] = {

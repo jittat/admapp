@@ -58,7 +58,9 @@ def index(request, project_id, round_id):
             applicant.majors = []
             applicant.major_number = 1000000000
 
-        applicant.has_paid = applicant_paid_amount.get(applicant.national_id,0) >= app.admission_fee()
+        admission_fee = app.admission_fee(project_base_fee=project.base_fee,
+                                          majors=applicant.majors)
+        applicant.has_paid = applicant_paid_amount.get(applicant.national_id,0) >= admission_fee
             
         applicants.append(applicant)
 

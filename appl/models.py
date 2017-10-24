@@ -462,16 +462,25 @@ class ProjectApplication(models.Model):
     def is_active(self):
         return not self.is_canceled
 
-    def admission_fee(self, major_selection=None):
-        fee = self.admission_project.base_fee
-        if not major_selection:
-            try:
-                major_selection = self.major_selection
-            except:
-                major_selection = None
+    def admission_fee(self,
+                      major_selection=None,
+                      project_base_fee=None,
+                      majors=None):
+        if project_base_fee != None:
+            fee = project_base_fee
+        else:
+            fee = self.admission_project.base_fee
 
-        if major_selection:
-            majors = major_selection.get_majors()
+        if not majors:
+            if not major_selection:
+                try:
+                    major_selection = self.major_selection
+                except:
+                    major_selection = None
+
+        if majors or major_selection:
+            if not majors:
+                majors = major_selection.get_majors()
             one_time_fee = 0
             acc_fee = 0
             for m in majors:
@@ -500,6 +509,7 @@ class ProjectApplication(models.Model):
                                    admission_round,
                                    with_selection=False):
         results = (ProjectApplication.objects
+                   .select_related('applicant')
                    .filter(admission_project=admission_project, 
                            admission_round=admission_round, 
                            is_canceled=False))
