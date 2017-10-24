@@ -490,6 +490,11 @@ class ProjectApplication(models.Model):
         except:
             return None
 
+
+    def has_paid(self):
+        paid_amount = sum([p.amount for p in Payment.find_for_applicant_in_round(self.applicant, self.admission_round)])
+        return paid_amount >= self.admission_fee()
+        
     @staticmethod
     def find_for_project_and_round(admission_project,
                                    admission_round,

@@ -12,6 +12,7 @@
             <th></th>
             <th>รหัสประชาชน</th>
             <th>ชื่อ-นามสกุล</th>
+            <th>ค่าสมัคร</th>
             <th>สาขา</th>
           </tr>
         </thead>
@@ -35,6 +36,11 @@
               <td>{{ forloop.counter }}</td>
               <td><a href="{% url 'backoffice:show-applicant-in-project' applicant.national_id project.id %}">{{ applicant.national_id }}</a></td>
               <td>{{ applicant.get_full_name }}</td>
+              <td class="text-center">
+                {% if applicant.has_paid %}
+                  <i class="fa fa-check text-success"></i>
+                {% endif %}
+              </td>
               <td>
                 {% for m in applicant.majors %}
                   {{ m.title }}{% if not forloop.last %},{% endif %}

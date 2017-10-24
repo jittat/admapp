@@ -4,7 +4,7 @@ from django.http import HttpResponseForbidden
 
 from regis.models import Applicant
 from appl.models import AdmissionProject, AdmissionRound
-from appl.models import ProjectApplication
+from appl.models import ProjectApplication, Payment
 
 from backoffice.views.permissions import can_user_view_project
 from backoffice.decorators import user_login_required
@@ -42,7 +42,9 @@ def index(request, project_id, round_id):
             applicant.major_selection = None
             applicant.majors = []
             applicant.major_number = 1000000000
-        
+
+        applicant.has_paid = app.has_paid()
+            
         applicants.append(applicant)
 
     if project.max_num_selections==1:
