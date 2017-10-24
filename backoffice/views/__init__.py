@@ -109,8 +109,8 @@ def show(request, national_id, project_id=None):
     for a in all_applications:
         if user.is_super_admin or a.admission_project_id == int(project_id):
             applications.append(a)
-            
-    if len(applications)==0:
+
+    if (not user.is_super_admin) and len(applications)==0:
         return redirect(reverse('backoffice:index'))
     
     education = applicant.get_educational_profile()
