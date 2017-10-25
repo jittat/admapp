@@ -14,7 +14,7 @@ def load_applicant_round_paid_amount(admission_round):
 
     paid_amount = {}
     for p in round_payments:
-        if hasattr(p,'applicant'):
+        if p.applicant:
             if p.applicant.national_id not in paid_amount:
                 paid_amount[p.applicant.national_id] = 0
             paid_amount[p.applicant.national_id] += p.amount
