@@ -80,7 +80,8 @@ class ProjectSupplementConfig(object):
                  template_name,
                  form_prefix,
                  form_init_function,
-                 form_processing_function):
+                 form_processing_function,
+                 backoffice_template):
         
         self.name = name
         self.title = title
@@ -89,6 +90,7 @@ class ProjectSupplementConfig(object):
         self.form_prefix = form_prefix
         self.form_init_function = form_init_function
         self.form_processing_function = form_processing_function
+        self.backoffice_template = backoffice_template
 
 
 def load_project_supplements(applicant, admission_project, configs):
@@ -105,6 +107,23 @@ def load_project_supplements(applicant, admission_project, configs):
         else:
             supplements[config.name] = None
     return supplements
+
+
+def load_supplement_configs_with_instance(applicant, admission_project):
+    from supplements.models import PROJECT_SUPPLEMENTS, ProjectSupplement
+
+    all_supplements = ProjectSupplement.get_applicant_supplements_as_dict(applicant)
+    
+    supplement_configs = []
+    if admission_project.title in PROJECT_SUPPLEMENTS:
+        supplement_configs = PROJECT_SUPPLEMENTS[admission_project.title]
+        for c in supplement_configs:
+            if c.name in all_supplements:
+                c.supplement_instance = all_supplements[c.name]
+            else:
+                c.supplement_instance = None
+
+    return supplement_configs
 
 
 class ProjectBlockConfig(object):
@@ -129,14 +148,16 @@ PROJECT_SUPPLEMENTS = {
                                 'supplements/nat_sport/sport_type.html',
                                 'sport_type_',
                                 'supplements.views.forms.nat_sport.init_sport_type_form',
-                                'supplements.views.forms.nat_sport.process_sport_type_form'),
+                                'supplements.views.forms.nat_sport.process_sport_type_form',
+                                'supplements/backoffice/nat_sport/sport_type.html'),
         ProjectSupplementConfig('sport_history',
                                 'ผลการแข่งขัน',
                                 True,
                                 'supplements/nat_sport/sport_history.html',
                                 'sport_history_',
                                 'supplements.views.forms.nat_sport.init_sport_history_form',
-                                'supplements.views.forms.nat_sport.process_sport_history_form'),
+                                'supplements.views.forms.nat_sport.process_sport_history_form',
+                                'supplements/backoffice/nat_sport/sport_history.html'),
     ],
 }
 

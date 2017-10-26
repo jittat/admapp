@@ -7,7 +7,12 @@
       {{ app.admission_round }}
     </td>
     <td>
-      {{ app.admission_project }}
+      {{ app.admission_project }}<br />
+      {% if app.supplement_configs %}
+        {% with app.supplement_configs as supplement_configs %}
+          {% include 'backoffice/include/supplements.html' %}
+        {% endwith %}
+      {% endif %}
       {% if app.major_selection %}
         - สาขาที่เลือก:<br />
         <ul>

@@ -31,6 +31,16 @@ def render_supplement_block(request,
                              'block_context': block_context, })
     return html
 
+
+def render_supplement_for_backoffice(supplement_config, supplement):
+    from django.template.loader import get_template
+
+    template = get_template(supplement_config.backoffice_template)
+    html = template.render({ 'instance': supplement.get_data() })
+
+    return html
+
+
 def process_supplement_forms(request,
                              applicant, admission_project, admission_round,
                              supplements, supplement_configs):

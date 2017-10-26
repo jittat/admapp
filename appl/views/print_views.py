@@ -6,7 +6,7 @@ from regis.decorators import appl_login_required
 
 from appl.models import AdmissionProject, ProjectUploadedDocument, AdmissionRound, Payment, ProjectApplication, AdmissionProjectRound, Eligibility
 
-from appl.views import load_supplements
+from supplements.models import load_supplement_configs_with_instance
 
 
 SPORT_MAJOR_NUMBER_MAP = {
@@ -115,8 +115,8 @@ def sport_print(request):
         else:
             m.display_number = str(m.number)
 
-    supplement_configs = load_supplements(applicant,
-                                          admission_project)
+    supplement_configs = load_supplement_configs_with_instance(applicant,
+                                                               admission_project)
 
     sport_type = supplement_configs[0].supplement_instance.get_data()
     sport_history = supplement_configs[1].supplement_instance.get_data()

@@ -1,0 +1,12 @@
+จำนวน {{ instance|length }} รายการ<br />
+<table class="table">
+  {% for r in instance %}
+    <tr>
+      <td>{{ forloop.counter }}</td>
+      <td>{{ r.title }}</td>
+      <td>{{ r.dates }}</td>
+      <td>{{ r.location }}</td>
+      <td>{{ r.result }}</td>
+    </tr>
+  {% endfor %}
+</table>

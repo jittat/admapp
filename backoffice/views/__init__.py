@@ -8,6 +8,10 @@ from crispy_forms.layout import Layout, Submit, ButtonHolder, Row, Div
 
 from regis.models import Applicant, LogItem
 from appl.models import AdmissionProject,ProjectApplication,EducationalProfile,PersonalProfile, Payment
+from supplements.models import load_supplement_configs_with_instance
+
+from supplements.views import render_supplement_for_backoffice
+
 from backoffice.models import Profile
 
 from backoffice.decorators import user_login_required
@@ -117,6 +121,17 @@ def show(request, national_id, project_id=None):
     personal = applicant.get_personal_profile()
     payments = Payment.objects.filter(applicant=applicant)
 
+    for app in applications:
+        supplement_configs = load_supplement_configs_with_instance(applicant,
+                                                                       app.admission_project)
+        for c in supplement_configs:
+            if hasattr(c,'supplement_instance'):
+                c.html = render_supplement_for_backoffice(c, c.supplement_instance)
+            else:
+                c.html = None
+                
+        app.supplement_configs = supplement_configs
+        
     if user.is_super_admin:
         logs = applicant.logitem_set.all()
         applicant_form = ApplicantForm(initial={'email': applicant.email,

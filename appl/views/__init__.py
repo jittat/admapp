@@ -16,6 +16,7 @@ from appl.views.upload import upload_form_for
 
 from appl.barcodes import generate
 
+from supplements.models import load_supplement_configs_with_instance
 
 def prepare_uploaded_document_forms(applicant, project_uploaded_documents):
     for d in project_uploaded_documents:
@@ -31,22 +32,6 @@ def prepare_project_eligibility_and_detes(projects,
         project.project_round = project.get_project_round_for(admission_round)
 
 
-def load_supplements(applicant, admission_project):
-    from supplements.models import PROJECT_SUPPLEMENTS, ProjectSupplement
-
-    all_supplements = ProjectSupplement.get_applicant_supplements_as_dict(applicant)
-    
-    supplement_configs = []
-    if admission_project.title in PROJECT_SUPPLEMENTS:
-        supplement_configs = PROJECT_SUPPLEMENTS[admission_project.title]
-        for c in supplement_configs:
-            if c.name in all_supplements:
-                c.supplement_instance = all_supplements[c.name]
-            else:
-                c.supplement_instance = None
-
-    return supplement_configs
-        
 def load_supplement_blocks(request, applicant, admission_project, admission_round):
     from supplements.models import PROJECT_ADDITIONAL_BLOCKS
     from supplements.views import render_supplement_block
@@ -99,8 +84,8 @@ def index_with_active_application(request, active_application):
 
     major_selection = active_application.get_major_selection()
 
-    supplement_configs = load_supplements(applicant,
-                                          admission_project)
+    supplement_configs = load_supplement_configs_with_instance(applicant,
+                                                               admission_project)
 
     supplement_blocks = load_supplement_blocks(request,
                                                applicant,
@@ -381,8 +366,8 @@ def check_application_documents(request):
 
     major_selection = active_application.get_major_selection()
 
-    supplement_configs = load_supplements(applicant,
-                                          admission_project)
+    supplement_configs = load_supplement_configs_with_instance(applicant,
+                                                               admission_project)
 
     documents_complete_status = check_project_documents(applicant,
                                                         admission_project,
