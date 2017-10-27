@@ -16,10 +16,7 @@ def can_user_view_project(user, project):
     if not profile:
         return False
     
-    if profile.is_admission_admin: 
-        return profile.admission_projects.filter(id=project.id).count() == 1
-    else:
-        return False
+    return profile.admission_projects.filter(id=project.id).count() == 1
 
     
     

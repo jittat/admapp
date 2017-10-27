@@ -512,7 +512,14 @@ class ProjectApplication(models.Model):
     def has_paid(self):
         paid_amount = sum([p.amount for p in Payment.find_for_applicant_in_round(self.applicant, self.admission_round)])
         return paid_amount >= self.admission_fee()
-        
+
+    def has_applied_to_faculty(self, faculty):
+        if hasattr(self,'major_selection'):
+            major_selection = self.major_selection
+            return major_selection.has_applied_to_faculty(faculty)
+        else:
+            return False
+    
     @staticmethod
     def find_for_project_and_round(admission_project,
                                    admission_round,
@@ -526,8 +533,8 @@ class ProjectApplication(models.Model):
             results = results.select_related('major_selection')
 
         return results.all()
-        
 
+    
 class MajorSelection(models.Model):
     applicant = models.ForeignKey(Applicant)
     project_application = models.OneToOneField(ProjectApplication,
@@ -566,7 +573,13 @@ class MajorSelection(models.Model):
         else:
             return []
         
+    def has_applied_to_faculty(self, faculty):
+        for m in self.get_majors():
+            if m.faculty.id == faculty.id:
+                return True
+        return False
 
+        
 class Payment(models.Model):
     applicant = models.ForeignKey(Applicant,
                                   null=True)

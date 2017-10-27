@@ -2,7 +2,12 @@
 {% block content %}
   <div class="row">
     <div class="col-md-12">
-      <h1>ผู้สมัครโครงการ{{ project.title }} ({{ admission_round }})</h1>
+      <h2>
+        ผู้สมัครโครงการ{{ project.title }} ({{ admission_round }})
+        {% if faculty %}
+          - {{ faculty }}
+        {% endif %}
+      </h2>
       {% if sorted_by_majors %}
         เรียงตามสาขาที่สมัคร
       {% endif %}

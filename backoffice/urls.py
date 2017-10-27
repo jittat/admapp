@@ -22,6 +22,7 @@ urlpatterns = [
     url(r'^search/(\d+)/$', views.search, name='search-project'),
 
     url(r'^projects/(\d+)/(\d+)/$', projects.index, name='projects-index'),
+    url(r'^projects/(\d+)/(\d+)/list/$', projects.list_applicants, name='projects-list'),
 
     url(r'^users/$', users.index, name='users-index'),
 ]
