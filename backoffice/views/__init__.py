@@ -74,6 +74,11 @@ def search(request, project_id=None):
     query = request.POST['q']
     applicants = Applicant.find_by_query(query)
 
+    if (len(query.strip())==6) and (user.is_super_admin):
+        application = ProjectApplication.find_by_number(query.strip())
+        if application:
+            applicants.append(application.applicant)
+
     message = ''
     if len(applicants) > 200:
         message = 'แสดงเฉพาะ 200 คนแรก'

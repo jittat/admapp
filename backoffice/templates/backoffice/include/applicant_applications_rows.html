@@ -7,7 +7,9 @@
       {{ app.admission_round }}
     </td>
     <td>
-      {{ app.admission_project }}<br />
+      {{ app.admission_project }}
+      {% if user.is_super_admin %}({{ app.get_verification_number }}){% endif %}
+      <br />
       {% if app.supplement_configs %}
         {% with app.supplement_configs as supplement_configs %}
           {% include 'backoffice/include/supplements.html' %}

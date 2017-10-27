@@ -446,6 +446,15 @@ class ProjectApplication(models.Model):
     def get_number(self):
         return self.ID_OFFSET_MAGIC + self.id
 
+    @staticmethod
+    def find_by_number(number):
+        try:
+            id = int(number) - ProjectApplication.ID_OFFSET_MAGIC
+            app = ProjectApplication.objects.get(pk=id)
+            return app
+        except:
+            return None
+    
     def get_verification_number(self):
         project_round = self.admission_project.get_project_round_for(self.admission_round)
         deadline = project_round.payment_deadline
