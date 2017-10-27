@@ -38,18 +38,23 @@
           if (data.result == 'OK') {
             $(div).replaceWith(data.html);
           } else if (data.result == 'FORM_ERROR') {
-            $(uploadErrorDiv).show().html('ไม่ได้ระบุไฟล์ที่อัพโหลด</b>');
+            $(uploadErrorDiv).show().html('<b>ไม่ได้ระบุไฟล์ที่อัพโหลด</b>');
           } else if (data.result == 'EXT_ERROR') {
-            $(uploadErrorDiv).show().html('นามสกุลของไฟล์ไม่ถูกต้อง</b>');
+            $(uploadErrorDiv).show().html('<b>นามสกุลของไฟล์ไม่ถูกต้อง</b>');
           } else if (data.result == 'SIZE_ERROR') {
-            $(uploadErrorDiv).show().html('ขนาดของไฟล์ใหญ่กว่าที่กำหนด</b>');
+            $(uploadErrorDiv).show().html('<b>ขนาดของไฟล์ใหญ่กว่าที่กำหนด</b>');
           } else if (data.result == 'DETAIL_REQUIRE') {
-            $(uploadErrorDiv).show().html('โปรดระบุคำอธิบาย</b>');
+            $(uploadErrorDiv).show().html('<b>โปรดระบุคำอธิบาย</b>');
           } else if (data.result == 'URL_INVALID') {
-            $(uploadErrorDiv).show().html('URL ที่ระบุไม่ถูกต้อง</b>');
+            $(uploadErrorDiv).show().html('<b>URL ที่ระบุไม่ถูกต้อง</b>');
           }
           $(progress).hide();
           refreshDocumentStatus();
+        },
+        statusCode: {
+          403: function() { 
+            $(uploadErrorDiv).show().html('<b>คุณได้ออกจากระบบแล้ว กรุณา refresh หน้าจอเพื่อเข้าระบบใหม่</b>');
+          }
         }
       }).uploadProgress(function(e) {
         if (e.lengthComputable) {
