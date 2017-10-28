@@ -12,7 +12,7 @@ from django.contrib.auth.password_validation import validate_password
 from django.conf import settings
 
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Submit, ButtonHolder, Row, Div
+from crispy_forms.layout import Layout, Fieldset, Submit, ButtonHolder, Row, Div
 
 from admapp.emails import send_registration_email, send_forget_password_email
 
@@ -43,13 +43,14 @@ PASSWORD_THAI_ERROR_MESSAGES = {
 }
 
 HAS_NATIONAL_ID_CHOICES = [
-    ('1','มี'),
-    ('0','ไม่มี'),
+    ('1','มีรหัสประจำตัวประชาชน'),
+    ('0','ไม่มีรหัสประจำตัวประชาชน (ใช้เลขที่หนังสือเดินทางในการสมัคร)'),
 ]
 
 class RegistrationForm(forms.Form):
 
-    has_national_id = forms.ChoiceField(label='หากไม่มีรหัสประจำตัวประชาชน ให้เลือก "ไม่มี" และกรอกเลขที่หนังสือเดินทาง', 
+    has_national_id = forms.ChoiceField(label='ผู้สมัครที่มีรหัสประจำตัวประชาชน ต้องสมัครด้วยรหัสประจำตัวประชาชนเท่านั้น',
+                                        help_text='หากเคยสมัครแล้วแต่ไม่สามารถเข้าสู่ระบบได้ กรุณากดขอรหัสผ่านใหม่',
                                         choices=HAS_NATIONAL_ID_CHOICES, 
                                         widget=forms.Select(), 
                                         initial=1)
@@ -68,7 +69,8 @@ class RegistrationForm(forms.Form):
                                               max_length=20,
                                               required=False)
 
-    email = forms.EmailField(label='อีเมล')
+    email = forms.EmailField(label='อีเมล',
+                             help_text='กรุณากรอกอีเมลที่ใช้งานได้ เพื่อรับข้อมูลสำคัญเกี่ยวกับการสมัครเข้าศึกษาจากเรา')
     email_confirm = forms.EmailField(label='ยืนยันอีเมล')
 
     prefix = forms.ChoiceField(label='คำนำหน้า',
@@ -82,7 +84,7 @@ class RegistrationForm(forms.Form):
 
     password = forms.CharField(label='รหัสผ่าน',
                                max_length=100,
-                               help_text='ต้องมีความยาวไม่น้อยกว่า 8 ตัวอักษร ห้ามใช้แต่ตัวเลข',
+                               help_text='ต้องมีความยาวไม่น้อยกว่า 8 ตัวอักษร ไม่สามารถประกอบขึ้นจากตัวเลขเพียงอย่างเดียวได้',
                                widget=forms.PasswordInput)
     password_confirm = forms.CharField(label='ยืนยันรหัสผ่าน',
                                        max_length=100,
@@ -92,27 +94,33 @@ class RegistrationForm(forms.Form):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.layout = Layout(
-            Row(
-                Div('national_id', css_class='col-md-6'),
-                Div('national_id_confirm', css_class='col-md-6'),
+            Fieldset(
+                'ข้อมูลสำหรับการเข้าสู่ระบบ',
+                Row(
+                    Div('national_id', css_class='col-md-6'),
+                    Div('national_id_confirm', css_class='col-md-6'),
+                ),
+                'has_national_id',
+                Row(
+                    Div('passport_number', css_class='col-md-6'),
+                    Div('passport_number_confirm', css_class='col-md-6'),
+                ),
+                Row(
+                    Div('password', css_class='col-md-6'),
+                    Div('password_confirm', css_class='col-md-6'),
+                ),
             ),
-            'has_national_id',
-            Row(
-                Div('passport_number', css_class='col-md-6'),
-                Div('passport_number_confirm', css_class='col-md-6'),
-            ),
-            Row(
-                Div('email', css_class='col-md-6'),
-                Div('email_confirm', css_class='col-md-6'),
-            ),
-            Row(
-                Div('prefix', css_class='col-md-2'),
-                Div('first_name', css_class='col-md-5'),
-                Div('last_name', css_class='col-md-5'),
-            ),
-            Row(
-                Div('password', css_class='col-md-6'),
-                Div('password_confirm', css_class='col-md-6'),
+            Fieldset(
+                'ข้อมูลพื้นฐานของผู้สมัคร',
+                Row(
+                    Div('prefix', css_class='col-md-2'),
+                    Div('first_name', css_class='col-md-5'),
+                    Div('last_name', css_class='col-md-5'),
+                ),
+                Row(
+                    Div('email', css_class='col-md-6'),
+                    Div('email_confirm', css_class='col-md-6'),
+                ),
             ),
             ButtonHolder(
                 Submit('submit', 'ลงทะเบียน', css_class='lbtn btn-primary')
