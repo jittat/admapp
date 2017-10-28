@@ -1,13 +1,32 @@
-<li>
+<div class="project-appl-sections bborder-superlight">
+  <h4>สาขาที่สมัคร</h4>
   {% if major_selection %}
-    สามารถเลือกได้ {{ active_application.admission_project.max_num_selections }} สาขาที่คุณเลือก<br />
+    สามารถเลือกได้ {{ active_application.admission_project.max_num_selections }} สาขา สาขาที่คุณเลือกคือ<br />
     {% for m in major_selection.get_majors %}
-      {{ forloop.counter }}. {{ m.faculty }} - {{ m.title }}<br />
+      <div>
+        {{ forloop.counter }}. {{ m.faculty }} - {{ m.title }}
+        {% if active_application.admission_project.max_num_selections > 1 %}
+          <a class="badge badge-pill badge-secondary major-info-toggle-links" data-major-number="{{ m.number }}" href="#">แสดงรายละเอียด</a>
+          <div id="major_info_{{ m.number }}_id" style="display: none;" class="bg-light border rounded mt5">
+            {{ m.get_detail_items_as_list_display|safe }}
+          </div>
+        {% endif %}
+      </div>
     {% endfor %}
-    <a class="btn btn-sm btn-primary" href="{% url 'appl:major-selection' admission_round.id %}">แก้ไขสาขาที่เลือก</a>
+    <div class="mt5">
+      <a class="btn btn-sm btn-primary" href="{% url 'appl:major-selection' admission_round.id %}">แก้ไขสาขาที่เลือก</a>
+    </div>
   {% else %}
-    คุณยังไม่ได้เลือกสาขาที่จะสมัคร (เลือกได้ {{ active_application.admission_project.max_num_selections }} สาขา่)<br>
+    คุณยังไม่ได้เลือกสาขาที่จะสมัคร (เลือกได้ {{ active_application.admission_project.max_num_selections }} สาขา)<br />
     <a class="btn btn-sm btn-primary" href="{% url 'appl:major-selection' admission_round.id %}">เลือกสาขา</a>
   {% endif %}
-  <br />
-</li>
+</div>
+<script>
+  $(function(){
+    $(".major-info-toggle-links").click(function(){
+      var num = $(this).data('majorNumber');
+      $("#major_info_" + num + "_id").slideToggle();
+      return false;
+    });
+  });
+</script>

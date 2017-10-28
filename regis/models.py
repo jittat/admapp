@@ -69,6 +69,9 @@ class Applicant(models.Model):
         else:
             return None
 
+    def get_all_active_applications(self):
+        return self.project_applications.filter(is_canceled=False).all()
+
     def apply_to_project(self, admission_project, admission_round):
         from appl.models import ProjectApplication
 
@@ -163,8 +166,11 @@ class LogItem(models.Model):
     def create(message, applicant=None, request=None):
         log = LogItem(applicant=applicant,
                       message=message)
-        if request and ('REMOTE_ADDR' in request.META):
-            log.request_ip = request.META['REMOTE_ADDR']
+        if request:
+            if ('REMOTE_ADDR' in request.META) and (request.META['REMOTE_ADDR'] != "b''"):
+                log.request_ip = request.META['REMOTE_ADDR']
+            elif 'HTTP_X_FORWARDED_FOR' in request.META:
+                log.request_ip = request.META['HTTP_X_FORWARDED_FOR']
 
         log.save()
         return log

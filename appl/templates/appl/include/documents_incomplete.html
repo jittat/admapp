@@ -1,7 +1,5 @@
-<li>
-  สถานะการสมัคร: <span class="badge badge-danger">เอกสารไม่เรียบร้อย</span><br />
-  เนื่องจาก:
-  {% for msg in documents_complete_status.errors %}
-    {{ msg }}{% if not forloop.last %},{% endif %}
-  {% endfor %}
-</li>
+สถานะการสมัคร: <span class="badge badge-danger">เอกสารไม่เรียบร้อย</span><br />
+เนื่องจาก:
+{% for msg in documents_complete_status.errors %}
+  {{ msg }}{% if not forloop.last %},{% endif %}
+{% endfor %}

@@ -1,3 +1,6 @@
+import os
+import json
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.forms import ModelForm
@@ -6,20 +9,15 @@ from django.conf import settings
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
 
-import json
-import os
-
 from regis.models import Applicant
 from regis.decorators import appl_login_required
 
 from appl.models import AdmissionProject, ProjectUploadedDocument, UploadedDocument
 
-import os
-
 class UploadedDocumentForm(ModelForm):
     class Meta:
         model = UploadedDocument
-        fields = ['uploaded_file','detail']
+        fields = ['uploaded_file','document_url','detail']
 
 def upload_form_for(project_uploaded_document):
     return UploadedDocumentForm()
@@ -29,13 +27,30 @@ def upload_check(form, size_limit, allowed_extentions, is_detail_required):
         return (False, 'FORM_ERROR')
 
     cleaned_data = form.cleaned_data['uploaded_file']
+    if not cleaned_data:
+        return (False, 'FORM_ERROR')
+    
     if size_limit <= cleaned_data.size:
         return (False, 'SIZE_ERROR')
 
     name, extension = os.path.splitext(cleaned_data.name)
     extension = extension[1:]
-    if not extension in allowed_extentions:
+    if not extension.upper() in allowed_extentions:
         return (False, 'EXT_ERROR')
+
+    if is_detail_required:
+        if len(form.cleaned_data['detail']) == 0:
+            return (False, 'DETAIL_REQUIRE')
+
+    return (True, 'OK')
+
+
+def url_check(form, is_detail_required):
+    if not form.is_valid():
+        return (False, 'URL_INVALID')
+
+    if form.cleaned_data['document_url'] == '':
+        return (False, 'URL_INVALID')
 
     if is_detail_required:
         if len(form.cleaned_data['detail']) == 0:
@@ -51,12 +66,20 @@ def upload(request, document_id):
                                                   pk=document_id)
     if request.method != 'POST':
         return HttpResponseForbidden()
-    size_limit = project_uploaded_document.size_limit
-    is_detail_required = project_uploaded_document.is_detail_required
-    allowed_extentions = project_uploaded_document.allowed_extentions.split(',')
+
     form = UploadedDocumentForm(request.POST, request.FILES)
 
-    is_valid, result_code = upload_check(form, size_limit, allowed_extentions, is_detail_required)
+    is_detail_required = project_uploaded_document.is_detail_required
+    
+    if project_uploaded_document.is_url_document:
+        is_valid, result_code = url_check(form, is_detail_required)
+    else:
+        size_limit = project_uploaded_document.size_limit
+        allowed_extentions = [ext.upper() for ext in
+                              project_uploaded_document.allowed_extentions.split(',')]
+
+        is_valid, result_code = upload_check(form, size_limit, allowed_extentions, is_detail_required)
+
     if is_valid:
         if not project_uploaded_document.can_have_multiple_files:
             old_uploaded_documents = project_uploaded_document.get_uploaded_documents_for_applicant(applicant)
@@ -64,12 +87,14 @@ def upload(request, document_id):
                 odoc.uploaded_file.delete()
                 odoc.delete()
 
-
         uploaded_document = form.save(commit=False)
         uploaded_document.applicant = request.applicant
         uploaded_document.project_uploaded_document = project_uploaded_document
         uploaded_document.rank = 0
-        uploaded_document.orginal_filename = uploaded_document.uploaded_file.name
+
+        if not project_uploaded_document.is_url_document:
+            uploaded_document.orginal_filename = uploaded_document.uploaded_file.name
+            
         uploaded_document.save()
 
         from django.template import loader
@@ -84,7 +109,7 @@ def upload(request, document_id):
             'toggle': 'show'
         }
         result = {'result': 'OK',
-                            'html': template.render(context,request),
+                            'html': template.render(context, request),
         }
     else:
         result = {'result': result_code}
@@ -92,7 +117,6 @@ def upload(request, document_id):
     return HttpResponse(json.dumps(result),
                         content_type='application/json')
 
-import os
 
 def get_uploaded_document_or_403(request, applicant_id, project_uploaded_document_id, document_id):
 

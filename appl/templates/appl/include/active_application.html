@@ -5,25 +5,44 @@
     {% include 'appl/include/project_cancel_div.html' %}
   </div>
 </div>
+{% if active_application.admission_project.descriptions %}
+  <div class="row">
+    <div class="col-md-12">
+      <div class="border-a0 p5 mb10 pl10 pr10">
+        {{ active_application.admission_project.descriptions|safe }}
+      </div>
+    </div>
+  </div>
+{% endif %}
 <div class="row">
   <div {% if project_uploaded_documents %} class="col-md-5" {% else %} class="col-md-12" {% endif %}>
-    <ul>
-      {% include 'appl/include/project_supplement_link.html' %}
-      {% include 'appl/include/major_selection_item.html' %}
-      {% if documents_complete_status.status %}
-        {% if major_selection %}
-          {% include 'appl/include/payment_item.html' %}
-        {% endif %}
-      {% else %}
-        {% include 'appl/include/documents_incomplete.html' %}
-      {% endif %}
+    {% if supplement_blocks %}
+      {% include 'appl/include/supplement_blocks.html' %}
+    {% endif %}
+    
+    {% include 'appl/include/project_supplement_link.html' %}
+
+    {% include 'appl/include/major_selection_item.html' %}
+
+    {% if active_application.admission_project.max_num_selections == 1 %}
+      {% with active_application.admission_project as project %}
+        {% include 'appl/include/selected_major_details.html' %}
+      {% endwith %}
+    {% endif %}
+
+    <div id="project_status_div_id">
+      {% include 'appl/include/application_document_status.html' %}
+    </div>
+
+    {% if documents_complete_status.status and major_selection %}
       {% if active_application.admission_project.id == 3 %}
-        <li>
-          <span class="badge badge-danger">การพิมพ์ใบสมัคร</span>
-          จะสามารถพิมพ์ใบสมัครได้ภายในเวลา 12:00 ของวันนี้
-        </li>
+        <div class="project-appl-sections">
+          <h4>พิมพ์ใบสมัคร</h4>
+          คุณกรอกข้อมูลครบถ้วนแล้ว<br />
+          <a href="{% url 'appl:natsport-print' %}" target="_blank" class="btn btn-sm btn-success">พิมพ์ใบสมัคร</a>
+        </div>
       {% endif %}
-    </ul>
+    {% endif %}
   </div>
   {% if project_uploaded_documents %}
     <div class="col-md-7">

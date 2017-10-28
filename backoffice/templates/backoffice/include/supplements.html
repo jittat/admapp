@@ -1,0 +1,9 @@
+{% for config in supplement_configs %}
+  <div>
+    {% if config.supplement_instance %}
+      <i class="fa fa-check text-success"></i> {{ config.title }}: {{ config.html }}
+    {% else %}
+      {{ config.title }}
+    {% endif %}
+  </div>
+{% endfor %}

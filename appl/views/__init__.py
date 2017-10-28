@@ -16,6 +16,7 @@ from appl.views.upload import upload_form_for
 
 from appl.barcodes import generate
 
+from supplements.models import load_supplement_configs_with_instance
 
 def prepare_uploaded_document_forms(applicant, project_uploaded_documents):
     for d in project_uploaded_documents:
@@ -31,22 +32,20 @@ def prepare_project_eligibility_and_detes(projects,
         project.project_round = project.get_project_round_for(admission_round)
 
 
-def load_supplements(applicant, admission_project):
-    from supplements.models import PROJECT_SUPPLEMENTS, ProjectSupplement
-
-    all_supplements = ProjectSupplement.get_applicant_supplements_as_dict(applicant)
+def load_supplement_blocks(request, applicant, admission_project, admission_round):
+    from supplements.models import PROJECT_ADDITIONAL_BLOCKS
+    from supplements.views import render_supplement_block
     
-    supplement_configs = []
-    if admission_project.title in PROJECT_SUPPLEMENTS:
-        supplement_configs = PROJECT_SUPPLEMENTS[admission_project.title]
-        for c in supplement_configs:
-            if c.name in all_supplements:
-                c.supplement_instance = all_supplements[c.name]
-            else:
-                c.supplement_instance = None
+    supplement_blocks = []
+    if admission_project.title in PROJECT_ADDITIONAL_BLOCKS:
+        for config in PROJECT_ADDITIONAL_BLOCKS[admission_project.title]:
+            supplement_blocks.append(render_supplement_block(request,
+                                                             applicant,
+                                                             admission_project,
+                                                             admission_round,
+                                                             config))
+    return supplement_blocks    
 
-    return supplement_configs
-        
 def check_project_documents(applicant,
                             admission_project,
                             supplement_configs,
@@ -85,9 +84,14 @@ def index_with_active_application(request, active_application):
 
     major_selection = active_application.get_major_selection()
 
-    supplement_configs = load_supplements(applicant,
-                                          admission_project)
+    supplement_configs = load_supplement_configs_with_instance(applicant,
+                                                               admission_project)
 
+    supplement_blocks = load_supplement_blocks(request,
+                                               applicant,
+                                               admission_project,
+                                               admission_round)
+    
     admission_fee = active_application.admission_fee(major_selection)
     payments = Payment.find_for_applicant_in_round(applicant, admission_round)
     paid_amount = sum([p.amount for p in payments])
@@ -119,6 +123,8 @@ def index_with_active_application(request, active_application):
                     'admission_projects': admission_projects,
                     'active_application': active_application,
                     'supplement_configs': supplement_configs,
+                    'supplement_blocks': supplement_blocks,
+                    
                     'major_selection': major_selection,
 
                     'documents_complete_status': documents_complete_status,
@@ -341,3 +347,50 @@ def payment_barcode(request, application_id, stub):
     return response
 
 
+@appl_login_required
+def check_application_documents(request):
+    applicant = request.applicant
+    admission_round = AdmissionRound.get_available()
+    active_application = applicant.get_active_application(admission_round)
+
+    if not active_application:
+        return HttpResponseForbidden()
+    
+    admission_project = active_application.admission_project
+    
+    common_uploaded_documents = ProjectUploadedDocument.get_common_documents()
+    project_uploaded_documents = admission_project.projectuploadeddocument_set.all()
+    
+    prepare_uploaded_document_forms(applicant, common_uploaded_documents)
+    prepare_uploaded_document_forms(applicant, project_uploaded_documents)
+
+    major_selection = active_application.get_major_selection()
+
+    supplement_configs = load_supplement_configs_with_instance(applicant,
+                                                               admission_project)
+
+    documents_complete_status = check_project_documents(applicant,
+                                                        admission_project,
+                                                        supplement_configs,
+                                                        list(common_uploaded_documents) + list(project_uploaded_documents))
+        
+    admission_fee = active_application.admission_fee(major_selection)
+
+    payments = Payment.find_for_applicant_in_round(applicant, admission_round)
+    paid_amount = sum([p.amount for p in payments])
+
+    if admission_fee > paid_amount:
+        additional_payment = admission_fee - paid_amount
+    else:
+        additional_payment = 0
+
+    return render(request,
+                  'appl/include/application_document_status.html',
+                  { 'documents_complete_status': documents_complete_status,
+                    'active_application': active_application,
+                    'major_selection': major_selection,
+                    
+                    'payments': payments,
+                    'paid_amount': paid_amount,
+                    'additional_payment': additional_payment,
+                    })

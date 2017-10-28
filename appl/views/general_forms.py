@@ -7,7 +7,7 @@ from django.http import HttpResponse
 from django.urls import reverse
 
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Fieldset, ButtonHolder, Submit, MultiWidgetField, Div, Row
+from crispy_forms.layout import Layout, Fieldset, ButtonHolder, Submit, MultiWidgetField, Div, Row, HTML
 
 from regis.decorators import appl_login_required
 
@@ -25,7 +25,39 @@ class EducationForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
-        self.helper.add_input(Submit('submit', 'จัดเก็บ', css_class='btn btn-primary'))
+        self.helper.layout = Layout(
+            'education_level',
+            Row(
+                Div('education_plan', css_class='col-md-6'),
+                Div('gpa', css_class='col-md-6'),
+            ),
+            Row(
+                Div(
+                    HTML('<b>ข้อมูลโรงเรียน</b>'),
+                    css_class='col-md-12',
+                ),
+            ),
+            Row(
+                Div(
+                    HTML('<small>ในกรณีที่สมัครโครงการช้างเผือก สามารถเลือกให้แสดงเฉพาะโรงเรียนที่เข้าโครงการได้ โดยกดปุ่มตอนท้าย</small>'),
+                    css_class='col-md-12 form-text mb5',
+                ),
+            ),
+            Row(
+                Div('province', css_class='col-md-6'),
+                Div('school_title', css_class='col-md-6'),
+            ),
+            Row(
+                Div(
+                    HTML('<input id="wh_school_check_id" type="checkbox" /> &nbsp;'),
+                    HTML('แสดงรายการเฉพาะโรงเรียนในโครงการช้างเผือก'),
+                    css_class='col-md-12 mb5',
+                ),
+            ),
+            ButtonHolder(
+                Submit('submit', 'จัดเก็บ', css_class='btn btn-primary')
+            )
+        )
 
 
 class ThaiSelectDateWidget(forms.widgets.SelectDateWidget):
@@ -94,7 +126,7 @@ class PersonalProfileForm(ModelForm):
                 )),
             ),
             Fieldset(
-                'ข้อมูลบิดา',
+                'ข้อมูลบิดา (ภาษาไทย)',
                 Row(
                     Div('father_prefix', css_class='col-md-2'),
                     Div('father_first_name', css_class='col-md-5'),
@@ -102,7 +134,7 @@ class PersonalProfileForm(ModelForm):
                 )
             ),
             Fieldset(
-                'ข้อมูลมารดา',
+                'ข้อมูลมารดา (ภาษาไทย)',
                 Row(
                     Div('mother_prefix', css_class='col-md-2'),
                     Div('mother_first_name', css_class='col-md-5'),
@@ -135,11 +167,15 @@ class PersonalProfileForm(ModelForm):
             )
         )
 
-
+        
 @appl_login_required
 def ajax_school_search(request):
     province = request.GET['province']
+
+    if province == '':
+        return HttpResponse(json.dumps([]))
     term = request.GET['term']
+
     schools = School.objects.filter(province=province,title__contains=term)
     results = [s.title for s in schools]
 
@@ -154,13 +190,29 @@ def ajax_school_search(request):
     return HttpResponse(json.dumps(results))
 
 
+@appl_login_required
+def ajax_topschool_list(request):
+    province = request.GET['province']
+    if province == '':
+        return HttpResponse(json.dumps([]))
+
+    schools = School.objects.filter(province=province,
+                                    topschool__isnull=False)
+    results = [s.title for s in schools]
+
+    return HttpResponse(json.dumps(results))
+
+
 @appl_login_required        
 def personal_profile(request):
     applicant = request.applicant
     profile = applicant.get_personal_profile()
     if profile is None:
+        instruction_step = 2
         profile = PersonalProfile()
         profile.applicant = applicant
+    else:
+        instruction_step = None
 
     if request.method == 'POST':
         form = PersonalProfileForm(request.POST, instance=profile)
@@ -173,14 +225,21 @@ def personal_profile(request):
     else:
         form = PersonalProfileForm(instance=profile)
 
-    return render(request, 'appl/forms/personal.html',
-                  { 'form': form })
+    return render(request,
+                  'appl/forms/personal.html',
+                  { 'form': form,
+                    'instruction_step': instruction_step,
+                  })
 
 
 @appl_login_required        
 def education_profile(request):
     applicant = request.applicant
     profile = applicant.get_educational_profile()
+    if profile is None:
+        instruction_step = 3
+    else:
+        instruction_step = None
 
     if request.method == 'POST':
         form = EducationForm(request.POST, instance=profile)
@@ -203,5 +262,8 @@ def education_profile(request):
     else:
         form = EducationForm(instance=profile)
 
-    return render(request, 'appl/forms/education.html',
-                  { 'form': form })
+    return render(request,
+                  'appl/forms/education.html',
+                  { 'form': form,
+                    'instruction_step': instruction_step,
+                  })

@@ -12,8 +12,8 @@ from admapp import settings
 from regis.models import Applicant
 
 
-validate_phonenumber = RegexValidator(r'^\+?[0-9]+$',
-                                      'เบอร์โทรศัพท์สามารถประกอบด้วยตัวเลข 0-9 และอาจเริ่มต้นด้วยเครื่องหมาย +')
+validate_phonenumber = RegexValidator(r'^\+?[0-9#-]+$',
+                                      'เบอร์โทรศัพท์สามารถประกอบด้วยตัวเลข 0-9 สามารถใช้เครื่องหมาย - เพื่อแบ่งกลุ่มตัวเลข และอาจเริ่มต้นด้วยเครื่องหมาย +')
 
 
 class Campus(models.Model):
@@ -140,7 +140,12 @@ class AdmissionProject(models.Model):
         else:
             return project_rounds[0]
 
+    def get_major_description_list_template(self):
+        from .header_utils import table_header_as_list_template
+        
+        return table_header_as_list_template(self.column_descriptions)
 
+        
 class AdmissionProjectRound(models.Model):
     admission_round = models.ForeignKey('AdmissionRound',
                                         on_delete=models.CASCADE)
@@ -215,7 +220,11 @@ class Major(models.Model):
         for row in reader:
             return row
 
-
+    def get_detail_items_as_list_display(self):
+        items = [item.replace("\n","<br />") for item in self.get_detail_items()]
+        return self.admission_project.get_major_description_list_template().format(*items)
+    
+        
 class ProjectUploadedDocument(models.Model):
     admission_projects = models.ManyToManyField(AdmissionProject,
                                                 blank=True)
@@ -228,16 +237,16 @@ class ProjectUploadedDocument(models.Model):
                              blank=True)
 
     allowed_extentions = models.CharField(max_length=50)
-
-    is_required = models.BooleanField(default=True)
-    can_have_multiple_files = models.BooleanField(default=False)
-
     file_prefix = models.CharField(max_length=50,
                                    blank=True)
     size_limit = models.IntegerField(default=2000000)
 
+    is_url_document = models.BooleanField(default=False)
+    
+    is_required = models.BooleanField(default=True)
     is_detail_required = models.BooleanField(default=False)
-
+    can_have_multiple_files = models.BooleanField(default=False)
+    
     class Meta:
         ordering = ['rank']
 
@@ -278,11 +287,14 @@ class UploadedDocument(models.Model):
                                                   on_delete=models.CASCADE,
                                                   related_name='uploaded_document_set')
     rank = models.IntegerField()
-    original_filename = models.CharField(max_length=200)
-
-    uploaded_file = models.FileField(upload_to=applicant_document_path)
-
     detail = models.CharField(default='', blank=True, max_length=200)
+
+    uploaded_file = models.FileField(upload_to=applicant_document_path,
+                                     blank=True)
+    original_filename = models.CharField(max_length=200,
+                                         blank=True)
+    
+    document_url = models.URLField(blank=True)
 
     def __str__(self):
         return '%s (%s)' % (self.project_uploaded_document.title,
@@ -335,6 +347,17 @@ class EducationalProfile(models.Model):
                                    blank=True,
                                    default='')
 
+    def get_education_level_display(self):
+        try:
+            return dict(self.EDUCATION_LEVEL_CHOICES)[self.education_level]
+        except:
+            return ''
+
+    def get_education_plan_display(self):
+        try:
+            return dict(self.EDUCATION_PLAN_CHOICES)[self.education_plan]
+        except:
+            return ''
 
 
 class PersonalProfile(models.Model):
@@ -393,6 +416,7 @@ class PersonalProfile(models.Model):
 
     contact_phone = models.CharField(max_length=20,
                                     verbose_name='เบอร์โทรศัพท์ที่ติดต่อได้',
+                                    help_text='หากเป็นเบอร์ติดต่อภายใน ให้ใช้ # คั่น เช่น 034-567-890#111',
                                     validators=[validate_phonenumber])
     mobile_phone = models.CharField(max_length=20,
                                     verbose_name='เบอร์โทรศัพท์มือถือ',
@@ -414,11 +438,23 @@ class ProjectApplication(models.Model):
     cancelled_at = models.DateTimeField(blank=True,
                                         null=True)
 
+    verification_number = models.CharField(max_length=20,
+                                           blank=True)
+
     ID_OFFSET_MAGIC = 104341
 
     def get_number(self):
         return self.ID_OFFSET_MAGIC + self.id
 
+    @staticmethod
+    def find_by_number(number):
+        try:
+            id = int(number) - ProjectApplication.ID_OFFSET_MAGIC
+            app = ProjectApplication.objects.get(pk=id)
+            return app
+        except:
+            return None
+    
     def get_verification_number(self):
         project_round = self.admission_project.get_project_round_for(self.admission_round)
         deadline = project_round.payment_deadline
@@ -435,16 +471,25 @@ class ProjectApplication(models.Model):
     def is_active(self):
         return not self.is_canceled
 
-    def admission_fee(self, major_selection=None):
-        fee = self.admission_project.base_fee
-        if not major_selection:
-            try:
-                major_selection = self.major_selection
-            except:
-                major_selection = None
+    def admission_fee(self,
+                      major_selection=None,
+                      project_base_fee=None,
+                      majors=None):
+        if project_base_fee != None:
+            fee = project_base_fee
+        else:
+            fee = self.admission_project.base_fee
 
-        if major_selection:
-            majors = major_selection.get_majors()
+        if not majors:
+            if not major_selection:
+                try:
+                    major_selection = self.major_selection
+                except:
+                    major_selection = None
+
+        if majors or major_selection:
+            if not majors:
+                majors = major_selection.get_majors()
             one_time_fee = 0
             acc_fee = 0
             for m in majors:
@@ -464,6 +509,32 @@ class ProjectApplication(models.Model):
             return None
 
 
+    def has_paid(self):
+        paid_amount = sum([p.amount for p in Payment.find_for_applicant_in_round(self.applicant, self.admission_round)])
+        return paid_amount >= self.admission_fee()
+
+    def has_applied_to_faculty(self, faculty):
+        if hasattr(self,'major_selection'):
+            major_selection = self.major_selection
+            return major_selection.has_applied_to_faculty(faculty)
+        else:
+            return False
+    
+    @staticmethod
+    def find_for_project_and_round(admission_project,
+                                   admission_round,
+                                   with_selection=False):
+        results = (ProjectApplication.objects
+                   .select_related('applicant')
+                   .filter(admission_project=admission_project, 
+                           admission_round=admission_round, 
+                           is_canceled=False))
+        if with_selection:
+            results = results.select_related('major_selection')
+
+        return results.all()
+
+    
 class MajorSelection(models.Model):
     applicant = models.ForeignKey(Applicant)
     project_application = models.OneToOneField(ProjectApplication,
@@ -474,7 +545,6 @@ class MajorSelection(models.Model):
     num_selected = models.IntegerField(default=0)
     major_list = models.CharField(max_length=50,
                                   blank=True)
-
 
     def __str__(self):
         return self.major_list
@@ -497,8 +567,19 @@ class MajorSelection(models.Model):
         self.major_list = ','.join([str(m.number) for m in self.majors])
         self.num_selected = len(majors)
 
+    def get_major_numbers(self):
+        if self.major_list:
+            return [int(num) for num in self.major_list.split(',')]
+        else:
+            return []
+        
+    def has_applied_to_faculty(self, faculty):
+        for m in self.get_majors():
+            if m.faculty.id == faculty.id:
+                return True
+        return False
 
-
+        
 class Payment(models.Model):
     applicant = models.ForeignKey(Applicant,
                                   null=True)
@@ -560,6 +641,21 @@ class Eligibility(object):
             return
         try:
             topschool = TopSchool.objects.get(school=school)
+        except ObjectDoesNotExist:
+            return
+
+        self.is_eligible = True
+        self.is_hidden = False
+
+
+    def advanced_placement(self):
+        from supplements.models import AdvancedPlacementApplicant
+        self.is_eligible = False
+        self.is_hidden = False
+        self.notice_text = 'โครงการนี้ผู้สมัครต้องผ่านการเข้าร่วมโครงการเรียนล่วงหน้าของม.เกษตรศาสตร์ รุ่นที่ 12 ปีการศึกษา 2560'
+
+        try:
+            school = AdvancedPlacementApplicant.objects.get(national_id=self._applicant.national_id)
         except ObjectDoesNotExist:
             return
 

@@ -1,11 +1,12 @@
-<li>
-  พิมพ์ใบชำระเงิน:
-  ค่าสมัคร {{ active_application.admission_fee }} บาท
-  ชำระแล้ว {{ paid_amount }} บาท
-  {% if active_application.admission_fee > paid_amount %}
-    ต้องชำระเพิ่ม {{ additional_payment }} บาท
-    <a target="_blank" class="btn btn-sm btn-success" href="{% url 'appl:payment' active_application.id %}">พิมพ์</a>
-  {% else %}
-    ไม่ต้องชำระเพิ่ม
-  {% endif %}
-</li>
+{% if paid_amount >= active_application.admission_fee %}
+  <i style="color: green" class="fa fa-check" aria-hidden="true"></i>
+{% endif %}
+<b>การชำระค่าสมัคร:</b>
+ค่าสมัคร {{ active_application.admission_fee }} บาท
+ชำระแล้ว {{ paid_amount }} บาท
+{% if active_application.admission_fee > paid_amount %}
+  ต้องชำระเพิ่ม {{ additional_payment }} บาท<br />
+  <a target="_blank" class="btn btn-sm btn-success" href="{% url 'appl:payment' active_application.id %}">พิมพ์ใบชำระเงิน</a>
+{% else %}
+  ไม่ต้องชำระเพิ่ม
+{% endif %}

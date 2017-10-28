@@ -1,0 +1,19 @@
+<div class="project-appl-sections bborder-superlight">
+  <h4>{{ block_config.title }}</h4>
+  <table class="table table-striped table-sm">
+    <thead>
+      <tr>
+        <th>รหัสวิชา</th>
+        <th>วิชา</th>
+        <th>ผลการเรียน</th>
+      </tr>
+    </thead>
+    {% for course in block_context.courses %}
+      <tr>
+        <td>{{ course.subject_id }}</td>
+        <td>{{ course.get_course_title_display }}</td>
+        <td>{{ course.grade }}</td>
+      </tr>
+    {% endfor %}
+  </table>
+</div>

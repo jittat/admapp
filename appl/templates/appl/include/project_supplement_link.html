@@ -1,6 +1,6 @@
 {% if supplement_configs %}
-  <li>
-    กรอกข้อมูลเพิ่มเติมสำหรับโครงการ{{ active_application.admission_project }}
+  <div class="project-appl-sections bborder-superlight">
+    <h4>ข้อมูลเพิ่มเติมสำหรับโครงการ{{ active_application.admission_project }}</h4>
     <ul>
       {% for config in supplement_configs %}
         <li>
@@ -12,5 +12,5 @@
       {% endfor %}
     </ul>
     <a class="btn btn-sm btn-primary" href="{% url 'supplements:index' active_application.admission_project.id active_application.admission_round.id %}">กรอกข้อมูลเพิ่มเติม</a>
-  </li>
+  </div>
 {% endif %}

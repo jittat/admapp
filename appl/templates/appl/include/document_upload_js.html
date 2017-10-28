@@ -1,4 +1,12 @@
 <script>
+  var refreshDocumentStatus = function() {
+    var url = "{% url 'appl:check-project-documents' %}";
+    jQuery.get(url,
+               function(html) {
+                 $('#project_status_div_id').html(html);
+               });
+  };
+  
   $(function() {
     $(".all-document-upload-forms").on("click", ".upload-form-submit-buttons", function() {
       var div = $(this).parents('.project-document-upload-forms')[0];
@@ -29,28 +37,38 @@
         success: function(data) {
           if (data.result == 'OK') {
             $(div).replaceWith(data.html);
+          } else if (data.result == 'FORM_ERROR') {
+            $(uploadErrorDiv).show().html('<b>ไม่ได้ระบุไฟล์ที่อัพโหลด</b>');
           } else if (data.result == 'EXT_ERROR') {
-            $(uploadErrorDiv).show().html('นามสกุลของไฟล์ไม่ถูกต้อง</b>');
+            $(uploadErrorDiv).show().html('<b>นามสกุลของไฟล์ไม่ถูกต้อง</b>');
           } else if (data.result == 'SIZE_ERROR') {
-            $(uploadErrorDiv).show().html('ขนาดของไฟล์ใหญ่กว่าที่กำหนด</b>');
+            $(uploadErrorDiv).show().html('<b>ขนาดของไฟล์ใหญ่กว่าที่กำหนด</b>');
           } else if (data.result == 'DETAIL_REQUIRE') {
-            $(uploadErrorDiv).show().html('โปรดระบุคำอธิบาย</b>');
+            $(uploadErrorDiv).show().html('<b>โปรดระบุคำอธิบาย</b>');
+          } else if (data.result == 'URL_INVALID') {
+            $(uploadErrorDiv).show().html('<b>URL ที่ระบุไม่ถูกต้อง</b>');
           }
           $(progress).hide();
+          refreshDocumentStatus();
+        },
+        statusCode: {
+          403: function() { 
+            $(uploadErrorDiv).show().html('<b>คุณได้ออกจากระบบแล้ว กรุณา refresh หน้าจอเพื่อเข้าระบบใหม่</b>');
+          }
         }
       }).uploadProgress(function(e) {
         if (e.lengthComputable) {
           $(progress).show().text(Math.round((e.loaded * 100) / e.total) + "%");
         }
       });
-
+      
       return false;
     });
 
     $(".all-document-upload-forms").on("click", ".upload-form-delete-buttons", function() {
       var url = $(this).attr('data-delete-url');
       var div = $(this).parents('.project-document-upload-forms')[0];
-      if (confirm("คุณ้องการจะลบเอกสารดังกล่าวใช่หรือไม่?")) {
+      if (confirm("คุณต้องการจะลบเอกสารดังกล่าวใช่หรือไม่?")) {
         jQuery.ajax({
           url: url,
           type: 'POST',
@@ -63,6 +81,7 @@
             } else if (data.result == 'ERROR') {
               alert("ERROR");
             }
+            refreshDocumentStatus();
           }
         });
       }

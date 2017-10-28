@@ -73,4 +73,26 @@ def send_forget_password_email(applicant, new_password):
                            body)
 
 
+def send_payment_email(applicant, amount, paid_at):
+    subject = 'แจ้งการได้รับการชำระค่าสมัคร ' + ADMISSION_SHORT_TITLE
+    body = """
+เรียนผู้สมัคร {full_name}
+
+อีเมลนี้แจ้งว่าโครงการได้รับเงินค่าสมัครจากผู้สมัครแล้ว
+
+จำนวนเงิน: {amount}
+ชำระเมื่อ: {paid_at}
+
+ขอขอบคุณที่ให้ความสนใจสมัครเข้าศึกษาต่อในมหาวิทยาลัยเกษตรศาสตร์
+-ทีมงานระบบรับสมัคร
+""".format(full_name=applicant.get_full_name(),
+           amount=amount,
+           paid_at=paid_at)
+
+
+    send_mail_to_applicant(applicant,
+                           subject,
+                           body)
+
+    
     

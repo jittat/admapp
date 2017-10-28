@@ -1,0 +1,58 @@
+{% extends 'backoffice/base.html' %}
+{% block content %}
+  <h1>รายการผู้ใช้</h1>
+
+  <table class="table table-striped">
+    <thead class="table-inverse">
+      <tr>
+        <th></th>
+        <th>บัญชี</th>
+        <th>ชื่อ</th>
+        <th>ระดับ</th>
+        <th>โครงการ</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for u in users %}
+        <tr {% if not u.is_active %}class="table-secondary"{% endif %}>
+          <td>{{ forloop.counter }}</td>
+          <td>
+            {% if u.is_active %}
+              {{ u.get_username }}
+            {% else %}
+              <del>{{ u.get_username }}</del>
+              <i class="fa fa-times" aria-hidden="true"></i>
+            {% endif %}
+          </td>
+          <td>
+            {{ u.get_full_name }}
+          </td>
+          {% if u.is_super_admin %}
+            <td>
+              ฝ่ายรับเข้า
+            </td>
+            <td>
+              <small>ทุกโครงการ, ทุกคณะ, จัดการการเงิน, จัดการผู้ใช้</small>
+            </td>
+          {% else %}
+            <td>
+              {% if u.profile.is_admission_admin %}
+                ระดับโครงการ<br />
+              {% endif %}
+              {% if u.profile and u.profile.faculty %}
+                ระดับคณะ: {{ u.profile.faculty.title }}<br />
+              {% endif %}
+            </td>
+            <td>
+              <small>
+                {% for p in u.profile.admission_projects.all %}
+                  {{ p.title }}<br />
+                {% endfor %}
+              </small>
+            </td>
+          {% endif %}
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

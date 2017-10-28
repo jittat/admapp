@@ -18,7 +18,7 @@
     <div class="col-md-12 mb10 bborder-a0">
       <h2>ผู้สมัครในโครงการ</h2>
       {% if is_admission_admin %}
-        คุณเป็นผู้ดูแลจากฝ่ายรับเข้า สามารถดูแลได้ทุกสาขาในโครงการรับสมัครที่รับผิดชอบ
+        คุณเป็นผู้ดูแลโครงการ สามารถดูแลได้ทุกสาขาในโครงการรับสมัครที่รับผิดชอบ
       {% else %}
         {% if faculty %}
           คุณเป็นผู้ดูแลจาก {{ faculty }} สามารถดูแลได้ทุกสาขาจากคณะในโครงการรับสมัครที่รับผิดชอบ
@@ -29,7 +29,12 @@
       
       <ul>
         {% for project in admission_projects %}
-          <li>{{ project }} {% for round in project.admission_rounds.all %}<a href="{% url 'backoffice:projects-index' project.id round.id %}">{{ round }}</a>{% endfor %}</li>
+          <li>
+            {{ project }}
+            {% for round in project.admission_rounds.all %}
+              <a class="btn btn-sm btn-success" href="{% url 'backoffice:projects-index' project.id round.id %}">{{ round }}</a>
+            {% endfor %}
+          </li>
         {% endfor %}
       </ul>
     </div>

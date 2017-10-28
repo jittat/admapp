@@ -9,25 +9,104 @@
 <div class="row">
   <div class="col-md-12">
     <h2>กรอกข้อมูลการศึกษา</h2>
+  </div>
+  {% include 'appl/include/form_instruction.html' %}
+  <div class="col-md-12">
     {% crispy form %}
   </div>
 </div>
 <script>
- $(function(){
-   $("#id_school_title").autocomplete({
-     source: function(request, response) {
-       var baseUrl = "{% url 'appl:ajax-school-search' %}";
-       var province = $("#id_province").val();
-       jQuery.get(baseUrl,
-                  { province: province,
-                    term: request.term },
-                  function(data) {
-                    var actualData = eval(data);
-                    response(actualData);
-                  });
-     },
-     minLength: 3
-   });
- });
+  var schoolSelectStr = '<select id="id_topschool_select" class="select form-control" style="display:none;"></select>';
+
+  var copySchoolToSelect = function() {
+    var val = $("#id_school_title").val();
+    $("#id_topschool_select option").each(function(){
+      if($(this).val() == val) {
+        $(this).prop('selected',true);
+      }
+    });
+  };
+
+  var copySchoolToInput = function() {
+    var val = $("#id_topschool_select").val();
+    if(val) {
+      $("#id_school_title").val(val);
+    }
+  };
+  
+  var updateSchoolInput = function() {
+    var wh_only = $('#wh_school_check_id').prop('checked');
+    
+    if(wh_only) {
+      $("#id_school_title")
+        .hide()
+        .attr('name','school_title_hidden')
+        .prop('required',false);
+
+      $("#id_topschool_select")
+        .show()
+        .attr('name','school_title')
+        .prop('required',true);
+
+      copySchoolToSelect();
+    } else {
+      $("#id_topschool_select")
+        .hide()
+        .attr('name','school_title_hidden')
+        .prop('required',false);
+
+      $("#id_school_title")
+        .show()
+        .attr('name','school_title')
+        .prop('required',true);
+
+      copySchoolToInput();
+    }
+  };
+
+  var populateSchoolSelect = function() {
+    var baseUrl = '{% url 'appl:ajax-topschool-list' %}';
+    var province = $("#id_province").val();
+    jQuery.get(baseUrl,
+               { province: province },
+               function(data) {
+                 var actualData = eval(data);
+                 $("#id_topschool_select option").detach();
+                 jQuery.each(actualData, function(i, title) {
+                   title = title.replace(/\"/g,'&quot;')
+                   var optionStr = ('<option value="' + title + '">' +
+                                    title + '</option>');
+                   $("#id_topschool_select").append(optionStr);
+                 });
+               });
+  }
+  
+  $(function(){
+    $("#id_school_title").after(schoolSelectStr);
+
+    $("#id_school_title").autocomplete({
+      source: function(request, response) {
+        var baseUrl = "{% url 'appl:ajax-school-search' %}";
+        var province = $("#id_province").val();
+        
+        jQuery.get(baseUrl,
+                   { province: province,
+                     term: request.term },
+                   function(data) {
+                     var actualData = eval(data);
+                     response(actualData);
+                   });
+      },
+      minLength: 3
+    });
+
+    $("#wh_school_check_id").click(updateSchoolInput);
+    $("#id_province").change(populateSchoolSelect);
+    
+    populateSchoolSelect();
+    updateSchoolInput();
+  });
 </script>
 {% endblock %}
+
+

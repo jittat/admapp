@@ -1,0 +1,28 @@
+<tr class="table-primary">
+  <td colspan="100">ข้อมูลการสมัครโครงการ</td>
+</tr>
+{% for app in applications %}
+  <tr>
+    <td>
+      {{ app.admission_round }}
+    </td>
+    <td>
+      {{ app.admission_project }}
+      {% if user.is_super_admin %}({{ app.get_verification_number }}){% endif %}
+      <br />
+      {% if app.supplement_configs %}
+        {% with app.supplement_configs as supplement_configs %}
+          {% include 'backoffice/include/supplements.html' %}
+        {% endwith %}
+      {% endif %}
+      {% if app.major_selection %}
+        - สาขาที่เลือก:<br />
+        <ul>
+          {% for m in app.major_selection.get_majors %}
+            <li>{{ m.faculty.title}} - {{ m }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    </td>
+  </tr>
+{% endfor %}

@@ -1,0 +1,10 @@
+<tr>
+  <td>การชำระเงินค่าสมัคร</td>
+  <td>
+    <ul>
+      {% for p in payments %}
+        <li>{{ p.admission_round }} ชำระ {{ p.amount|floatformat:"2" }} บาท เมื่อ {{ p.paid_at }}</li>
+      {% endfor %}
+    </ul>
+  </td>
+</tr>

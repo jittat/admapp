@@ -160,7 +160,7 @@ LOGOUT_REDIRECT_URL = 'backoffice:index'
 ADMISSION_TITLE = "โครงการรับสมัครนักเรียนเข้าศึกษาในมหาวิทยาลัยเกษตรศาสตร์ ปีการศึกษา 2561"
 ADMISSION_SHORT_TITLE = "KU-TCAS'61"
 
-VERIFY_NATIONAL_ID = False
+VERIFY_NATIONAL_ID = True
 FAKE_LOGIN = False
 
 BARCODE_DIR = '/tmp/'
@@ -169,6 +169,7 @@ ADM_EMAIL_FROM = 'admission@ku.ac.th'
 
 ELIGIBILITY_CHECK = {
     'ช้างเผือก': 'white_elephant',
+    'เรียนล่วงหน้า': 'advanced_placement',
 }
 
 # Manipulate Settings with Local Settings
@@ -178,6 +179,12 @@ try:
 except ImportError:
     pass 
 
+# for django debug toolbar
+if DEBUG:
+    INTERNAL_IPS = ['127.0.0.1']
+    INSTALLED_APPS.append('debug_toolbar')
+    MIDDLEWARE.append('debug_toolbar.middleware.DebugToolbarMiddleware')
+    
 import sys
 if 'test' in sys.argv:
     DATABASES['default'] = {

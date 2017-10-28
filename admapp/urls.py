@@ -37,3 +37,9 @@ urlpatterns = [
         auth_views.LogoutView.as_view(),
         name='backoffice-logout'),
 ]
+
+if settings.DEBUG:
+    import debug_toolbar
+    urlpatterns = [
+        url(r'^__debug__/', include(debug_toolbar.urls)),
+    ] + urlpatterns
