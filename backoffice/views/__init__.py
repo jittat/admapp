@@ -122,7 +122,7 @@ def show(request, national_id, project_id=None):
     if (not user.is_super_admin) and len(applications)==0:
         return redirect(reverse('backoffice:index'))
 
-    if not user.profile.is_admission_admin:
+    if (not user.is_super_admin) and (not user.profile.is_admission_admin):
         applied = False
         for a in applications:
             if a.has_applied_to_faculty(user.profile.faculty):

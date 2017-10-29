@@ -24,6 +24,9 @@ urlpatterns = [
     url(r'^projects/(\d+)/(\d+)/$', projects.index, name='projects-index'),
     url(r'^projects/(\d+)/(\d+)/list/$', projects.list_applicants, name='projects-list'),
 
+    url(r'^projects/applicants/(\d+)/(\d+)/(\d+)/(\d+)/$',
+        projects.show_applicant, name='projects-show-applicant'),
+
     url(r'^users/$', users.index, name='users-index'),
 ]
 

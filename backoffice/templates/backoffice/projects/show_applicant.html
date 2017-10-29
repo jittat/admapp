@@ -1,0 +1,29 @@
+{% extends 'backoffice/base.html' %}
+{% block content %}
+  <div class="row">
+    <div class="col-md-12">
+      <div class="float-right border rounded p5">
+        {% include 'backoffice/projects/include/applicant_nav.html' %}
+      </div>
+      <div>
+        <span class="badge badge-danger badge-pill">ตัวอย่าง</span>
+        <b>พิจารณาผู้สมัครโครงการ{{ project }} {{ admission_round}}</b>: {{ applicant }}
+      </div>
+      {% include 'backoffice/projects/include/applicant_info.html' %}
+      {% include 'backoffice/projects/include/applicant_toolbar.html' %}
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-2" style="overflow-y: auto;">
+      {% include 'backoffice/projects/include/applicant_uploaded_doc_menu.html' %}
+    </div>
+    <div class="col-md-7">
+      <div class="border mt5 bg-light" style="height: 100%;">
+      </div>
+    </div>
+    <div class="col-md-3">
+      {% include 'backoffice/projects/include/applicant_comments.html' %}
+    </div>
+  </div>
+{% endblock %}

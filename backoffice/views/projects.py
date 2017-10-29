@@ -1,10 +1,11 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
-from django.http import HttpResponseForbidden
+from django.http import HttpResponseForbidden, HttpResponseNotFound
 
 from regis.models import Applicant
 from appl.models import AdmissionProject, AdmissionRound
-from appl.models import ProjectApplication, Payment
+from appl.models import ProjectApplication, Payment, Major
+from appl.models import ProjectUploadedDocument
 
 from backoffice.views.permissions import can_user_view_project
 from backoffice.decorators import user_login_required
@@ -41,7 +42,7 @@ def load_project_applicants(project, admission_round, faculty):
     project_applications = ProjectApplication.find_for_project_and_round(project,
                                                                          admission_round,
                                                                          True)
-    major_map = dict([(m.number,m) for m in project.major_set.all()])
+    major_map = project.get_majors_as_dict()
     applicants = []
 
     for app in project_applications:
@@ -85,6 +86,8 @@ def process_applicant_stats(majors, applicants, max_num_selections):
             m.stats.append({'sel': 0, 'paid': 0})
         midx += 1
 
+    faculty_stats = {}
+        
     for a in applicants:
         r = 0
         for m in a.majors:
@@ -92,8 +95,55 @@ def process_applicant_stats(majors, applicants, max_num_selections):
                 majors[mnum_map[m.number]].stats[r]['sel'] += 1
                 if a.has_paid:
                     majors[mnum_map[m.number]].stats[r]['paid'] += 1
+
+                if max_num_selections == 1:
+                    if m.faculty_id not in faculty_stats:
+                        faculty_stats[m.faculty_id] = {'sel': 0, 'paid': 0}
+                    faculty_stats[m.faculty_id]['sel'] += 1
+                    if a.has_paid:
+                        faculty_stats[m.faculty_id]['paid'] += 1
+
+                    majors[mnum_map[m.number]].faculty_stat = faculty_stats[m.faculty_id]
             r += 1
     return majors
+
+
+def load_major_applicant_with_major_stats(project, admission_round, major, num):
+    project_applications = ProjectApplication.find_for_project_and_round(project,
+                                                                         admission_round,
+                                                                         True)
+    applicant_paid_amount = load_applicant_round_paid_amount(admission_round)
+    major_map = project.get_majors_as_dict()
+    
+    applicants = []
+    for application in project_applications:
+        if not hasattr(application, 'major_selection'):
+            continue
+        major_numbers = application.major_selection.get_major_numbers()
+
+        applicant = application.applicant
+
+        if major in major_numbers:
+            admission_fee = application.admission_fee(project_base_fee=project.base_fee,
+                                                      majors=application.major_selection.get_majors(major_map))
+            applicant.has_paid = applicant_paid_amount.get(applicant.national_id,0) >= admission_fee
+            
+            applicants.append(applicant)
+            
+    amaps = dict([(a.id,a) for a in applicants])
+    sorted_applicant_ids = [x[2] for x in sorted([(({True: 0, False: 1}[applicant.has_paid]),
+                                                   applicant.national_id,
+                                                   applicant.id) for applicant
+                                                  in applicants])]
+    sorted_applicants = [amaps[i] for i in sorted_applicant_ids]
+
+    stat = {'total': len(sorted_applicants),
+            'paid': len([a for a in sorted_applicants if a.has_paid]),}
+    
+    if len(sorted_applicants) > num:
+        return sorted_applicants[num], stat
+    else:
+        return None, stat
 
 
 @user_login_required
@@ -101,6 +151,8 @@ def index(request, project_id, round_id):
     user = request.user
     project = get_object_or_404(AdmissionProject, pk=project_id)
     admission_round = get_object_or_404(AdmissionRound, pk=round_id)
+    project_round = project.get_project_round_for(admission_round)
+    
     if not can_user_view_project(user, project):
         return redirect(reverse('backoffice:index'))
 
@@ -119,6 +171,8 @@ def index(request, project_id, round_id):
 
     process_applicant_stats(majors, applicants, project_max_num_selections)
     ranks = range(1, project_max_num_selections+1)
+
+    applicant_info_viewable = project_round.applicant_info_viewable
     
     return render(request,
                   'backoffice/projects/index.html',
@@ -130,6 +184,8 @@ def index(request, project_id, round_id):
                     'applicant_count': len(applicants),
                     'paid_applicant_count': len([a for a in applicants if a.has_paid]),
                     'ranks': ranks,
+
+                    'applicant_info_viewable': applicant_info_viewable,
                   })
 
 
@@ -150,7 +206,9 @@ def list_applicants(request, project_id, round_id):
         
     if project.max_num_selections==1:
         amap = dict([(a.id,a) for a in applicants])
-        sorted_applicants = [x[1] for x in sorted([(applicant.major_number,
+        sorted_applicants = [x[3] for x in sorted([(applicant.major_number,
+                                                    ({True: 0, False: 1}[applicant.has_paid]),
+                                                    applicant.national_id,
                                                     applicant.id) for applicant
                                                    in applicants])]
         applicants = [amap[i] for i in sorted_applicants]
@@ -167,3 +225,41 @@ def list_applicants(request, project_id, round_id):
                     'applicants': applicants,
                     'sorted_by_majors': sorted_by_majors,
                   })
+
+@user_login_required
+def show_applicant(request, project_id, round_id, major_number, rank):
+    user = request.user
+    project = get_object_or_404(AdmissionProject, pk=project_id)
+    admission_round = get_object_or_404(AdmissionRound, pk=round_id)
+    major = Major.get_by_project_number(project, major_number)
+    
+    if not can_user_view_project(user, project):
+        return redirect(reverse('backoffice:index'))
+
+    real_rank = int(rank) - 1
+    major_number = int(major_number)
+
+    applicant, major_stat = load_major_applicant_with_major_stats(project, admission_round, major_number, real_rank)
+
+    if not applicant:
+        return HttpResponseNotFound()
+
+    uploaded_documents = (list(ProjectUploadedDocument.get_common_documents()) + 
+                          list(project.projectuploadeddocument_set.all()))
+
+    for doc in uploaded_documents:
+        doc.applicant_uploaded_documents = doc.get_uploaded_documents_for_applicant(applicant)
+    
+    return render(request,
+                  'backoffice/projects/show_applicant.html',
+                  { 'project': project,
+                    'admission_round': admission_round,
+                    'major': major,
+                    
+                    'applicant': applicant,
+                    'major_stat': major_stat,
+
+                    'uploaded_documents': uploaded_documents,
+                  })
+
+    

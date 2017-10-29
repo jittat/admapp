@@ -145,7 +145,10 @@ class AdmissionProject(models.Model):
         
         return table_header_as_list_template(self.column_descriptions)
 
-        
+    def get_majors_as_dict(self):
+        return dict([(m.number,m) for m in self.major_set.all()])
+
+    
 class AdmissionProjectRound(models.Model):
     admission_round = models.ForeignKey('AdmissionRound',
                                         on_delete=models.CASCADE)
@@ -167,6 +170,9 @@ class AdmissionProjectRound(models.Model):
                                         null=True,
                                         verbose_name='วันชำระค่าสมัครวันสุดท้าย')
 
+    applicant_info_viewable = models.BooleanField(default=False,
+                                                  verbose_name='สามารถดูรายละเอียดผู้สมัครได้')
+    
     def __str__(self):
         return "{0} ({1})".format(self.admission_project.title, str(self.admission_round))
 
@@ -549,7 +555,7 @@ class MajorSelection(models.Model):
     def __str__(self):
         return self.major_list
 
-    def get_majors(self):
+    def get_majors(self, major_dict=None):
         try:
             return self.majors
         except:
@@ -558,8 +564,11 @@ class MajorSelection(models.Model):
         self.majors = []
         if self.admission_project_id != None:
             for num in self.major_list.split(','):
-                self.majors.append(Major.get_by_project_number(self.admission_project,
-                                                               num))
+                if major_dict:
+                    self.majors.append(major_dict[int(num)])
+                else:
+                    self.majors.append(Major.get_by_project_number(self.admission_project,
+                                                                   num))
         return self.majors
 
     def set_majors(self, majors):

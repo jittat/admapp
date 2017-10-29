@@ -23,11 +23,17 @@
             <td>
               สาขา
             </td>
+            <td class="text-right">
+              จำนวนรับ
+            </td>
             {% for r in ranks %}
               <td class="text-right">
                 อันดับ {{ r }}
               </td>
             {% endfor %}
+            {% if applicant_info_viewable %}
+              <td></td>
+            {% endif %}
           </tr>
         </thead>
         {% for major in majors %}
@@ -35,19 +41,27 @@
             {% ifchanged major.faculty %}
               <tr class="table-info">
                 <th colspan="1000" class="text-center">
-                  {{ major.faculty.title }}
+                  {{ major.faculty.title }} ({{ major.faculty_stat.paid }} / {{ major.faculty_stat.sel }})
                 </th>
               </tr>
             {% endifchanged %}
           {% endif %}
           <tr>
             <td>{{ major.number }}</td>
-            <td>{{ major.title }}</td>
+            <td>
+              {{ major.title }}
+            </td>
+            <td class="text-right">
+              {{ major.slots }}{% if major.slots_comments %}*{% endif %}
+            </td>
             {% for stat in major.stats %}
               <td class="text-right">
                 {{ stat.paid }} / {{ stat.sel }}
               </td>
             {% endfor %}
+            {% if applicant_info_viewable %}
+              <td><a class="btn btn-sm btn-outline-secondary" href="{% url 'backoffice:projects-show-applicant' project.id admission_round.id major.number 1 %}">พิจารณาข้อมูลผู้สมัคร</a></td>
+            {% endif %}
           </tr>
         {% endfor %}
       </table>

@@ -1,0 +1,21 @@
+{% for doc in uploaded_documents %}
+  <div class="mt5 border border-top-0 border-left-0 border-right-0">
+    <small>
+      {% if doc.can_have_multiple_files and doc.applicant_uploaded_documents|length > 1 %}
+        <i class="fa fa-angle-right"></i> {{ doc.title }}
+        <span class="badge badge-secondary">{{ doc.applicant_uploaded_documents|length }}</span>
+        <br />
+        {% for app_doc in doc.applicant_uploaded_documents %}
+          <a href="">
+            <i class="fa fa-angle-double-right"></i>
+            {% if app_doc.detail %}{{ app_doc.detail }}{% else %}เอกสารที่ {{ forloop.counter }}{% endif %}
+          </a>
+          <br />
+        {% endfor %}
+      {% else %}
+        <a href=""><i class="fa fa-angle-right"></i> {{ doc.title }}</a>
+        <span class="badge badge-secondary">{{ doc.applicant_uploaded_documents|length }}</span>
+      {% endif %}
+    </small>
+  </div>
+{% endfor %}
