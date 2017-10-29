@@ -9,7 +9,7 @@
         {% if doc.applicant_uploaded_documents|length > 0 %}<span class="badge badge-secondary">{{ doc.applicant_uploaded_documents|length }} ไฟล์</span>{% endif %}
         <small>{{ doc.descriptions|linebreaksbr }}</small>
         <a class="btn btn-sm btn-outline-primary" data-toggle="collapse" data-parent="#accordian" href="#accordian-upload-form-{{ doc.id }}" aria-expanded="true" aria-controls="accordian-upload-form-{{ doc.id }}" role="button">
-          รายละเอียด
+          รายละเอียด <i class="fa fa-caret-down"></i>
         </a>
       </div>
 
@@ -54,7 +54,7 @@
                       <a href="{{ d.document_url }}" class="btn btn-sm btn-info" target="_blank">ดูลิงก์</a>
                     {% endif %}
                     &nbsp;
-  		    <a data-delete-url="{% url 'appl:document-delete' applicant.id doc.id d.id %}" href="#" class="upload-form-delete-buttons btn btn-sm btn-secondary">ลบ</a>
+  		    <a data-delete-url="{% url 'appl:document-delete' applicant.id doc.id d.id %}" href="#" class="upload-form-delete-buttons btn btn-sm btn-secondary"><i class="fa fa-trash"></i> ลบ</a>
   		  </li>
   		{% endfor %}
   	      </ul>

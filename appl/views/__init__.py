@@ -75,6 +75,10 @@ def index_with_active_application(request, active_application):
     applicant = request.applicant
     admission_round = AdmissionRound.get_available()
     admission_project = active_application.admission_project
+
+    project_round = admission_project.get_project_round_for(admission_round)
+    is_deadline_passed = project_round.is_deadline_passed()
+    payment_deadline = project_round.payment_deadline
     
     common_uploaded_documents = ProjectUploadedDocument.get_common_documents()
     project_uploaded_documents = admission_project.projectuploadeddocument_set.all()
@@ -114,6 +118,9 @@ def index_with_active_application(request, active_application):
                   'appl/index.html',
                   { 'notice': notice,
                     'applicant': applicant,
+
+                    'is_deadline_passed': is_deadline_passed,
+                    
                     'personal_profile': applicant.get_personal_profile(),
                     'educational_profile': applicant.get_educational_profile(),
                     'common_uploaded_documents': common_uploaded_documents,
@@ -132,6 +139,7 @@ def index_with_active_application(request, active_application):
                     'payments': payments,
                     'paid_amount': paid_amount,
                     'additional_payment': additional_payment,
+                    'payment_deadline': payment_deadline,
                   })
 
 
@@ -209,6 +217,9 @@ def apply_project(request, project_id, admission_round_id):
     if not project_round:
         return HttpResponseForbidden()
 
+    if not project_round.is_open():
+        return redirect(reverse('appl:index'))
+    
     active_application = applicant.get_active_application(admission_round)
     
     if active_application:
@@ -238,9 +249,9 @@ def cancel_project(request, project_id, admission_round_id):
     admission_round = get_object_or_404(AdmissionRound, pk=admission_round_id)
 
     project_round = project.get_project_round_for(admission_round)
-    if not project_round:
+    if (not project_round) or (not project_round.is_open()):
         return redirect(reverse('appl:index'))
-
+    
     active_application = applicant.get_active_application(admission_round)
     
     if ((not active_application) or
@@ -355,6 +366,10 @@ def check_application_documents(request):
 
     if not active_application:
         return HttpResponseForbidden()
+
+    admission_project = active_application.admission_project
+    project_round = admission_project.get_project_round_for(admission_round)
+    payment_deadline = project_round.payment_deadline
     
     admission_project = active_application.admission_project
     
@@ -393,4 +408,5 @@ def check_application_documents(request):
                     'payments': payments,
                     'paid_amount': paid_amount,
                     'additional_payment': additional_payment,
+                    'payment_deadline': payment_deadline,
                     })

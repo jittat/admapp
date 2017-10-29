@@ -1,3 +1,4 @@
+{% load appl_tags %}
 {% if paid_amount >= active_application.admission_fee %}
   <i style="color: green" class="fa fa-check" aria-hidden="true"></i>
 {% endif %}
@@ -6,7 +7,8 @@
 ชำระแล้ว {{ paid_amount }} บาท
 {% if active_application.admission_fee > paid_amount %}
   ต้องชำระเพิ่ม {{ additional_payment }} บาท<br />
-  <a target="_blank" class="btn btn-sm btn-success" href="{% url 'appl:payment' active_application.id %}">พิมพ์ใบชำระเงิน</a>
+  <a target="_blank" class="btn btn-sm btn-success" href="{% url 'appl:payment' active_application.id %}"><i class="fa fa-bank"></i> พิมพ์ใบชำระเงิน</a><br />
+  <small>ชำระได้ถึงวันที่ {{ payment_deadline|thaidate }}</small>
 {% else %}
   ไม่ต้องชำระเพิ่ม
 {% endif %}

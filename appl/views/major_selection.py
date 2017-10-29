@@ -50,6 +50,9 @@ def select(request, admission_round_id):
         return HttpResponseForbidden()
 
     project = application.admission_project
+    project_round = project.get_project_round_for(admission_round)
+    if not project_round.is_open():
+        return redirect(reverse('appl:index'))
     
     try:
         major_selection = application.major_selection
