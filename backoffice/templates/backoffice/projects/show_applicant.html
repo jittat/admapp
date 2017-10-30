@@ -15,15 +15,37 @@
   </div>
 
   <div class="row">
-    <div class="col-md-2" style="overflow-y: auto;">
-      {% include 'backoffice/projects/include/applicant_uploaded_doc_menu.html' %}
+    <div class="col-md-2"> 
+      <div id="document_menu_id" style="overflow-y: auto;">
+        {% include 'backoffice/projects/include/applicant_uploaded_doc_menu.html' %}
+      </div>
     </div>
     <div class="col-md-7">
-      <div class="border mt5 bg-light" style="height: 100%;">
+      <div id="document_panel_id" class="border mt5 bg-light" style="height: 100%;">
       </div>
     </div>
     <div class="col-md-3">
-      {% include 'backoffice/projects/include/applicant_comments.html' %}
+      <div id="comment_panel_id" style="overflow-y: auto;">
+        {% include 'backoffice/projects/include/applicant_comments.html' %}
+      </div>
     </div>
   </div>
+  <script>
+    var adjustHeight = function(sel, vh) {
+      var top = $(sel).offset().top;
+      $(sel).css('height',vh - top - 5);
+    }
+
+    var resizePanels = function() {
+      var vh = $(window).height();
+      adjustHeight('#document_panel_id',vh);
+      adjustHeight('#document_menu_id',vh);
+      adjustHeight('#comment_panel_id',vh);
+    };
+    
+    $(function(){
+      resizePanels();
+      $(window).resize(resizePanels);
+    });
+  </script>
 {% endblock %}
