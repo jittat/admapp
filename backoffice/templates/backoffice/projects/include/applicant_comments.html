@@ -1,19 +1,27 @@
 ความเห็นกรรมการ:
-<form class="form">
-  <textarea class="form-control mb5">
-  </textarea>
-  <button class="btn btn-secondary btn-sm">จัดเก็บ</button>
+<form method="post" action="{% url 'backoffice:projects-save-comment' project.id admission_round.id applicant.national_id major.number  %}" class="form comment-form">
+  {% csrf_token %}
+  <textarea id="comment_textarea_id" name="body" class="form-control mb5" style="padding: 3px; font-size: 70%;"></textarea>
+  <input type="submit" id="comment_submit_id" class="btn btn-secondary btn-sm" value="จัดเก็บ"/>
 </form>
 <hr />
-<div class="border mb5 p5">
-  <small>ทดสอบ ทดสอบ</small>
+<div id="judge_comments_id">
+  {% include 'backoffice/projects/include/judge_comment_list.html' %}
 </div>
-<div class="border mb5 p5">
-  <small>ทดสอบ ทดสอบ พิมพ์</small>
-</div>
-<div class="border mb5 p5">
-  <small>ทดสอบ ทดสอบ พิมพ์พิมพ์</small>
-</div>
-<div class="border mb5 p5">
-  <small>ทดสอบ ทดสอบครับผม นี่เป็นตัวอย่างความเห็น</small>
-</div>
+<script>
+  $(function(){
+    $("#comment_submit_id").click(function() {
+      var data = $(".comment-form").serialize();
+      var url = $(".comment-form").attr('action');
+      jQuery.post(url,
+                  data,
+                  function(data) {
+                    if(data.result == 'OK') {
+                      $('#judge_comments_id').html(data.html);
+                      $('#comment_textarea_id').val('');
+                    }
+                  });
+      return false;
+    });
+  });
+</script>

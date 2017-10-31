@@ -1,0 +1,5 @@
+{% for comment in judge_comments %}
+  <div class="border mb5 p5">
+    <small>{{ comment.body|linebreaksbr }}</small>
+  </div>
+{% endfor %}

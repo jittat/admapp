@@ -358,3 +358,41 @@ def check_mark_toggle(request, project_id, round_id, national_id, major_number, 
     return HttpResponse(json.dumps({ 'result': 'OK',
                                      'html': html }),
                         content_type='application/json')
+
+
+@user_login_required
+def save_comment(request, project_id, round_id, national_id, major_number):
+    user = request.user
+    applicant = get_object_or_404(Applicant, national_id=national_id)
+    project = get_object_or_404(AdmissionProject, pk=project_id)
+    admission_round = get_object_or_404(AdmissionRound, pk=round_id)
+    major = Major.get_by_project_number(project, major_number)
+
+    application = applicant.get_active_application(admission_round)
+
+    if application.admission_project_id != project.id:
+        return HttpResponseNotFound()
+
+    if not can_user_view_applicant_in_major(user, applicant, application, project, major):
+        return redirect(reverse('backoffice:index'))
+
+    comment = JudgeComment(applicant=applicant,
+                           project_application=application,
+                           body=request.POST.get('body',''))
+    if comment.body.strip() != '':
+        comment.save()
+    
+        from django.template import loader
+        template = loader.get_template('backoffice/projects/include/judge_comment_list.html')
+
+        judge_comments = application.judge_comment_set.all()
+        html = template.render({ 'judge_comments': judge_comments }, request)
+    
+        return HttpResponse(json.dumps({ 'result': 'OK',
+                                         'html': html }),
+                            content_type='application/json')
+    else:
+        return HttpResponse(json.dumps({ 'result': 'ERROR', }),
+                            content_type='application/json')
+
+                           

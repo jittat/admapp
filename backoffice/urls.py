@@ -31,9 +31,13 @@ urlpatterns = [
         projects.download_applicant_document,
         name='projects-download-app-document'),
         
-    url(r'^projects/applicants/(\d+)/(\d+)/(\d+)/(\d+)/mark/(\d+)/$',
+    url(r'^projects/applicants/(\d+)/(\d+)/(\d+)/(\d+)/marks/(\d+)/$',
         projects.check_mark_toggle,
         name='projects-check-mark-toggle'),
+        
+    url(r'^projects/applicants/(\d+)/(\d+)/(\d+)/(\d+)/comments/$',
+        projects.save_comment,
+        name='projects-save-comment'),
         
     url(r'^users/$', users.index, name='users-index'),
 ]
