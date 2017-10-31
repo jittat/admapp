@@ -451,7 +451,7 @@ class ProjectApplication(models.Model):
 
     verification_number = models.CharField(max_length=20,
                                            blank=True)
-
+    
     ID_OFFSET_MAGIC = 104341
 
     def get_number(self):

@@ -10,6 +10,8 @@ from appl.models import ProjectUploadedDocument, UploadedDocument
 from backoffice.views.permissions import can_user_view_project
 from backoffice.decorators import user_login_required
 
+from backoffice.models import CheckMarkGroup, JudgeComment
+
 def load_applicant_round_paid_amount(admission_round):
     round_payments = Payment.objects.select_related('applicant').filter(admission_round=admission_round)
 
@@ -244,12 +246,25 @@ def show_applicant(request, project_id, round_id, major_number, rank):
     if not applicant:
         return HttpResponseNotFound()
 
+    application = applicant.get_active_application(admission_round)
+    if application.admission_project_id != project.id:
+        return HttpResponseNotFound()
+    
     uploaded_documents = (list(ProjectUploadedDocument.get_common_documents()) + 
                           list(project.projectuploadeddocument_set.all()))
 
     for doc in uploaded_documents:
         doc.applicant_uploaded_documents = doc.get_uploaded_documents_for_applicant(applicant)
-    
+
+    if hasattr(application,'check_mark_group'):
+        check_mark_group = application.check_mark_group
+    else:
+        check_mark_group = CheckMarkGroup(applicant=applicant,
+                                          project_application=application)
+        check_mark_group.save()
+
+    judge_comments = application.judge_comment_set.all()
+        
     return render(request,
                   'backoffice/projects/show_applicant.html',
                   { 'project': project,
@@ -257,10 +272,14 @@ def show_applicant(request, project_id, round_id, major_number, rank):
                     'major': major,
                     
                     'applicant': applicant,
+                    'application': application,
                     'rank': rank,
                     'major_stat': major_stat,
 
                     'uploaded_documents': uploaded_documents,
+
+                    'check_mark_group': check_mark_group,
+                    'judge_comments': judge_comments,
                   })
 
 

@@ -6,7 +6,9 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-from appl.models import Campus, Faculty, AdmissionProject
+from appl.models import Campus, Faculty, AdmissionProject, AdmissionRound, ProjectApplication
+from regis.models import Applicant
+
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -48,3 +50,45 @@ def save_user_profile(sender, instance, **kwargs):
         instance.profile.save()
     except Profile.DoesNotExist:
         Profile.objects.create(user=instance)
+
+
+class CheckMarkGroup(models.Model):
+    NUM_CHECK_MARKS = 6
+
+    COLORS = ['text-primary',
+              'text-success',
+              'text-warning',
+              'text-danger',
+              'text-secondary',
+              'text-dark']
+    
+    applicant = models.ForeignKey(Applicant)
+    project_application = models.OneToOneField(ProjectApplication,
+                                               related_name='check_mark_group')
+    check_marks = models.CharField(default='',
+                                   max_length=20)
+
+        
+    def is_checked(self, num):
+        if len(self.check_marks) >= num:
+            return self.check_marks[num-1] == '1'
+
+    def get_check_mark_list(self):
+        marks = []
+        for i in range(self.NUM_CHECK_MARKS):
+            marks.append({ 'is_checked': self.is_checked(i+1),
+                           'text_color': self.COLORS[i] })
+        return marks
+        
+    def __str__(self):
+        return '{0} - {1}'.format(self.applicant.national_id, self.check_marks)
+
+    
+class JudgeComment(models.Model):
+    applicant = models.ForeignKey(Applicant)
+    project_application = models.ForeignKey(ProjectApplication,
+                                            related_name='judge_comment_set')
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    body = models.TextField()

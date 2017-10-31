@@ -1,19 +1,10 @@
 <div class="applicant-toolbars p5 border rounded bg-light">
   <span class="badge badge-pill badge-danger">ตัวอย่างเท่านั้น!!!</span>
   เลือก
-  <div class="border d-inline-block m0 p5 text-primary bg-white">
-    <i class="fa fa-circle"></i>
-  </div><div class="border d-inline-block m0 p5 text-success bg-white">
-    <i class="fa fa-circle-o"></i>
-  </div><div class="border d-inline-block m0 p5 text-danger bg-white">
-    <i class="fa fa-circle"></i>
-  </div><div class="border d-inline-block m0 p5 text-warning bg-white">
-    <i class="fa fa-circle-o"></i>
-  </div><div class="border d-inline-block m0 p5 text-secondary bg-white">
-    <i class="fa fa-circle"></i>
-  </div><div class="border d-inline-block m0 p5 text-dark bg-white">
-    <i class="fa fa-circle-o"></i>
+  <div class="check-mark-groups d-inline-block">
+    {% include 'backoffice/projects/include/check_mark_group.html' %}
   </div>
+  
   ผลการพิจารณา: เรียกสัมภาษณ์
   <div class="btn-group" role="group">
     <button type="button" class="btn btn-sm btn-success"><i class="fa fa-check"></i> เรียก</button>
