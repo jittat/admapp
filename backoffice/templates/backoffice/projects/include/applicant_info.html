@@ -1,3 +1,9 @@
 <div>
-  โรงเรียน: xxx, แผนการเรียน: yyy, เกรดเฉลี่ย: zzzz
+  {% if education %}
+    โรงเรียน: {{ education.school_title }} ({{ education.province }}) |
+    แผนการเรียน: {{ education.get_education_plan_display }} |
+    GPA: {{ education.gpa|floatformat:"2" }}
+  {% else %}
+    <span class="badge badge-danger">ไม่มีข้อมูลการศึกษา</span>
+  {% endif %}
 </div>

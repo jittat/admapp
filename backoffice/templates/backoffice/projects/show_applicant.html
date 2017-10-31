@@ -1,14 +1,18 @@
 {% extends 'backoffice/base.html' %}
 {% block content %}
-  <div class="row">
+  <div class="row" style="margin-top: -10px;">
     <div class="col-md-12">
       <div class="float-right border rounded p5">
         {% include 'backoffice/projects/include/applicant_nav.html' %}
       </div>
       <div>
-        <span class="badge badge-danger badge-pill">ตัวอย่าง</span>
         <b>พิจารณาผู้สมัครโครงการ{{ project }} {{ admission_round}} | สาขา{{ major.title }}</b><br />
         {{ applicant }}
+        {% if has_paid %}
+          <span class="badge badge-success"><i class="fa fa-check"></i> ชำระค่าสมัครแล้ว</span>
+        {% else %}
+          <span class="badge badge-danger"><i class="fa fa-close"></i> ยังไม่ชำระค่าสมัคร</span>
+        {% endif %}
       </div>
       {% include 'backoffice/projects/include/applicant_info.html' %}
       {% include 'backoffice/projects/include/applicant_toolbar.html' %}

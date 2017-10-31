@@ -253,13 +253,18 @@ def show_applicant(request, project_id, round_id, major_number, rank):
 
     if not can_user_view_applicant_in_major(user, applicant, application, project, major):
         return redirect(reverse('backoffice:index'))
-    
+
     uploaded_documents = (list(ProjectUploadedDocument.get_common_documents()) + 
                           list(project.projectuploadeddocument_set.all()))
 
     for doc in uploaded_documents:
         doc.applicant_uploaded_documents = doc.get_uploaded_documents_for_applicant(applicant)
 
+    if hasattr(applicant,'educationalprofile'):
+        education = applicant.educationalprofile
+    else:
+        education = None
+        
     if hasattr(application,'check_mark_group'):
         check_mark_group = application.check_mark_group
     else:
@@ -277,10 +282,13 @@ def show_applicant(request, project_id, round_id, major_number, rank):
                     
                     'applicant': applicant,
                     'application': application,
+                    'has_paid': application.has_paid(),
                     'rank': rank,
+
                     'major_stat': major_stat,
 
                     'uploaded_documents': uploaded_documents,
+                    'education': education,
 
                     'check_mark_group': check_mark_group,
                     'judge_comments': judge_comments,

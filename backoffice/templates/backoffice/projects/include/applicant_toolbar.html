@@ -1,15 +1,21 @@
 <div class="applicant-toolbars p5 border rounded bg-light">
-  <span class="badge badge-pill badge-danger">ตัวอย่างเท่านั้น!!!</span>
-  เลือก
+  ทำเครื่องหมาย
   <div class="check-mark-groups d-inline-block">
     {% include 'backoffice/projects/include/check_mark_group.html' %}
   </div>
-  
-  ผลการพิจารณา: เรียกสัมภาษณ์
-  <div class="btn-group" role="group">
-    <button type="button" class="btn btn-sm btn-outline-success"><i class="fa fa-check"></i> เรียก</button>
-    <button type="button" class="btn btn-sm btn-outline-danger"><i class="fa fa-close"></i> ไม่เรียก</button>
-  </div>
+  &nbsp;
+  ผลการพิจารณา:
+  {% if has_paid %}
+    เรียกสัมภาษณ์
+    <div class="btn-group" role="group">
+      <button type="button" class="btn btn-sm btn-outline-secondary"><i class="fa fa-check"></i> เรียก</button>
+      <button type="button" class="btn btn-sm btn-outline-secondary"><i class="fa fa-close"></i> ไม่เรียก</button>
+    </div>
+    <span class="badge badge-warning">ขออภัย - ยังเลือกผลการพิจารณาไม่ได้</span>
+  {% else %}
+    ไม่เรียกสัมภาษณ์
+    <small>(ยังไม่ชำระค่าสมัคร)</small>
+  {% endif %}
 </div>
 <script>
   var baseToggleUrl = '{% url 'backoffice:projects-check-mark-toggle' project.id admission_round.id applicant.national_id major.number 0 %}';
