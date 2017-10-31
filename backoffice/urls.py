@@ -27,6 +27,10 @@ urlpatterns = [
     url(r'^projects/applicants/(\d+)/(\d+)/(\d+)/(\d+)/$',
         projects.show_applicant, name='projects-show-applicant'),
 
+    url(r'^projects/applicants/(\d+)/(\d+)/(\d+)/doc/(\d+)/(\d+)/(\d+)/$',
+        projects.download_applicant_document,
+        name='projects-download-app-document'),
+        
     url(r'^users/$', users.index, name='users-index'),
 ]
 

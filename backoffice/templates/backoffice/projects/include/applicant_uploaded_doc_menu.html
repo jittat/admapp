@@ -6,16 +6,34 @@
         <span class="badge badge-secondary">{{ doc.applicant_uploaded_documents|length }}</span>
         <br />
         {% for app_doc in doc.applicant_uploaded_documents %}
-          <a href="">
+          <a class="app-document-links" href="{% url 'backoffice:projects-download-app-document' project.id admission_round.id major.number applicant.national_id doc.id app_doc.id %}" data-is-pdf="{{ app_doc.is_pdf }}">
             <i class="fa fa-angle-double-right"></i>
             {% if app_doc.detail %}{{ app_doc.detail }}{% else %}เอกสารที่ {{ forloop.counter }}{% endif %}
           </a>
           <br />
         {% endfor %}
       {% else %}
-        <a href=""><i class="fa fa-angle-right"></i> {{ doc.title }}</a>
-        <span class="badge badge-secondary">{{ doc.applicant_uploaded_documents|length }}</span>
+        {% for app_doc in doc.applicant_uploaded_documents %}
+          <a class="app-document-links" href="{% url 'backoffice:projects-download-app-document' project.id admission_round.id major.number applicant.national_id doc.id app_doc.id %}" data-is-pdf="{{ app_doc.is_pdf }}"><i class="fa fa-angle-right"></i> {{ doc.title }}</a>
+          <span class="badge badge-secondary">{{ doc.applicant_uploaded_documents|length }}</span>
+        {% endfor %}
       {% endif %}
     </small>
   </div>
 {% endfor %}
+<script>
+  $(function(){
+    $(".app-document-links").click(function(){
+      var href = $(this).attr('href');
+      var isPdf = ($(this).data('isPdf') == 'True');
+      
+      if(!isPdf) {
+        var imgstr = '<a href="' + href + '" target="_blank"><img class="img-fluid" src="' + href + '"/></a>';
+      } else {
+        var imgstr = '<a href="' + href + '" target="_blank"><embed width="100%" height="100%" type="application/pdf" src="' + href + '"/></a>';
+      }
+      $('#document_panel_id').html(imgstr);
+      return false;
+    });
+  });
+</script>

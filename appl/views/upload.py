@@ -143,14 +143,7 @@ def get_file_mime_type(document):
         return 'image/png'
 
 
-@appl_login_required
-def document_download(request, applicant_id=0, project_uploaded_document_id=0, document_id=0):
-
-    uploaded_document = get_uploaded_document_or_403(request, applicant_id, project_uploaded_document_id, document_id)
-
-    if int(applicant_id) != request.applicant.id:
-        return HttpResponseForbidden()
-    
+def download_uploaded_document_response(uploaded_document):
     doc_file = uploaded_document.uploaded_file
 
     mime = get_file_mime_type(doc_file)
@@ -159,6 +152,18 @@ def document_download(request, applicant_id=0, project_uploaded_document_id=0, d
     response['Content-Type'] = mime
 
     return response
+
+
+@appl_login_required
+def document_download(request, applicant_id=0, project_uploaded_document_id=0, document_id=0):
+
+    uploaded_document = get_uploaded_document_or_403(request, applicant_id, project_uploaded_document_id, document_id)
+
+    if int(applicant_id) != request.applicant.id:
+        return HttpResponseForbidden()
+
+    return download_uploaded_document_response(uploaded_document)
+
 
 @appl_login_required
 def document_delete(request, applicant_id=0, project_uploaded_document_id=0, document_id=0):

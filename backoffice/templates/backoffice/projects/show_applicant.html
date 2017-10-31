@@ -7,7 +7,8 @@
       </div>
       <div>
         <span class="badge badge-danger badge-pill">ตัวอย่าง</span>
-        <b>พิจารณาผู้สมัครโครงการ{{ project }} {{ admission_round}}</b>: {{ applicant }}
+        <b>พิจารณาผู้สมัครโครงการ{{ project }} {{ admission_round}} | สาขา{{ major.title }}</b><br />
+        {{ applicant }}
       </div>
       {% include 'backoffice/projects/include/applicant_info.html' %}
       {% include 'backoffice/projects/include/applicant_toolbar.html' %}

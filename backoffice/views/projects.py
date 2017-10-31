@@ -5,7 +5,7 @@ from django.http import HttpResponseForbidden, HttpResponseNotFound
 from regis.models import Applicant
 from appl.models import AdmissionProject, AdmissionRound
 from appl.models import ProjectApplication, Payment, Major
-from appl.models import ProjectUploadedDocument
+from appl.models import ProjectUploadedDocument, UploadedDocument
 
 from backoffice.views.permissions import can_user_view_project
 from backoffice.decorators import user_login_required
@@ -262,4 +262,29 @@ def show_applicant(request, project_id, round_id, major_number, rank):
                     'uploaded_documents': uploaded_documents,
                   })
 
+
+@user_login_required
+def download_applicant_document(request, project_id, round_id, major_number,
+                                national_id, project_uploaded_document_id, document_id):
+
+    from appl.views.upload import get_uploaded_document_or_403
+    from appl.views.upload import download_uploaded_document_response
     
+    user = request.user
+    project = get_object_or_404(AdmissionProject, pk=project_id)
+    admission_round = get_object_or_404(AdmissionRound, pk=round_id)
+    major = Major.get_by_project_number(project, major_number)
+    
+    applicant = get_object_or_404(Applicant, national_id=national_id)
+    
+    if not can_user_view_project(user, project):
+        return redirect(reverse('backoffice:index'))
+
+    project_uploaded_document = get_object_or_404(ProjectUploadedDocument,pk=project_uploaded_document_id)
+    uploaded_document = get_object_or_404(UploadedDocument,pk=document_id)
+
+    if uploaded_document.applicant_id != applicant.id:
+        return HttpResponseForbidden()
+
+    return download_uploaded_document_response(uploaded_document)
+

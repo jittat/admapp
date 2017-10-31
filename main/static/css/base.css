@@ -21,8 +21,17 @@ p.invalid-feedback {
     padding-bottom: 10px;
 }
 
+/* commons */
+
 .bg-warn {
     background: #fff3cd;
+}
+
+.btn-xsm {
+    padding: .125rem .25rem;
+    font-size: .8rem;
+    line-height: 1.2;
+    border-radius: .2rem;
 }
 
 /* spaces & borders */

@@ -306,6 +306,11 @@ class UploadedDocument(models.Model):
         return '%s (%s)' % (self.project_uploaded_document.title,
                             self.applicant)
 
+    def is_pdf(self):
+        if self.uploaded_file:
+            return self.uploaded_file.name.endswith('pdf')
+        else:
+            return False
 
 class Province(models.Model):
     title = models.CharField(max_length=30)

@@ -8,7 +8,7 @@
 	<b>{{ doc.title }}{% if doc.is_required %}*{% endif %}</b>
         {% if doc.applicant_uploaded_documents|length > 0 %}<span class="badge badge-secondary">{{ doc.applicant_uploaded_documents|length }} ไฟล์</span>{% endif %}
         <small>{{ doc.descriptions|linebreaksbr }}</small>
-        <a class="btn btn-sm btn-outline-primary" data-toggle="collapse" data-parent="#accordian" href="#accordian-upload-form-{{ doc.id }}" aria-expanded="true" aria-controls="accordian-upload-form-{{ doc.id }}" role="button">
+        <a class="btn btn-xsm btn-outline-primary" data-toggle="collapse" data-parent="#accordian" href="#accordian-upload-form-{{ doc.id }}" aria-expanded="true" aria-controls="accordian-upload-form-{{ doc.id }}" role="button">
           รายละเอียด <i class="fa fa-caret-down"></i>
         </a>
       </div>
