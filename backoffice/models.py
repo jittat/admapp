@@ -73,11 +73,21 @@ class CheckMarkGroup(models.Model):
         if len(self.check_marks) >= num:
             return self.check_marks[num-1] == '1'
 
+    def init_marks(self):
+        self.check_marks = ''.join(['0' for i in range(self.NUM_CHECK_MARKS)])
+        
+    def set_check(self, num):
+        self.check_marks = self.check_marks[:(num-1)] + '1' + self.check_marks[num:]
+
+    def set_uncheck(self, num):
+        self.check_marks = self.check_marks[:(num-1)] + '0' + self.check_marks[num:]
+        
     def get_check_mark_list(self):
         marks = []
         for i in range(self.NUM_CHECK_MARKS):
-            marks.append({ 'is_checked': self.is_checked(i+1),
-                           'text_color': self.COLORS[i] })
+            marks.append({ 'number': i+1,
+                           'is_checked': self.is_checked(i+1),
+                           'text_color': self.COLORS[i], })
         return marks
         
     def __str__(self):

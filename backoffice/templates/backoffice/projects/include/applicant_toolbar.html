@@ -11,3 +11,20 @@
     <button type="button" class="btn btn-sm btn-outline-secondary"><i class="fa fa-close"></i> ไม่เรียก</button>
   </div>
 </div>
+<script>
+  var baseToggleUrl = '{% url 'backoffice:projects-check-mark-toggle' project.id admission_round.id applicant.national_id major.number 0 %}';
+  $(function(){
+    $('.check-mark-groups').on('click','.check-mark-toggles', function() {
+      var number = $(this).data('markNum');
+      var url = baseToggleUrl.replace('/0/','/'+number+'/');
+      jQuery.post(url,
+                  { csrfmiddlewaretoken: csrftoken },
+                  function(data) {
+                    if(data.result == 'OK') {
+                      $('.check-mark-groups').html(data.html);
+                    }
+                  });
+      return false;
+    });
+  });
+</script>

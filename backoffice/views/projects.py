@@ -1,13 +1,15 @@
+import json
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
-from django.http import HttpResponseForbidden, HttpResponseNotFound
+from django.http import HttpResponse, HttpResponseForbidden, HttpResponseNotFound
 
 from regis.models import Applicant
 from appl.models import AdmissionProject, AdmissionRound
 from appl.models import ProjectApplication, Payment, Major
 from appl.models import ProjectUploadedDocument, UploadedDocument
 
-from backoffice.views.permissions import can_user_view_project
+from backoffice.views.permissions import can_user_view_project, can_user_view_applicant_in_major
 from backoffice.decorators import user_login_required
 
 from backoffice.models import CheckMarkGroup, JudgeComment
@@ -228,6 +230,7 @@ def list_applicants(request, project_id, round_id):
                     'sorted_by_majors': sorted_by_majors,
                   })
 
+
 @user_login_required
 def show_applicant(request, project_id, round_id, major_number, rank):
     user = request.user
@@ -235,9 +238,6 @@ def show_applicant(request, project_id, round_id, major_number, rank):
     admission_round = get_object_or_404(AdmissionRound, pk=round_id)
     major = Major.get_by_project_number(project, major_number)
     
-    if not can_user_view_project(user, project):
-        return redirect(reverse('backoffice:index'))
-
     real_rank = int(rank) - 1
     major_number = int(major_number)
 
@@ -247,8 +247,12 @@ def show_applicant(request, project_id, round_id, major_number, rank):
         return HttpResponseNotFound()
 
     application = applicant.get_active_application(admission_round)
+
     if application.admission_project_id != project.id:
         return HttpResponseNotFound()
+
+    if not can_user_view_applicant_in_major(user, applicant, application, project, major):
+        return redirect(reverse('backoffice:index'))
     
     uploaded_documents = (list(ProjectUploadedDocument.get_common_documents()) + 
                           list(project.projectuploadeddocument_set.all()))
@@ -296,10 +300,14 @@ def download_applicant_document(request, project_id, round_id, major_number,
     major = Major.get_by_project_number(project, major_number)
     
     applicant = get_object_or_404(Applicant, national_id=national_id)
-    
-    if not can_user_view_project(user, project):
-        return redirect(reverse('backoffice:index'))
+    application = applicant.get_active_application(admission_round)
 
+    if application.admission_project_id != project.id:
+        return HttpResponseNotFound()
+
+    if not can_user_view_applicant_in_major(user, applicant, application, project, major):
+        return redirect(reverse('backoffice:index'))
+    
     project_uploaded_document = get_object_or_404(ProjectUploadedDocument,pk=project_uploaded_document_id)
     uploaded_document = get_object_or_404(UploadedDocument,pk=document_id)
 
@@ -308,3 +316,45 @@ def download_applicant_document(request, project_id, round_id, major_number,
 
     return download_uploaded_document_response(uploaded_document)
 
+
+@user_login_required
+def check_mark_toggle(request, project_id, round_id, national_id, major_number, number):
+    user = request.user
+    applicant = get_object_or_404(Applicant, national_id=national_id)
+    project = get_object_or_404(AdmissionProject, pk=project_id)
+    admission_round = get_object_or_404(AdmissionRound, pk=round_id)
+    major = Major.get_by_project_number(project, major_number)
+
+    application = applicant.get_active_application(admission_round)
+
+    if application.admission_project_id != project.id:
+        return HttpResponseNotFound()
+
+    if not can_user_view_applicant_in_major(user, applicant, application, project, major):
+        return redirect(reverse('backoffice:index'))
+
+    if hasattr(application,'check_mark_group'):
+        check_mark_group = application.check_mark_group
+    else:
+        check_mark_group = CheckMarkGroup(applicant=applicant,
+                                          project_application=application)
+        check_mark_group.save()
+
+    if check_mark_group.check_marks == '':
+        check_mark_group.init_marks()
+
+    number = int(number)
+    if check_mark_group.is_checked(number):
+        check_mark_group.set_uncheck(number)
+    else:
+        check_mark_group.set_check(number)
+    check_mark_group.save()
+
+    from django.template import loader
+    template = loader.get_template('backoffice/projects/include/check_mark_group.html')
+
+    html = template.render({ 'check_mark_group': check_mark_group }, request)
+    
+    return HttpResponse(json.dumps({ 'result': 'OK',
+                                     'html': html }),
+                        content_type='application/json')

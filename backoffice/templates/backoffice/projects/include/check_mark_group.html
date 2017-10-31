@@ -1,11 +1,13 @@
 {% spaceless %}
-  {% for mark in check_mark_group.get_check_mark_list %}
-    <div class="border d-inline-block m0 p5 {{ mark.text_color }} bg-white">
-      {% if mark.is_checked %}
-        <i class="fa fa-circle"></i>
-      {% else %}
-        <i class="fa fa-circle-o"></i>
-      {% endif %}
-    </div>
-  {% endfor %}
+  <div class="btn-group">
+    {% for mark in check_mark_group.get_check_mark_list %}
+      <a class="btn btn-sm btn-outline-secondary check-mark-toggles" data-mark-num="{{ mark.number }}" href="#">
+        {% if mark.is_checked %}
+          <i class="fa fa-circle {{ mark.text_color }}"></i>
+        {% else %}
+          <i class="fa fa-circle-o {{ mark.text_color }}"></i>
+        {% endif %}
+      </a>
+    {% endfor %}
+  </div>
 {% endspaceless %}

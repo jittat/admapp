@@ -31,6 +31,10 @@ urlpatterns = [
         projects.download_applicant_document,
         name='projects-download-app-document'),
         
+    url(r'^projects/applicants/(\d+)/(\d+)/(\d+)/(\d+)/mark/(\d+)/$',
+        projects.check_mark_toggle,
+        name='projects-check-mark-toggle'),
+        
     url(r'^users/$', users.index, name='users-index'),
 ]
 

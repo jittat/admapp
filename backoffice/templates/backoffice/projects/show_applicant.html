@@ -31,7 +31,12 @@
       </div>
     </div>
   </div>
+  <form id="dummy_csrf_id" style="display: none;">
+    {% csrf_token %}
+  </form>
   <script>
+    var csrftoken;
+    
     var adjustHeight = function(sel, vh) {
       var top = $(sel).offset().top;
       $(sel).css('height',vh - top - 5);
@@ -47,6 +52,8 @@
     $(function(){
       resizePanels();
       $(window).resize(resizePanels);
+
+      csrftoken = $("#dummy_csrf_id input[name=csrfmiddlewaretoken]").val();      
     });
   </script>
 {% endblock %}
