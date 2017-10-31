@@ -97,6 +97,15 @@ class Applicant(models.Model):
                 zero = '0' * (13 - len(fake_national_id))
                 fake_national_id += zero
 
+                mul = 13
+                total = 0
+                for c in fake_national_id[:-1]:
+                    total += mul * int(c)
+                    mul -= 1
+                r1 = total % 11
+                checkdigit = (11 - r1) % 10
+                fake_national_id = fake_national_id[:-1] + str(checkdigit)
+
                 self.national_id = fake_national_id
                 try:
                     self.save()

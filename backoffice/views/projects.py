@@ -257,6 +257,7 @@ def show_applicant(request, project_id, round_id, major_number, rank):
                     'major': major,
                     
                     'applicant': applicant,
+                    'rank': rank,
                     'major_stat': major_stat,
 
                     'uploaded_documents': uploaded_documents,
