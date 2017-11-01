@@ -12,7 +12,7 @@ from django.db import transaction
 from regis.models import Applicant
 from regis.decorators import appl_login_required
 
-from appl.models import AdmissionProject, ProjectUploadedDocument, UploadedDocument
+from appl.models import AdmissionProject, ProjectUploadedDocument, UploadedDocument, AdmissionRound
 
 class UploadedDocumentForm(ModelForm):
     class Meta:
@@ -62,6 +62,16 @@ def url_check(form, is_detail_required):
 @appl_login_required
 def upload(request, document_id):
     applicant = request.applicant
+    admission_round = AdmissionRound.get_available()
+
+    active_application = applicant.get_active_application(admission_round)
+    admission_project = active_application.admission_project
+    project_round = admission_project.get_project_round_for(admission_round)
+    is_deadline_passed = project_round.is_deadline_passed()
+    
+    if is_deadline_passed:
+        return HttpResponseForbidden()
+            
     project_uploaded_document = get_object_or_404(ProjectUploadedDocument,
                                                   pk=document_id)
     if request.method != 'POST':
@@ -173,6 +183,18 @@ def document_delete(request, applicant_id=0, project_uploaded_document_id=0, doc
     try:
         with transaction.atomic():
             uploaded_document = get_uploaded_document_or_403(request, applicant_id, project_uploaded_document_id, document_id)
+
+            applicant = get_object_or_404(Applicant, pk=applicant_id)
+            admission_round = AdmissionRound.get_available()
+            
+            active_application = applicant.get_active_application(admission_round)
+            admission_project = active_application.admission_project
+            project_round = admission_project.get_project_round_for(admission_round)
+            is_deadline_passed = project_round.is_deadline_passed()
+
+            if is_deadline_passed:
+                return HttpResponseForbidden()
+            
             uploaded_document.delete()
 
             from django.template import loader

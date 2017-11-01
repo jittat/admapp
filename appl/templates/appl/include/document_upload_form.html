@@ -17,27 +17,30 @@
         <div class="card-block p10">
   	  <form class="upload-forms" action="{% url 'appl:upload' doc.id %}" method="post" data-detail-required="{% if doc.is_detail_required %}true{% endif %}" enctype="multipart/form-data">
   	    {% csrf_token %}
-            <div class="form-group">
-              {% if doc.is_detail_required %}
-                <small><b>ชื่อหรือคำอธิบายเอกสาร*</b></small>
-              {% else %} 
-                <small>ชื่อหรือคำอธิบายเอกสาร (สามารถละไว้ได้)</small>
-              {% endif %}
-              <input type="text" class="form-control" name="detail" value="" />
-              {% if doc.is_url_document %}
-  	        <small><b>{{ doc.specifications }}</b></small>
-  	        <br />
-                <input type="text" class="form-control col-md-8 d-inline" name="document_url" value="" />
-  	        <input type="submit" class="btn btn-success btn-sm upload-form-submit-buttons" value="จัดเก็บ" />
-              {% endif %}
-            </div>
 
-            {% if not doc.is_url_document %}
-  	      <input type="file" class="input-files" name="uploaded_file" required id="id_uploaded_file" />
-  	      <input type="submit" class="btn btn-success btn-sm upload-form-submit-buttons" value="อัพโหลด" />
-  	      <br />
-  	      <small>{{ doc.specifications }}</small>
-  	      <br />
+            {% if not  is_deadline_passed %}
+              <div class="form-group">
+                {% if doc.is_detail_required %}
+                  <small><b>ชื่อหรือคำอธิบายเอกสาร*</b></small>
+                {% else %} 
+                  <small>ชื่อหรือคำอธิบายเอกสาร (สามารถละไว้ได้)</small>
+                {% endif %}
+                <input type="text" class="form-control" name="detail" value="" />
+                {% if doc.is_url_document %}
+  	          <small><b>{{ doc.specifications }}</b></small>
+  	          <br />
+                  <input type="text" class="form-control col-md-8 d-inline" name="document_url" value="" />
+  	          <input type="submit" class="btn btn-success btn-sm upload-form-submit-buttons" value="จัดเก็บ" />
+                {% endif %}
+              </div>
+
+              {% if not doc.is_url_document %}
+  	        <input type="file" class="input-files" name="uploaded_file" required id="id_uploaded_file" />
+  	        <input type="submit" class="btn btn-success btn-sm upload-form-submit-buttons" value="อัพโหลด" />
+  	        <br />
+  	        <small>{{ doc.specifications }}</small>
+  	        <br />
+              {% endif %}
             {% endif %}
             
   	    <small style="color:red" class="document-upload-errors"></small> {% if doc.applicant_uploaded_documents %}
@@ -54,7 +57,9 @@
                       <a href="{{ d.document_url }}" class="btn btn-sm btn-info" target="_blank">ดูลิงก์</a>
                     {% endif %}
                     &nbsp;
-  		    <a data-delete-url="{% url 'appl:document-delete' applicant.id doc.id d.id %}" href="#" class="upload-form-delete-buttons btn btn-sm btn-secondary"><i class="fa fa-trash"></i> ลบ</a>
+                    {% if not is_deadline_passed %}
+  		      <a data-delete-url="{% url 'appl:document-delete' applicant.id doc.id d.id %}" href="#" class="upload-form-delete-buttons btn btn-sm btn-secondary"><i class="fa fa-trash"></i> ลบ</a>
+                    {% endif %}
   		  </li>
   		{% endfor %}
   	      </ul>
