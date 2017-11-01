@@ -23,6 +23,8 @@ class Profile(models.Model):
 
     admission_projects = models.ManyToManyField(AdmissionProject,
                                                 blank=True)
+    major_number = models.IntegerField(default=0,
+                                       verbose_name='หมายเลขสาขา (กรณีที่ดูแลโครงการเดียว)')
 
     def __str__(self):
         if self.faculty:
