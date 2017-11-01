@@ -4,7 +4,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseNotFound
 
-from regis.models import Applicant
+from regis.models import Applicant, LogItem
 from appl.models import AdmissionProject, AdmissionRound
 from appl.models import ProjectApplication, Payment, Major
 from appl.models import ProjectUploadedDocument, UploadedDocument
@@ -358,6 +358,10 @@ def check_mark_toggle(request, project_id, round_id, national_id, major_number, 
         check_mark_group.set_check(number)
     check_mark_group.save()
 
+    LogItem.create('Toggle mark ({0}) by {1}'.format(number, user.username),
+                   applicant,
+                   request)
+    
     from django.template import loader
     template = loader.get_template('backoffice/projects/include/check_mark_group.html')
 
@@ -386,9 +390,14 @@ def save_comment(request, project_id, round_id, national_id, major_number):
 
     comment = JudgeComment(applicant=applicant,
                            project_application=application,
-                           body=request.POST.get('body',''))
+                           body=request.POST.get('body',''),
+                           author_username=user.username)
     if comment.body.strip() != '':
         comment.save()
+
+        LogItem.create('Added comment by ' + user.username,
+                       applicant,
+                       request)
     
         from django.template import loader
         template = loader.get_template('backoffice/projects/include/judge_comment_list.html')

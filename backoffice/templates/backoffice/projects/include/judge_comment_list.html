@@ -1,5 +1,8 @@
 {% for comment in judge_comments %}
   <div class="border mb5 p5">
-    <small>{{ comment.body|linebreaksbr }}</small>
+    <small>
+      {{ comment.body|linebreaksbr }}
+      {% if comment.author_username %}- {{ comment.author_username }}{% endif %}
+    </small>
   </div>
 {% endfor %}

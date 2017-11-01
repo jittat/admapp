@@ -101,6 +101,8 @@ class JudgeComment(models.Model):
     project_application = models.ForeignKey(ProjectApplication,
                                             related_name='judge_comment_set')
 
+    author_username = models.CharField(max_length=30,
+                                       blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     
     body = models.TextField()
