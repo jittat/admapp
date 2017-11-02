@@ -186,8 +186,6 @@ class AdmissionProjectRound(models.Model):
         return self.is_started and (not self.is_deadline_passed())
 
 
-
-
 class Major(models.Model):
     number = models.IntegerField()
     title = models.CharField(max_length=200)
@@ -312,6 +310,7 @@ class UploadedDocument(models.Model):
         else:
             return False
 
+        
 class Province(models.Model):
     title = models.CharField(max_length=30)
 

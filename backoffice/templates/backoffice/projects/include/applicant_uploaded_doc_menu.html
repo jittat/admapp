@@ -6,16 +6,29 @@
         <span class="badge badge-secondary">{{ doc.applicant_uploaded_documents|length }}</span>
         <br />
         {% for app_doc in doc.applicant_uploaded_documents %}
-          <a class="app-document-links" href="{% url 'backoffice:projects-download-app-document' project.id admission_round.id major.number applicant.national_id doc.id app_doc.id %}" data-is-pdf="{{ app_doc.is_pdf }}">
-            <i class="fa fa-angle-double-right"></i>
-            {% if app_doc.detail %}{{ app_doc.detail }}{% else %}เอกสารที่ {{ forloop.counter }}{% endif %}
-          </a>
+          {% if not doc.is_url_document %}
+            <a class="app-document-links" href="{% url 'backoffice:projects-download-app-document' project.id admission_round.id major.number applicant.national_id doc.id app_doc.id %}" data-is-pdf="{{ app_doc.is_pdf }}">
+              <i class="fa fa-angle-double-right"></i>
+              {% if app_doc.detail %}{{ app_doc.detail }}{% else %}เอกสารที่ {{ forloop.counter }}{% endif %}
+            </a>
+          {% else %}
+            <a target="_blank" href="{{ app_doc.document_url }}">
+              <i class="fa fa-angle-double-right"></i>
+              {% if app_doc.detail %}{{ app_doc.detail }}{% else %}เอกสารที่ {{ forloop.counter }}{% endif %} <i class="fa fa-external-link"></i>
+            </a>
+          {% endif %}
           <br />
         {% endfor %}
       {% else %}
         {% for app_doc in doc.applicant_uploaded_documents %}
-          <a class="app-document-links" href="{% url 'backoffice:projects-download-app-document' project.id admission_round.id major.number applicant.national_id doc.id app_doc.id %}" data-is-pdf="{{ app_doc.is_pdf }}"><i class="fa fa-angle-right"></i> {{ doc.title }}</a>
-          <span class="badge badge-secondary">{{ doc.applicant_uploaded_documents|length }}</span>
+          {% if not doc.is_url_document %}
+            <a class="app-document-links" href="{% url 'backoffice:projects-download-app-document' project.id admission_round.id major.number applicant.national_id doc.id app_doc.id %}" data-is-pdf="{{ app_doc.is_pdf }}"><i class="fa fa-angle-right"></i> {{ doc.title }}</a>
+            <span class="badge badge-secondary">{{ doc.applicant_uploaded_documents|length }}</span>
+          {% else %}
+            <a target="_blank" href="{{ app_doc.document_url }}">
+              <i class="fa fa-angle-right"></i> {{ doc.title }} <i class="fa fa-external-link"></i>
+            </a>
+          {% endif %}
         {% endfor %}
       {% endif %}
     </small>
