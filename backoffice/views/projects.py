@@ -237,14 +237,17 @@ def show_applicant(request, project_id, round_id, major_number, rank):
     project = get_object_or_404(AdmissionProject, pk=project_id)
     admission_round = get_object_or_404(AdmissionRound, pk=round_id)
     major = Major.get_by_project_number(project, major_number)
-    
+
     real_rank = int(rank) - 1
+    if real_rank < 0:
+        return redirect(reverse('backoffice:projects-show-applicant',args=[project_id, round_id, major_number, 1]))
+    
     major_number = int(major_number)
 
     applicant, major_stat = load_major_applicant_with_major_stats(project, admission_round, major_number, real_rank)
 
     if not applicant:
-        return HttpResponseNotFound()
+        return redirect(reverse('backoffice:projects-show-applicant',args=[project_id, round_id, major_number, 1]))
 
     application = applicant.get_active_application(admission_round)
 
@@ -286,6 +289,7 @@ def show_applicant(request, project_id, round_id, major_number, rank):
                     'rank': rank,
 
                     'major_stat': major_stat,
+                    'rank_choices': range(1,major_stat['total']+1),
 
                     'uploaded_documents': uploaded_documents,
                     'education': education,

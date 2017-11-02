@@ -1,5 +1,28 @@
-<small>คนที่ {{ rank }} จากชำระเงิน {{ major_stat.paid }} คน (ทั้งหมด {{ major_stat.total }} คน)</small>
+<small>
+  คนที่ {{ rank }}
+  จากชำระเงิน {{ major_stat.paid }} คน (ทั้งหมด {{ major_stat.total }} คน)
+</small>
 <div class="btn-group" role="group">
-  <a class="btn btn-sm btn-outline-secondary" href="{% url 'backoffice:projects-show-applicant' project.id admission_round.id major.number rank|add:"-1" %}"><i class="fa fa-chevron-left"></i></a>
+  <a class="btn btn-sm btn-outline-secondary {% if rank == "1" %}disabled{% endif %}" href="{% url 'backoffice:projects-show-applicant' project.id admission_round.id major.number rank|add:"-1" %}"><i class="fa fa-chevron-left"></i></a>
   <a type="button" class="btn btn-sm btn-outline-secondary" href="{% url 'backoffice:projects-show-applicant' project.id admission_round.id major.number rank|add:"1" %}"><i class="fa fa-chevron-right"></i></a>
 </div>
+<small>
+  ไปคนที่
+  <select id="rank_select_id">
+    {% for r in rank_choices %}
+      <option value="{{ r }}" {% if rank == r|stringformat:"d" %}selected{% endif %}>{{ r }}</option>
+    {% endfor %}
+  </select>
+</small>
+<script>
+  $(function(){
+    $("#rank_select_id").click(function(){
+      var baseUrl = '{% url 'backoffice:projects-show-applicant' project.id admission_round.id major.number 0 %}';
+      var r = $("#rank_select_id").val();
+      if(r != {{ rank }}) {
+        var url = baseUrl.replace('/0/','/' + r + '/');
+        window.location.href = url;
+      }
+    });
+  });
+</script>
