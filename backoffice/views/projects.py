@@ -208,10 +208,14 @@ def list_applicants(request, project_id, round_id):
 
     if not user.profile.is_admission_admin:
         faculty = user.profile.faculty
+        user_major_number = user.profile.major_number
     else:
         faculty = None
+        user_major_number = user.profile.ANY_MAJOR
     
     applicants = load_project_applicants(project, admission_round, faculty)
+    if user_major_number != user.profile.ANY_MAJOR:
+        applicants = [a for a in applicants if a.major_number == user_major_number]
         
     if project.max_num_selections==1:
         amap = dict([(a.id,a) for a in applicants])
