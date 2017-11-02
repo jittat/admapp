@@ -18,25 +18,38 @@ def main():
                 first = False
                 continue
 
-            if len(items) < 5:
+            if len(items) < 6:
                 continue
             username = items[0]
             email = username + '@fake.admission.ku.ac.th'
-            password = items[2]
+            password = items[3]
 
-            user = User.objects.create_user(username, email, password)
+            old_user = User.objects.filter(username=username)
+            if len(old_user) >= 1:
+                user = old_user[0]
+                user.email = email
+                user.set_password(password)
+            else:
+                user = User.objects.create_user(username, email, password)
 
-            user.first_name = items[1]
+            user.first_name = items[1].strip()
+            user.last_name = items[2].strip()
             user.save()
 
-            project = AdmissionProject.objects.get(pk=items[3])
-            faculty = Faculty.objects.get(pk=items[4])
+            project = AdmissionProject.objects.get(pk=items[4])
+            faculty = Faculty.objects.get(pk=items[5])
 
             profile = user.profile
             profile.is_admission_admin = False
             profile.admission_projects.add(project)
             profile.faculty = faculty
+
+            if len(items) >= 7:
+                profile.major_number = int(items[6])
+            
             profile.save()
+
+            print(username)
 
             counter += 1
 

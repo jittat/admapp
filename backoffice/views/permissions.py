@@ -18,6 +18,7 @@ def can_user_view_project(user, project):
     
     return profile.admission_projects.filter(id=project.id).count() == 1
 
+
 def can_user_view_applicant_in_major(user, applicant, application, project, major):
     if is_super_admin(user):
         return True
@@ -31,7 +32,12 @@ def can_user_view_applicant_in_major(user, applicant, application, project, majo
         if profile.is_admission_admin:
             return True
         else:
-            return major.faculty_id == profile.faculty_id
+            if major.faculty_id == profile.faculty_id:
+                return ((profile.major_number == major.number) or
+                        (profile.major_number == profile.ANY_MAJOR))
+            else:
+                return False
+                    
     else:
         return False
     

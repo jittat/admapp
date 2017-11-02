@@ -40,13 +40,18 @@
                 ระดับโครงการ<br />
               {% endif %}
               {% if u.profile and u.profile.faculty %}
-                ระดับคณะ: {{ u.profile.faculty.title }}<br />
+                {% if u.profile.major_number == any_major %}
+                  ระดับคณะ: {{ u.profile.faculty.title }}<br />
+                {% else %}
+                  ระดับสาขา: {{ u.profile.faculty.title }}<br />
+                {% endif %}
               {% endif %}
             </td>
             <td>
               <small>
                 {% for p in u.profile.admission_projects.all %}
-                  {{ p.title }}<br />
+                  {{ p.title }} {% if u.profile.major_number %}(สาขา {{ u.profile.major_number }}){% endif %}
+                  <br />
                 {% endfor %}
               </small>
             </td>

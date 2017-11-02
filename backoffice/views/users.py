@@ -18,4 +18,6 @@ def index(request):
     return render(request,
                   'backoffice/users/index.html',
                   { 'users': users,
+
+                    'any_major': u.profile.ANY_MAJOR,
                   })

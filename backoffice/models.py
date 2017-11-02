@@ -11,6 +11,8 @@ from regis.models import Applicant
 
 
 class Profile(models.Model):
+    ANY_MAJOR = 0
+    
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
     faculty = models.ForeignKey(Faculty,
@@ -23,7 +25,7 @@ class Profile(models.Model):
 
     admission_projects = models.ManyToManyField(AdmissionProject,
                                                 blank=True)
-    major_number = models.IntegerField(default=0,
+    major_number = models.IntegerField(default=ANY_MAJOR,
                                        verbose_name='หมายเลขสาขา (กรณีที่ดูแลโครงการเดียว)')
 
     def __str__(self):

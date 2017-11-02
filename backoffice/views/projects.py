@@ -162,8 +162,10 @@ def index(request, project_id, round_id):
 
     if not user.profile.is_admission_admin:
         faculty = user.profile.faculty
+        user_major_number = user.profile.major_number
     else:
         faculty = None
+        user_major_number = user.profile.ANY_MAJOR
 
     majors = project.major_set.all()
 
@@ -190,6 +192,9 @@ def index(request, project_id, round_id):
                     'ranks': ranks,
 
                     'applicant_info_viewable': applicant_info_viewable,
+
+                    'user_major_number': user_major_number,
+                    'any_major': user.profile.ANY_MAJOR,
                   })
 
 
@@ -319,6 +324,9 @@ def download_applicant_document(request, project_id, round_id, major_number,
 
     if not can_user_view_applicant_in_major(user, applicant, application, project, major):
         return redirect(reverse('backoffice:index'))
+
+    if not application.has_applied_to_major(major):
+        return HttpResponseForbidden()
     
     project_uploaded_document = get_object_or_404(ProjectUploadedDocument,pk=project_uploaded_document_id)
     uploaded_document = get_object_or_404(UploadedDocument,pk=document_id)
@@ -345,6 +353,9 @@ def check_mark_toggle(request, project_id, round_id, national_id, major_number, 
     if not can_user_view_applicant_in_major(user, applicant, application, project, major):
         return redirect(reverse('backoffice:index'))
 
+    if not application.has_applied_to_major(major):
+        return HttpResponseForbidden()
+    
     if hasattr(application,'check_mark_group'):
         check_mark_group = application.check_mark_group
     else:
@@ -392,6 +403,9 @@ def save_comment(request, project_id, round_id, national_id, major_number):
     if not can_user_view_applicant_in_major(user, applicant, application, project, major):
         return redirect(reverse('backoffice:index'))
 
+    if not application.has_applied_to_major(major):
+        return HttpResponseForbidden()
+    
     comment = JudgeComment(applicant=applicant,
                            project_application=application,
                            body=request.POST.get('body',''),
