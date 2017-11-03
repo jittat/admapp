@@ -629,7 +629,37 @@ class Payment(models.Model):
         return Payment.objects.filter(applicant=applicant,
                                       admission_round=admission_round).all()
 
+class AdmissionResult(models.Model):
+    applicant = models.ForeignKey(Applicant)
+    application = models.ForeignKey(ProjectApplication)
+    admission_project = models.ForeignKey(AdmissionProject)
+    admission_round = models.ForeignKey(AdmissionRound)
 
+    major = models.ForeignKey(Major)
+    major_rank = models.IntegerField(default=1)
+
+    is_accepted_for_interview = models.NullBooleanField(default=None)
+    updated_accepted_for_interview_at = models.DateTimeField(null=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['application','major']),
+            models.Index(fields=['admission_round','major']),
+            models.Index(fields=['major']),
+            models.Index(fields=['admission_project']),
+            models.Index(fields=['applicant']),
+        ]
+
+    @staticmethod
+    def get_for_application_and_major(application, major):
+        results = AdmissionResult.objects.filter(application=application,
+                                                 major=major).all()
+        if len(results) > 0:
+            return results[0]
+        else:
+            return None
+
+    
 class Eligibility(object):
     def __init__(self, project=None, applicant=None):
         self.is_eligible = True

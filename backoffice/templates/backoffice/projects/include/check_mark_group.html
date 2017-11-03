@@ -1,7 +1,7 @@
 {% spaceless %}
   <div class="btn-group">
     {% for mark in check_mark_group.get_check_mark_list %}
-      <a class="btn btn-sm btn-outline-secondary check-mark-toggles" data-mark-num="{{ mark.number }}" href="#">
+      <a class="btn btn-sm bg-white btn-outline-secondary check-mark-toggles" data-mark-num="{{ mark.number }}" href="#">
         {% if mark.is_checked %}
           <i class="fa fa-circle {{ mark.text_color }}"></i>
         {% else %}

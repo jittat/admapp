@@ -39,6 +39,10 @@ urlpatterns = [
         projects.save_comment,
         name='projects-save-comment'),
         
+    url(r'^projects/applicants/(\d+)/(\d+)/(\d+)/(\d+)/interview/(.+)/$',
+        projects.set_call_for_interview,
+        name='projects-set-call-for-interview'),
+        
     url(r'^users/$', users.index, name='users-index'),
 ]
 

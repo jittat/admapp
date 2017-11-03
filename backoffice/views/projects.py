@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
@@ -6,7 +7,7 @@ from django.http import HttpResponse, HttpResponseForbidden, HttpResponseNotFoun
 
 from regis.models import Applicant, LogItem
 from appl.models import AdmissionProject, AdmissionRound
-from appl.models import ProjectApplication, Payment, Major
+from appl.models import ProjectApplication, Payment, Major, AdmissionResult
 from appl.models import ProjectUploadedDocument, UploadedDocument
 
 from backoffice.views.permissions import can_user_view_project, can_user_view_applicant_in_major
@@ -285,7 +286,13 @@ def show_applicant(request, project_id, round_id, major_number, rank):
         check_mark_group.save()
 
     judge_comments = application.judge_comment_set.all()
-        
+
+    admission_result = AdmissionResult.get_for_application_and_major(application, major)
+    if admission_result:
+        is_accepted_for_interview = admission_result.is_accepted_for_interview
+    else:
+        is_accepted_for_interview = None
+    
     return render(request,
                   'backoffice/projects/show_applicant.html',
                   { 'project': project,
@@ -303,6 +310,8 @@ def show_applicant(request, project_id, round_id, major_number, rank):
                     'uploaded_documents': uploaded_documents,
                     'education': education,
 
+                    'is_accepted_for_interview': is_accepted_for_interview,
+                    
                     'check_mark_group': check_mark_group,
                     'judge_comments': judge_comments,
                   })
@@ -385,6 +394,59 @@ def check_mark_toggle(request, project_id, round_id, national_id, major_number, 
     template = loader.get_template('backoffice/projects/include/check_mark_group.html')
 
     html = template.render({ 'check_mark_group': check_mark_group }, request)
+    
+    return HttpResponse(json.dumps({ 'result': 'OK',
+                                     'html': html }),
+                        content_type='application/json')
+
+
+@user_login_required
+def set_call_for_interview(request, project_id, round_id, national_id, major_number, decision):
+    user = request.user
+    applicant = get_object_or_404(Applicant, national_id=national_id)
+    project = get_object_or_404(AdmissionProject, pk=project_id)
+    admission_round = get_object_or_404(AdmissionRound, pk=round_id)
+    major = Major.get_by_project_number(project, major_number)
+
+    application = applicant.get_active_application(admission_round)
+
+    if application.admission_project_id != project.id:
+        return HttpResponseNotFound()
+
+    if not can_user_view_applicant_in_major(user, applicant, application, project, major):
+        return redirect(reverse('backoffice:index'))
+
+    if not application.has_applied_to_major(major):
+        return HttpResponseForbidden()
+
+    admission_result = AdmissionResult.get_for_application_and_major(application, major)
+    if not admission_result:
+        admission_result = AdmissionResult(applicant=applicant,
+                                           application=application,
+                                           admission_project=project,
+                                           admission_round=admission_round,
+                                           major=major)
+
+    if decision == 'accepted':
+        admission_result.is_accepted_for_interview = True
+    else:
+        admission_result.is_accepted_for_interview = False
+
+    admission_result.updated_accepted_for_interview_at = datetime.now()
+    admission_result.save()
+        
+    LogItem.create('Interview decision (major: {0} {1}) by {2}'.format(major_number,
+                                                                       decision,
+                                                                       user.username),
+                   applicant,
+                   request)
+    
+    is_accepted_for_interview = admission_result.is_accepted_for_interview
+
+    from django.template import loader
+    template = loader.get_template('backoffice/projects/include/interview_buttons.html')
+
+    html = template.render({ 'is_accepted_for_interview': is_accepted_for_interview }, request)
     
     return HttpResponse(json.dumps({ 'result': 'OK',
                                      'html': html }),

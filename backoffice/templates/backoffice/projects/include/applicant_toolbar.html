@@ -7,11 +7,9 @@
   ผลการพิจารณา:
   {% if has_paid %}
     เรียกสัมภาษณ์
-    <div class="btn-group" role="group">
-      <button type="button" class="btn btn-sm btn-outline-secondary"><i class="fa fa-check"></i> เรียก</button>
-      <button type="button" class="btn btn-sm btn-outline-secondary"><i class="fa fa-close"></i> ไม่เรียก</button>
+    <div id="interview_button_group_id" class="d-inline-block">
+      {% include 'backoffice/projects/include/interview_buttons.html' %}
     </div>
-    <span class="badge badge-warning">ขออภัย - ยังเลือกผลการพิจารณาไม่ได้</span>
   {% else %}
     ไม่เรียกสัมภาษณ์
     <small>(ยังไม่ชำระค่าสมัคร)</small>
@@ -19,6 +17,7 @@
 </div>
 <script>
   var baseToggleUrl = '{% url 'backoffice:projects-check-mark-toggle' project.id admission_round.id applicant.national_id major.number 0 %}';
+  var baseSetInterviewUrl = '{% url 'backoffice:projects-set-call-for-interview' project.id admission_round.id applicant.national_id major.number 'x' %}';
   $(function(){
     $('.check-mark-groups').on('click','.check-mark-toggles', function() {
       var number = $(this).data('markNum');
@@ -28,6 +27,19 @@
                   function(data) {
                     if(data.result == 'OK') {
                       $('.check-mark-groups').html(data.html);
+                    }
+                  });
+      return false;
+    });
+
+    $('#interview_button_group_id').on('click','.interview-selection-buttons', function() {
+      var decision = $(this).data('decision');
+      var url = baseSetInterviewUrl.replace('/x/','/'+decision+'/');
+      jQuery.post(url,
+                  { csrfmiddlewaretoken: csrftoken },
+                  function(data) {
+                    if(data.result == 'OK') {
+                      $('#interview_button_group_id').html(data.html);
                     }
                   });
       return false;
