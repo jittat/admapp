@@ -6,7 +6,8 @@
         {% include 'backoffice/projects/include/applicant_nav.html' %}
       </div>
       <div>
-        <b>พิจารณาผู้สมัครโครงการ{{ project }} {{ admission_round}} | สาขา{{ major.title }}</b><br />
+        <b>ผู้สมัครโครงการ{{ project }} {{ admission_round}} | สาขา{{ major.title }}</b> (เรียกสัมภาษณ์แล้ว <span id="accepted_for_interview_count_id">{{ major_accepted_for_interview_count }}</span> คน)
+        <br />
         {{ applicant }}
         {% if has_paid %}
           <span class="badge badge-success"><i class="fa fa-check"></i> ชำระค่าสมัครแล้ว</span>

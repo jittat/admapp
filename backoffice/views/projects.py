@@ -292,6 +292,9 @@ def show_applicant(request, project_id, round_id, major_number, rank):
         is_accepted_for_interview = admission_result.is_accepted_for_interview
     else:
         is_accepted_for_interview = None
+
+    major_accepted_for_interview_count = AdmissionResult.accepted_for_interview_count(admission_round,
+                                                                                      major)
     
     return render(request,
                   'backoffice/projects/show_applicant.html',
@@ -306,6 +309,7 @@ def show_applicant(request, project_id, round_id, major_number, rank):
 
                     'major_stat': major_stat,
                     'rank_choices': range(1,major_stat['total']+1),
+                    'major_accepted_for_interview_count': major_accepted_for_interview_count,
 
                     'uploaded_documents': uploaded_documents,
                     'education': education,
@@ -447,9 +451,13 @@ def set_call_for_interview(request, project_id, round_id, national_id, major_num
     template = loader.get_template('backoffice/projects/include/interview_buttons.html')
 
     html = template.render({ 'is_accepted_for_interview': is_accepted_for_interview }, request)
+
+    major_accepted_for_interview_count = AdmissionResult.accepted_for_interview_count(admission_round,
+                                                                                      major)
     
     return HttpResponse(json.dumps({ 'result': 'OK',
-                                     'html': html }),
+                                     'html': html,
+                                     'count': major_accepted_for_interview_count }),
                         content_type='application/json')
 
 
