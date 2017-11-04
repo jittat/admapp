@@ -151,6 +151,20 @@ def load_major_applicant_with_major_stats(project, admission_round, major, num):
         return None, stat
 
 
+def load_accepted_applicant_counts(admission_round, admission_project, majors):
+    mmap = dict([(majors[i].id,i) for i in range(len(majors))])
+
+    for m in majors:
+        m.accepted_for_interview_count = 0
+
+    results = AdmissionResult.objects.filter(admission_round=admission_round,
+                                             admission_project=admission_project)
+    for r in results:
+        if r.is_accepted_for_interview:
+            midx = mmap[r.major_id]
+            majors[midx].accepted_for_interview_count += 1
+
+            
 @user_login_required
 def index(request, project_id, round_id):
     user = request.user
@@ -180,6 +194,11 @@ def index(request, project_id, round_id):
     ranks = range(1, project_max_num_selections+1)
 
     applicant_info_viewable = project_round.applicant_info_viewable
+
+    if applicant_info_viewable:
+        load_accepted_applicant_counts(admission_round,
+                                       project,
+                                       majors)
     
     return render(request,
                   'backoffice/projects/index.html',

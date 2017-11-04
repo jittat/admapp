@@ -26,6 +26,11 @@
             <td class="text-right">
               จำนวนรับ
             </td>
+            {% if applicant_info_viewable %}
+              <td class="text-right">
+                เรียกสัมภาษณ์
+              </td>
+            {% endif %}
             {% for r in ranks %}
               <td class="text-right">
                 อันดับ {{ r }}
@@ -54,6 +59,11 @@
             <td class="text-right">
               {{ major.slots }}{% if major.slots_comments %}*{% endif %}
             </td>
+            {% if applicant_info_viewable %}
+              <td class="text-right">
+                {{ major.accepted_for_interview_count }}
+              </td>
+            {% endif %}
             {% for stat in major.stats %}
               <td class="text-right">
                 {{ stat.paid }} / {{ stat.sel }}
