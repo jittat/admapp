@@ -7,7 +7,7 @@ from django.http import HttpResponse, HttpResponseForbidden, HttpResponseNotFoun
 
 from regis.models import Applicant, LogItem
 from appl.models import AdmissionProject, AdmissionRound
-from appl.models import ProjectApplication, Payment, Major, AdmissionResult
+from appl.models import ProjectApplication, Payment, Major, AdmissionResult, Faculty
 from appl.models import ProjectUploadedDocument, UploadedDocument
 
 from backoffice.views.permissions import can_user_view_project, can_user_view_applicant_in_major
@@ -48,6 +48,13 @@ def load_project_applicants(project, admission_round, faculty):
                                                                          admission_round,
                                                                          True)
     major_map = project.get_majors_as_dict()
+    faculties = dict([(f.id,f) for f in Faculty.objects.all()])
+    
+    for num in major_map.keys():
+        m = major_map[num]
+        if m.faculty_id in faculties:
+            m.faculty = faculties[m.faculty_id]
+
     applicants = []
 
     for app in project_applications:
@@ -218,11 +225,34 @@ def index(request, project_id, round_id):
                   })
 
 
+def load_check_marks_and_results(applicants, admission_project, admission_round):
+    result_map = dict([(r.applicant_id,r) for r in
+                       AdmissionResult.objects.filter(admission_project=admission_project,
+                                                      admission_round=admission_round)])
+
+    all_check_marks = (CheckMarkGroup
+                       .objects
+                       .select_related('project_application')
+                       .filter(project_application__admission_project=admission_project)
+                       .filter(project_application__admission_round=admission_round)
+                       .all())
+    
+    check_marks = {}
+    for c in all_check_marks:
+        check_marks[c.applicant_id] = c
+    
+    for a in applicants:
+        a.admission_result = result_map.get(a.id, None)
+        a.check_marks = check_marks.get(a.id, None)
+
+
 @user_login_required
 def list_applicants(request, project_id, round_id):
     user = request.user
     project = get_object_or_404(AdmissionProject, pk=project_id)
     admission_round = get_object_or_404(AdmissionRound, pk=round_id)
+    project_round = project.get_project_round_for(admission_round)
+
     if not can_user_view_project(user, project):
         return redirect(reverse('backoffice:index'))
 
@@ -249,6 +279,10 @@ def list_applicants(request, project_id, round_id):
         sorted_by_majors = True
     else:
         sorted_by_majors = False
+
+    applicant_info_viewable = project_round.applicant_info_viewable
+    if applicant_info_viewable:
+        load_check_marks_and_results(applicants, project, admission_round)
         
     return render(request,
                   'backoffice/projects/list_applicants.html',
@@ -256,7 +290,9 @@ def list_applicants(request, project_id, round_id):
                     'faculty': faculty,
                     'admission_round': admission_round,
                     'applicants': applicants,
+
                     'sorted_by_majors': sorted_by_majors,
+                    'applicant_info_viewable': applicant_info_viewable,
                   })
 
 
