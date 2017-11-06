@@ -1,0 +1,154 @@
+{% load static %}
+{% load appl_tags %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <title>ใบสมัครมหาวิทยาลัยเกษตรศาสตร์</title>
+    <style type="text/css">
+     #app-content {
+         margin: 10px;
+     }
+     
+     #app-content h1 {
+         font-size: 140%;
+     }
+     
+     table {
+         border-collapse: collapse;
+     }
+     
+     td {
+         border: 1px solid black;
+         padding: 5px;
+     }
+     
+     .section {
+         padding-bottom: 5px;
+         border-bottom: 1px solid gray;
+     }
+     
+     #applying-info {
+     }
+    </style>
+    <script src="{% static 'lib/jquery/jquery-3.2.1.min.js' %}"></script>
+  </head>
+  <body>
+    <div id="app-content">
+      <h1>
+        ใบสมัครคัดเลือกโครงการเรียนล่วงหน้า
+        เข้าศึกษาต่อมหาวิทยาลัยเกษตรศาสตร์ ประจำปีการศึกษา 2561
+      </h1>
+      <div class="section">
+        <b>ชื่อ-นามสกุลผู้สมัคร:</b> {{ applicant.get_full_name }}
+        &nbsp;&nbsp;&nbsp;
+        <b>รหัสประจำตัวประชาชน:</b> {{ applicant.national_id }}
+        &nbsp;&nbsp;&nbsp;
+        <b>วันเกิด:</b> {{ personal_profile.birthday|thaidate }}<br />
+        <b>ที่อยู่:</b>
+        บ้านเลขที่ {{ personal_profile.house_number }}
+        &nbsp;&nbsp;
+        หมู่ {{ personal_profile.village_number|default:"-" }}
+        &nbsp;&nbsp;
+        ซอย {{ personal_profile.avenue|default:"-" }}
+        &nbsp;&nbsp;
+        ถนน {{ personal_profile.road|default:"-" }}
+        <br />
+        ตำบล/แขวง {{ personal_profile.sub_district }}
+        &nbsp;&nbsp;
+        อำเภอ/เขต {{ personal_profile.district }}
+        &nbsp;&nbsp;
+        จังหวัด {{ personal_profile.province }}
+        &nbsp;&nbsp;
+        รหัสไปรษณีย์ {{ personal_profile.postal_code }}
+        <br />
+        เบอร์โทรศัพท์ที่ติดต่อได้ {{ personal_profile.contact_phone }}
+        &nbsp;&nbsp;
+        โทรศัพท์มือถือ {{ personal_profile.mobile_phone|default:"-" }}
+        &nbsp;&nbsp;
+        อีเมล {{ applicant.email }}
+        <br />
+        เป็นนักเรียนชั้นมัธยมศึกษาตอนปลายจากโรงเรียน {{ educational_profile.school_title }} จังหวัด {{ educational_profile.province.title }}<br />
+        <b>บิดา:</b>
+        {{ personal_profile.father_prefix }}{{ personal_profile.father_first_name }}
+        {{ personal_profile.father_last_name }}
+        &nbsp;&nbsp;&nbsp;
+        <b>มารดา: </b>
+        {{ personal_profile.mother_prefix }}{{ personal_profile.mother_first_name }}
+        {{ personal_profile.mother_last_name }}
+      </div>
+
+      <div class="section">
+        <b>สถานภาพทางการศึกษาในปีการศึกษา 2561</b><br />
+        {{ educational_profile.get_education_level_display }}
+        แผนการเรียน
+        ... {{ educational_profile.get_education_plan_display }} ...
+        คะแนนเฉลี่ยสะสม
+        ... {{ educational_profile.gpa|floatformat:2 }} .....<br />
+      </div>
+      
+      <div class="section">
+        <b>ผลการเรียนจากโครงการเรียนล่วงหน้า</b><br />
+        <table>
+          <tr>
+            <td>รายวิชา</td>
+            {% for course in ap_courses.courses %}
+              <td>{{ course.get_course_title_display }}</td>
+            {% endfor %}
+          </tr>
+          <tr>
+            <td>ผลการเรียน</td>
+            {% for course in ap_courses.courses %}
+              <td style="text-align: center;">{{ course.grade }}</td>
+            {% endfor %}
+          </tr>
+        </table>
+      </div>
+      <div class="section">
+        <b>อันดับการเลือก</b><br />
+        <table>
+          <tr>
+            <td></td>
+            <td>คณะ/สาขาวิชา</td>
+            <td>เกณฑ์ขั้นต่ำ</td>
+          </tr>
+          {% for m in majors %}
+            <tr>
+              <td>{{ forloop.counter }}</td>
+              <td>
+                {{ m.faculty }} - 
+                สาขา{{ m.title }}
+              </td>
+              <td>
+                {% if m.is_accepted_for_interview %}
+                  ผ่านเกณฑ์การสมัคร
+                {% else %}
+                  ไม่ผ่านเกณฑ์
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </table>
+      </div>
+      
+      <div class="section">
+        <p>
+          ข้าพเจ้าขอรับรองว่าเป็นผู้มีคุณสมบัติครบถ้วน ตามประกาศมหาวิทยาลัยเกษตรศาสตร์
+          ว่าด้วยโครงการเรียนล่วงหน้าของมหาวิทยาลัยเกษตรศาสตร์เพื่อเข้าศึกษาสังกัดคณะในปีการศึกษา 2561 และขอรับรองว่าข้อความที่ปรากฏในเอกสารการสมัครนี้เป็นจริงทุกประการ
+        </p>
+
+        <p>
+          ลงชื่อ  ...............................................................ผู้สมัคร<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(............................................................................)<br>
+          วันที่...........เดือน..................................พ.ศ. ......
+        </p>
+      </div>
+    </div>
+    <script>
+      $(function() {
+        window.print();
+      });
+    </script>
+  </body>
+</html>

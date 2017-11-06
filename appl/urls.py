@@ -31,4 +31,5 @@ urlpatterns = [
     url(r'^status/$', views.check_application_documents, name='check-project-documents'),
 
     url(r'^natsport/print/$', print_views.sport_print, name='natsport-print'),
+    url(r'^ap/print/$', print_views.ap_print, name='ap-print'),
 ]
