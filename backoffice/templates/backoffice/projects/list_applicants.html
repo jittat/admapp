@@ -20,6 +20,9 @@
             <th>ค่าสมัคร</th>
             <th>สาขา</th>
             {% if applicant_info_viewable %}
+              {% if info_header_template %}
+                {% include info_header_template %}
+              {% endif %}
               <th></th>
               <th>เรียกสัมภาษณ์</th>
             {% endif %}
@@ -58,6 +61,9 @@
                 {% endfor %}
               </td>
               {% if applicant_info_viewable %}
+                {% if info_header_template %}
+                  {% include info_template %}
+                {% endif %}
                 <td>
                   {% if applicant.check_marks %}
                     <div class="d-inline-block">
@@ -74,13 +80,7 @@
                   {% endif %}
                 </td>
                 <td>
-                  {% if applicant.admission_result %}
-                    {% if applicant.admission_result.is_accepted_for_interview %}
-                      <span class="badge badge-success">เรียก</span>
-                    {% else %}
-                      {% if applicant.admission_result.is_accepted_for_interview == False %}<span class="badge badge-danger">ไม่เรียก</span>{% endif %}
-                    {% endif %}
-                  {% endif %}
+                  {% include 'backoffice/projects/include/admission_result_td.html' %}
                 </td>
               {% endif %}
             </tr>

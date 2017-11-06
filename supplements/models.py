@@ -170,3 +170,47 @@ PROJECT_ADDITIONAL_BLOCKS = {
                            'supplements.views.blocks.load_ap_course_results'),
     ],
 }
+
+ap_course_results = None
+
+def load_applicant_ap_results(applicant,
+                              admission_project,
+                              admission_round):
+    global ap_course_results
+
+    if not ap_course_results:
+        SUBJECT_IDX = {
+            '01403000': 0,
+            '01417000': 1,
+            '01420000': 2,
+            '01424000': 3,
+        }
+        
+        ap_course_results = {}
+        ap_applicants = dict([(a.id, a) for a
+                              in AdvancedPlacementApplicant.objects.all()])
+        for res in AdvancedPlacementResult.objects.all():
+            national_id = ap_applicants[res.ap_applicant_id].national_id
+            if national_id not in ap_course_results:
+                ap_app = ap_applicants[res.ap_applicant_id]
+                ap_app.course_results = ['-','-','-','-']
+                ap_course_results[ap_app.national_id] = ap_app
+
+            ap_app = ap_course_results[national_id]
+            ap_app.course_results[SUBJECT_IDX[res.subject_id]] = res.grade
+
+        
+
+    if applicant.national_id in ap_course_results:
+        return ap_course_results[applicant.national_id]
+    else:
+        return None
+
+PROJECT_APPLICANT_LIST_ADDITIONS = {
+    'เรียนล่วงหน้า': {
+        'loader': load_applicant_ap_results,
+        'col_count': 4,
+        'header_template': 'supplements/ap/applicant_info_head.html',
+        'template': 'supplements/ap/applicant_info.html',
+    },
+}

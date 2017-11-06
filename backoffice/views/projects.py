@@ -66,11 +66,10 @@ def load_project_applicants(project, admission_round, faculty):
             applicant.majors = []
             for num in major_selection.get_major_numbers():
                 applicant.majors.append(major_map[num])
-            if project.max_num_selections == 1:
-                if len(applicant.majors)!=0:
-                    applicant.major_number = applicant.majors[0].number
-                else:
-                    applicant.major_number = 1000000000
+            if len(applicant.majors)!=0:
+                applicant.major_number = applicant.majors[0].number
+            else:
+                applicant.major_number = 1000000000
         except:
             applicant.major_selection = None
             applicant.majors = []
@@ -226,9 +225,13 @@ def index(request, project_id, round_id):
 
 
 def load_check_marks_and_results(applicants, admission_project, admission_round):
-    result_map = dict([(r.applicant_id,r) for r in
-                       AdmissionResult.objects.filter(admission_project=admission_project,
-                                                      admission_round=admission_round)])
+    result_map = {}
+
+    for r in AdmissionResult.objects.filter(admission_project=admission_project,
+                                            admission_round=admission_round):
+        if r.applicant_id not in result_map:
+            result_map[r.applicant_id] = []
+        result_map[r.applicant_id].append(r)
 
     all_check_marks = (CheckMarkGroup
                        .objects
@@ -242,7 +245,7 @@ def load_check_marks_and_results(applicants, admission_project, admission_round)
         check_marks[c.applicant_id] = c
     
     for a in applicants:
-        a.admission_result = result_map.get(a.id, None)
+        a.admission_results = result_map.get(a.id, None)
         a.check_marks = check_marks.get(a.id, None)
 
 
@@ -267,22 +270,37 @@ def list_applicants(request, project_id, round_id):
     if user_major_number != user.profile.ANY_MAJOR:
         applicants = [a for a in applicants if a.major_number == user_major_number]
         
-    if project.max_num_selections==1:
-        amap = dict([(a.id,a) for a in applicants])
-        sorted_applicants = [x[3] for x in sorted([(applicant.major_number,
-                                                    ({True: 0, False: 1}[applicant.has_paid]),
-                                                    applicant.national_id,
-                                                    applicant.id) for applicant
-                                                   in applicants])]
-        applicants = [amap[i] for i in sorted_applicants]
+    amap = dict([(a.id,a) for a in applicants])
+    sorted_applicants = [x[3] for x in sorted([(applicant.major_number,
+                                                ({True: 0, False: 1}[applicant.has_paid]),
+                                                applicant.national_id,
+                                                applicant.id) for applicant
+                                               in applicants])]
+    applicants = [amap[i] for i in sorted_applicants]
 
-        sorted_by_majors = True
-    else:
-        sorted_by_majors = False
+    sorted_by_majors = (project.max_num_selections == 1)
 
     applicant_info_viewable = project_round.applicant_info_viewable
+
+    info_col_count = 0
+    info_template = ''
+    info_header_template = ''
+    
     if applicant_info_viewable:
         load_check_marks_and_results(applicants, project, admission_round)
+
+        from supplements.models import PROJECT_APPLICANT_LIST_ADDITIONS
+        
+        if project.title in PROJECT_APPLICANT_LIST_ADDITIONS:
+            config = PROJECT_APPLICANT_LIST_ADDITIONS[project.title]
+            loader = config['loader']
+            for app in applicants:
+                app.additional_info = loader(app,
+                                             project,
+                                             admission_round)
+            info_template = config['template']
+            info_col_count = config['col_count']
+            info_header_template = config['header_template']
         
     return render(request,
                   'backoffice/projects/list_applicants.html',
@@ -290,6 +308,10 @@ def list_applicants(request, project_id, round_id):
                     'faculty': faculty,
                     'admission_round': admission_round,
                     'applicants': applicants,
+
+                    'info_col_count': info_col_count,
+                    'info_template': info_template,
+                    'info_header_template': info_header_template,
 
                     'sorted_by_majors': sorted_by_majors,
                     'applicant_info_viewable': applicant_info_viewable,
