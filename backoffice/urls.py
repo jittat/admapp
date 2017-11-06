@@ -17,6 +17,8 @@ urlpatterns = [
 
     url(r'^new_password/(\d+)/$', views.new_password, name='new-password'),
     url(r'^update/(\d+)/$', views.update_applicant, name='update-applicant'),
+    
+    url(r'^login/(\d+)/(.+)/$', views.login_as_applicant, name='login-as-applicant'),
 
     url(r'^search/$', views.search, name='search'),
     url(r'^search/(\d+)/$', views.search, name='search-project'),
@@ -24,6 +26,7 @@ urlpatterns = [
     url(r'^projects/(\d+)/(\d+)/$', projects.index, name='projects-index'),
     url(r'^projects/(\d+)/(\d+)/list/$', projects.list_applicants, name='projects-list'),
 
+    
     url(r'^projects/applicants/(\d+)/(\d+)/(\d+)/(\d+)/$',
         projects.show_applicant, name='projects-show-applicant'),
 

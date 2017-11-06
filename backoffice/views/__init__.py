@@ -14,7 +14,7 @@ from supplements.views import render_supplement_for_backoffice
 
 from backoffice.models import Profile
 
-from backoffice.decorators import user_login_required
+from backoffice.decorators import user_login_required, super_admin_login_required
 from .permissions import can_user_view_project
 
 from admapp.emails import send_forget_password_email
@@ -232,3 +232,22 @@ def update_applicant(request, national_id):
         
     return redirect(reverse('backoffice:show-applicant', args=[applicant.national_id]))
     
+@super_admin_login_required
+def login_as_applicant(request, national_id, login_key):
+    from django.conf import settings
+
+    try:
+        if login_key != settings.SUPER_ADMIN_APPLICANT_LOGIN_KEY:
+            return HttpResponseForbidden()
+    except:
+        return HttpResponseForbidden()
+
+    applicant = get_object_or_404(Applicant, national_id=national_id)
+    
+    from regis.views import login_applicant
+
+    login_applicant(request, applicant)
+
+    LogItem.create('Admin ({0}) logged in as {1}'.format(request.user.username, applicant.national_id), applicant, request)
+                
+    return redirect(reverse('appl:index'))
