@@ -10,7 +10,12 @@ from regis.decorators import appl_login_required
 
 from admapp.utils import number_to_thai_text
 
-from appl.models import AdmissionProject, ProjectUploadedDocument, AdmissionRound, Payment, ProjectApplication, AdmissionProjectRound, Eligibility
+from appl.models import AdmissionProject, AdmissionRound, AdmissionProjectRound
+from appl.models import ProjectApplication
+from appl.models import ProjectUploadedDocument
+from appl.models import Eligibility
+from appl.models import Payment
+from appl.models import AdmissionResult
 
 from appl.views.upload import upload_form_for
 
@@ -112,6 +117,23 @@ def index_with_active_application(request, active_application):
         
     admission_projects = []
 
+    if project_round.accepted_for_interview_result_shown:
+        admission_results = AdmissionResult.find_by_application(active_application)
+        is_accepted_for_interview = False
+        for res in admission_results:
+            if res.is_accepted_for_interview:
+                is_accepted_for_interview = True
+
+        mresults = dict([(res.major_id, res) for res in admission_results])
+        for major in major_selection.get_majors():
+            if major.id not in mresults:
+                major.is_accepted_for_interview = False
+            else:
+                major.is_accepted_for_interview = mresults[major.id].is_accepted_for_interview
+    else:
+        admission_results = []
+        is_accepted_for_interview = False
+    
     notice = request.session.pop('notice', None)
 
     return render(request,
@@ -128,6 +150,7 @@ def index_with_active_application(request, active_application):
 
                     'admission_round': admission_round,
                     'admission_projects': admission_projects,
+                    'project_round': project_round,
                     'active_application': active_application,
                     'supplement_configs': supplement_configs,
                     'supplement_blocks': supplement_blocks,
@@ -140,6 +163,10 @@ def index_with_active_application(request, active_application):
                     'paid_amount': paid_amount,
                     'additional_payment': additional_payment,
                     'payment_deadline': payment_deadline,
+
+                    'accepted_for_interview_result_shown': project_round.accepted_for_interview_result_shown,
+                    'admission_results': admission_results,
+                    'is_accepted_for_interview': is_accepted_for_interview,
                   })
 
 

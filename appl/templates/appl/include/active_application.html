@@ -18,6 +18,9 @@
     </div>
   </div>
 {% endif %}
+{% if accepted_for_interview_result_shown %}
+  {% include 'appl/include/project_accepted_for_interview_result.html' %}
+{% endif %}
 <div class="row">
   <div {% if project_uploaded_documents %} class="col-md-5" {% else %} class="col-md-12" {% endif %}>
     {% if supplement_blocks %}

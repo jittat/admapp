@@ -172,6 +172,15 @@ class AdmissionProjectRound(models.Model):
 
     applicant_info_viewable = models.BooleanField(default=False,
                                                   verbose_name='สามารถดูรายละเอียดผู้สมัครได้')
+
+    accepted_for_interview_result_shown = models.BooleanField(default=False,
+                                                              verbose_name='แสดงผลการเรียกสัมภาษณ์กับผู้สมัคร')
+
+    accepted_for_interview_instructions = models.TextField(blank=True,
+                                                           verbose_name='รายละเอียดแสดงกับผู้สมัครที่ผ่านการคัดเลือก')
+    
+    class Meta:
+        ordering = ['admission_round','admission_project']
     
     def __str__(self):
         return "{0} ({1})".format(self.admission_project.title, str(self.admission_round))
@@ -671,6 +680,10 @@ class AdmissionResult(models.Model):
         else:
             return None
 
+    @staticmethod
+    def find_by_application(application):
+        return AdmissionResult.objects.filter(application=application).all()
+    
     
 class Eligibility(object):
     def __init__(self, project=None, applicant=None):

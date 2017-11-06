@@ -4,7 +4,15 @@
     สามารถเลือกได้ {{ active_application.admission_project.max_num_selections }} สาขา สาขาที่คุณเลือกคือ<br />
     {% for m in major_selection.get_majors %}
       <div>
-        {{ forloop.counter }}. {{ m.faculty }} - {{ m.title }}
+        {{ forloop.counter }}.
+        {% if accepted_for_interview_result_shown %}
+          {% if m.is_accepted_for_interview %}
+            <span class="badge badge-success"><i class="fa fa-check"></i> เรียกสัมภาษณ์</span>
+          {% else %}
+            <span class="badge badge-secondary"><i class="fa fa-close"></i> ไม่เรียกสัมภาษณ์</span>
+          {% endif %}
+        {% endif %}
+        {{ m.faculty }} - {{ m.title }}
         {% if active_application.admission_project.max_num_selections > 1 %}
           <a class="badge badge-pill badge-secondary major-info-toggle-links" data-major-number="{{ m.number }}" href="#">แสดงรายละเอียด</a>
           <div id="major_info_{{ m.number }}_id" style="display: none;" class="bg-light border rounded mt5">
