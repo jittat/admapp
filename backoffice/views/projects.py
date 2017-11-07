@@ -363,7 +363,7 @@ def show_applicant(request, project_id, round_id, major_number, rank):
                                           project_application=application)
         check_mark_group.save()
 
-    judge_comments = application.judge_comment_set.all()
+    judge_comments = application.judge_comment_set.filter(is_deleted=False)
 
     admission_result = AdmissionResult.get_for_application_and_major(application, major)
     if admission_result:
@@ -572,7 +572,7 @@ def save_comment(request, project_id, round_id, national_id, major_number):
         from django.template import loader
         template = loader.get_template('backoffice/projects/include/judge_comment_list.html')
 
-        judge_comments = application.judge_comment_set.all()
+        judge_comments = application.judge_comment_set.filter(is_deleted=False)
         html = template.render({ 'judge_comments': judge_comments,'project':project, 'admission_round':admission_round, 'applicant':applicant, 'major':major }, request)
 
         return HttpResponse(json.dumps({ 'result': 'OK',
@@ -606,7 +606,7 @@ def delete_comment(request, project_id, round_id, national_id, major_number, com
     comment.is_deleted = True
     comment.save()
 
-    LogItem.create('Delete comment by ' + user.username,
+    LogItem.create('Delete comment ' + comment_id + ' by ' + user.username,
                    applicant,
                    request)
 
