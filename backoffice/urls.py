@@ -41,7 +41,7 @@ urlpatterns = [
     url(r'^projects/applicants/(\d+)/(\d+)/(\d+)/(\d+)/comments/$',
         projects.save_comment,
         name='projects-save-comment'),
-    url(r'^projects/applicants/(\d+)/(\d+)/(\d+)/(\d+)/commentdelete/(\d+)/$',
+    url(r'^projects/applicants/(\d+)/(\d+)/(\d+)/(\d+)/comment/(\d+)/delete/$',
         projects.delete_comment,
         name='projects-delete-comment'),
 
