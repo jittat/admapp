@@ -573,8 +573,13 @@ def save_comment(request, project_id, round_id, national_id, major_number):
         template = loader.get_template('backoffice/projects/include/judge_comment_list.html')
 
         judge_comments = application.judge_comment_set.filter(is_deleted=False)
-        html = template.render({ 'judge_comments': judge_comments,'project':project, 'admission_round':admission_round, 'applicant':applicant, 'major':major }, request)
-
+        html = template.render({
+                'judge_comments': judge_comments,
+                'project':project,
+                'admission_round':admission_round,
+                'applicant':applicant,
+                'major':major }
+            , request)
         return HttpResponse(json.dumps({ 'result': 'OK',
                                          'html': html }),
                             content_type='application/json')
@@ -614,7 +619,13 @@ def delete_comment(request, project_id, round_id, national_id, major_number, com
     template = loader.get_template('backoffice/projects/include/judge_comment_list.html')
 
     judge_comments = application.judge_comment_set.filter(is_deleted=False)
-    html = template.render({ 'judge_comments': judge_comments,'project':project, 'admission_round':admission_round, 'applicant':applicant, 'major':major }, request)
+    html = template.render({
+            'judge_comments': judge_comments,
+            'project':project,
+            'admission_round':admission_round,
+            'applicant':applicant,
+            'major':major }
+        , request)
     return HttpResponse(json.dumps({ 'result': 'OK',
                                      'html': html }),
                         content_type='application/json')
