@@ -41,7 +41,7 @@
       var isPdf = ($(this).data('isPdf') == 'True');
       
       if(!isPdf) {
-        var imgstr = '<a href="' + href + '" target="_blank"><img class="img-fluid" src="' + href + '"/></a>';
+        var imgstr = '<a href="' + href + '" target="_blank"><img class="img-fluid" style="max-height: 100%;" src="' + href + '"/></a>';
       } else {
         var imgstr = '<a href="' + href + '" target="_blank"><embed width="100%" height="100%" type="application/pdf" src="' + href + '"/></a>';
       }
