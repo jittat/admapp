@@ -23,5 +23,17 @@
                   });
       return false;
     });
+    $("#judge_comments_id").on("click", ".comment-delete", function() {
+      var url = $(this).attr('data-delete-url');
+      alert(url)
+      jQuery.get(url,
+                  function(data) {
+                    if(data.result == 'OK') {
+                      $('#judge_comments_id').html(data.html);
+                      $('#comment_textarea_id').val('');
+                    }
+                  });
+      return false;
+    });
   });
 </script>
