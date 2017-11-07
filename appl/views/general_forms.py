@@ -167,7 +167,7 @@ class PersonalProfileForm(ModelForm):
             )
         )
 
-        
+
 @appl_login_required
 def ajax_school_search(request):
     province = request.GET['province']
@@ -186,7 +186,7 @@ def ajax_school_search(request):
             schools = School.objects.filter(province=province,
                                             title__contains=trancated_term)
             results += [s.title for s in schools]
-    
+    print(results)
     return HttpResponse(json.dumps(results))
 
 
@@ -203,7 +203,7 @@ def ajax_topschool_list(request):
     return HttpResponse(json.dumps(results))
 
 
-@appl_login_required        
+@appl_login_required
 def personal_profile(request):
     applicant = request.applicant
     profile = applicant.get_personal_profile()
@@ -232,7 +232,7 @@ def personal_profile(request):
                   })
 
 
-@appl_login_required        
+@appl_login_required
 def education_profile(request):
     applicant = request.applicant
     profile = applicant.get_educational_profile()
