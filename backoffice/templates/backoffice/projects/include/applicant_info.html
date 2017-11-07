@@ -3,7 +3,21 @@
     โรงเรียน: {{ education.school_title }} ({{ education.province }}) |
     แผนการเรียน: {{ education.get_education_plan_display }} |
     GPA: {{ education.gpa|floatformat:"2" }}
+	    <button class="btn btn-info btn-sm personal-toggle-buttons">แสดงข้อมูลเพิ่มเติม</button>
+	    <li class="personal-list" style="display: none;">ชื่อ(อังกฤษ): {{ personal.prefix_english }} {{ personal.first_name_english }} {{ personal.last_name_english }}</li>
+	    <li class="personal-list" style="display: none;">วันเดือนปีเกิด: {{ personal.birthday }} </li>
+	    <li class="personal-list" style="display: none;">ชื่อบิดา: {{ personal.father_prefix }} {{ personal.father_first_name }} {{ personal.father_last_name }} 
+	          | ชื่อมารดา: {{ personal.mother_prefix }} {{ personal.mother_first_name }} {{ personal.mother_last_name }}</li>
+	    <li class="personal-list" style="display: none;">ที่อยู่: {{ personal.house_number }} {{ personal.village_number }} {{ personal.avenue }} {{ personal.road }} {{ personal.sub_district }} {{ personal.province }} {{ personal.postal_code }}</li>
   {% else %}
     <span class="badge badge-danger">ไม่มีข้อมูลการศึกษา</span>
   {% endif %}
 </div>
+<script>
+    $(function(){
+      $(".personal-toggle-buttons").click(function(){
+        $(".personal-list").toggle();
+        return false;
+      });
+    });
+  </script>

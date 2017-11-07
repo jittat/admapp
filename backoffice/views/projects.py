@@ -356,6 +356,11 @@ def show_applicant(request, project_id, round_id, major_number, rank):
     else:
         education = None
         
+    if hasattr(applicant,'personalprofile'):
+        personal = applicant.personalprofile
+    else:
+        personal = None
+
     if hasattr(application,'check_mark_group'):
         check_mark_group = application.check_mark_group
     else:
@@ -391,6 +396,7 @@ def show_applicant(request, project_id, round_id, major_number, rank):
 
                     'uploaded_documents': uploaded_documents,
                     'education': education,
+                    'personal': personal,
 
                     'is_accepted_for_interview': is_accepted_for_interview,
                     
