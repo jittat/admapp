@@ -1,5 +1,21 @@
 {% extends 'backoffice/base.html' %}
+{% load static %}
 {% block content %}
+  <!-- Core CSS file -->
+  <link rel="stylesheet" href="{% static 'lib/photoswipe/photoswipe.css' %}"> 
+
+  <!-- Skin CSS file (styling of UI - buttons, caption, etc.)
+      In the folder of skin CSS file there are also:
+      - .png and .svg icons sprite, 
+      - preloader.gif (for browsers that do not support CSS animations) -->
+  <link rel="stylesheet" href="{% static 'lib/photoswipe/default-skin.css' %}"> 
+
+  <!-- Core JS file -->
+  <script src="{% static 'lib/photoswipe/photoswipe.min.js' %}"></script> 
+
+  <!-- UI JS file -->
+  <script src="{% static 'lib/photoswipe/photoswipe-ui-default.min.js' %}"></script>
+
   <div class="row" style="margin-top: -10px;">
     <div class="col-md-12">
       <div class="float-right border rounded p5">
@@ -26,7 +42,52 @@
         {% include 'backoffice/projects/include/applicant_uploaded_doc_menu.html' %}
       </div>
     </div>
-    <div class="col-md-7">
+    <div class="col-md-7">        
+        <div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+          <div class="pswp__bg"></div>
+        
+          <div class="pswp__scroll-wrap">
+        
+          <div class="pswp__container">
+              <div class="pswp__item"></div>
+              <div class="pswp__item"></div>
+              <div class="pswp__item"></div>
+          </div>
+  
+          <div class="pswp__ui pswp__ui--hidden">
+            
+            <div class="pswp__top-bar">
+              <div class="pswp__counter"></div>
+              <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+              <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+              <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+              <div class="pswp__preloader">
+                <div class="pswp__preloader__icn">
+                  <div class="pswp__preloader__cut">
+                    <div class="pswp__preloader__donut"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+  
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+              <div class="pswp__caption__center"></div>
+            </div>
+
+          </div>
+        
+        </div>
+      </div>
       <div id="document_panel_id" class="border mt5 bg-light" style="overflow-y: auto;">
       </div>
     </div>
@@ -60,5 +121,30 @@
 
       csrftoken = $("#dummy_csrf_id input[name=csrfmiddlewaretoken]").val();      
     });
+    
+    var openPhotoSwipe = function(href) {
+      var pswpElement = document.querySelectorAll('.pswp')[0];
+      // build items array
+      var items = [
+        {
+          src: 'http://localhost:8000' + href,
+          w: 964,
+          h: 1024
+        },
+      ];
+        
+      // define options (if needed)
+      var options = {
+        // history & focus options are disabled on CodePen        
+        history: false,
+        focus: false,
+
+        showAnimationDuration: 0,
+        hideAnimationDuration: 0  
+      };
+    
+      var gallery = new PhotoSwipe( pswpElement, PhotoSwipeUI_Default, items, options);
+      gallery.init();
+    };
   </script>
 {% endblock %}
