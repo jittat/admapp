@@ -167,8 +167,9 @@ def load_accepted_applicant_counts(admission_round, admission_project, majors):
                                              admission_project=admission_project)
     for r in results:
         if r.is_accepted_for_interview:
-            midx = mmap[r.major_id]
-            majors[midx].accepted_for_interview_count += 1
+            if r.major_id in mmap:
+                midx = mmap[r.major_id]
+                majors[midx].accepted_for_interview_count += 1
 
             
 @user_login_required
