@@ -573,7 +573,7 @@ def save_comment(request, project_id, round_id, national_id, major_number):
         template = loader.get_template('backoffice/projects/include/judge_comment_list.html')
 
         judge_comments = application.judge_comment_set.all()
-        html = template.render({ 'judge_comments': judge_comments }, request)
+        html = template.render({ 'judge_comments': judge_comments,'project':project, 'admission_round':admission_round, 'applicant':applicant, 'major':major }, request)
 
         return HttpResponse(json.dumps({ 'result': 'OK',
                                          'html': html }),
@@ -606,16 +606,15 @@ def delete_comment(request, project_id, round_id, national_id, major_number, com
     comment.is_deleted = True
     comment.save()
 
-    LogItem.create('Added comment by ' + user.username,
+    LogItem.create('Delete comment by ' + user.username,
                    applicant,
                    request)
 
     from django.template import loader
     template = loader.get_template('backoffice/projects/include/judge_comment_list.html')
 
-    judge_comments = application.judge_comment_set.all()
-    html = template.render({ 'judge_comments': judge_comments, 'project':project, 'admission_round':admission_round, 'applicant':applicant, 'major':major }, request)
-
+    judge_comments = application.judge_comment_set.filter(is_deleted=False)
+    html = template.render({ 'judge_comments': judge_comments,'project':project, 'admission_round':admission_round, 'applicant':applicant, 'major':major }, request)
     return HttpResponse(json.dumps({ 'result': 'OK',
                                      'html': html }),
                         content_type='application/json')
