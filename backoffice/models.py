@@ -12,7 +12,7 @@ from regis.models import Applicant
 
 class Profile(models.Model):
     ANY_MAJOR = 0
-    
+
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
     faculty = models.ForeignKey(Faculty,
@@ -65,27 +65,27 @@ class CheckMarkGroup(models.Model):
               'text-danger',
               'text-secondary',
               'text-dark']
-    
+
     applicant = models.ForeignKey(Applicant)
     project_application = models.OneToOneField(ProjectApplication,
                                                related_name='check_mark_group')
     check_marks = models.CharField(default='',
                                    max_length=20)
 
-        
+
     def is_checked(self, num):
         if len(self.check_marks) >= num:
             return self.check_marks[num-1] == '1'
 
     def init_marks(self):
         self.check_marks = ''.join(['0' for i in range(self.NUM_CHECK_MARKS)])
-        
+
     def set_check(self, num):
         self.check_marks = self.check_marks[:(num-1)] + '1' + self.check_marks[num:]
 
     def set_uncheck(self, num):
         self.check_marks = self.check_marks[:(num-1)] + '0' + self.check_marks[num:]
-        
+
     def get_check_mark_list(self):
         marks = []
         for i in range(self.NUM_CHECK_MARKS):
@@ -93,11 +93,11 @@ class CheckMarkGroup(models.Model):
                            'is_checked': self.is_checked(i+1),
                            'text_color': self.COLORS[i], })
         return marks
-        
+
     def __str__(self):
         return '{0} - {1}'.format(self.applicant.national_id, self.check_marks)
 
-    
+
 class JudgeComment(models.Model):
     applicant = models.ForeignKey(Applicant)
     project_application = models.ForeignKey(ProjectApplication,
@@ -106,8 +106,10 @@ class JudgeComment(models.Model):
     author_username = models.CharField(max_length=30,
                                        blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    
+
     body = models.TextField()
+
+    is_deleted = models.BooleanField(delault=False)
 
     class Meta:
         ordering = ['-created_at']
