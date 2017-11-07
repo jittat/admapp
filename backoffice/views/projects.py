@@ -585,4 +585,4 @@ def save_comment(request, project_id, round_id, national_id, major_number):
 
 @user_login_required
 def delete_comment(request, project_id, round_id, national_id, major_number, comment_id):
-    pass
+    print(comment_id)
