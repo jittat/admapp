@@ -10,6 +10,7 @@ from django.http import HttpResponseForbidden
 from django.contrib.auth.password_validation import validate_password
 
 from django.conf import settings
+from django.utils.translation import ugettext_lazy as _
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Submit, ButtonHolder, Row, Div
@@ -21,9 +22,9 @@ from .validators import is_valid_passport_number
 from .models import Applicant, LogItem
 
 class LoginForm(forms.Form):
-    national_id = forms.CharField(label='รหัสประจำตัวประชาชนหรือหมายเลขพาสปอร์ต',
+    national_id = forms.CharField(label=_('รหัสประจำตัวประชาชนหรือหมายเลขพาสปอร์ต'),
                                   max_length=20)
-    password = forms.CharField(label='รหัสผ่าน',
+    password = forms.CharField(label=_('รหัสผ่าน'),
                                max_length=100,
                                widget=forms.PasswordInput)
 
