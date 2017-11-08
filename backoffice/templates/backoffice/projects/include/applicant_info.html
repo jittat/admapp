@@ -8,20 +8,24 @@
   {% endif %}
 
   {% if personal %}
-  	<button class="btn btn-info btn-sm personal-toggle-buttons">แสดงข้อมูลเพิ่มเติม</button>
-	<li class="personal-list" style="display: none;">ชื่อ(อังกฤษ): {{ personal.prefix_english }} {{ personal.first_name_english }} {{ personal.last_name_english }}</li>
-	<li class="personal-list" style="display: none;">วันเดือนปีเกิด: {{ personal.birthday }} </li>
-	<li class="personal-list" style="display: none;">ชื่อบิดา: {{ personal.father_prefix }} {{ personal.father_first_name }} {{ personal.father_last_name }} | ชื่อมารดา: {{ personal.mother_prefix }} {{ personal.mother_first_name }} {{ personal.mother_last_name }}</li>
-	<li class="personal-list" style="display: none;">ที่อยู่: {{ personal.house_number }} {{ personal.village_number }} {{ personal.avenue }} {{ personal.road }} {{ personal.sub_district }} {{ personal.province }} {{ personal.postal_code }}</li>
+    <a href="#" class="badge badge-info badge-pill personal-toggle-buttons">แสดงข้อมูลเพิ่มเติม</a>
+    <div class="personal-list" style="display: none;">
+      <ul>
+        <li>ชื่อ(อังกฤษ): {{ personal.prefix_english }} {{ personal.first_name_english }} {{ personal.last_name_english }}</li>
+        <li>วันเดือนปีเกิด: {{ personal.birthday }} </li>
+        <li>ชื่อบิดา: {{ personal.father_prefix }} {{ personal.father_first_name }} {{ personal.father_last_name }} | ชื่อมารดา: {{ personal.mother_prefix }} {{ personal.mother_first_name }} {{ personal.mother_last_name }}</li>
+        <li>ที่อยู่: {{ personal.house_number }} {{ personal.village_number }} {{ personal.avenue }} {{ personal.road }} {{ personal.sub_district }} {{ personal.province }} {{ personal.postal_code }}</li>
+      </ul>
+    </div>
   {% else %}
-    <span class="badge badge-danger">ไม่มีข้อมูลส่วนตัว</span>
+    <span class="badge badge-secondary">ไม่มีข้อมูลส่วนตัว</span>
   {% endif %}
 </div>
 <script>
-    $(function(){
-      $(".personal-toggle-buttons").click(function(){
-        $(".personal-list").toggle();
-        return false;
-      });
+  $(function(){
+    $(".personal-toggle-buttons").click(function(){
+      $(".personal-list").slideToggle();
+      return false;
     });
-  </script>
+  });
+</script>
