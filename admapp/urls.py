@@ -17,12 +17,13 @@ from django.conf.urls import url, include
 from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
+from django.conf.urls.i18n import i18n_patterns
 
 from django.contrib.auth import views as auth_views
 
 import main.views
 
-urlpatterns = [
+urlpatterns = i18n_patterns(
     url(r'^$', main.views.index, name='main-index'),
     url(r'^regis/', include('regis.urls')),
     url(r'^appl/', include('appl.urls')),
@@ -36,7 +37,9 @@ urlpatterns = [
     url(r'^accounts/logout/$',
         auth_views.LogoutView.as_view(),
         name='backoffice-logout'),
-]
+
+    prefix_default_language=False
+)
 
 if settings.DEBUG:
     import debug_toolbar
