@@ -278,6 +278,15 @@ def list_applicants(request, project_id, round_id):
                                                 applicant.id) for applicant
                                                in applicants])]
     applicants = [amap[i] for i in sorted_applicants]
+    old_num = -1
+    r = 0
+    for a in applicants:
+        if a.major_number != old_num:
+            r = 1
+            old_num = a.major_number
+        else:
+            r += 1
+        a.r = r
 
     sorted_by_majors = (project.max_num_selections == 1)
 

@@ -1,15 +1,15 @@
 {% extends 'backoffice/base.html' %}
 {% load static %}
-{% block content %}
+{% block additional_head %}
   <!-- Core CSS file -->
   <link rel="stylesheet" href="{% static 'lib/photoswipe/photoswipe.css' %}"> 
-
   <!-- Skin CSS file (styling of UI - buttons, caption, etc.)
-      In the folder of skin CSS file there are also:
-      - .png and .svg icons sprite, 
-      - preloader.gif (for browsers that do not support CSS animations) -->
+       In the folder of skin CSS file there are also:
+     - .png and .svg icons sprite, 
+     - preloader.gif (for browsers that do not support CSS animations) -->
   <link rel="stylesheet" href="{% static 'lib/photoswipe/default-skin.css' %}"> 
-
+{% endblock %}
+{% block content %}
   <!-- Core JS file -->
   <script src="{% static 'lib/photoswipe/photoswipe.min.js' %}"></script> 
 
@@ -43,17 +43,17 @@
       </div>
     </div>
     <div class="col-md-7">        
-        <div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
-          <div class="pswp__bg"></div>
+      <div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="pswp__bg"></div>
         
-          <div class="pswp__scroll-wrap">
-        
+        <div class="pswp__scroll-wrap">
+          
           <div class="pswp__container">
-              <div class="pswp__item"></div>
-              <div class="pswp__item"></div>
-              <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
           </div>
-  
+          
           <div class="pswp__ui pswp__ui--hidden">
             
             <div class="pswp__top-bar">
@@ -69,23 +69,22 @@
                 </div>
               </div>
             </div>
-  
+            
             <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
-                <div class="pswp__share-tooltip"></div> 
+              <div class="pswp__share-tooltip"></div> 
             </div>
-
+            
             <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
             </button>
-
+            
             <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
             </button>
-
+            
             <div class="pswp__caption">
               <div class="pswp__caption__center"></div>
             </div>
-
+            
           </div>
-        
         </div>
       </div>
       <div id="document_panel_id" class="border mt5 bg-light" style="overflow-y: auto;">
