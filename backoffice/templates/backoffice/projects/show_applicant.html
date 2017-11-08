@@ -10,12 +10,6 @@
   <link rel="stylesheet" href="{% static 'lib/photoswipe/default-skin.css' %}"> 
 {% endblock %}
 {% block content %}
-  <!-- Core JS file -->
-  <script src="{% static 'lib/photoswipe/photoswipe.min.js' %}"></script> 
-
-  <!-- UI JS file -->
-  <script src="{% static 'lib/photoswipe/photoswipe-ui-default.min.js' %}"></script>
-
   <div class="row" style="margin-top: -10px;">
     <div class="col-md-12">
       <div class="float-right border rounded p5">
@@ -42,52 +36,12 @@
         {% include 'backoffice/projects/include/applicant_uploaded_doc_menu.html' %}
       </div>
     </div>
-    <div class="col-md-7">        
-      <div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="pswp__bg"></div>
-        
-        <div class="pswp__scroll-wrap">
-          
-          <div class="pswp__container">
-            <div class="pswp__item"></div>
-            <div class="pswp__item"></div>
-            <div class="pswp__item"></div>
-          </div>
-          
-          <div class="pswp__ui pswp__ui--hidden">
-            
-            <div class="pswp__top-bar">
-              <div class="pswp__counter"></div>
-              <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
-              <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
-              <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
-              <div class="pswp__preloader">
-                <div class="pswp__preloader__icn">
-                  <div class="pswp__preloader__cut">
-                    <div class="pswp__preloader__donut"></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
-              <div class="pswp__share-tooltip"></div> 
-            </div>
-            
-            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
-            </button>
-            
-            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
-            </button>
-            
-            <div class="pswp__caption">
-              <div class="pswp__caption__center"></div>
-            </div>
-            
-          </div>
-        </div>
+    <div class="col-md-7">
+      <div style="position: absolute; right: 16px; top: 6px; z-index: 10;">
+        <a id="download_link_id" target="_blank" href="#" class="btn btn-secondary btn-sm rounded-0" style="display: none;"><i class="fa fa-download"></i></a>
       </div>
-      <div id="document_panel_id" class="border mt5 bg-light" style="overflow-y: auto;">
+      {% include 'backoffice/projects/include/pswp_div.html' %}
+      <div id="document_panel_id" class="border mt5 bg-light" style="overflow-y: auto; width: 100%;">
       </div>
     </div>
     <div class="col-md-3">
@@ -99,6 +53,10 @@
   <form id="dummy_csrf_id" style="display: none;">
     {% csrf_token %}
   </form>
+  <!-- Core JS file -->
+  <script src="{% static 'lib/photoswipe/photoswipe.min.js' %}"></script> 
+  <!-- UI JS file -->
+  <script src="{% static 'lib/photoswipe/photoswipe-ui-default.min.js' %}"></script>
   <script>
     var csrftoken;
     
@@ -121,7 +79,7 @@
       csrftoken = $("#dummy_csrf_id input[name=csrfmiddlewaretoken]").val();      
     });
 
-   function openPhotoSwipe(href) {
+    function openPhotoSwipe(href) {
       var pswpElement = document.querySelectorAll('.pswp')[0];
       // build items array
       var items = [
@@ -131,7 +89,7 @@
           h: 0
         },
       ];
-        
+      
       // define options (if needed)
       var options = {
         // history & focus options are disabled on CodePen        
@@ -141,12 +99,12 @@
         hideAnimationDuration: 0,
         bgOpacity: 0.85
       };
-    
+      
       var gallery = new PhotoSwipe( pswpElement, PhotoSwipeUI_Default, items, options);
       gallery.listen('gettingData', function(index, item) {
-          if (item.w < 1 || item.h < 1) { // unknown size
-            var img = new Image();
-            img.onload = function() { // will get size after load
+        if (item.w < 1 || item.h < 1) { // unknown size
+          var img = new Image();
+          img.onload = function() { // will get size after load
             item.w = this.width; // set image width
             item.h = this.height; // set image height
             gallery.invalidateCurrItems(); // reinit Items
