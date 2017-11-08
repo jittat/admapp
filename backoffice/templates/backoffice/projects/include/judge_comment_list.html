@@ -4,5 +4,6 @@
       {{ comment.body|linebreaksbr }}
       {% if comment.author_username %}- {{ comment.author_username }}{% endif %}
     </small>
+    <a href="#" data-delete-url="{% url 'backoffice:projects-delete-comment' project.id admission_round.id applicant.national_id major.number comment.id %}" class="comment-delete">delete</a>
   </div>
 {% endfor %}

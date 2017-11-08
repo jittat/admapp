@@ -178,18 +178,18 @@ ELIGIBILITY_CHECK = {
 try:
     from .settings_local import *
 except ImportError:
-    pass 
+    pass
 
 # for django debug toolbar
 if DEBUG:
     INTERNAL_IPS = ['127.0.0.1']
     INSTALLED_APPS.append('debug_toolbar')
     MIDDLEWARE.append('debug_toolbar.middleware.DebugToolbarMiddleware')
-    
+
 import sys
 if 'test' in sys.argv:
     DATABASES['default'] = {
         'ENGINE': 'django.db.backends.sqlite3',
         'TEST_CHARSET': 'UTF8',
-        'NAME': ':memory:', 
+        'NAME': ':memory:',
     }

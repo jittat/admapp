@@ -26,7 +26,7 @@ def load_applicant_round_paid_amount(admission_round):
             paid_amount[p.applicant.national_id] += p.amount
 
     return paid_amount
-        
+
 def filter_faculty_applicants(applicants, faculty):
     faculty_applicants = []
     for a in applicants:
@@ -49,7 +49,7 @@ def load_project_applicants(project, admission_round, faculty):
                                                                          True)
     major_map = project.get_majors_as_dict()
     faculties = dict([(f.id,f) for f in Faculty.objects.all()])
-    
+
     for num in major_map.keys():
         m = major_map[num]
         if m.faculty_id in faculties:
@@ -78,12 +78,12 @@ def load_project_applicants(project, admission_round, faculty):
         admission_fee = app.admission_fee(project_base_fee=project.base_fee,
                                           majors=applicant.majors)
         applicant.has_paid = applicant_paid_amount.get(applicant.national_id,0) >= admission_fee
-            
+
         applicants.append(applicant)
-        
+
     if faculty:
         applicants = filter_faculty_applicants(applicants, faculty)
-        
+
     return applicants
 
 
@@ -98,7 +98,7 @@ def process_applicant_stats(majors, applicants, max_num_selections):
         midx += 1
 
     faculty_stats = {}
-        
+
     for a in applicants:
         r = 0
         for m in a.majors:
@@ -125,7 +125,7 @@ def load_major_applicant_with_major_stats(project, admission_round, major, num):
                                                                          True)
     applicant_paid_amount = load_applicant_round_paid_amount(admission_round)
     major_map = project.get_majors_as_dict()
-    
+
     applicants = []
     for application in project_applications:
         if not hasattr(application, 'major_selection'):
@@ -138,9 +138,9 @@ def load_major_applicant_with_major_stats(project, admission_round, major, num):
             admission_fee = application.admission_fee(project_base_fee=project.base_fee,
                                                       majors=application.major_selection.get_majors(major_map))
             applicant.has_paid = applicant_paid_amount.get(applicant.national_id,0) >= admission_fee
-            
+
             applicants.append(applicant)
-            
+
     amaps = dict([(a.id,a) for a in applicants])
     sorted_applicant_ids = [x[2] for x in sorted([(({True: 0, False: 1}[applicant.has_paid]),
                                                    applicant.national_id,
@@ -150,7 +150,7 @@ def load_major_applicant_with_major_stats(project, admission_round, major, num):
 
     stat = {'total': len(sorted_applicants),
             'paid': len([a for a in sorted_applicants if a.has_paid]),}
-    
+
     if len(sorted_applicants) > num:
         return sorted_applicants[num], stat
     else:
@@ -171,14 +171,14 @@ def load_accepted_applicant_counts(admission_round, admission_project, majors):
                 midx = mmap[r.major_id]
                 majors[midx].accepted_for_interview_count += 1
 
-            
+
 @user_login_required
 def index(request, project_id, round_id):
     user = request.user
     project = get_object_or_404(AdmissionProject, pk=project_id)
     admission_round = get_object_or_404(AdmissionRound, pk=round_id)
     project_round = project.get_project_round_for(admission_round)
-    
+
     if not can_user_view_project(user, project):
         return redirect(reverse('backoffice:index'))
 
@@ -206,7 +206,7 @@ def index(request, project_id, round_id):
         load_accepted_applicant_counts(admission_round,
                                        project,
                                        majors)
-    
+
     return render(request,
                   'backoffice/projects/index.html',
                   { 'project': project,
@@ -240,11 +240,11 @@ def load_check_marks_and_results(applicants, admission_project, admission_round)
                        .filter(project_application__admission_project=admission_project)
                        .filter(project_application__admission_round=admission_round)
                        .all())
-    
+
     check_marks = {}
     for c in all_check_marks:
         check_marks[c.applicant_id] = c
-    
+
     for a in applicants:
         a.admission_results = result_map.get(a.id, None)
         a.check_marks = check_marks.get(a.id, None)
@@ -266,11 +266,11 @@ def list_applicants(request, project_id, round_id):
     else:
         faculty = None
         user_major_number = user.profile.ANY_MAJOR
-    
+
     applicants = load_project_applicants(project, admission_round, faculty)
     if user_major_number != user.profile.ANY_MAJOR:
         applicants = [a for a in applicants if a.major_number == user_major_number]
-        
+
     amap = dict([(a.id,a) for a in applicants])
     sorted_applicants = [x[3] for x in sorted([(applicant.major_number,
                                                 ({True: 0, False: 1}[applicant.has_paid]),
@@ -286,12 +286,12 @@ def list_applicants(request, project_id, round_id):
     info_col_count = 0
     info_template = ''
     info_header_template = ''
-    
+
     if applicant_info_viewable:
         load_check_marks_and_results(applicants, project, admission_round)
 
         from supplements.models import PROJECT_APPLICANT_LIST_ADDITIONS
-        
+
         if project.title in PROJECT_APPLICANT_LIST_ADDITIONS:
             config = PROJECT_APPLICANT_LIST_ADDITIONS[project.title]
             loader = config['loader']
@@ -302,7 +302,7 @@ def list_applicants(request, project_id, round_id):
             info_template = config['template']
             info_col_count = config['col_count']
             info_header_template = config['header_template']
-        
+
     return render(request,
                   'backoffice/projects/list_applicants.html',
                   { 'project': project,
@@ -329,7 +329,7 @@ def show_applicant(request, project_id, round_id, major_number, rank):
     real_rank = int(rank) - 1
     if real_rank < 0:
         return redirect(reverse('backoffice:projects-show-applicant',args=[project_id, round_id, major_number, 1]))
-    
+
     major_number = int(major_number)
 
     applicant, major_stat = load_major_applicant_with_major_stats(project, admission_round, major_number, real_rank)
@@ -345,7 +345,7 @@ def show_applicant(request, project_id, round_id, major_number, rank):
     if not can_user_view_applicant_in_major(user, applicant, application, project, major):
         return redirect(reverse('backoffice:index'))
 
-    uploaded_documents = (list(ProjectUploadedDocument.get_common_documents()) + 
+    uploaded_documents = (list(ProjectUploadedDocument.get_common_documents()) +
                           list(project.projectuploadeddocument_set.all()))
 
     for doc in uploaded_documents:
@@ -355,7 +355,7 @@ def show_applicant(request, project_id, round_id, major_number, rank):
         education = applicant.educationalprofile
     else:
         education = None
-        
+
     if hasattr(application,'check_mark_group'):
         check_mark_group = application.check_mark_group
     else:
@@ -363,7 +363,7 @@ def show_applicant(request, project_id, round_id, major_number, rank):
                                           project_application=application)
         check_mark_group.save()
 
-    judge_comments = application.judge_comment_set.all()
+    judge_comments = application.judge_comment_set.filter(is_deleted=False)
 
     admission_result = AdmissionResult.get_for_application_and_major(application, major)
     if admission_result:
@@ -373,13 +373,13 @@ def show_applicant(request, project_id, round_id, major_number, rank):
 
     major_accepted_for_interview_count = AdmissionResult.accepted_for_interview_count(admission_round,
                                                                                       major)
-    
+
     return render(request,
                   'backoffice/projects/show_applicant.html',
                   { 'project': project,
                     'admission_round': admission_round,
                     'major': major,
-                    
+
                     'applicant': applicant,
                     'application': application,
                     'has_paid': application.has_paid(),
@@ -393,7 +393,7 @@ def show_applicant(request, project_id, round_id, major_number, rank):
                     'education': education,
 
                     'is_accepted_for_interview': is_accepted_for_interview,
-                    
+
                     'check_mark_group': check_mark_group,
                     'judge_comments': judge_comments,
                   })
@@ -405,12 +405,12 @@ def download_applicant_document(request, project_id, round_id, major_number,
 
     from appl.views.upload import get_uploaded_document_or_403
     from appl.views.upload import download_uploaded_document_response
-    
+
     user = request.user
     project = get_object_or_404(AdmissionProject, pk=project_id)
     admission_round = get_object_or_404(AdmissionRound, pk=round_id)
     major = Major.get_by_project_number(project, major_number)
-    
+
     applicant = get_object_or_404(Applicant, national_id=national_id)
     application = applicant.get_active_application(admission_round)
 
@@ -422,7 +422,7 @@ def download_applicant_document(request, project_id, round_id, major_number,
 
     if not application.has_applied_to_major(major):
         return HttpResponseForbidden()
-    
+
     project_uploaded_document = get_object_or_404(ProjectUploadedDocument,pk=project_uploaded_document_id)
     uploaded_document = get_object_or_404(UploadedDocument,pk=document_id)
 
@@ -450,7 +450,7 @@ def check_mark_toggle(request, project_id, round_id, national_id, major_number, 
 
     if not application.has_applied_to_major(major):
         return HttpResponseForbidden()
-    
+
     if hasattr(application,'check_mark_group'):
         check_mark_group = application.check_mark_group
     else:
@@ -471,12 +471,12 @@ def check_mark_toggle(request, project_id, round_id, national_id, major_number, 
     LogItem.create('Toggle mark ({0}) by {1}'.format(number, user.username),
                    applicant,
                    request)
-    
+
     from django.template import loader
     template = loader.get_template('backoffice/projects/include/check_mark_group.html')
 
     html = template.render({ 'check_mark_group': check_mark_group }, request)
-    
+
     return HttpResponse(json.dumps({ 'result': 'OK',
                                      'html': html }),
                         content_type='application/json')
@@ -516,13 +516,13 @@ def set_call_for_interview(request, project_id, round_id, national_id, major_num
 
     admission_result.updated_accepted_for_interview_at = datetime.now()
     admission_result.save()
-        
+
     LogItem.create('Interview decision (major: {0} {1}) by {2}'.format(major_number,
                                                                        decision,
                                                                        user.username),
                    applicant,
                    request)
-    
+
     is_accepted_for_interview = admission_result.is_accepted_for_interview
 
     from django.template import loader
@@ -532,7 +532,7 @@ def set_call_for_interview(request, project_id, round_id, national_id, major_num
 
     major_accepted_for_interview_count = AdmissionResult.accepted_for_interview_count(admission_round,
                                                                                       major)
-    
+
     return HttpResponse(json.dumps({ 'result': 'OK',
                                      'html': html,
                                      'count': major_accepted_for_interview_count }),
@@ -557,7 +557,7 @@ def save_comment(request, project_id, round_id, national_id, major_number):
 
     if not application.has_applied_to_major(major):
         return HttpResponseForbidden()
-    
+
     comment = JudgeComment(applicant=applicant,
                            project_application=application,
                            body=request.POST.get('body',''),
@@ -568,13 +568,18 @@ def save_comment(request, project_id, round_id, national_id, major_number):
         LogItem.create('Added comment by ' + user.username,
                        applicant,
                        request)
-    
+
         from django.template import loader
         template = loader.get_template('backoffice/projects/include/judge_comment_list.html')
 
-        judge_comments = application.judge_comment_set.all()
-        html = template.render({ 'judge_comments': judge_comments }, request)
-    
+        judge_comments = application.judge_comment_set.filter(is_deleted=False)
+        html = template.render({
+                'judge_comments': judge_comments,
+                'project':project,
+                'admission_round':admission_round,
+                'applicant':applicant,
+                'major':major }
+            , request)
         return HttpResponse(json.dumps({ 'result': 'OK',
                                          'html': html }),
                             content_type='application/json')
@@ -582,4 +587,45 @@ def save_comment(request, project_id, round_id, national_id, major_number):
         return HttpResponse(json.dumps({ 'result': 'ERROR', }),
                             content_type='application/json')
 
-                           
+
+@user_login_required
+def delete_comment(request, project_id, round_id, national_id, major_number, comment_id):
+    user = request.user
+    applicant = get_object_or_404(Applicant, national_id=national_id)
+    project = get_object_or_404(AdmissionProject, pk=project_id)
+    admission_round = get_object_or_404(AdmissionRound, pk=round_id)
+    major = Major.get_by_project_number(project, major_number)
+    comment = get_object_or_404(JudgeComment, pk=comment_id)
+
+    application = applicant.get_active_application(admission_round)
+
+    if application.admission_project_id != project.id:
+        return HttpResponseNotFound()
+
+    if not can_user_view_applicant_in_major(user, applicant, application, project, major):
+        return redirect(reverse('backoffice:index'))
+
+    if not application.has_applied_to_major(major):
+        return HttpResponseForbidden()
+
+    comment.is_deleted = True
+    comment.save()
+
+    LogItem.create('Delete comment ' + comment_id + ' by ' + user.username,
+                   applicant,
+                   request)
+
+    from django.template import loader
+    template = loader.get_template('backoffice/projects/include/judge_comment_list.html')
+
+    judge_comments = application.judge_comment_set.filter(is_deleted=False)
+    html = template.render({
+            'judge_comments': judge_comments,
+            'project':project,
+            'admission_round':admission_round,
+            'applicant':applicant,
+            'major':major }
+        , request)
+    return HttpResponse(json.dumps({ 'result': 'OK',
+                                     'html': html }),
+                        content_type='application/json')
