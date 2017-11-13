@@ -110,6 +110,8 @@ class JudgeComment(models.Model):
     body = models.TextField()
 
     is_deleted = models.BooleanField(default=False)
+    is_super = models.BooleanField(default=False)
+    major_number = models.IntegerField(default=0)
 
     class Meta:
         ordering = ['-created_at']

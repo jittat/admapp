@@ -376,7 +376,14 @@ def show_applicant(request, project_id, round_id, major_number, rank):
                                           project_application=application)
         check_mark_group.save()
 
-    judge_comments = application.judge_comment_set.filter(is_deleted=False)
+    judge_comments = application.judge_comment_set.filter(is_deleted=False, is_super=False)
+    super_comments = JudgeComment.objects.filter(
+      is_super=True, 
+      is_deleted=False,
+      project_application_id=application.id,
+      major_number=major.number
+    )
+    print('super_comments: ', super_comments)
 
     admission_result = AdmissionResult.get_for_application_and_major(application, major)
     if admission_result:
