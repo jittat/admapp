@@ -2,7 +2,9 @@
 <form method="post" action="{% url 'backoffice:projects-save-comment' project.id admission_round.id applicant.national_id major.number  %}" class="form comment-form">
   {% csrf_token %}
   <textarea id="comment_textarea_id" name="body" class="form-control mb5" style="padding: 3px; font-size: 70%;"></textarea>
+  <input type="hidden" name="super_comment" value="0" />
   <input type="submit" id="comment_submit_id" class="btn btn-secondary btn-sm" value="จัดเก็บ"/>
+  <input type="submit" id="super_comment_submit_id" class="btn btn-secondary btn-sm" value="super comment"/>    
 </form>
 <hr />
 <div id="judge_comments_id">
@@ -10,7 +12,22 @@
 </div>
 <script>
   $(function(){
+    $('#super_comment_submit_id').click(function(e) {
+      e.preventDefault();
+      $('input[name=super_comment]').val("1");
+      var data = $(".comment-form").serialize();
+      var url = $(".comment-form").attr('action');
+      jQuery.post(url,
+                  data,
+                  function(data) {
+                    if(data.result == 'OK') {
+                      $('#judge_comments_id').html(data.html);
+                      $('#comment_textarea_id').val('');
+                    }
+                  });
+    })
     $("#comment_submit_id").click(function() {
+      $('input[name=super_comment]').val("0");
       var data = $(".comment-form").serialize();
       var url = $(".comment-form").attr('action');
       jQuery.post(url,
@@ -38,3 +55,12 @@
     });
   });
 </script>
+<style>
+  #super_comment_submit_id {
+    background-color: #1abc9c;
+    border: none;
+  }
+  #super_comment_submit_id:hover {
+    background-color: #16a085;
+  }
+</style>

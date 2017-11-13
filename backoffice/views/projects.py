@@ -563,6 +563,7 @@ def set_call_for_interview(request, project_id, round_id, national_id, major_num
 
 @user_login_required
 def save_comment(request, project_id, round_id, national_id, major_number):
+    print('request: ', request.POST)
     user = request.user
     applicant = get_object_or_404(Applicant, national_id=national_id)
     project = get_object_or_404(AdmissionProject, pk=project_id)
@@ -583,7 +584,13 @@ def save_comment(request, project_id, round_id, national_id, major_number):
     comment = JudgeComment(applicant=applicant,
                            project_application=application,
                            body=request.POST.get('body',''),
-                           author_username=user.username)
+                           author_username=user.username,
+                           is_super=False)
+
+    if int(request.POST['super_comment']):
+        comment.is_super = True
+        comment.major_number = major_number
+
     if comment.body.strip() != '':
         comment.save()
 
