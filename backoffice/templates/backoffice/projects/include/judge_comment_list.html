@@ -1,3 +1,15 @@
+{% for comment in super_comments %}
+  <div class="border mb5 p5" style="background-color: #1abc9c; color: white;">
+    <!-- <div class="float-right">
+      <a class="badge badge-secondary comment-delete" href="#" data-delete-url="{% url 'backoffice:projects-delete-comment' project.id admission_round.id applicant.national_id major.number comment.id %}"><i class="fa fa-close"></i></a>
+    </div> -->
+    <small>
+      {{ comment.body|linebreaksbr }}
+      {% if comment.author_username %}- {{ comment.author_username }}{% endif %}
+    </small>
+  </div>
+{% endfor %}
+
 {% for comment in judge_comments %}
   <div class="border mb5 p5">
     <div class="float-right">

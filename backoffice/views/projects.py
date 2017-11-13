@@ -417,6 +417,7 @@ def show_applicant(request, project_id, round_id, major_number, rank):
 
                     'check_mark_group': check_mark_group,
                     'judge_comments': judge_comments,
+                    'super_comments': super_comments,
                   })
 
 
