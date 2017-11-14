@@ -11,7 +11,7 @@ from appl.models import AdmissionProject, AdmissionRound
 from appl.models import ProjectApplication, Payment, Major, AdmissionResult, Faculty
 from appl.models import ProjectUploadedDocument, UploadedDocument
 
-from backoffice.views.permissions import can_user_view_project, can_user_view_applicant_in_major
+from backoffice.views.permissions import can_user_view_project, can_user_view_applicant_in_major, can_user_view_applicants_in_major
 from backoffice.decorators import user_login_required
 
 from backoffice.models import CheckMarkGroup, JudgeComment
@@ -454,6 +454,9 @@ def download_applicants_sheet(request, project_id, round_id, major_number):
     project = get_object_or_404(AdmissionProject, pk=project_id)
     admission_round = get_object_or_404(AdmissionRound, pk=round_id)
     major = Major.get_by_project_number(project, major_number)
+
+    if not can_user_view_applicants_in_major(user, project, major):
+        return HttpResponseForbidden()
 
     filename = 'applicants-{}-{}-{}.csv'.format(project_id, round_id, major_number)
     response = HttpResponse(content_type='text/csv; charset=utf-8')
