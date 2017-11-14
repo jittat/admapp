@@ -577,8 +577,7 @@ def save_comment(request, project_id, round_id, national_id, major_number):
 
     if not application.has_applied_to_major(major):
         return HttpResponseForbidden()
-    print('project_id', project.id)
-    print('admission_round_id', admission_round.id)
+
     comment = JudgeComment(applicant=applicant,
                            project_application=application,
                            body=request.POST.get('body',''),
