@@ -38,6 +38,7 @@
             {% endfor %}
             {% if applicant_info_viewable %}
               <td></td>
+              <td></td>
             {% endif %}
           </tr>
         </thead>
@@ -74,6 +75,10 @@
                 {% if user_major_number == any_major or user_major_number == major.number %}
                   <a class="btn btn-sm btn-outline-secondary" href="{% url 'backoffice:projects-show-applicant' project.id admission_round.id major.number 1 %}">พิจารณาข้อมูลผู้สมัคร</a>
                 {% endif %}
+              </td>
+              <td>
+                <a class="btn btn-sm btn-outline-secondary" href="{% url 'backoffice:projects-download-app-sheet' project.id admission_round.id major.number %}">ดาวน์โหลด CSV</a>
+                <!-- TODO -->
               </td>
             {% endif %}
           </tr>

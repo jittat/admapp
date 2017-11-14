@@ -1,3 +1,4 @@
+import csv
 import json
 from datetime import datetime
 
@@ -119,7 +120,7 @@ def process_applicant_stats(majors, applicants, max_num_selections):
     return majors
 
 
-def load_major_applicant_with_major_stats(project, admission_round, major, num):
+def load_major_applicants(project, admission_round, major):
     project_applications = ProjectApplication.find_for_project_and_round(project,
                                                                          admission_round,
                                                                          True)
@@ -134,7 +135,7 @@ def load_major_applicant_with_major_stats(project, admission_round, major, num):
 
         applicant = application.applicant
 
-        if major in major_numbers:
+        if major.number in major_numbers:
             admission_fee = application.admission_fee(project_base_fee=project.base_fee,
                                                       majors=application.major_selection.get_majors(major_map))
             applicant.has_paid = applicant_paid_amount.get(applicant.national_id,0) >= admission_fee
@@ -146,8 +147,11 @@ def load_major_applicant_with_major_stats(project, admission_round, major, num):
                                                    applicant.national_id,
                                                    applicant.id) for applicant
                                                   in applicants])]
-    sorted_applicants = [amaps[i] for i in sorted_applicant_ids]
+    return [amaps[i] for i in sorted_applicant_ids]
 
+
+def load_major_applicant_with_major_stats(project, admission_round, major, num):
+    sorted_applicants = load_major_applicants(project, admission_round, major)
     stat = {'total': len(sorted_applicants),
             'paid': len([a for a in sorted_applicants if a.has_paid]),}
 
@@ -339,9 +343,7 @@ def show_applicant(request, project_id, round_id, major_number, rank):
     if real_rank < 0:
         return redirect(reverse('backoffice:projects-show-applicant',args=[project_id, round_id, major_number, 1]))
 
-    major_number = int(major_number)
-
-    applicant, major_stat = load_major_applicant_with_major_stats(project, admission_round, major_number, real_rank)
+    applicant, major_stat = load_major_applicant_with_major_stats(project, admission_round, major, real_rank)
 
     if not applicant:
         return redirect(reverse('backoffice:projects-show-applicant',args=[project_id, round_id, major_number, 1]))
@@ -444,6 +446,47 @@ def download_applicant_document(request, project_id, round_id, major_number,
         return HttpResponseForbidden()
 
     return download_uploaded_document_response(uploaded_document)
+
+
+@user_login_required
+def download_applicants_sheet(request, project_id, round_id, major_number):
+    user = request.user
+    project = get_object_or_404(AdmissionProject, pk=project_id)
+    admission_round = get_object_or_404(AdmissionRound, pk=round_id)
+    major = Major.get_by_project_number(project, major_number)
+
+    filename = 'applicants-{}-{}-{}.csv'.format(project_id, round_id, major_number)
+    response = HttpResponse(content_type='text/csv; charset=utf-8')
+    response['Content-Disposition'] = 'attachment; filename="{}"'.format(filename)
+    writer = csv.writer(response)
+
+    applicants = load_major_applicants(project, admission_round, major)
+    writer.writerow(['รหัสประจำตัวประชาชน',
+                     'หมายเลขหนังสือเดินทาง',
+                     'คำนำหน้า',
+                     'ชื่อต้น',
+                     'นามสกุล',
+                     'E-mail',
+                     'เบอร์โทรที่ติดต่อได้',
+                     'เบอร์โทรมือถือ',
+                     'แผนการเรียน',
+                     'โรงเรียน',
+                     'จังหวัด',
+                     'GPA'])
+    for applicant in applicants:
+        writer.writerow([applicant.national_id,
+                         applicant.personalprofile.passport_number,
+                         applicant.prefix,
+                         applicant.first_name,
+                         applicant.last_name,
+                         applicant.email,
+                         applicant.personalprofile.contact_phone,
+                         applicant.personalprofile.mobile_phone,
+                         applicant.educationalprofile.get_education_plan_display(),
+                         applicant.educationalprofile.school_title,
+                         applicant.educationalprofile.province.title,
+                         applicant.educationalprofile.gpa])
+    return response
 
 
 @user_login_required
