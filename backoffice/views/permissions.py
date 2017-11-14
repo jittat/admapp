@@ -43,3 +43,4 @@ def can_user_view_applicants_in_major(user, project, major):
 def can_user_view_applicant_in_major(user, applicant, application, project, major):
     if not can_user_view_applicants_in_major(user, project, major):
         return False
+    return True
