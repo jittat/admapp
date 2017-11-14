@@ -383,7 +383,6 @@ def show_applicant(request, project_id, round_id, major_number, rank):
       project_application_id=application.id,
       major_number=major.number
     )
-    print('super_comments: ', super_comments)
 
     admission_result = AdmissionResult.get_for_application_and_major(application, major)
     if admission_result:
@@ -563,7 +562,6 @@ def set_call_for_interview(request, project_id, round_id, national_id, major_num
 
 @user_login_required
 def save_comment(request, project_id, round_id, national_id, major_number):
-    print('request: ', request.POST)
     user = request.user
     applicant = get_object_or_404(Applicant, national_id=national_id)
     project = get_object_or_404(AdmissionProject, pk=project_id)
@@ -601,8 +599,14 @@ def save_comment(request, project_id, round_id, national_id, major_number):
         from django.template import loader
         template = loader.get_template('backoffice/projects/include/judge_comment_list.html')
 
-        judge_comments = application.judge_comment_set.filter(is_deleted=False)
+        judge_comments = application.judge_comment_set.filter(is_deleted=False, is_super=False)
+        super_comments = JudgeComment.objects.filter(is_super=True, 
+                                                     is_deleted=False,
+                                                     project_application_id=application.id,
+                                                     major_number=major.number)                      
+        
         html = template.render({
+                'super_comments': super_comments,
                 'judge_comments': judge_comments,
                 'project':project,
                 'admission_round':admission_round,
@@ -648,7 +652,13 @@ def delete_comment(request, project_id, round_id, national_id, major_number, com
     template = loader.get_template('backoffice/projects/include/judge_comment_list.html')
 
     judge_comments = application.judge_comment_set.filter(is_deleted=False)
+    super_comments = JudgeComment.objects.filter(is_super=True, 
+                                                     is_deleted=False,
+                                                     project_application_id=application.id,
+                                                     major_number=major.number)                      
+
     html = template.render({
+            'super_comments': super_comments,      
             'judge_comments': judge_comments,
             'project':project,
             'admission_round':admission_round,
