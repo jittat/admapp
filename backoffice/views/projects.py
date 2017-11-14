@@ -377,12 +377,11 @@ def show_applicant(request, project_id, round_id, major_number, rank):
         check_mark_group.save()
 
     judge_comments = application.judge_comment_set.filter(is_deleted=False, is_super=False)
-    super_comments = JudgeComment.objects.filter(
-      is_super=True, 
-      is_deleted=False,
-      project_application_id=application.id,
-      major_number=major.number
-    )
+    super_comments = JudgeComment.objects.filter(is_super=True, 
+                                                 is_deleted=False,
+                                                 project_id=project.id,
+                                                 admission_round_id=admission_round.id,
+                                                 major_number=major.number)
 
     admission_result = AdmissionResult.get_for_application_and_major(application, major)
     if admission_result:
@@ -578,12 +577,15 @@ def save_comment(request, project_id, round_id, national_id, major_number):
 
     if not application.has_applied_to_major(major):
         return HttpResponseForbidden()
-
+    print('project_id', project.id)
+    print('admission_round_id', admission_round.id)
     comment = JudgeComment(applicant=applicant,
                            project_application=application,
                            body=request.POST.get('body',''),
                            author_username=user.username,
-                           is_super=False)
+                           is_super=False,
+                           project_id=project.id,
+                           admission_round_id=admission_round.id)
 
     if int(request.POST['super_comment']):
         comment.is_super = True
@@ -602,7 +604,8 @@ def save_comment(request, project_id, round_id, national_id, major_number):
         judge_comments = application.judge_comment_set.filter(is_deleted=False, is_super=False)
         super_comments = JudgeComment.objects.filter(is_super=True, 
                                                      is_deleted=False,
-                                                     project_application_id=application.id,
+                                                     project_id=project.id,
+                                                     admission_round_id=admission_round.id,
                                                      major_number=major.number)                      
         
         html = template.render({
@@ -651,11 +654,12 @@ def delete_comment(request, project_id, round_id, national_id, major_number, com
     from django.template import loader
     template = loader.get_template('backoffice/projects/include/judge_comment_list.html')
 
-    judge_comments = application.judge_comment_set.filter(is_deleted=False)
+    judge_comments = application.judge_comment_set.filter(is_deleted=False, is_super=False)
     super_comments = JudgeComment.objects.filter(is_super=True, 
-                                                     is_deleted=False,
-                                                     project_application_id=application.id,
-                                                     major_number=major.number)                      
+                                                  is_deleted=False,
+                                                  project_id=project.id,
+                                                  admission_round_id=admission_round.id,
+                                                  major_number=major.number)                      
 
     html = template.render({
             'super_comments': super_comments,      
