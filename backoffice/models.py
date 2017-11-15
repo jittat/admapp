@@ -112,8 +112,8 @@ class JudgeComment(models.Model):
     is_deleted = models.BooleanField(default=False)
     is_super = models.BooleanField(default=False)
     
-    project = models.ForeignKey(AdmissionProject)
-    admission_round = models.ForeignKey(AdmissionRound)
+    project = models.ForeignKey(AdmissionProject, default=None)
+    admission_round = models.ForeignKey(AdmissionRound, default=None)
     major_number = models.IntegerField(default=0)
     
     class Meta:
