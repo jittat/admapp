@@ -475,8 +475,13 @@ def download_applicants_sheet(request, project_id, round_id, major_number):
                      'แผนการเรียน',
                      'โรงเรียน',
                      'จังหวัด',
-                     'GPA'])
+                     'GPA',
+                     'การชำระเงินค่าสมัคร',])
     for applicant in applicants:
+        if applicant.has_paid:
+            payment_message = 'ชำระแล้ว'
+        else:
+            payment_message = 'ยังไม่ได้ชำระ'
         writer.writerow([applicant.national_id,
                          applicant.personalprofile.passport_number,
                          applicant.prefix,
@@ -488,7 +493,8 @@ def download_applicants_sheet(request, project_id, round_id, major_number):
                          applicant.educationalprofile.get_education_plan_display(),
                          applicant.educationalprofile.school_title,
                          applicant.educationalprofile.province.title,
-                         applicant.educationalprofile.gpa])
+                         applicant.educationalprofile.gpa,
+                         payment_message,])
     return response
 
 
