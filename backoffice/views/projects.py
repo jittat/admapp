@@ -379,8 +379,8 @@ def show_applicant(request, project_id, round_id, major_number, rank):
     judge_comments = application.judge_comment_set.filter(is_deleted=False, is_super=False)
     super_comments = JudgeComment.objects.filter(is_super=True, 
                                                  is_deleted=False,
-                                                 project_id=project.id,
-                                                 admission_round_id=admission_round.id,
+                                                 project=project,
+                                                 admission_round=admission_round,
                                                  major_number=major.number)
 
     admission_result = AdmissionResult.get_for_application_and_major(application, major)
@@ -583,8 +583,8 @@ def save_comment(request, project_id, round_id, national_id, major_number):
                            body=request.POST.get('body',''),
                            author_username=user.username,
                            is_super=False,
-                           project_id=project.id,
-                           admission_round_id=admission_round.id)
+                           project=project,
+                           admission_round=admission_round)
 
     if int(request.POST['super_comment']):
         comment.is_super = True
@@ -603,8 +603,8 @@ def save_comment(request, project_id, round_id, national_id, major_number):
         judge_comments = application.judge_comment_set.filter(is_deleted=False, is_super=False)
         super_comments = JudgeComment.objects.filter(is_super=True, 
                                                      is_deleted=False,
-                                                     project_id=project.id,
-                                                     admission_round_id=admission_round.id,
+                                                     project=project,
+                                                     admission_round=admission_round,
                                                      major_number=major.number)                      
         
         html = template.render({
@@ -656,8 +656,8 @@ def delete_comment(request, project_id, round_id, national_id, major_number, com
     judge_comments = application.judge_comment_set.filter(is_deleted=False, is_super=False)
     super_comments = JudgeComment.objects.filter(is_super=True, 
                                                   is_deleted=False,
-                                                  project_id=project.id,
-                                                  admission_round_id=admission_round.id,
+                                                  project=project,
+                                                  admission_round=admission_round,
                                                   major_number=major.number)                      
 
     html = template.render({
