@@ -53,6 +53,11 @@ class AdmissionRound(models.Model):
 
     is_available = models.BooleanField(default=False)
 
+    clearing_house_description = models.TextField(blank=True,
+                                                  verbose_name='ข้อมูลการยืนยันสิทธิ์')
+    clearing_house_dates = models.CharField(max_length=50,
+                                            blank=True)
+    
     class Meta:
         ordering = ['rank']
 
@@ -178,6 +183,12 @@ class AdmissionProjectRound(models.Model):
 
     accepted_for_interview_instructions = models.TextField(blank=True,
                                                            verbose_name='รายละเอียดแสดงกับผู้สมัครที่ผ่านการคัดเลือก')
+
+    accepted_result_shown = models.BooleanField(default=False,
+                                                verbose_name='แสดงผลการรับเข้าศึกษากับผู้สมัคร')
+
+    accepted_instructions = models.TextField(blank=True,
+                                             verbose_name='รายละเอียดแสดงกับผู้สมัครที่ได้รับการคัดเลือกเข้าศึกษา')
     
     class Meta:
         ordering = ['admission_round','admission_project']
@@ -650,6 +661,13 @@ class AdmissionResult(models.Model):
     is_accepted_for_interview = models.NullBooleanField(default=None)
     updated_accepted_for_interview_at = models.DateTimeField(null=True)
 
+    is_accepted = models.NullBooleanField(default=None)
+    updated_accepted_at = models.DateTimeField(null=True)
+
+    clearing_house_code = models.CharField(max_length=10,
+                                           blank=True)
+    clearing_house_code_number = models.IntegerField(default=0)
+    
     class Meta:
         indexes = [
             models.Index(fields=['application','major']),
