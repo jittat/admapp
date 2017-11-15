@@ -27,13 +27,8 @@
 {% endif %}
 <div class="row">
   <div {% if project_uploaded_documents %} class="col-md-5" {% else %} class="col-md-12" {% endif %}>
-    {% if active_application.admission_project.id == 4 %}
-      {% if accepted_for_interview_result_shown and is_accepted_for_interview %}
-        <h4>พิมพ์ใบสมัครเพื่อสัมภาษณ์</h4>
-        <a class="btn btn-success btn-sm" target="_blank" href="{% url 'appl:ap-print' %}">พิมพ์ใบสมัคร</a><br />
-        เพื่อนำมาประกอบการสัมภาษณ์ในวันที่ 10 พ.ย. 2560
-        <hr />
-      {% endif %}
+    {% if accepted_for_interview_result_shown and is_accepted_for_interview %}
+      {% include 'appl/include/interview_application_print_hook.html' %}
     {% endif %}
     
     {% if supplement_blocks %}

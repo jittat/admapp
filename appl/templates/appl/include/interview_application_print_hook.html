@@ -1,0 +1,13 @@
+{% if active_application.admission_project.id == 4 %}
+  <h4>พิมพ์ใบสมัครเพื่อสัมภาษณ์</h4>
+  <a class="btn btn-success btn-sm" target="_blank" href="{% url 'appl:ap-print' %}">พิมพ์ใบสมัคร</a><br />
+  เพื่อนำมาประกอบการสัมภาษณ์ในวันที่ 10 พ.ย. 2560
+  <hr />
+{% endif %}
+{% if active_application.admission_project.id == 2 %}
+  <h4>พิมพ์ใบสมัครเพื่อสัมภาษณ์</h4>
+  <a class="btn btn-success btn-sm" target="_blank" href="{% url 'appl:el-print' %}">พิมพ์ใบสมัคร</a><br />
+  เพื่อนำมาประกอบการสัมภาษณ์ในวันที่ 24 พ.ย. 2560
+  <hr />
+{% endif %}
+

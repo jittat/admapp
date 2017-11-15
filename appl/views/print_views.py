@@ -182,5 +182,6 @@ def ap_print(request):
                     'ap_courses': ap_courses, })
 
 
-
-
+@appl_login_required
+def el_print(request):
+    return HttpResponseForbidden()

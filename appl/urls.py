@@ -32,4 +32,5 @@ urlpatterns = [
 
     url(r'^natsport/print/$', print_views.sport_print, name='natsport-print'),
     url(r'^ap/print/$', print_views.ap_print, name='ap-print'),
+    url(r'^el/print/$', print_views.el_print, name='el-print'),
 ]
