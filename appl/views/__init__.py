@@ -120,9 +120,15 @@ def index_with_active_application(request, active_application):
     if project_round.accepted_for_interview_result_shown:
         admission_results = AdmissionResult.find_by_application(active_application)
         is_accepted_for_interview = False
+        is_accepted = False
+        accepted_result = None
         for res in admission_results:
             if res.is_accepted_for_interview:
                 is_accepted_for_interview = True
+                print(res.is_accepted)
+                if res.is_accepted:
+                    is_accepted = True
+                    accepted_result = res
 
         mresults = dict([(res.major_id, res) for res in admission_results])
         for major in major_selection.get_majors():
@@ -133,6 +139,8 @@ def index_with_active_application(request, active_application):
     else:
         admission_results = []
         is_accepted_for_interview = False
+        is_accepted = False
+        accepted_result = None
     
     notice = request.session.pop('notice', None)
 
@@ -167,6 +175,10 @@ def index_with_active_application(request, active_application):
                     'accepted_for_interview_result_shown': project_round.accepted_for_interview_result_shown,
                     'admission_results': admission_results,
                     'is_accepted_for_interview': is_accepted_for_interview,
+
+                    'accepted_result_shown': project_round.accepted_result_shown,
+                    'is_accepted': is_accepted,
+                    'accepted_result': accepted_result,
                   })
 
 

@@ -1,0 +1,33 @@
+<div class="row">
+  <div class="col-md-12">
+    <div class="border-a0 p5 mb10 pl10 pr10 bg-light">
+      {% if is_accepted_for_interview %}
+        {% if is_accepted %}
+          <h3>ขอแสดงความยินดีด้วย</h3>
+          <i class="text-success fa fa-check"></i>
+          คุณผ่านการสอบสัมภาษณ์และมีสิทธิ์เข้าศึกษาต่อในสาขา:
+          <h4>{{ accepted_result.major }} - {{ accepted_result.major.faculty }} ({{ accepted_result.major.faculty.campus.title }})</h4>
+          รหัสยืนยันตัวตนในระบบเคลียริงเฮาส์: {{ accepted_result.clearing_house_code }}
+          <div class="mt5">
+            {{ project_round.accepted_instructions|safe }}
+          </div>
+        {% else %}
+          <h3>ขอแสดงความเสียใจด้วย</h3>
+          คุณไม่ผ่านการสอบสัมภาษณ์ อย่างไรก็ตาม คุณยังมีโอกาสเข้าศึกษาต่อที่มหาวิทยาลัยเกษตรศาสตร์ผ่านทางโครงการอื่น ๆ ในรอบถัด ๆ ไป กรุณาติดตามข่าวสารได้จากเว็บไซต์ admission.ku.ac.th<br />
+          รายการสาขาที่มีสิทธิ์เข้าสัมภาษณ์:
+          <ul>
+            {% for result in admission_results %}
+              {% if result.is_accepted_for_interview %}
+                <li>{{ result.major.faculty }} - {{ result.major.title }}</li>
+              {% endif %}
+            {% endfor %}
+          </ul>
+          {{ project_round.accepted_for_interview_instructions|safe }}
+        {% endif %}
+      {% else %}
+        <h3>ขอแสดงความเสียใจด้วย</h3>
+        คุณไม่ผ่านการพิจารณาคัดเลือกให้เข้าสอบสัมภาษณ์ มหาวิทยาลัยเกษตรศาสตร์ขอขอบคุณผู้สมัครที่สนใจเข้าศึกษาต่อที่มหาวิทยาลัยเกษตรศาสตร์ นอกจากโครงการนี้แล้วยังมีโครงการรับสมัครในรอบการคัดเลือกอื่น ๆ อีก สามารถติดตามข้อมูลได้จากเว็บไซต์ admission.ku.ac.th
+      {% endif %}
+    </div>
+  </div>
+</div>

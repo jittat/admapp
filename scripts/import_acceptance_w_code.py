@@ -41,7 +41,18 @@ def main():
             majors = major_selection.get_majors()
 
             if major_num == 0:
-                accepted_major = majors[0]
+                accepted_major = None
+                for m in majors:
+                    results = AdmissionResult.objects.filter(applicant=application.applicant,
+                                                             application=application,
+                                                             major=m,
+                                                             is_accepted_for_interview=True).all()
+                    if len(results)!=0:
+                        accepted_major = m
+                        break
+                if not accepted_major:
+                    print('ERROR', nat_id,'major not found',major_num)
+                    continue
             else:
                 accepted_major = None
                 for m in majors:
@@ -61,11 +72,12 @@ def main():
             result = results[0]
 
             result.is_accepted = True
+            result.updated_accepted_at = datetime.now()
             result.clearing_house_code = items[3]
             result.clearing_house_code_number = int(items[4])
             result.save()
 
-            print(application.applicant)
+            print(application.applicant, result.major)
 
             counter += 1
 
