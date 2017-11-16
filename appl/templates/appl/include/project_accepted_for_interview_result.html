@@ -8,10 +8,20 @@
         <ul>
           {% for result in admission_results %}
             {% if result.is_accepted_for_interview %}
-              <li>{{ result.major.faculty }} - {{ result.major.title }}</li>
+              <li>
+                {{ result.major.faculty }} - {{ result.major.title }}
+                {% if result.has_interview_rank %}
+                  (สัมภาษณ์ลำดับที่ {{ result.interview_rank }})
+                {% endif %}
+              </li>
             {% endif %}
           {% endfor %}
         </ul>
+        {% if interview_descriptions %}
+          <div>
+            <b>สถานที่และเวลา:</b> {{ interview_descriptions.descriptions|linebreaksbr }}
+          </div>
+        {% endif %}
         {{ project_round.accepted_for_interview_instructions|safe }}
       {% else %}
         <h3>ขอแสดงความเสียใจด้วย</h3>

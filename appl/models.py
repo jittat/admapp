@@ -649,6 +649,7 @@ class Payment(models.Model):
         return Payment.objects.filter(applicant=applicant,
                                       admission_round=admission_round).all()
 
+    
 class AdmissionResult(models.Model):
     applicant = models.ForeignKey(Applicant)
     application = models.ForeignKey(ProjectApplication)
@@ -660,6 +661,7 @@ class AdmissionResult(models.Model):
 
     is_accepted_for_interview = models.NullBooleanField(default=None)
     updated_accepted_for_interview_at = models.DateTimeField(null=True)
+    interview_rank = models.IntegerField(default=0)
 
     is_accepted = models.NullBooleanField(default=None)
     updated_accepted_at = models.DateTimeField(null=True)
@@ -677,6 +679,9 @@ class AdmissionResult(models.Model):
             models.Index(fields=['applicant']),
         ]
 
+    def has_interview_rank(self):
+        return self.interview_rank != 0
+        
     @staticmethod
     def find_by_admission_round_and_major(admission_round, major):
         return AdmissionResult.objects.filter(admission_round=admission_round,
@@ -703,6 +708,27 @@ class AdmissionResult(models.Model):
         return AdmissionResult.objects.filter(application=application).all()
     
     
+class MajorInterviewDescription(models.Model):
+    major = models.ForeignKey(Major)
+    admission_round = models.ForeignKey(AdmissionRound)
+    descriptions = models.TextField()
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['admission_round','major']),
+            models.Index(fields=['major']),
+        ]
+
+    @staticmethod
+    def find_by_major_and_admission_round(major,admission_round):
+        descs = MajorInterviewDescription.objects.filter(major=major,
+                                                         admission_round=admission_round).all()
+        if len(descs) > 0:
+            return descs[0]
+        else:
+            return None
+    
+
 class Eligibility(object):
     def __init__(self, project=None, applicant=None):
         self.is_eligible = True

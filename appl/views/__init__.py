@@ -15,7 +15,7 @@ from appl.models import ProjectApplication
 from appl.models import ProjectUploadedDocument
 from appl.models import Eligibility
 from appl.models import Payment
-from appl.models import AdmissionResult
+from appl.models import AdmissionResult, MajorInterviewDescription
 
 from appl.views.upload import upload_form_for
 
@@ -122,6 +122,8 @@ def index_with_active_application(request, active_application):
         is_accepted_for_interview = False
         is_accepted = False
         accepted_result = None
+        interview_descriptions = None
+
         for res in admission_results:
             if res.is_accepted_for_interview:
                 is_accepted_for_interview = True
@@ -136,9 +138,15 @@ def index_with_active_application(request, active_application):
                 major.is_accepted_for_interview = False
             else:
                 major.is_accepted_for_interview = mresults[major.id].is_accepted_for_interview
+                if major.is_accepted_for_interview:
+                    interview_descriptions = (
+                        MajorInterviewDescription.find_by_major_and_admission_round(major,
+                                                                                    admission_round))
+
     else:
         admission_results = []
         is_accepted_for_interview = False
+        interview_descriptions = None
         is_accepted = False
         accepted_result = None
     
@@ -175,6 +183,7 @@ def index_with_active_application(request, active_application):
                     'accepted_for_interview_result_shown': project_round.accepted_for_interview_result_shown,
                     'admission_results': admission_results,
                     'is_accepted_for_interview': is_accepted_for_interview,
+                    'interview_descriptions': interview_descriptions,
 
                     'accepted_result_shown': project_round.accepted_result_shown,
                     'is_accepted': is_accepted,
