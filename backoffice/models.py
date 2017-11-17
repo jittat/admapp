@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-from appl.models import Campus, Faculty, AdmissionProject, AdmissionRound, ProjectApplication
+from appl.models import Campus, Faculty, AdmissionProject, AdmissionRound, ProjectApplication 
 from regis.models import Applicant
 
 
@@ -110,6 +110,11 @@ class JudgeComment(models.Model):
     body = models.TextField()
 
     is_deleted = models.BooleanField(default=False)
-
+    is_super = models.BooleanField(default=False)
+    
+    project = models.ForeignKey(AdmissionProject, default=None)
+    admission_round = models.ForeignKey(AdmissionRound, default=None)
+    major_number = models.IntegerField(default=0)
+    
     class Meta:
         ordering = ['-created_at']
