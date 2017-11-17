@@ -127,21 +127,21 @@ def index_with_active_application(request, active_application):
         for res in admission_results:
             if res.is_accepted_for_interview:
                 is_accepted_for_interview = True
-                print(res.is_accepted)
                 if res.is_accepted:
                     is_accepted = True
                     accepted_result = res
 
         mresults = dict([(res.major_id, res) for res in admission_results])
-        for major in major_selection.get_majors():
-            if major.id not in mresults:
-                major.is_accepted_for_interview = False
-            else:
-                major.is_accepted_for_interview = mresults[major.id].is_accepted_for_interview
-                if major.is_accepted_for_interview:
-                    interview_descriptions = (
-                        MajorInterviewDescription.find_by_major_and_admission_round(major,
-                                                                                    admission_round))
+        if major_selection:
+            for major in major_selection.get_majors():
+                if major.id not in mresults:
+                    major.is_accepted_for_interview = False
+                else:
+                    major.is_accepted_for_interview = mresults[major.id].is_accepted_for_interview
+                    if major.is_accepted_for_interview:
+                        interview_descriptions = (
+                            MajorInterviewDescription.find_by_major_and_admission_round(major,
+                                                                                        admission_round))
 
     else:
         admission_results = []
