@@ -6,9 +6,10 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-from appl.models import Campus, Faculty, AdmissionProject, AdmissionRound, ProjectApplication 
 from regis.models import Applicant
-
+from appl.models import Campus, Faculty
+from appl.models import AdmissionProject, AdmissionRound, ProjectApplication 
+from appl.models import Major
 
 class Profile(models.Model):
     ANY_MAJOR = 0
@@ -110,11 +111,20 @@ class JudgeComment(models.Model):
     body = models.TextField()
 
     is_deleted = models.BooleanField(default=False)
-    is_super = models.BooleanField(default=False)
+    is_shared_in_major = models.BooleanField(default=False)
     
-    project = models.ForeignKey(AdmissionProject, default=None)
-    admission_round = models.ForeignKey(AdmissionRound, default=None)
-    major_number = models.IntegerField(default=0)
+    admission_project = models.ForeignKey(AdmissionProject,
+                                          blank=True,
+                                          null=True,
+                                          default=None)
+    admission_round = models.ForeignKey(AdmissionRound,
+                                        blank=True,
+                                        null=True,
+                                        default=None)
+    major = models.ForeignKey(Major,
+                              blank=True,
+                              null=True,
+                              default=None)
     
     class Meta:
         ordering = ['-created_at']
