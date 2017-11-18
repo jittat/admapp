@@ -467,56 +467,6 @@ def download_applicant_document(request, project_id, round_id, major_number,
 
 
 @user_login_required
-def download_applicants_sheet(request, project_id, round_id, major_number):
-    user = request.user
-    project = get_object_or_404(AdmissionProject, pk=project_id)
-    admission_round = get_object_or_404(AdmissionRound, pk=round_id)
-    major = Major.get_by_project_number(project, major_number)
-
-    if not can_user_view_applicants_in_major(user, project, major):
-        return HttpResponseForbidden()
-
-    filename = 'applicants-{}-{}-{}.csv'.format(project_id, round_id, major_number)
-    response = HttpResponse(content_type='text/csv; charset=utf-8')
-    response['Content-Disposition'] = 'attachment; filename="{}"'.format(filename)
-    writer = csv.writer(response)
-
-    applicants = load_major_applicants(project, admission_round, major)
-    writer.writerow(['รหัสประจำตัวประชาชน',
-                     'หมายเลขหนังสือเดินทาง',
-                     'คำนำหน้า',
-                     'ชื่อต้น',
-                     'นามสกุล',
-                     'E-mail',
-                     'เบอร์โทรที่ติดต่อได้',
-                     'เบอร์โทรมือถือ',
-                     'แผนการเรียน',
-                     'โรงเรียน',
-                     'จังหวัด',
-                     'GPA',
-                     'การชำระเงินค่าสมัคร',])
-    for applicant in applicants:
-        if applicant.has_paid:
-            payment_message = 'ชำระแล้ว'
-        else:
-            payment_message = 'ยังไม่ได้ชำระ'
-        writer.writerow([applicant.national_id,
-                         applicant.personalprofile.passport_number,
-                         applicant.prefix,
-                         applicant.first_name,
-                         applicant.last_name,
-                         applicant.email,
-                         applicant.personalprofile.contact_phone,
-                         applicant.personalprofile.mobile_phone,
-                         applicant.educationalprofile.get_education_plan_display(),
-                         applicant.educationalprofile.school_title,
-                         applicant.educationalprofile.province.title,
-                         applicant.educationalprofile.gpa,
-                         payment_message,])
-    return response
-
-
-@user_login_required
 def check_mark_toggle(request, project_id, round_id, national_id, major_number, number):
     user = request.user
     applicant = get_object_or_404(Applicant, national_id=national_id)
@@ -733,3 +683,4 @@ def delete_comment(request, project_id, round_id, national_id, major_number, com
     return HttpResponse(json.dumps({ 'result': 'OK',
                                      'html': html }),
                         content_type='application/json')
+

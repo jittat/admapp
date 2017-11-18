@@ -1,9 +1,10 @@
 from django.conf.urls import url, include
 
 from . import views
-from backoffice.views import projects
 from backoffice.views import payments
+from backoffice.views import projects
 from backoffice.views import users
+from backoffice.views import reports
 
 app_name = 'backoffice'
 
@@ -26,11 +27,6 @@ urlpatterns = [
     url(r'^projects/(\d+)/(\d+)/$', projects.index, name='projects-index'),
     url(r'^projects/(\d+)/(\d+)/list/$', projects.list_applicants, name='projects-list'),
 
-
-    url(r'^projects/applicants/(\d+)/(\d+)/(\d+)/sheet$',
-        projects.download_applicants_sheet,
-        name='projects-download-app-sheet'),
-
     url(r'^projects/applicants/(\d+)/(\d+)/(\d+)/(\d+)/$',
         projects.show_applicant, name='projects-show-applicant'),
 
@@ -52,6 +48,14 @@ urlpatterns = [
     url(r'^projects/applicants/(\d+)/(\d+)/(\d+)/(\d+)/interview/(.+)/$',
         projects.set_call_for_interview,
         name='projects-set-call-for-interview'),
+
+    url(r'^projects/applicants/(\d+)/(\d+)/(\d+)/sheet$',
+        reports.download_applicants_sheet,
+        name='projects-download-app-sheet'),
+
+    url(r'^projects/applicants/(\d+)/(\d+)/(\d+)/interview-sheet$',
+        reports.download_applicants_interview_sheet,
+        name='projects-download-app-interview-sheet'),
 
     url(r'^users/$', users.index, name='users-index'),
 ]
