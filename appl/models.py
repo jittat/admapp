@@ -178,6 +178,8 @@ class AdmissionProjectRound(models.Model):
     applicant_info_viewable = models.BooleanField(default=False,
                                                   verbose_name='สามารถดูรายละเอียดผู้สมัครได้')
 
+    accepted_for_interview_result_frozen = models.BooleanField(default=False,
+                                                               verbose_name='ปิดการแก้ไขผลการเรียกสัมภาษณ์')
     accepted_for_interview_result_shown = models.BooleanField(default=False,
                                                               verbose_name='แสดงผลการเรียกสัมภาษณ์กับผู้สมัคร')
 

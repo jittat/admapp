@@ -572,8 +572,12 @@ def set_call_for_interview(request, project_id, round_id, national_id, major_num
     applicant = get_object_or_404(Applicant, national_id=national_id)
     project = get_object_or_404(AdmissionProject, pk=project_id)
     admission_round = get_object_or_404(AdmissionRound, pk=round_id)
+    project_round = project.get_project_round_for(admission_round)
     major = Major.get_by_project_number(project, major_number)
 
+    if project_round.accepted_for_interview_result_frozen:
+        return HttpResponseForbidden()
+    
     application = applicant.get_active_application(admission_round)
 
     if application.admission_project_id != project.id:
