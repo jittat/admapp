@@ -14,7 +14,7 @@ from appl.models import ProjectUploadedDocument, UploadedDocument
 from backoffice.views.permissions import can_user_view_project, can_user_view_applicant_in_major, can_user_view_applicants_in_major
 from backoffice.decorators import user_login_required
 
-from .projects import load_major_applicants
+from .projects import load_major_applicants, load_check_marks_and_results
 
 
 @user_login_required
@@ -191,8 +191,17 @@ def download_applicants_interview_sheet(request, project_id, round_id, major_num
     bordered_cell_format = workbook.add_format()
     bordered_cell_format.set_border(1)
     
-    applicants = load_major_applicants(project, admission_round, major)
+    all_applicants = load_major_applicants(project, admission_round, major)
+    load_check_marks_and_results(all_applicants, project, admission_round)
 
+    applicants = []
+    
+    for applicant in all_applicants:
+        if applicant.admission_results:
+            for res in applicant.admission_results:
+                if (res.major == major) and res.is_accepted_for_interview:
+                    applicants.append(applicant)
+        
     write_registration_sheet(reg_worksheet, project, applicants, major, bordered_cell_format)
     write_interview_result_sheet(result_worksheet, project, applicants, major, bordered_cell_format)
     
