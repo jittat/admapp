@@ -697,6 +697,13 @@ class AdmissionResult(models.Model):
                     if result.is_accepted_for_interview])
         
     @staticmethod
+    def accepted_count(admission_round, major):
+        return len([result for result
+                    in AdmissionResult.find_by_admission_round_and_major(admission_round,
+                                                                         major)
+                    if result.is_accepted])
+        
+    @staticmethod
     def get_for_application_and_major(application, major):
         results = AdmissionResult.objects.filter(application=application,
                                                  major=major).all()

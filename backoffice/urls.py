@@ -49,6 +49,10 @@ urlpatterns = [
         projects.set_call_for_interview,
         name='projects-set-call-for-interview'),
 
+    url(r'^projects/applicants/(\d+)/(\d+)/(\d+)/(\d+)/acceptance/(.+)/$',
+        projects.set_acceptance,
+        name='projects-set-acceptance'),
+
     url(r'^projects/applicants/(\d+)/(\d+)/(\d+)/sheet$',
         reports.download_applicants_sheet,
         name='projects-download-app-sheet'),

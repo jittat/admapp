@@ -6,10 +6,32 @@
   &nbsp;
   ผลการพิจารณา:
   {% if has_paid %}
-    เรียกสัมภาษณ์
-    <div id="interview_button_group_id" class="d-inline-block">
-      {% include 'backoffice/projects/include/interview_buttons.html' %}
-    </div>
+    {% if frozen_results and frozen_results.interview %}
+      {% if is_accepted_for_interview %}
+        <span class="badge badge-success"><i class="fa fa-check"></i></span> เรียกสัมภาษณ์
+      {% else %}
+        <span class="badge badge-danger"><i class="fa fa-close"></i></span> ไม่เรียกสัมภาษณ์
+      {% endif %}
+      {% if frozen_results.acceptance %}
+        {% if is_accepted %}
+          <span class="badge badge-success"><i class="fa fa-check"></i></span> รับเข้าศึกษา
+        {% else %}
+          <span class="badge badge-danger"><i class="fa fa-close"></i></span> ไม่รับเข้าศึกษา
+        {% endif %}
+      {% else %}
+        {% if is_accepted_for_interview %}
+          | การรับเข้าศึกษา
+          <div id="acceptance_button_group_id" class="d-inline-block">
+            {% include 'backoffice/projects/include/acceptance_buttons.html' %}
+          </div>
+        {% endif %}
+      {% endif %}
+    {% else %}
+      การสัมภาษณ์
+      <div id="interview_button_group_id" class="d-inline-block">
+        {% include 'backoffice/projects/include/interview_buttons.html' %}
+      </div>
+    {% endif %}
   {% else %}
     ไม่เรียกสัมภาษณ์
     <small>(ยังไม่ชำระค่าสมัคร)</small>
@@ -18,6 +40,22 @@
 <script>
   var baseToggleUrl = '{% url 'backoffice:projects-check-mark-toggle' project.id admission_round.id applicant.national_id major.number 0 %}';
   var baseSetInterviewUrl = '{% url 'backoffice:projects-set-call-for-interview' project.id admission_round.id applicant.national_id major.number 'x' %}';
+  var baseSetAcceptanceUrl = '{% url 'backoffice:projects-set-acceptance' project.id admission_round.id applicant.national_id major.number 'x' %}';
+
+  var saveResult = function(elt, baseUrl, buttonGroupSelector, countSelector) {
+    var decision = $(elt).data('decision');
+    var url = baseUrl.replace('/x/','/'+decision+'/');
+    jQuery.post(url,
+                { csrfmiddlewaretoken: csrftoken },
+                function(data) {
+                  if(data.result == 'OK') {
+                    $(buttonGroupSelector).html(data.html);
+                    $(countSelector).text(data.count);
+                  }
+                });
+    return false;
+  };
+  
   $(function(){
     $('.check-mark-groups').on('click','.check-mark-toggles', function() {
       var number = $(this).data('markNum');
@@ -31,18 +69,14 @@
                   });
       return false;
     });
-
+    
     $('#interview_button_group_id').on('click','.interview-selection-buttons', function() {
-      var decision = $(this).data('decision');
-      var url = baseSetInterviewUrl.replace('/x/','/'+decision+'/');
-      jQuery.post(url,
-                  { csrfmiddlewaretoken: csrftoken },
-                  function(data) {
-                    if(data.result == 'OK') {
-                      $('#interview_button_group_id').html(data.html);
-                      $('#accepted_for_interview_count_id').text(data.count);
-                    }
-                  });
+      saveResult(this, baseSetInterviewUrl, '#interview_button_group_id', '#accepted_for_interview_count_id');
+      return false;
+    });
+
+    $('#acceptance_button_group_id').on('click','.acceptance-selection-buttons', function() {
+      saveResult(this, baseSetAcceptanceUrl, '#acceptance_button_group_id', '#accepted_count_id');
       return false;
     });
   });

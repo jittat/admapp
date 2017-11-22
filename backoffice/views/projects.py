@@ -345,13 +345,14 @@ def load_all_judge_comments(application,
                                                           is_shared_in_major=False)
 
     return list(shared_comments) + list(judge_comments)
-    
+
 
 @user_login_required
 def show_applicant(request, project_id, round_id, major_number, rank):
     user = request.user
     project = get_object_or_404(AdmissionProject, pk=project_id)
     admission_round = get_object_or_404(AdmissionRound, pk=round_id)
+    project_round = project.get_project_round_for(admission_round)
     major = Major.get_by_project_number(project, major_number)
 
     real_rank = int(rank) - 1
@@ -401,11 +402,19 @@ def show_applicant(request, project_id, round_id, major_number, rank):
     admission_result = AdmissionResult.get_for_application_and_major(application, major)
     if admission_result:
         is_accepted_for_interview = admission_result.is_accepted_for_interview
+        is_accepted = admission_result.is_accepted
     else:
         is_accepted_for_interview = None
+        is_accepted = False
 
     major_accepted_for_interview_count = AdmissionResult.accepted_for_interview_count(admission_round,
                                                                                       major)
+
+    major_accepted_count = AdmissionResult.accepted_count(admission_round,
+                                                          major)
+
+    frozen_results = { 'interview': project_round.accepted_for_interview_result_frozen,
+                       'acceptance': project_round.accepted_result_shown }
 
     return render(request,
                   'backoffice/projects/show_applicant.html',
@@ -421,16 +430,43 @@ def show_applicant(request, project_id, round_id, major_number, rank):
                     'major_stat': major_stat,
                     'rank_choices': range(1,major_stat['total']+1),
                     'major_accepted_for_interview_count': major_accepted_for_interview_count,
+                    'major_accepted_count': major_accepted_count,
 
                     'uploaded_documents': uploaded_documents,
                     'education': education,
                     'personal': personal,
 
                     'is_accepted_for_interview': is_accepted_for_interview,
+                    'is_accepted': is_accepted,
+
+                    'frozen_results': frozen_results,
 
                     'check_mark_group': check_mark_group,
                     'judge_comments': judge_comments,
                   })
+
+
+def load_applicant_application_and_check_permission(request, project_id, round_id, national_id, major_number):
+    user = request.user
+
+    request.project = get_object_or_404(AdmissionProject, pk=project_id)
+    request.admission_round = get_object_or_404(AdmissionRound, pk=round_id)
+    request.project_round = request.project.get_project_round_for(request.admission_round)
+    request.major = Major.get_by_project_number(request.project, major_number)
+
+    request.applicant = get_object_or_404(Applicant, national_id=national_id)
+    request.application = request.applicant.get_active_application(request.admission_round)
+
+    if request.application.admission_project_id != request.project.id:
+        return (False, HttpResponseNotFound())
+
+    if not can_user_view_applicant_in_major(user, request.applicant, request.application, request.project, request.major):
+        return (False, redirect(reverse('backoffice:index')))
+
+    if not request.application.has_applied_to_major(request.major):
+        return (False,HttpResponseForbidden())
+
+    return (True, None)
 
 
 @user_login_required
@@ -440,23 +476,15 @@ def download_applicant_document(request, project_id, round_id, major_number,
     from appl.views.upload import get_uploaded_document_or_403
     from appl.views.upload import download_uploaded_document_response
 
-    user = request.user
-    project = get_object_or_404(AdmissionProject, pk=project_id)
-    admission_round = get_object_or_404(AdmissionRound, pk=round_id)
-    major = Major.get_by_project_number(project, major_number)
-
-    applicant = get_object_or_404(Applicant, national_id=national_id)
-    application = applicant.get_active_application(admission_round)
-
-    if application.admission_project_id != project.id:
-        return HttpResponseNotFound()
-
-    if not can_user_view_applicant_in_major(user, applicant, application, project, major):
-        return redirect(reverse('backoffice:index'))
-
-    if not application.has_applied_to_major(major):
-        return HttpResponseForbidden()
-
+    can_view, error_response = load_applicant_application_and_check_permission(request,
+                                                                               project_id,
+                                                                               round_id,
+                                                                               national_id,
+                                                                               major_number)
+    if not can_view:
+        return error_response
+    
+    applicant = request.applicant
     project_uploaded_document = get_object_or_404(ProjectUploadedDocument,pk=project_uploaded_document_id)
     uploaded_document = get_object_or_404(UploadedDocument,pk=document_id)
 
@@ -468,22 +496,17 @@ def download_applicant_document(request, project_id, round_id, major_number,
 
 @user_login_required
 def check_mark_toggle(request, project_id, round_id, national_id, major_number, number):
+    can_view, error_response = load_applicant_application_and_check_permission(request,
+                                                                               project_id,
+                                                                               round_id,
+                                                                               national_id,
+                                                                               major_number)
+    if not can_view:
+        return error_response
+
     user = request.user
-    applicant = get_object_or_404(Applicant, national_id=national_id)
-    project = get_object_or_404(AdmissionProject, pk=project_id)
-    admission_round = get_object_or_404(AdmissionRound, pk=round_id)
-    major = Major.get_by_project_number(project, major_number)
-
-    application = applicant.get_active_application(admission_round)
-
-    if application.admission_project_id != project.id:
-        return HttpResponseNotFound()
-
-    if not can_user_view_applicant_in_major(user, applicant, application, project, major):
-        return redirect(reverse('backoffice:index'))
-
-    if not application.has_applied_to_major(major):
-        return HttpResponseForbidden()
+    applicant = request.applicant
+    application = request.application
 
     if hasattr(application,'check_mark_group'):
         check_mark_group = application.check_mark_group
@@ -518,32 +541,28 @@ def check_mark_toggle(request, project_id, round_id, national_id, major_number, 
 
 @user_login_required
 def set_call_for_interview(request, project_id, round_id, national_id, major_number, decision):
+    can_view, error_response = load_applicant_application_and_check_permission(request,
+                                                                               project_id,
+                                                                               round_id,
+                                                                               national_id,
+                                                                               major_number)
+    if not can_view:
+        return error_response
+
     user = request.user
-    applicant = get_object_or_404(Applicant, national_id=national_id)
-    project = get_object_or_404(AdmissionProject, pk=project_id)
-    admission_round = get_object_or_404(AdmissionRound, pk=round_id)
-    project_round = project.get_project_round_for(admission_round)
-    major = Major.get_by_project_number(project, major_number)
+    applicant = request.applicant
+    admission_round = request.admission_round
+    major = request.major
+    application = request.application
 
-    if project_round.accepted_for_interview_result_frozen:
-        return HttpResponseForbidden()
-    
-    application = applicant.get_active_application(admission_round)
-
-    if application.admission_project_id != project.id:
-        return HttpResponseNotFound()
-
-    if not can_user_view_applicant_in_major(user, applicant, application, project, major):
-        return redirect(reverse('backoffice:index'))
-
-    if not application.has_applied_to_major(major):
+    if request.project_round.accepted_for_interview_result_frozen:
         return HttpResponseForbidden()
 
     admission_result = AdmissionResult.get_for_application_and_major(application, major)
     if not admission_result:
         admission_result = AdmissionResult(applicant=applicant,
                                            application=application,
-                                           admission_project=project,
+                                           admission_project=request.project,
                                            admission_round=admission_round,
                                            major=major)
 
@@ -578,23 +597,74 @@ def set_call_for_interview(request, project_id, round_id, national_id, major_num
 
 
 @user_login_required
-def save_comment(request, project_id, round_id, national_id, major_number):
+def set_acceptance(request, project_id, round_id, national_id, major_number, decision):
+    can_view, error_response = load_applicant_application_and_check_permission(request,
+                                                                               project_id,
+                                                                               round_id,
+                                                                               national_id,
+                                                                               major_number)
+    if not can_view:
+        return error_response
+
     user = request.user
-    applicant = get_object_or_404(Applicant, national_id=national_id)
-    project = get_object_or_404(AdmissionProject, pk=project_id)
-    admission_round = get_object_or_404(AdmissionRound, pk=round_id)
-    major = Major.get_by_project_number(project, major_number)
+    applicant = request.applicant
+    admission_round = request.admission_round
+    major = request.major
+    application = request.application
 
-    application = applicant.get_active_application(admission_round)
-
-    if application.admission_project_id != project.id:
-        return HttpResponseNotFound()
-
-    if not can_user_view_applicant_in_major(user, applicant, application, project, major):
-        return redirect(reverse('backoffice:index'))
-
-    if not application.has_applied_to_major(major):
+    if request.project_round.accepted_result_shown:
         return HttpResponseForbidden()
+    
+    admission_result = AdmissionResult.get_for_application_and_major(application, major)
+    if not admission_result:
+        return HttpResponseForbidden()
+
+    if decision == 'accepted':
+        admission_result.is_accepted = True
+    else:
+        admission_result.is_accepted = False
+
+    admission_result.updated_accepted_at = datetime.now()
+    admission_result.save()
+
+    LogItem.create('Acceptance decision (major: {0} {1}) by {2}'.format(major_number,
+                                                                        decision,
+                                                                        user.username),
+                   applicant,
+                   request)
+
+    is_accepted = admission_result.is_accepted
+
+    from django.template import loader
+    template = loader.get_template('backoffice/projects/include/acceptance_buttons.html')
+
+    html = template.render({ 'is_accepted': is_accepted }, request)
+
+    major_accepted_count = AdmissionResult.accepted_count(admission_round,
+                                                          major)
+
+    return HttpResponse(json.dumps({ 'result': 'OK',
+                                     'html': html,
+                                     'count': major_accepted_count }),
+                        content_type='application/json')
+
+
+@user_login_required
+def save_comment(request, project_id, round_id, national_id, major_number):
+    can_view, error_response = load_applicant_application_and_check_permission(request,
+                                                                               project_id,
+                                                                               round_id,
+                                                                               national_id,
+                                                                               major_number)
+    if not can_view:
+        return error_response
+
+    user = request.user
+    applicant = request.applicant
+    project = request.project
+    admission_round = request.admission_round
+    major = request.major
+    application = request.application
 
     comment = JudgeComment(applicant=applicant,
                            project_application=application,
@@ -623,13 +693,12 @@ def save_comment(request, project_id, round_id, national_id, major_number):
                                                  admission_round,
                                                  major)
         
-        html = template.render({
-                'judge_comments': judge_comments,
-                'project':project,
-                'admission_round':admission_round,
-                'applicant':applicant,
-                'major':major }
-            , request)
+        html = template.render({ 'judge_comments': judge_comments,
+                                 'project':project,
+                                 'admission_round':admission_round,
+                                 'applicant':applicant,
+                                 'major':major, }, request)
+
         return HttpResponse(json.dumps({ 'result': 'OK',
                                          'html': html }),
                             content_type='application/json')
@@ -640,24 +709,22 @@ def save_comment(request, project_id, round_id, national_id, major_number):
 
 @user_login_required
 def delete_comment(request, project_id, round_id, national_id, major_number, comment_id):
+    can_view, error_response = load_applicant_application_and_check_permission(request,
+                                                                               project_id,
+                                                                               round_id,
+                                                                               national_id,
+                                                                               major_number)
+    if not can_view:
+        return error_response
+
     user = request.user
-    applicant = get_object_or_404(Applicant, national_id=national_id)
-    project = get_object_or_404(AdmissionProject, pk=project_id)
-    admission_round = get_object_or_404(AdmissionRound, pk=round_id)
-    major = Major.get_by_project_number(project, major_number)
+    applicant = request.applicant
+    project = request.project
+    admission_round = request.admission_round
+    major = request.major
+    application = request.application
+
     comment = get_object_or_404(JudgeComment, pk=comment_id)
-
-    application = applicant.get_active_application(admission_round)
-
-    if application.admission_project_id != project.id:
-        return HttpResponseNotFound()
-
-    if not can_user_view_applicant_in_major(user, applicant, application, project, major):
-        return redirect(reverse('backoffice:index'))
-
-    if not application.has_applied_to_major(major):
-        return HttpResponseForbidden()
-
     comment.is_deleted = True
     comment.save()
 
@@ -673,13 +740,12 @@ def delete_comment(request, project_id, round_id, national_id, major_number, com
                                              admission_round,
                                              major)
 
-    html = template.render({
-            'judge_comments': judge_comments,
-            'project':project,
-            'admission_round':admission_round,
-            'applicant':applicant,
-            'major':major }
-        , request)
+    html = template.render({'judge_comments': judge_comments,
+                            'project': project,
+                            'admission_round': admission_round,
+                            'applicant': applicant,
+                            'major': major }, request)
+    
     return HttpResponse(json.dumps({ 'result': 'OK',
                                      'html': html }),
                         content_type='application/json')
