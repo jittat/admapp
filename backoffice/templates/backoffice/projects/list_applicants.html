@@ -30,6 +30,7 @@
                 {% include info_header_template %}
               {% endif %}
               <th></th>
+              <th style="width: 100px;"></th>
               <th>เรียกสัมภาษณ์</th>
             {% endif %}
           </tr>
@@ -70,6 +71,9 @@
                 {% if info_header_template %}
                   {% include info_template %}
                 {% endif %}
+                <td>
+                  <a class="btn btn-sm btn-outline-primary" target="_blank" href="{% url 'backoffice:projects-show-applicant' project.id admission_round.id applicant.major_number applicant.r %}">พิจารณา</a>
+                </td>
                 <td>
                   {% if applicant.check_marks %}
                     <div class="d-inline-block">

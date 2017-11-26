@@ -17,14 +17,14 @@ from backoffice.decorators import user_login_required
 from backoffice.models import CheckMarkGroup, JudgeComment
 
 def load_applicant_round_paid_amount(admission_round):
-    round_payments = Payment.objects.select_related('applicant').filter(admission_round=admission_round)
+    round_payments = Payment.objects.filter(admission_round=admission_round)
 
     paid_amount = {}
     for p in round_payments:
-        if p.applicant:
-            if p.applicant.national_id not in paid_amount:
-                paid_amount[p.applicant.national_id] = 0
-            paid_amount[p.applicant.national_id] += p.amount
+        if p.applicant_id:
+            if p.applicant_id not in paid_amount:
+                paid_amount[p.applicant_id] = 0
+            paid_amount[p.applicant_id] += p.amount
 
     return paid_amount
 
@@ -78,7 +78,7 @@ def load_project_applicants(project, admission_round, faculty):
 
         admission_fee = app.admission_fee(project_base_fee=project.base_fee,
                                           majors=applicant.majors)
-        applicant.has_paid = applicant_paid_amount.get(applicant.national_id,0) >= admission_fee
+        applicant.has_paid = applicant_paid_amount.get(applicant.id,0) >= admission_fee
 
         applicants.append(applicant)
 
@@ -120,6 +120,19 @@ def process_applicant_stats(majors, applicants, max_num_selections):
     return majors
 
 
+def sorted_applicants(applicants, with_interview_call_results=False):
+    amaps = dict([(a.id,a) for a in applicants])
+    for a in applicants:
+        if not hasattr(a,'major_number'):
+            a.major_number = 0
+    sorted_applicant_ids = [x[3] for x in sorted([(applicant.major_number,
+                                                   ({True: 0, False: 1}[applicant.has_paid]),
+                                                   applicant.national_id,
+                                                   applicant.id) for applicant
+                                                  in applicants])]
+    return [amaps[i] for i in sorted_applicant_ids]
+
+
 def load_major_applicants(project, admission_round, major):
     project_applications = ProjectApplication.find_for_project_and_round(project,
                                                                          admission_round,
@@ -138,16 +151,11 @@ def load_major_applicants(project, admission_round, major):
         if major.number in major_numbers:
             admission_fee = application.admission_fee(project_base_fee=project.base_fee,
                                                       majors=application.major_selection.get_majors(major_map))
-            applicant.has_paid = applicant_paid_amount.get(applicant.national_id,0) >= admission_fee
+            applicant.has_paid = applicant_paid_amount.get(applicant.id,0) >= admission_fee
 
             applicants.append(applicant)
 
-    amaps = dict([(a.id,a) for a in applicants])
-    sorted_applicant_ids = [x[2] for x in sorted([(({True: 0, False: 1}[applicant.has_paid]),
-                                                   applicant.national_id,
-                                                   applicant.id) for applicant
-                                                  in applicants])]
-    return [amaps[i] for i in sorted_applicant_ids]
+    return sorted_applicants(applicants)
 
 
 def load_major_applicant_with_major_stats(project, admission_round, major, num):
@@ -275,13 +283,13 @@ def list_applicants(request, project_id, round_id):
     if user_major_number != user.profile.ANY_MAJOR:
         applicants = [a for a in applicants if a.major_number == user_major_number]
 
-    amap = dict([(a.id,a) for a in applicants])
-    sorted_applicants = [x[3] for x in sorted([(applicant.major_number,
-                                                ({True: 0, False: 1}[applicant.has_paid]),
-                                                applicant.national_id,
-                                                applicant.id) for applicant
-                                               in applicants])]
-    applicants = [amap[i] for i in sorted_applicants]
+    applicant_info_viewable = project_round.applicant_info_viewable
+
+    if applicant_info_viewable:
+        load_check_marks_and_results(applicants, project, admission_round)
+
+    applicants = sorted_applicants(applicants)
+
     old_num = -1
     r = 0
     for a in applicants:
@@ -294,15 +302,11 @@ def list_applicants(request, project_id, round_id):
 
     sorted_by_majors = (project.max_num_selections == 1)
 
-    applicant_info_viewable = project_round.applicant_info_viewable
-
     info_col_count = 0
     info_template = ''
     info_header_template = ''
 
     if applicant_info_viewable:
-        load_check_marks_and_results(applicants, project, admission_round)
-
         from supplements.models import PROJECT_APPLICANT_LIST_ADDITIONS
 
         if project.title in PROJECT_APPLICANT_LIST_ADDITIONS:
