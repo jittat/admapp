@@ -30,6 +30,9 @@
               <td class="text-right">
                 เรียกสัมภาษณ์
               </td>
+              <td class="text-right">
+                รับจริง
+              </td>
             {% endif %}
             {% for r in ranks %}
               <td class="text-right">
@@ -63,6 +66,9 @@
             {% if applicant_info_viewable %}
               <td class="text-right">
                 {{ major.accepted_for_interview_count }}
+              </td>
+              <td class="text-right">
+                {{ major.accepted_count }}
               </td>
             {% endif %}
             {% for stat in major.stats %}

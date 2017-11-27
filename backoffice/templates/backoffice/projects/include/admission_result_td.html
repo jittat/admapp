@@ -1,18 +1,38 @@
 {% if applicant.admission_results %}
   {% if project.max_num_selections == 1 %}
     {% if applicant.admission_results.0.is_accepted_for_interview %}
-      <span class="badge badge-success">เรียก</span>
+      <td>
+        <span class="badge badge-success">เรียก</span>
+      </td>
+      <td>
+        {% if applicant.admission_results.0.is_accepted %}
+          <span class="badge badge-success">รับเข้าศึกษา</span>
+        {% else %}
+          {% if applicant.admission_results.0.is_accepted == False %}
+            <span class="badge badge-danger">ไม่รับ</span>
+          {% endif %}
+        {% endif %}
+      </td>
     {% else %}
-      {% if applicant.admission_results.0.is_accepted_for_interview == False %}<span class="badge badge-danger">ไม่เรียก</span>{% endif %}
+      <td>
+        {% if applicant.admission_results.0.is_accepted_for_interview == False %}<span class="badge badge-danger">ไม่เรียก</span>{% endif %}
+      </td>
+      <td></td>
     {% endif %}
   {% else %}
-    {% for result in applicant.admission_results %}
-      {% if result.is_accepted_for_interview %}
-        <i class="text-success fa fa-check"></i> <small>เรียก {{ result.major }}</small>
-      {% else %}
-        {% if result.is_accepted_for_interview == False %}<i class="text-danger fa fa-close"></i> <small>ไม่เรียก {{ result.major }}</small>{% endif %}
-      {% endif %}
-      <br />
-    {% endfor %}
+    <td>
+      {% for result in applicant.admission_results %}
+        {% if result.is_accepted_for_interview %}
+          <i class="text-success fa fa-check"></i> <small>เรียก {{ result.major }}</small>
+        {% else %}
+          {% if result.is_accepted_for_interview == False %}<i class="text-danger fa fa-close"></i> <small>ไม่เรียก {{ result.major }}</small>{% endif %}
+        {% endif %}
+        <br />
+      {% endfor %}
+    </td>
+    <td></td>
   {% endif %}
+{% else %}
+  <td></td>
+  <td></td>
 {% endif %}

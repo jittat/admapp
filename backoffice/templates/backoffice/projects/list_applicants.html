@@ -13,8 +13,9 @@
       {% endif %}
       {% if applicant_info_viewable %}
         {% if project.max_num_selections == 1 %}
-          <a id="all_applicant_toggle_id" href="#" class="badge badge-pill badge-secondary">แสดงทั้งหมด</a>
-          <a id="interview_only_toggle_id" href="#" class="badge badge-pill badge-light">แสดงเฉพาะที่เรียกสัมภาษณ์</a>
+          <a id="all_applicant_toggle_id" href="#" class="badge badge-pill badge-secondary list-toggle-buttons">แสดงทั้งหมด</a>
+          <a id="interview_only_toggle_id" href="#" class="badge badge-pill badge-light list-toggle-buttons">แสดงเฉพาะที่เรียกสัมภาษณ์</a>
+          <a id="accepted_only_toggle_id" href="#" class="badge badge-pill badge-light list-toggle-buttons">แสดงเฉพาะที่รับเข้าศึกษา</a>
         {% endif %}
       {% endif %}
       <table class="table table-striped table-sm bborder-a0">
@@ -31,12 +32,14 @@
               {% endif %}
               <th></th>
               <th style="width: 100px;"></th>
-              <th>เรียกสัมภาษณ์</th>
+              <th>สัมภาษณ์</th>
+              <th>รับเข้า</th>
             {% endif %}
           </tr>
         </thead>
         <tbody>
           {% for applicant in applicants %}
+
             {% if sorted_by_majors %}
               {% ifchanged applicant.major_number %}
                 <tr class="table-info">
@@ -51,7 +54,9 @@
                 </tr>
               {% endifchanged %}
             {% endif %}
-            <tr class="applicant-items major-{{ applicant.major_number }} {% if project.max_num_selections == 1 %}{% if applicant.admission_results.0.is_accepted_for_interview %}called-for-interview{% else %}not-called-for-interview{% endif %}{% endif %}" data-major-number="{{ applicant.major_number }}">
+
+            <tr class="applicant-items major-{{ applicant.major_number }} {% if project.max_num_selections == 1 %}{% if applicant.admission_results.0.is_accepted_for_interview %}called-for-interview{% else %}not-called-for-interview{% endif %} {% if applicant.admission_results.0.is_accepted %}accepted{% else %}not-accepted{% endif %} {% endif %}" data-major-number="{{ applicant.major_number }}">
+              
               <td class="app-number">{{ applicant.r }}</td>
               <td><a href="{% url 'backoffice:show-applicant-in-project' applicant.national_id project.id %}">{{ applicant.national_id }}</a></td>
               <td>{{ applicant.get_full_name }}</td>
@@ -89,9 +94,8 @@
                     </div>
                   {% endif %}
                 </td>
-                <td>
-                  {% include 'backoffice/projects/include/admission_result_td.html' %}
-                </td>
+
+                {% include 'backoffice/projects/include/admission_result_td.html' %}
               {% endif %}
             </tr>
           {% endfor %}
@@ -100,11 +104,11 @@
     </div>
   </div>
   <script>
-    var renumber = function(all) {
+    var renumber = function(all, cls) {
       var count = 0;
       var old_num = "-";
       $('.applicant-items').each(function(i,elt){
-        if((all) || ($(this).hasClass('called-for-interview'))) {
+        if((all) || ($(this).hasClass(cls))) {
           var num = $(this).data('majorNumber');
           if(num != old_num) {
             count = 0;
@@ -121,16 +125,29 @@
         $('.applicant-items').show();
         renumber(true);
         
+        $('.list-toggle-buttons').removeClass('badge-secondary').addClass('badge-light');
+
         $('#all_applicant_toggle_id').removeClass('badge-light').addClass('badge-secondary');
-        $('#interview_only_toggle_id').removeClass('badge-secondary').addClass('badge-light');
         return false;
       });
       $('#interview_only_toggle_id').click(function(){
+        $('.applicant-items.called-for-interview').show();
         $('.applicant-items.not-called-for-interview').hide();
-        renumber(false);
+        renumber(false, 'called-for-interview');
         
-        $('#all_applicant_toggle_id').removeClass('badge-secondary').addClass('badge-light');
+        $('.list-toggle-buttons').removeClass('badge-secondary').addClass('badge-light');
+
         $('#interview_only_toggle_id').removeClass('badge-light').addClass('badge-secondary');
+        return false;
+      });
+      $('#accepted_only_toggle_id').click(function(){
+        $('.applicant-items.accepted').show();
+        $('.applicant-items.not-accepted').hide();
+        renumber(false, 'accepted');
+        
+        $('.list-toggle-buttons').removeClass('badge-secondary').addClass('badge-light');
+
+        $('#accepted_only_toggle_id').removeClass('badge-light').addClass('badge-secondary');
         return false;
       });
     });
