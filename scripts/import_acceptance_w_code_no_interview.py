@@ -78,10 +78,14 @@ def main():
                                                     application=application,
                                                     major=accepted_major).all()
             if len(results) == 0:
-                print('ERROR', nat_id,'major not found',major_num,'result not found')
-                continue
-
-            result = results[0]
+                result = AdmissionResult(applicant=application.applicant,
+                                         application=application,
+                                         admission_project=admission_project,
+                                         admission_round=admission_round,
+                                         major_rank=0,
+                                         major=accepted_major)
+            else:
+                result = results[0]
 
             result.is_accepted_for_interview = True
             result.is_accepted = True
