@@ -32,6 +32,9 @@ class Faculty(models.Model):
     title = models.CharField(max_length=100)
     campus = models.ForeignKey('Campus')
 
+    ku_code = models.CharField(max_length=10, blank=True)
+    cupt_code = models.CharField(max_length=10, blank=True)
+    
     class Meta:
         verbose_name_plural = 'faculties'
 
@@ -68,6 +71,12 @@ class AdmissionRound(models.Model):
         else:
             return 'รอบที่ %d/%d' % (self.number, self.subround_number)
 
+    def get_full_number(self):
+        if self.subround_number == 0:
+            return '%d' % (self.number,)
+        else:
+            return '%d/%d' % (self.number, self.subround_number)
+        
     @staticmethod
     def get_available():
         rounds = AdmissionRound.objects.filter(is_available=True).all()
@@ -114,6 +123,8 @@ class AdmissionProject(models.Model):
     base_fee = models.IntegerField(default=0,
                                    verbose_name='ค่าสมัคร')
 
+    cupt_code = models.CharField(max_length=10, blank=True)
+    
     def __str__(self):
         return self.title
 
@@ -224,6 +235,11 @@ class Major(models.Model):
     additional_fee_per_major = models.IntegerField(default=0,
                                                    verbose_name='ค่าสมัครเพิ่มเติม (คิดซ้ำสาขา)')
 
+    ku_code = models.CharField(max_length=10, blank=True)
+    study_type = models.CharField(max_length=20, blank=True)
+    cupt_code = models.CharField(max_length=10, blank=True)
+    cupt_study_type_code = models.CharField(max_length=10, blank=True)
+    
     class Meta:
         ordering = ['number']
 

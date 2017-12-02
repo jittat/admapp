@@ -83,6 +83,9 @@ class Applicant(models.Model):
         
         return application
 
+    def has_registered_with_passport(self):
+        return self.national_id.startswith('999')
+    
     def generate_random_national_id_and_save(self):
         applicants = Applicant.objects.filter(passport_number=self.passport_number).all()
         if len(applicants) != 0:
