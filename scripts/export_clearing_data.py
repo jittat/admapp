@@ -15,10 +15,10 @@ def main():
     admission_project = AdmissionProject.objects.get(pk=project_id)
     admission_round = AdmissionRound.objects.get(pk=round_id)
 
-    results = AdmissionResult.objects.filter(admission_project=admission_project,
+    all_results = AdmissionResult.objects.filter(admission_project=admission_project,
                                              admission_round=admission_round).all()
-
     
+    results = [x[2] for x in sorted([(r.major.number, r.applicant.national_id, r) for r in all_results])]
 
     count = 0
     for res in results:
@@ -37,7 +37,7 @@ def main():
             faculty = major.faculty
             campus = faculty.campus
             
-            if applicant.has_registered_with_passport:
+            if applicant.has_registered_with_passport():
                 national_id = ''
                 passport = applicant.passport_number
             else:
