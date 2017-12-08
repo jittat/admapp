@@ -699,7 +699,14 @@ class AdmissionResult(models.Model):
 
     def has_interview_rank(self):
         return self.interview_rank != 0
-        
+
+    def read_clearing_house_code(self):
+        if self.clearing_house_code:
+            from appl.clearing_utils import read_clearing_code
+            return read_clearing_code(self.clearing_house_code)
+        else:
+            return ''
+    
     @staticmethod
     def find_by_admission_round_and_major(admission_round, major):
         return AdmissionResult.objects.filter(admission_round=admission_round,
