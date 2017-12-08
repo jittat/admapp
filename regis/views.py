@@ -30,64 +30,64 @@ class LoginForm(forms.Form):
 
 
 class ForgetForm(forms.Form):
-    national_id = forms.CharField(label='รหัสประจำตัวประชาชนหรือหมายเลขพาสปอร์ต',
+    national_id = forms.CharField(label=_('รหัสประจำตัวประชาชนหรือหมายเลขพาสปอร์ต'),
                                   max_length=20)
-    email = forms.CharField(label='อีเมลที่ลงทะเบียน',
+    email = forms.CharField(label=_('อีเมลที่ลงทะเบียน'),
                             max_length=100)
 
 
 
 PASSWORD_THAI_ERROR_MESSAGES = {
-    'password_entirely_numeric': 'รหัสผ่านมีแต่ตัวเลข',
-    'password_too_short': 'รหัสผ่านสั้นเกินไป',
-    'password_too_common': 'รหัสผ่านเป็นรหัสผ่านที่ใช้บ่อยมากเกินไป',
+    'password_entirely_numeric': _('รหัสผ่านมีแต่ตัวเลข'),
+    'password_too_short': _('รหัสผ่านสั้นเกินไป'),
+    'password_too_common': _('รหัสผ่านเป็นรหัสผ่านที่ใช้บ่อยมากเกินไป'),
 }
 
 HAS_NATIONAL_ID_CHOICES = [
-    ('1','มีรหัสประจำตัวประชาชน'),
-    ('0','ไม่มีรหัสประจำตัวประชาชน (ใช้เลขที่หนังสือเดินทางในการสมัคร)'),
+    ('1',_('มีรหัสประจำตัวประชาชน')),
+    ('0',_('ไม่มีรหัสประจำตัวประชาชน (ใช้เลขที่หนังสือเดินทางในการสมัคร)')),
 ]
 
 class RegistrationForm(forms.Form):
 
-    has_national_id = forms.ChoiceField(label='ผู้สมัครที่มีรหัสประจำตัวประชาชน ต้องสมัครด้วยรหัสประจำตัวประชาชนเท่านั้น',
-                                        help_text='หากเคยสมัครแล้วแต่ไม่สามารถเข้าสู่ระบบได้ กรุณากดขอรหัสผ่านใหม่',
+    has_national_id = forms.ChoiceField(label=_('ผู้สมัครที่มีรหัสประจำตัวประชาชน ต้องสมัครด้วยรหัสประจำตัวประชาชนเท่านั้น'),
+                                        help_text=_('หากเคยสมัครแล้วแต่ไม่สามารถเข้าสู่ระบบได้ กรุณากดขอรหัสผ่านใหม่'),
                                         choices=HAS_NATIONAL_ID_CHOICES, 
                                         widget=forms.Select(), 
                                         initial=1)
 
-    national_id = forms.CharField(label='รหัสประจำตัวประชาชน',
+    national_id = forms.CharField(label=_('รหัสประจำตัวประชาชน'),
                                   max_length=20, 
                                   required=False)
-    national_id_confirm = forms.CharField(label='ยืนยันรหัสประจำตัวประชาชน',
+    national_id_confirm = forms.CharField(label=_('ยืนยันรหัสประจำตัวประชาชน'),
                                           max_length=20,
                                           required=False)
 
-    passport_number = forms.CharField(label='เลขที่หนังสือเดินทาง (Passport No.)', 
+    passport_number = forms.CharField(label=_('เลขที่หนังสือเดินทาง (Passport No.)'), 
                                       max_length=20,
                                       required=False)
-    passport_number_confirm = forms.CharField(label='ยืนยันเลขที่หนังสือเดินทาง (Passport No.)', 
+    passport_number_confirm = forms.CharField(label=_('ยืนยันเลขที่หนังสือเดินทาง (Passport No.)'), 
                                               max_length=20,
                                               required=False)
 
-    email = forms.EmailField(label='อีเมล',
-                             help_text='กรุณากรอกอีเมลที่ใช้งานได้ เพื่อรับข้อมูลสำคัญเกี่ยวกับการสมัครเข้าศึกษาจากเรา')
-    email_confirm = forms.EmailField(label='ยืนยันอีเมล')
+    email = forms.EmailField(label=_('อีเมล'),
+                             help_text=_('กรุณากรอกอีเมลที่ใช้งานได้ เพื่อรับข้อมูลสำคัญเกี่ยวกับการสมัครเข้าศึกษาจากเรา'))
+    email_confirm = forms.EmailField(label=_('ยืนยันอีเมล'))
 
-    prefix = forms.ChoiceField(label='คำนำหน้า',
-                               choices=[('นาย','นาย'),
-                                        ('นางสาว','นางสาว'),
-                                        ('นาง','นาง')])
-    first_name = forms.CharField(label='ชื่อ',
+    prefix = forms.ChoiceField(label=_('คำนำหน้า'),
+                               choices=[('นาย',_('นาย')),
+                                        ('นางสาว',_('นางสาว')),
+                                        ('นาง',_('นาง'))])
+    first_name = forms.CharField(label=_('ชื่อ'),
                                  max_length=100)
-    last_name = forms.CharField(label='นามสกุล',
+    last_name = forms.CharField(label=_('นามสกุล'),
                                 max_length=200)
 
-    password = forms.CharField(label='รหัสผ่าน',
+    password = forms.CharField(label=_('รหัสผ่าน'),
                                max_length=100,
-                               help_text='ต้องมีความยาวไม่น้อยกว่า 8 ตัวอักษร ไม่สามารถประกอบขึ้นจากตัวเลขเพียงอย่างเดียวได้',
+                               help_text=_('ต้องมีความยาวไม่น้อยกว่า 8 ตัวอักษร ไม่สามารถประกอบขึ้นจากตัวเลขเพียงอย่างเดียวได้'),
                                widget=forms.PasswordInput)
-    password_confirm = forms.CharField(label='ยืนยันรหัสผ่าน',
+    password_confirm = forms.CharField(label=_('ยืนยันรหัสผ่าน'),
                                        max_length=100,
                                        widget=forms.PasswordInput)
 
@@ -96,7 +96,7 @@ class RegistrationForm(forms.Form):
         self.helper = FormHelper()
         self.helper.layout = Layout(
             Fieldset(
-                'ข้อมูลสำหรับการเข้าสู่ระบบ',
+                _('ข้อมูลสำหรับการเข้าสู่ระบบ'),
                 Row(
                     Div('national_id', css_class='col-md-6'),
                     Div('national_id_confirm', css_class='col-md-6'),
@@ -112,7 +112,7 @@ class RegistrationForm(forms.Form):
                 ),
             ),
             Fieldset(
-                'ข้อมูลพื้นฐานของผู้สมัคร',
+                _('ข้อมูลพื้นฐานของผู้สมัคร'),
                 Row(
                     Div('prefix', css_class='col-md-2'),
                     Div('first_name', css_class='col-md-5'),
@@ -124,7 +124,7 @@ class RegistrationForm(forms.Form):
                 ),
             ),
             ButtonHolder(
-                Submit('submit', 'ลงทะเบียน', css_class='lbtn btn-primary')
+                Submit('submit', _('ลงทะเบียน'), css_class='lbtn btn-primary')
             ),
         )
 
@@ -145,7 +145,7 @@ class RegistrationForm(forms.Form):
         
         if not is_valid_national_id(self.cleaned_data['national_id']):
             del self.cleaned_data['national_id']
-            raise ValidationError('รหัสประจำตัวประชาชนผิดรูปแบบ', code='invalid')
+            raise ValidationError(_('รหัสประจำตัวประชาชนผิดรูปแบบ'), code='invalid')
         return self.cleaned_data['national_id']
 
     def clean_national_id_confirm(self):
@@ -155,10 +155,10 @@ class RegistrationForm(forms.Form):
         if ((settings.VERIFY_NATIONAL_ID) and
             (not is_valid_national_id(self.cleaned_data['national_id_confirm']))):
             del self.cleaned_data['national_id_confirm']
-            raise ValidationError('รหัสประจำตัวประชาชนผิดรูปแบบ', code='invalid')
+            raise ValidationError(_('รหัสประจำตัวประชาชนผิดรูปแบบ'), code='invalid')
 
         self.check_confirm_and_raise_error('national_id', 'national_id_confirm',
-                                           'รหัสประจำตัวประชาชนที่ยืนยันไม่ตรงกัน')
+                                           _('รหัสประจำตัวประชาชนที่ยืนยันไม่ตรงกัน'))
         return self.cleaned_data['national_id_confirm']
 
     def clean_passport_number(self):
@@ -167,7 +167,7 @@ class RegistrationForm(forms.Form):
         
         if not is_valid_passport_number(self.cleaned_data['passport_number']):
             del self.cleaned_data['passport_number']
-            raise ValidationError('เลขที่หนังสือเดินทางผิดรูปแบบ', code='invalid')
+            raise ValidationError(_('เลขที่หนังสือเดินทางผิดรูปแบบ'), code='invalid')
         return self.cleaned_data['passport_number']
 
     def clean_passport_number_confirm(self):
@@ -176,15 +176,15 @@ class RegistrationForm(forms.Form):
         
         if not is_valid_passport_number(self.cleaned_data['passport_number_confirm']):
             del self.cleaned_data['passport_number_confirm']
-            raise ValidationError('เลขที่หนังสือเดินทางผิดรูปแบบ', code='invalid')
+            raise ValidationError(_('เลขที่หนังสือเดินทางผิดรูปแบบ'), code='invalid')
 
         self.check_confirm_and_raise_error('passport_number', 'passport_number_confirm',
-                                           'เลขที่หนังสือเดินทางที่ยืนยันไม่ตรงกัน')
+                                           _('เลขที่หนังสือเดินทางที่ยืนยันไม่ตรงกัน'))
         return self.cleaned_data['passport_number_confirm']
 
     def clean_email_confirm(self):
         self.check_confirm_and_raise_error('email', 'email_confirm',
-                                           'อีเมลที่ยืนยันไม่ตรงกัน')
+                                           _('อีเมลที่ยืนยันไม่ตรงกัน'))
         return self.cleaned_data['email_confirm']
 
     def clean_password(self):
@@ -199,7 +199,7 @@ class RegistrationForm(forms.Form):
     
     def clean_password_confirm(self):
         self.check_confirm_and_raise_error('password', 'password_confirm',
-                                           'รหัสผ่านที่ยืนยันไม่ตรงกัน')
+                                           _('รหัสผ่านที่ยืนยันไม่ตรงกัน'))
         return self.cleaned_data['password_confirm']
 
 
@@ -265,7 +265,7 @@ def forget(request):
                 applicant = Applicant.find_by_passport_number(national_id)
 
             if (not applicant) or (applicant.email.upper() != email.strip().upper()):
-                error_message = 'ไม่พบข้อมูลผู้สมัครที่ระบุหรืออีเมลที่ระบุไม่ถูกต้อง'
+                error_message = _('ไม่พบข้อมูลผู้สมัครที่ระบุหรืออีเมลที่ระบุไม่ถูกต้อง')
             else:
                 new_password = applicant.random_password()
                 applicant.save()

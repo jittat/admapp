@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-11-08 11:31+0700\n"
+"POT-Creation-Date: 2017-12-09 02:33+0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,8 +19,208 @@ msgstr ""
 
 #: admapp/settings.py:128
 msgid "Thai"
-msgstr ""
+msgstr "ไทย"
 
 #: admapp/settings.py:129
 msgid "English"
+msgstr "อังกฤษ"
+
+#: main/templates/base.html:67
+msgid "ฝ่ายรับเข้าศึกษา สำนักทะเบียนและประมวลผล มหาวิทยาลัยเกษตรศาสตร์"
+msgstr "Admission Department, Office of the Registrar, Kasetsart University"
+
+#: main/templates/base.html:68
+msgid "โทร. 0 2942 8200 ต่อ 8046 - 8051    E-mail: admission@ku.ac.th"
+msgstr "Tel. 0 2942 8200 ext. 8046 - 8051   E-mail: admission@ku.ac.th"
+
+#: main/templates/base.html:69
+msgid "เครดิตรูปภาพ: KU-Photo และภาพจากเว็บไซต์วิทยาเขต"
+msgstr "Photo credit: KU-Photo and campus websites"
+
+#: main/templates/main/index.html:7
+msgid "ยินดีต้อนรับสู่รั้วนนทรี"
+msgstr "Welcome to Kasetsart"
+
+#: main/templates/main/index.html:8
+msgid "เข้าใช้ระบบรับสมัคร"
+msgstr "Start using the admission system"
+
+#: main/templates/main/index.html:12
+msgid "กรุณา login เข้าใช้ระบบก่อนใช้งาน"
+msgstr "Please login to start using the admission system."
+
+#: main/templates/main/index.html:15
+msgid "ขออภัย ไม่สามารถเข้าใช้ระบบได้ เนื่องจากรหัสผ่านหรือรหัสประจำตัวประชาชนผิดพลาด"
 msgstr ""
+"Sorry.  You cannot login because you entered a wrong national ID or an "
+"incorrect password."
+
+#: main/templates/main/index.html:18
+msgid "ขออภัย ไม่สามารถเข้าใช้ระบบได้ เนื่องจากฟอร์มผิดพลาด"
+msgstr "Sorry.  Incorrect login form."
+
+#: main/templates/main/index.html:25
+msgid "เข้าใช้ระบบ"
+msgstr "Log in"
+
+#: main/templates/main/index.html:27
+msgid "หรือลงทะเบียนสำหรับผู้ใช้ใหม่"
+msgstr "For a new user, you have to register."
+
+#: main/templates/main/index.html:28 regis/views.py:127
+msgid "ลงทะเบียน"
+msgstr "Register"
+
+#: main/templates/main/index.html:29
+msgid "ถ้าลืมรหัสผ่าน"
+msgstr "If you forget your password,"
+
+#: main/templates/main/index.html:29
+msgid "สามารถขอรหัสผ่านใหม่ได้"
+msgstr "request a new password here."
+
+#: regis/templates/regis/register.html:7
+msgid "ลงทะเบียนบัญชีผู้สมัครเข้าศึกษา"
+msgstr "Register an account"
+
+#: regis/views.py:25 regis/views.py:33
+msgid "รหัสประจำตัวประชาชนหรือหมายเลขพาสปอร์ต"
+msgstr "National ID or passport number"
+
+#: regis/views.py:27 regis/views.py:86
+msgid "รหัสผ่าน"
+msgstr "Password"
+
+#: regis/views.py:35
+msgid "อีเมลที่ลงทะเบียน"
+msgstr "Registered email"
+
+#: regis/views.py:41
+msgid "รหัสผ่านมีแต่ตัวเลข"
+msgstr "This password is entirely numeric."
+
+#: regis/views.py:42
+msgid "รหัสผ่านสั้นเกินไป"
+msgstr "This password is too short."
+
+#: regis/views.py:43
+msgid "รหัสผ่านเป็นรหัสผ่านที่ใช้บ่อยมากเกินไป"
+msgstr "This password is too common."
+
+#: regis/views.py:47
+msgid "มีรหัสประจำตัวประชาชน"
+msgstr "You have Thai national ID"
+
+#: regis/views.py:48
+msgid "ไม่มีรหัสประจำตัวประชาชน (ใช้เลขที่หนังสือเดินทางในการสมัคร)"
+msgstr "You do not have Thai national ID. (You must use your passport number.)"
+
+#: regis/views.py:53
+msgid "ผู้สมัครที่มีรหัสประจำตัวประชาชน ต้องสมัครด้วยรหัสประจำตัวประชาชนเท่านั้น"
+msgstr "If you are a Thai citizen, you must register with Thai national ID."
+
+#: regis/views.py:54
+msgid "หากเคยสมัครแล้วแต่ไม่สามารถเข้าสู่ระบบได้ กรุณากดขอรหัสผ่านใหม่"
+msgstr ""
+"If you have registered but you cannot remember the password, you can request "
+"for a new password."
+
+#: regis/views.py:59
+msgid "รหัสประจำตัวประชาชน"
+msgstr "National ID"
+
+#: regis/views.py:62
+msgid "ยืนยันรหัสประจำตัวประชาชน"
+msgstr "National ID (confirmation)"
+
+#: regis/views.py:66
+msgid "เลขที่หนังสือเดินทาง (Passport No.)"
+msgstr "Passport number"
+
+#: regis/views.py:69
+msgid "ยืนยันเลขที่หนังสือเดินทาง (Passport No.)"
+msgstr "Passport number (confirmation)"
+
+#: regis/views.py:73
+msgid "อีเมล"
+msgstr "Email"
+
+#: regis/views.py:74
+msgid "กรุณากรอกอีเมลที่ใช้งานได้ เพื่อรับข้อมูลสำคัญเกี่ยวกับการสมัครเข้าศึกษาจากเรา"
+msgstr ""
+"Please use working email so that you can receive your admission information "
+"from us."
+
+#: regis/views.py:75
+msgid "ยืนยันอีเมล"
+msgstr "Email (confirmation)"
+
+#: regis/views.py:77
+msgid "คำนำหน้า"
+msgstr "Prefix"
+
+#: regis/views.py:78
+msgid "นาย"
+msgstr "Mr."
+
+#: regis/views.py:79
+msgid "นางสาว"
+msgstr "Miss"
+
+#: regis/views.py:80
+msgid "นาง"
+msgstr "Mrs."
+
+#: regis/views.py:81
+msgid "ชื่อ"
+msgstr "First name"
+
+#: regis/views.py:83
+msgid "นามสกุล"
+msgstr "Last name"
+
+#: regis/views.py:88
+msgid "ต้องมีความยาวไม่น้อยกว่า 8 ตัวอักษร ไม่สามารถประกอบขึ้นจากตัวเลขเพียงอย่างเดียวได้"
+msgstr ""
+"A password should contain at least 8 characters. It cannot be entirely numeric."
+"numbers."
+
+#: regis/views.py:90
+msgid "ยืนยันรหัสผ่าน"
+msgstr "Password (confirmation)"
+
+#: regis/views.py:99
+msgid "ข้อมูลสำหรับการเข้าสู่ระบบ"
+msgstr "Identification information"
+
+#: regis/views.py:115
+msgid "ข้อมูลพื้นฐานของผู้สมัคร"
+msgstr "Basic information"
+
+#: regis/views.py:148 regis/views.py:158
+msgid "รหัสประจำตัวประชาชนผิดรูปแบบ"
+msgstr "Incorrect national ID"
+
+#: regis/views.py:161
+msgid "รหัสประจำตัวประชาชนที่ยืนยันไม่ตรงกัน"
+msgstr "Incorrect national ID confirmation"
+
+#: regis/views.py:170 regis/views.py:179
+msgid "เลขที่หนังสือเดินทางผิดรูปแบบ"
+msgstr "Incorrect passport number"
+
+#: regis/views.py:182
+msgid "เลขที่หนังสือเดินทางที่ยืนยันไม่ตรงกัน"
+msgstr "Incorrect passport number confirmation"
+
+#: regis/views.py:187
+msgid "อีเมลที่ยืนยันไม่ตรงกัน"
+msgstr "Incorrect email confirmation"
+
+#: regis/views.py:202
+msgid "รหัสผ่านที่ยืนยันไม่ตรงกัน"
+msgstr "Incorrect password confirmation"
+
+#: regis/views.py:268
+msgid "ไม่พบข้อมูลผู้สมัครที่ระบุหรืออีเมลที่ระบุไม่ถูกต้อง"
+msgstr "Account information is not found, or you entered an incorrect email."

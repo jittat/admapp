@@ -1,9 +1,10 @@
 {% extends 'base.html' %}
+{% load i18n %}
 {% load crispy_forms_tags %}
 {% block content %}
 <div class="row">
   <div class="col-md-12">
-    <h2>ลงทะเบียนบัญชีผู้สมัครเข้าศึกษา</h2>
+    <h2>{% trans 'ลงทะเบียนบัญชีผู้สมัครเข้าศึกษา' %}</h2>
     {% crispy form %}
   </div>
 </div>
