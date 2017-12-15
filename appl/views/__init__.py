@@ -76,9 +76,11 @@ def index_outside_round(request):
     return HttpResponseForbidden()
 
 
-def index_with_active_application(request, active_application):
+def index_with_active_application(request, active_application, admission_round=None):
     applicant = request.applicant
-    admission_round = AdmissionRound.get_available()
+    if not admission_round:
+        admission_round = AdmissionRound.get_available()
+        
     admission_project = active_application.admission_project
 
     project_round = admission_project.get_project_round_for(admission_round)
@@ -194,6 +196,12 @@ def index_with_active_application(request, active_application):
 @appl_login_required
 def index(request):
     applicant = request.applicant
+
+    if applicant.confirmed_application:
+        active_application = applicant.confirmed_application
+        admission_round = active_application.admission_round
+        return index_with_active_application(request, active_application, admission_round)
+
     admission_round = AdmissionRound.get_available()
 
     if not admission_round:

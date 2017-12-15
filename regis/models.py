@@ -19,6 +19,10 @@ class Applicant(models.Model):
 
     hashed_password = models.CharField(max_length=128,
                                        blank=True)
+
+    confirmed_application = models.OneToOneField('appl.ProjectApplication',
+                                                 related_name='confirmed_applicant',
+                                                 null=True)
     
     class Meta:
         unique_together = ('national_id', 'passport_number')
