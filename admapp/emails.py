@@ -95,4 +95,38 @@ def send_payment_email(applicant, amount, paid_at):
                            body)
 
     
+def send_clearing_house_email(applicant, result, clearing_code, username):
+    from appl.clearing_utils import read_clearing_code
+    subject = 'แจ้งเตือนการยืนยันสิทธิ์เคลียริงเฮาส์ ' + ADMISSION_SHORT_TITLE
+    body = """
+เรียนผู้สมัคร {full_name}
+
+ผู้สมัครผ่านการคัดเลือกมีสิทธิ์เข้าศึกษาต่อในสาขาวิชา: {major_title} ({major_faculty})
+ในปีการศึกษา 2561 ผ่านทางการคัดเลือกในรอบ 1/1
+
+ผู้สมัครจะต้องยืนยันสิทธิ์ผ่านระบบยืนยันสิทธิ์ของทปอ. http://app.cupt.net/tcas/
+ระหว่างวันที่ 15 - 19 ธ.ค. 2560
+โดยใช้เลขประจำตัวประชาชนหรือหมายเลขพาสปอร์ต (กรณีไม่มีเลขประจำตัวประชาชน)
+และรหัสผ่านดังนี้
+
+เลขประจำตัวประชาชน {username}
+รหัสผ่าน {clearing_code}
+(คำอ่านของรหัสผ่าน {clearing_code_read})
+
+ขอขอบคุณที่ให้ความสนใจสมัครเข้าศึกษาต่อในมหาวิทยาลัยเกษตรศาสตร์
+และหวังว่าจะได้พบกับผู้สมัครในภาคต้นปีการศึกษา 2561 ต่อไป
+
+ยินดีต้อนรับสู่รั้วนนทรี
+-ทีมงานระบบรับสมัคร
+""".format(full_name=applicant.get_full_name(),
+           major_title=result.major.title,
+           major_faculty=result.major.faculty,
+           username=username,
+           clearing_code=clearing_code,
+           clearing_code_read=read_clearing_code(clearing_code))
+
+    send_mail_to_applicant(applicant,
+                           subject,
+                           body)
+
     
