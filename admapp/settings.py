@@ -185,6 +185,10 @@ ELIGIBILITY_CHECK = {
     'เรียนล่วงหน้า': 'advanced_placement',
 }
 
+VERIFY_CUPT_CONFIRMATION = False
+CUPT_USERNAME = ''
+CUPT_PASSWORD = ''
+
 # Manipulate Settings with Local Settings
 
 try:

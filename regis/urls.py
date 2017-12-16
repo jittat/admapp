@@ -10,4 +10,6 @@ urlpatterns = [
 
     url(r'^login/$', views.login, name='login'),
     url(r'^logout/$', views.logout, name='logout'),
+
+    url(r'^checkcupt/(\d+)/$', views.check_cupt_confirmation_available, name='cupt-check'),
 ]

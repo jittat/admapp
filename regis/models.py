@@ -119,7 +119,16 @@ class Applicant(models.Model):
                     return True
                 except:
                     continue
-        
+
+    def has_cupt_confirmation_result(self):
+        return hasattr(self,'cupt_confirmation')
+
+    def has_confirmed(self):
+        if not self.has_cupt_confirmation_result():
+            return False
+        else:
+            return self.cupt_confirmation.has_confirmed
+                
     @staticmethod
     def find_by_national_id(national_id):
         try:
@@ -163,6 +172,52 @@ class Applicant(models.Model):
 
         return results
 
+
+class CuptConfirmation(models.Model):
+    STATUS_NOT_REQUIRED = 0
+    STATUS_WAIT = 1
+    STATUS_FREE = 2
+    STATUS_CONFIRMED = 3
+
+    class CuptConfirmationStatus():
+        def __init__(self, status):
+            self.status = status
+
+        def is_not_required(self):
+            return self.status == CuptConfirmation.STATUS_NOT_REQUIRED
+
+        def is_wait(self):
+            return self.status == CuptConfirmation.STATUS_WAIT
+
+        def is_free(self):
+            return self.status == CuptConfirmation.STATUS_FREE
+
+        def is_confirmed(self):
+            return self.status == CuptConfirmation.STATUS_CONFIRMED
+        
+    applicant = models.OneToOneField(Applicant,
+                                     related_name='cupt_confirmation')
+    national_id = models.CharField(max_length=16,
+                                   blank=True)
+    passport_number = models.CharField(max_length=20,
+                                       blank=True)
+    has_confirmed = models.BooleanField(default=False)
+    updated_at = models.DateTimeField()
+
+    def get_status(self):
+        if self.has_confirmed:
+            return self.CuptConfirmationStatus(self.STATUS_CONFIRMED)
+        else:
+            return self.CuptConfirmationStatus(self.STATUS_FREE)
+
+    @classmethod
+    def get_wait_status(cls):
+        return cls.CuptConfirmationStatus(cls.STATUS_WAIT)
+        
+    @classmethod
+    def get_not_required_status(cls):
+        return cls.CuptConfirmationStatus(cls.STATUS_NOT_REQUIRED)
+        
 
 class LogItem(models.Model):
     applicant = models.ForeignKey(Applicant,

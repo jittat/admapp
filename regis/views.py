@@ -5,7 +5,7 @@ from django.forms import ValidationError
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
-from django.http import HttpResponseForbidden
+from django.http import HttpResponse, HttpResponseForbidden
 
 from django.contrib.auth.password_validation import validate_password
 
@@ -327,4 +327,11 @@ def logout(request):
         del request.session['applicant_id']
     return redirect(reverse('main-index'))
 
+
+def check_cupt_confirmation_available(request, national_id):
+    applicant = get_object_or_404(Applicant,national_id=national_id)
+    if hasattr(applicant,'cupt_confirmation'):
+        return HttpResponse('OK')
+    else:
+        return HttpResponse('WAIT')
     

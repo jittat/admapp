@@ -11,3 +11,4 @@ pyBarcode==0.8b1
 python-magic
 django-debug-toolbar==1.8
 XlsxWriter==1.0.2
+suds-py3
