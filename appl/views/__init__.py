@@ -6,6 +6,8 @@ from django.conf import settings
 from django.http import HttpResponseForbidden, HttpResponse
 
 from regis.models import Applicant, LogItem
+from regis.models import CuptConfirmation, CuptRequestQueueItem
+
 from regis.decorators import appl_login_required
 
 from admapp.utils import number_to_thai_text
@@ -232,6 +234,16 @@ def index(request):
     supplement_configs = []
     
     admission_projects = admission_round.get_available_projects()
+
+    if getattr(settings,'VERIFY_CUPT_CONFIRMATION',False):
+        if applicant.has_cupt_confirmation_result():
+            cupt_confirmation_status = applicant.cupt_confirmation.get_status()
+        else:
+            CuptRequestQueueItem.create_for(applicant)
+            cupt_confirmation_status = CuptConfirmation.get_wait_status()
+    else:
+        cupt_confirmation_status = CuptConfirmation.get_not_required_status()
+    
     prepare_project_eligibility_and_detes(admission_projects,
                                           admission_round,
                                           applicant)
@@ -257,6 +269,8 @@ def index(request):
                     'supplement_configs': supplement_configs,
                     'major_selection': major_selection,
 
+                    'cupt_confirmation_status': cupt_confirmation_status,
+                    
                     'payments': payments,
                     'paid_amount': paid_amount,
                     'additional_payment': additional_payment,

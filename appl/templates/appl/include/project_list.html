@@ -1,5 +1,8 @@
 <h2>รายการโครงการรับสมัคร{% if admission_round %}{{ admission_round }}{% endif %}</h2>
 {% if admission_round %}
+  {% if cupt_confirmation_status.is_wait %}
+    {% include 'appl/include/cupt_confirmation_wait.html' %}
+  {% endif %}
   {% for project in admission_projects %}
     {% if not project.eligibility.is_hidden %}
       <div class="border-a0 p10 mb5 project-items">
@@ -8,24 +11,32 @@
         {% endif %}
         {{ project.title }}
         (เปิดรับสมัครวันที่ {{ project.project_round.admission_dates }})
-        {% if project.is_open and project.eligibility.is_eligible %}
-          <a class="btn btn-primary btn-sm applying-links" href="#">สมัครโครงการนี้</a>
-          <div class="p10 border-a0 bg-warn applying-confirmations" style="display:none;">
-            {% if project.applying_confirmation_warning %}
-              {{ project.applying_confirmation_warning|safe }}
-            {% else %}
-              กรุณายืนยันการสมัครโครงการนี้ &nbsp;&nbsp;&nbsp;
+        {% if cupt_confirmation_status.is_not_required or cupt_confirmation_status.is_free %}
+          {% if project.is_open and project.eligibility.is_eligible %}
+            <a class="btn btn-primary btn-sm applying-links" href="#">สมัครโครงการนี้</a>
+            <div class="p10 border-a0 bg-warn applying-confirmations" style="display:none;">
+              {% if project.applying_confirmation_warning %}
+                {{ project.applying_confirmation_warning|safe }}
+              {% else %}
+                กรุณายืนยันการสมัครโครงการนี้ &nbsp;&nbsp;&nbsp;
+              {% endif %}
+              <form class="d-inline" method="post" action="{% url 'appl:apply-project' project.id admission_round.id %}">
+                {% csrf_token %}
+                <input type="submit" class="btn btn-success btn-sm" value="ยืนยันการสมัคร" />
+                <a href="#" class="btn btn-danger btn-sm cancel-links">ยกเลิก</a>
+              </form>
+            </div>
+          {% else %}
+            {% if not project.eligibility.is_eligible %}
+              <span class="badge badge-warning">ยังไม่สามารถสมัครได้</span>
+              <small>{{ project.eligibility.notice_text }}</small>
             {% endif %}
-            <form class="d-inline" method="post" action="{% url 'appl:apply-project' project.id admission_round.id %}">
-              {% csrf_token %}
-              <input type="submit" class="btn btn-success btn-sm" value="ยืนยันการสมัคร" />
-              <a href="#" class="btn btn-danger btn-sm cancel-links">ยกเลิก</a>
-            </form>
-          </div>
+          {% endif %}
         {% else %}
-          {% if not project.eligibility.is_eligible %}
-            <span class="badge badge-warning">ยังไม่สามารถสมัครได้</span>
-            <small>{{ project.eligibility.notice_text }}</small>
+          {% if cupt_confirmation_status.is_wait %}
+            (รอตรวจสอบสิทธิ์)
+          {% else %}
+            <span class="badge badge-danger">ไม่สามารถสมัครได้</span> (ยืนยันสิทธิ์แล้วในการสมัครรอบอื่น)
           {% endif %}
         {% endif %}
       </div>
@@ -37,18 +48,35 @@
   </p>
 {% endif %}
 <script>
- $(function(){
-   $('.applying-links').click(function(){
-     var project = $(this).parents('.project-items')[0];
-     $(project).find('.applying-confirmations').slideDown();
-     $(this).hide();
-     return false;
-   });
-   $('.cancel-links').click(function(){
-     var project = $(this).parents('.project-items')[0];
-     $(project).find('.applying-confirmations').slideUp();
-     $(project).find('.applying-links').show();
-     return false;
-   });
- });
+  $(function(){
+    $('.applying-links').click(function(){
+      var project = $(this).parents('.project-items')[0];
+      $(project).find('.applying-confirmations').slideDown();
+      $(this).hide();
+      return false;
+    });
+    $('.cancel-links').click(function(){
+      var project = $(this).parents('.project-items')[0];
+      $(project).find('.applying-confirmations').slideUp();
+      $(project).find('.applying-links').show();
+      return false;
+    });
+  });
 </script>
+{% if cupt_confirmation_status.is_wait %}
+  <script>
+    var cuptConfirmationUrl = '{% url 'regis:cupt-check' applicant.national_id %}';
+    var checkCuptConfirmation = function() {
+      jQuery.get(cuptConfirmationUrl,
+                 function(data) {
+                   if(data == 'OK') {
+                     window.location.reload(true);
+                   }
+                 });
+    };
+    $(function(){
+      checkCuptConfirmation();
+      setInterval(checkCuptConfirmation, 3000);
+    });
+  </script>
+{% endif %}
