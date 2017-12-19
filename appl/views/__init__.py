@@ -5,7 +5,9 @@ from django.urls import reverse
 from django.conf import settings
 from django.http import HttpResponseForbidden, HttpResponse
 
-from regis.models import Applicant, LogItem, CuptConfirmation
+from regis.models import Applicant, LogItem
+from regis.models import CuptConfirmation, CuptRequestQueueItem
+
 from regis.decorators import appl_login_required
 
 from admapp.utils import number_to_thai_text
@@ -237,6 +239,7 @@ def index(request):
         if applicant.has_cupt_confirmation_result():
             cupt_confirmation_status = applicant.cupt_confirmation.get_status()
         else:
+            CuptRequestQueueItem.create_for(applicant)
             cupt_confirmation_status = CuptConfirmation.get_wait_status()
     else:
         cupt_confirmation_status = CuptConfirmation.get_not_required_status()

@@ -174,6 +174,15 @@ class Applicant(models.Model):
 
 
 class CuptConfirmation(models.Model):
+    applicant = models.OneToOneField(Applicant,
+                                     related_name='cupt_confirmation')
+    national_id = models.CharField(max_length=16,
+                                   blank=True)
+    passport_number = models.CharField(max_length=20,
+                                       blank=True)
+    has_confirmed = models.BooleanField(default=False)
+    updated_at = models.DateTimeField()
+
     STATUS_NOT_REQUIRED = 0
     STATUS_WAIT = 1
     STATUS_FREE = 2
@@ -195,15 +204,6 @@ class CuptConfirmation(models.Model):
         def is_confirmed(self):
             return self.status == CuptConfirmation.STATUS_CONFIRMED
         
-    applicant = models.OneToOneField(Applicant,
-                                     related_name='cupt_confirmation')
-    national_id = models.CharField(max_length=16,
-                                   blank=True)
-    passport_number = models.CharField(max_length=20,
-                                       blank=True)
-    has_confirmed = models.BooleanField(default=False)
-    updated_at = models.DateTimeField()
-
     def get_status(self):
         if self.has_confirmed:
             return self.CuptConfirmationStatus(self.STATUS_CONFIRMED)
@@ -219,6 +219,23 @@ class CuptConfirmation(models.Model):
         return cls.CuptConfirmationStatus(cls.STATUS_NOT_REQUIRED)
         
 
+class CuptRequestQueueItem(models.Model):
+    applicant = models.OneToOneField(Applicant)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['created_at']
+    
+    @staticmethod
+    def create_for(applicant):
+        try:
+            item = CuptRequestQueueItem(applicant=applicant)
+            item.save()
+            return item
+        except:
+            return None
+    
+    
 class LogItem(models.Model):
     applicant = models.ForeignKey(Applicant,
                                   blank=True,
