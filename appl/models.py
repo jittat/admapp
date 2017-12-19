@@ -8,9 +8,11 @@ from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator, RegexValidator
 from django.core.exceptions import ObjectDoesNotExist
 
+from django.utils.translation import ugettext_lazy as _
+from django.utils.text import format_lazy
+
 from admapp import settings
 from regis.models import Applicant
-
 
 validate_phonenumber = RegexValidator(r'^\+?[0-9#-]+$',
                                       'เบอร์โทรศัพท์สามารถประกอบด้วยตัวเลข 0-9 สามารถใช้เครื่องหมาย - เพื่อแบ่งกลุ่มตัวเลข และอาจเริ่มต้นด้วยเครื่องหมาย +')
@@ -369,28 +371,28 @@ class School(models.Model):
 
 class EducationalProfile(models.Model):
     EDUCATION_LEVEL_CHOICES = [
-            (1,'กำลังศึกษาชั้นมัธยมศึกษาปีที่ 6 หรือเทียบเท่า'),
-            (2,'จบการศึกษาชั้นมัธยมศึกษาปีที่ 6 หรือเทียบเท่า'),
+            (1,_('กำลังศึกษาชั้นมัธยมศึกษาปีที่ 6 หรือเทียบเท่า')),
+            (2,_('จบการศึกษาชั้นมัธยมศึกษาปีที่ 6 หรือเทียบเท่า')),
     ]
     EDUCATION_PLAN_CHOICES = [
-            (1,'วิทย์-คณิต'),
-            (2,'ศิลป์-คำนวณ'),
-            (3,'ศิลป์-ภาษา'),
-            (4,'อาชีวศึกษา'),
+            (1,_('วิทย์-คณิต')),
+            (2,_('ศิลป์-คำนวณ')),
+            (3,_('ศิลป์-ภาษา')),
+            (4,_('อาชีวศึกษา')),
     ]
 
     applicant = models.OneToOneField(Applicant)
     education_level = models.IntegerField(choices=EDUCATION_LEVEL_CHOICES,
-                                          verbose_name='ระดับการศึกษา')
+                                          verbose_name=_('ระดับการศึกษา'))
     education_plan = models.IntegerField(choices=EDUCATION_PLAN_CHOICES,
-                                         verbose_name='แผนการศึกษา')
+                                         verbose_name=_('แผนการศึกษา'))
     gpa = models.FloatField(default=0,
                             verbose_name='GPA',
                             validators=[MinValueValidator(0.0), MaxValueValidator(4.0)])
     province = models.ForeignKey(Province,
-                                 verbose_name='จังหวัด')
+                                 verbose_name=_('จังหวัด'))
     school_title = models.CharField(max_length=80,
-                                    verbose_name='โรงเรียน')
+                                    verbose_name=_('โรงเรียน'))
     school_code = models.CharField(max_length=20,
                                    blank=True,
                                    default='')
@@ -417,57 +419,57 @@ class PersonalProfile(models.Model):
     applicant = models.OneToOneField(Applicant)
     prefix_english = models.CharField(max_length=4,
                                       choices=TITLE_CHOICES,
-                                      verbose_name='คำนำหน้า (อังกฤษ)',
+                                      verbose_name=_('คำนำหน้า (อังกฤษ)'),
                                       default='Mr.')
     first_name_english = models.CharField(max_length=100,
-                                          verbose_name='ชื่อ (อังกฤษ)')
+                                          verbose_name=_('ชื่อ (อังกฤษ)'))
     middle_name_english = models.CharField(max_length=100,
-                                           verbose_name='ชื่อกลาง (อังกฤษ, ถ้ามี)',
+                                           verbose_name=_('ชื่อกลาง (อังกฤษ, ถ้ามี)'),
                                            blank=True )
     last_name_english = models.CharField(max_length=200,
-                                         verbose_name='นามสกุล (อังกฤษ)')
+                                         verbose_name=_('นามสกุล (อังกฤษ)'))
     passport_number = models.CharField(max_length=20,
-                                       verbose_name='หมายเลข Passport (ถ้ามี)',
+                                       verbose_name=_('หมายเลข Passport (ถ้ามี)'),
                                        blank=True)
-    birthday = models.DateField(verbose_name='วันเดือนปีเกิด')
+    birthday = models.DateField(verbose_name=_('วันเดือนปีเกิด'))
     father_prefix = models.CharField(max_length=10,
-                                    verbose_name='คำนำหน้าชื่อบิดา')
+                                     verbose_name=_('คำนำหน้าชื่อบิดา'))
     father_first_name = models.CharField(max_length=100,
-                                         verbose_name='ชื่อบิดา')
+                                         verbose_name=_('ชื่อบิดา'))
     father_last_name = models.CharField(max_length=200,
-                                        verbose_name='นามสกุลบิดา')
+                                        verbose_name=_('นามสกุลบิดา'))
     mother_prefix = models.CharField(max_length=10,
-                                     verbose_name='คำนำหน้าชื่อมารดา')
+                                     verbose_name=_('คำนำหน้าชื่อมารดา'))
     mother_first_name = models.CharField(max_length=100,
-                                         verbose_name='ชื่อมารดา')
+                                         verbose_name=_('ชื่อมารดา'))
     mother_last_name = models.CharField(max_length=200,
-                                        verbose_name='นามสกุลมารดา')
+                                        verbose_name=_('นามสกุลมารดา'))
     house_number = models.CharField(max_length=10,
-                                    verbose_name='บ้านเลขที่')
+                                    verbose_name=_('บ้านเลขที่'))
     village_number = models.CharField(max_length=10,
-                                      verbose_name='หมู่',
+                                      verbose_name=_('หมู่'),
                                       blank=True)
     avenue = models.CharField(max_length=100,
-                              verbose_name='ซอย',
+                              verbose_name=_('ซอย'),
                               blank=True)
     road = models.CharField(max_length=100,
-                            verbose_name='ถนน',
+                            verbose_name=_('ถนน'),
                             blank=True)
     sub_district = models.CharField(max_length=100,
-                                    verbose_name='ตำบล/แขวง')
+                                    verbose_name=_('ตำบล/แขวง'))
     district = models.CharField(max_length=100,
-                                verbose_name='อำเภอ/เขต')
+                                verbose_name=_('อำเภอ/เขต'))
     province = models.CharField(max_length=100,
-                                verbose_name='จังหวัด')
+                                verbose_name=_('จังหวัด'))
     postal_code = models.CharField(max_length=10,
-                                   verbose_name='รหัสไปรษณีย์')
+                                   verbose_name=_('รหัสไปรษณีย์'))
 
     contact_phone = models.CharField(max_length=20,
-                                    verbose_name='เบอร์โทรศัพท์ที่ติดต่อได้',
+                                    verbose_name=_('เบอร์โทรศัพท์ที่ติดต่อได้'),
                                     help_text='หากเป็นเบอร์ติดต่อภายใน ให้ใช้ # คั่น เช่น 034-567-890#111',
                                     validators=[validate_phonenumber])
     mobile_phone = models.CharField(max_length=20,
-                                    verbose_name='เบอร์โทรศัพท์มือถือ',
+                                    verbose_name=_('เบอร์โทรศัพท์มือถือ'),
                                     blank=True,
                                     validators=[validate_phonenumber])
 

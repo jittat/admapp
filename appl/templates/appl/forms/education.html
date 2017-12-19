@@ -1,6 +1,7 @@
-{% extends 'base.html' %}
+{% extends 'appl/base.html' %}
 {% load static %}
 {% load crispy_forms_tags %}
+{% load i18n %}
 {% block additional_head %}
   <link href="{% static 'lib/jquery/jquery-ui.min.css' %}" rel="stylesheet" />
   <script src="{% static 'lib/jquery/jquery-ui.min.js' %}"></script>
@@ -8,7 +9,7 @@
 {% block content %}
 <div class="row">
   <div class="col-md-12">
-    <h2>กรอกข้อมูลการศึกษา</h2>
+    <h2>{% trans 'กรอกข้อมูลการศึกษา' context 'form title' %}</h2>
   </div>
   {% include 'appl/include/form_instruction.html' %}
   <div class="col-md-12">

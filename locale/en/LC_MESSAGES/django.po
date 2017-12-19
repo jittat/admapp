@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-12-09 02:33+0700\n"
+"POT-Creation-Date: 2017-12-20 02:08+0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -24,6 +24,261 @@ msgstr "ไทย"
 #: admapp/settings.py:129
 msgid "English"
 msgstr "อังกฤษ"
+
+#: appl/models.py:374
+msgid "กำลังศึกษาชั้นมัธยมศึกษาปีที่ 6 หรือเทียบเท่า"
+msgstr "Currently in grade 12 (Mathayom 6) or equivalent"
+
+#: appl/models.py:375
+msgid "จบการศึกษาชั้นมัธยมศึกษาปีที่ 6 หรือเทียบเท่า"
+msgstr "Graduated from grade 12 (Mathayom 6) or equivalent"
+
+#: appl/models.py:378
+msgid "วิทย์-คณิต"
+msgstr "Science-Math"
+
+#: appl/models.py:379
+msgid "ศิลป์-คำนวณ"
+msgstr "Art-Math"
+
+#: appl/models.py:380
+msgid "ศิลป์-ภาษา"
+msgstr "Art-Language"
+
+#: appl/models.py:381
+msgid "อาชีวศึกษา"
+msgstr "Vocational Education"
+
+#: appl/models.py:386
+msgid "ระดับการศึกษา"
+msgstr "Educational level"
+
+#: appl/models.py:388
+msgid "แผนการศึกษา"
+msgstr "Study plan"
+
+#: appl/models.py:393 appl/models.py:463
+msgid "จังหวัด"
+msgstr "Province"
+
+#: appl/models.py:395 appl/templates/appl/index.html:38
+msgid "โรงเรียน"
+msgstr "School"
+
+#: appl/models.py:422
+msgid "คำนำหน้า (อังกฤษ)"
+msgstr "Prefix (English)"
+
+#: appl/models.py:425
+msgid "ชื่อ (อังกฤษ)"
+msgstr "Name (English)"
+
+#: appl/models.py:427
+msgid "ชื่อกลาง (อังกฤษ, ถ้ามี)"
+msgstr "Middle name (English, optional)"
+
+#: appl/models.py:430
+msgid "นามสกุล (อังกฤษ)"
+msgstr "Last name (English)"
+
+#: appl/models.py:432
+msgid "หมายเลข Passport (ถ้ามี)"
+msgstr "Passport number (optional)"
+
+#: appl/models.py:434
+msgid "วันเดือนปีเกิด"
+msgstr "Date of birth"
+
+#: appl/models.py:436
+msgid "คำนำหน้าชื่อบิดา"
+msgstr "Prefix of father's name"
+
+#: appl/models.py:438
+msgid "ชื่อบิดา"
+msgstr "Father first name"
+
+#: appl/models.py:440
+msgid "นามสกุลบิดา"
+msgstr "Father last name"
+
+#: appl/models.py:442
+msgid "คำนำหน้าชื่อมารดา"
+msgstr "Prefix of mother's name"
+
+#: appl/models.py:444
+msgid "ชื่อมารดา"
+msgstr "Mother first name"
+
+#: appl/models.py:446
+msgid "นามสกุลมารดา"
+msgstr "Mother last name"
+
+#: appl/models.py:448
+msgid "บ้านเลขที่"
+msgstr "House number"
+
+#: appl/models.py:450
+msgid "หมู่"
+msgstr "Village"
+
+#: appl/models.py:453
+msgid "ซอย"
+msgstr "Avenue"
+
+#: appl/models.py:456
+msgid "ถนน"
+msgstr "Road"
+
+#: appl/models.py:459
+msgid "ตำบล/แขวง"
+msgstr "Sub-district (Tumbon)"
+
+#: appl/models.py:461
+msgid "อำเภอ/เขต"
+msgstr "District (Ampher)"
+
+#: appl/models.py:465
+msgid "รหัสไปรษณีย์"
+msgstr "Postal code"
+
+#: appl/models.py:468
+msgid "เบอร์โทรศัพท์ที่ติดต่อได้"
+msgstr "Contact phone"
+
+#: appl/models.py:472
+msgid "เบอร์โทรศัพท์มือถือ"
+msgstr "Mobile phone"
+
+#: appl/templates/appl/base.html:10
+msgid "หน้าหลัก"
+msgstr "Main application"
+
+#: appl/templates/appl/base.html:16
+msgid "ออกจากระบบ"
+msgstr "Log out"
+
+#: appl/templates/appl/forms/education.html:12
+msgctxt "form title"
+msgid "กรอกข้อมูลการศึกษา"
+msgstr "Educational information"
+
+#: appl/templates/appl/forms/personal.html:7
+msgctxt "form title"
+msgid "กรอกข้อมูลส่วนตัว"
+msgstr "Personal information"
+
+#: appl/templates/appl/include/project_list.html:2
+msgid "รายการโครงการรับสมัคร"
+msgstr "Admission projects for "
+
+#: appl/templates/appl/include/project_list.html:11
+msgid "หมดเวลารับสมัคร"
+msgstr "Deadline passed"
+
+#: appl/templates/appl/include/project_list.html:17
+msgid "สมัครโครงการนี้"
+msgstr "Apply"
+
+#: appl/templates/appl/include/project_list.html:22
+msgid "กรุณายืนยันการสมัครโครงการนี้"
+msgstr "Please confirm your application"
+
+#: appl/templates/appl/include/project_list.html:26
+msgid "ยืนยันการสมัคร"
+msgstr "I confirm my application"
+
+#: appl/templates/appl/include/project_list.html:27
+msgid "ยกเลิก"
+msgstr "Cancel"
+
+#: appl/templates/appl/index.html:6
+msgid "ยินดีต้อนรับ"
+msgstr "Welcome"
+
+#: appl/templates/appl/index.html:28
+msgid "เบอร์โทรศัพท์ติดต่อ"
+msgstr "Contact phone"
+
+#: appl/templates/appl/index.html:29
+msgid "แก้ไขข้อมูลส่วนตัว"
+msgstr "Edit personal information"
+
+#: appl/templates/appl/index.html:33
+msgctxt "form link"
+msgid "กรอกข้อมูลส่วนตัว"
+msgstr "Enter personal information"
+
+#: appl/templates/appl/index.html:39
+msgid "แผนการเรียน"
+msgstr "Study plan"
+
+#: appl/templates/appl/index.html:40
+msgid "แก้ไขข้อมูลการศึกษา"
+msgstr "Edit educational information"
+
+#: appl/templates/appl/index.html:44
+msgctxt "form link"
+msgid "กรอกข้อมูลการศึกษา"
+msgstr "Enter educational information"
+
+#: appl/views/general_forms.py:39
+msgid "ข้อมูลโรงเรียน"
+msgstr "School information"
+
+#: appl/views/general_forms.py:45
+msgid ""
+"ในกรณีที่สมัครโครงการช้างเผือก สามารถเลือกให้แสดงเฉพาะโรงเรียนที่เข้าโครงการได้ "
+"โดยกดปุ่มตอนท้าย"
+msgstr ""
+"If you are applying to โครงการช้างเผือก you can filter only eligible schools "
+"below."
+
+#: appl/views/general_forms.py:56
+msgid "แสดงรายการเฉพาะโรงเรียนในโครงการช้างเผือก"
+msgstr "Show only schools eligible to โครงการช้างเผือก"
+
+#: appl/views/general_forms.py:61 appl/views/general_forms.py:169
+msgid "จัดเก็บ"
+msgstr "Save"
+
+#: appl/views/general_forms.py:89 appl/views/general_forms.py:93
+#: appl/views/general_forms.py:96 regis/views.py:77
+msgid "คำนำหน้า"
+msgstr "Prefix"
+
+#: appl/views/general_forms.py:90 appl/views/general_forms.py:94
+#: appl/views/general_forms.py:97
+msgid "ชื่อต้น"
+msgstr "First name"
+
+#: appl/views/general_forms.py:91
+msgid "ชื่อกลาง (ถ้ามี)"
+msgstr "Middle name (optional)"
+
+#: appl/views/general_forms.py:92 appl/views/general_forms.py:95
+#: appl/views/general_forms.py:98 regis/views.py:83
+msgid "นามสกุล"
+msgstr "Last name"
+
+#: appl/views/general_forms.py:115
+msgid "ข้อมูลผู้สมัครภาษาอังกฤษ"
+msgstr "Applicant information (in English)"
+
+#: appl/views/general_forms.py:124
+msgid "ข้อมูลส่วนตัว"
+msgstr "Personal information"
+
+#: appl/views/general_forms.py:132
+msgid "ข้อมูลบิดา (ภาษาไทย)"
+msgstr "Father information"
+
+#: appl/views/general_forms.py:140
+msgid "ข้อมูลมารดา (ภาษาไทย)"
+msgstr "Mother information"
+
+#: appl/views/general_forms.py:148
+msgid "ข้อมูลที่อยู่"
+msgstr "Address"
 
 #: main/templates/base.html:67
 msgid "ฝ่ายรับเข้าศึกษา สำนักทะเบียนและประมวลผล มหาวิทยาลัยเกษตรศาสตร์"
@@ -155,10 +410,6 @@ msgstr ""
 msgid "ยืนยันอีเมล"
 msgstr "Email (confirmation)"
 
-#: regis/views.py:77
-msgid "คำนำหน้า"
-msgstr "Prefix"
-
 #: regis/views.py:78
 msgid "นาย"
 msgstr "Mr."
@@ -175,15 +426,11 @@ msgstr "Mrs."
 msgid "ชื่อ"
 msgstr "First name"
 
-#: regis/views.py:83
-msgid "นามสกุล"
-msgstr "Last name"
-
 #: regis/views.py:88
 msgid "ต้องมีความยาวไม่น้อยกว่า 8 ตัวอักษร ไม่สามารถประกอบขึ้นจากตัวเลขเพียงอย่างเดียวได้"
 msgstr ""
-"A password should contain at least 8 characters. It cannot be entirely numeric."
-"numbers."
+"A password should contain at least 8 characters. It cannot be entirely "
+"numeric.numbers."
 
 #: regis/views.py:90
 msgid "ยืนยันรหัสผ่าน"

@@ -6,6 +6,9 @@ from django.forms import ModelForm
 from django.http import HttpResponse
 from django.urls import reverse
 
+from django.utils.translation import ugettext_lazy as _
+from django.utils.text import format_lazy
+
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, ButtonHolder, Submit, MultiWidgetField, Div, Row, HTML
 
@@ -33,13 +36,13 @@ class EducationForm(ModelForm):
             ),
             Row(
                 Div(
-                    HTML('<b>ข้อมูลโรงเรียน</b>'),
+                    HTML(format_lazy('<b>{0}</b>',_('ข้อมูลโรงเรียน'))),
                     css_class='col-md-12',
                 ),
             ),
             Row(
                 Div(
-                    HTML('<small>ในกรณีที่สมัครโครงการช้างเผือก สามารถเลือกให้แสดงเฉพาะโรงเรียนที่เข้าโครงการได้ โดยกดปุ่มตอนท้าย</small>'),
+                    HTML(format_lazy('<small>{0}</small>', _('ในกรณีที่สมัครโครงการช้างเผือก สามารถเลือกให้แสดงเฉพาะโรงเรียนที่เข้าโครงการได้ โดยกดปุ่มตอนท้าย'))),
                     css_class='col-md-12 form-text mb5',
                 ),
             ),
@@ -50,12 +53,12 @@ class EducationForm(ModelForm):
             Row(
                 Div(
                     HTML('<input id="wh_school_check_id" type="checkbox" /> &nbsp;'),
-                    HTML('แสดงรายการเฉพาะโรงเรียนในโครงการช้างเผือก'),
+                    HTML(_('แสดงรายการเฉพาะโรงเรียนในโครงการช้างเผือก')),
                     css_class='col-md-12 mb5',
                 ),
             ),
             ButtonHolder(
-                Submit('submit', 'จัดเก็บ', css_class='btn btn-primary')
+                Submit('submit', _('จัดเก็บ'), css_class='btn btn-primary')
             )
         )
 
@@ -83,16 +86,16 @@ class PersonalProfileForm(ModelForm):
     class Meta:
         model = PersonalProfile
         labels = {
-            'prefix_english': 'คำนำหน้า',
-            'first_name_english': 'ชื่อต้น',
-            'middle_name_english': 'ชื่อกลาง (ถ้ามี)',
-            'last_name_english': 'นามสกุล',
-            'father_prefix': 'คำนำหน้า',
-            'father_first_name': 'ชื่อต้น',
-            'father_last_name': 'นามสกุล',
-            'mother_prefix': 'คำนำหน้า',
-            'mother_first_name': 'ชื่อต้น',
-            'mother_last_name': 'นามสกุล',
+            'prefix_english': _('คำนำหน้า'),
+            'first_name_english': _('ชื่อต้น'),
+            'middle_name_english': _('ชื่อกลาง (ถ้ามี)'),
+            'last_name_english': _('นามสกุล'),
+            'father_prefix': _('คำนำหน้า'),
+            'father_first_name': _('ชื่อต้น'),
+            'father_last_name': _('นามสกุล'),
+            'mother_prefix': _('คำนำหน้า'),
+            'mother_first_name': _('ชื่อต้น'),
+            'mother_last_name': _('นามสกุล'),
         }
         exclude = ['applicant']
         widgets = {
@@ -109,7 +112,7 @@ class PersonalProfileForm(ModelForm):
         self.helper = FormHelper()
         self.helper.layout = Layout(
             Fieldset(
-                'ข้อมูลผู้สมัครภาษาอังกฤษ',
+                _('ข้อมูลผู้สมัครภาษาอังกฤษ'),
                 Row(
                     Div('prefix_english', css_class='col-md-2'),
                     Div('first_name_english', css_class='col-md-3'),
@@ -118,7 +121,7 @@ class PersonalProfileForm(ModelForm):
                 ),
             ),
             Fieldset(
-                'ข้อมูลส่วนตัว',
+                _('ข้อมูลส่วนตัว'),
                 self._show_passport_field(),
                 MultiWidgetField(
                     'birthday',
@@ -126,7 +129,7 @@ class PersonalProfileForm(ModelForm):
                 )),
             ),
             Fieldset(
-                'ข้อมูลบิดา (ภาษาไทย)',
+                _('ข้อมูลบิดา (ภาษาไทย)'),
                 Row(
                     Div('father_prefix', css_class='col-md-2'),
                     Div('father_first_name', css_class='col-md-5'),
@@ -134,7 +137,7 @@ class PersonalProfileForm(ModelForm):
                 )
             ),
             Fieldset(
-                'ข้อมูลมารดา (ภาษาไทย)',
+                _('ข้อมูลมารดา (ภาษาไทย)'),
                 Row(
                     Div('mother_prefix', css_class='col-md-2'),
                     Div('mother_first_name', css_class='col-md-5'),
@@ -142,7 +145,7 @@ class PersonalProfileForm(ModelForm):
                 )
             ),
             Fieldset(
-                'ข้อมูลที่อยู่',
+                _('ข้อมูลที่อยู่'),
                 Row(
                     Div('house_number', css_class='col-md-2'),
                     Div('village_number', css_class='col-md-2'),
@@ -163,7 +166,7 @@ class PersonalProfileForm(ModelForm):
                 ),
             ),
             ButtonHolder(
-                Submit('submit', 'จัดเก็บ', css_class='btn btn-primary')
+                Submit('submit', _('จัดเก็บ'), css_class='btn btn-primary')
             )
         )
 
@@ -229,6 +232,7 @@ def personal_profile(request):
                   'appl/forms/personal.html',
                   { 'form': form,
                     'instruction_step': instruction_step,
+                    'applicant': applicant,
                   })
 
 
@@ -266,4 +270,5 @@ def education_profile(request):
                   'appl/forms/education.html',
                   { 'form': form,
                     'instruction_step': instruction_step,
+                    'applicant': applicant,
                   })

@@ -1,8 +1,9 @@
 {% extends 'appl/base.html' %}
+{% load i18n %}
 {% block content %}
 <div class="row">
   <div class="col-md-12">
-    <h1>ยินดีต้อนรับ {{ applicant }}</h1>
+    <h1>{% trans 'ยินดีต้อนรับ' %} {{ applicant }}</h1>
   </div>
 </div>
 
@@ -24,23 +25,23 @@
     <ul>
       {% if personal_profile %}
         <li>
-          เบอร์โทรศัพท์ติดต่อ: {{ personal_profile.contact_phone }} 
-          <a class="btn btn-sm btn-secondary" href="{% url 'appl:personal-profile' %}">แก้ไขข้อมูลส่วนตัว</a>
+          {% trans 'เบอร์โทรศัพท์ติดต่อ' %}: {{ personal_profile.contact_phone }} 
+          <a class="btn btn-sm btn-secondary" href="{% url 'appl:personal-profile' %}">{% trans 'แก้ไขข้อมูลส่วนตัว' %}</a>
         </li>
       {% else %}
         <li>
-          <a class="btn btn-sm btn-primary" href="{% url 'appl:personal-profile' %}">กรอกข้อมูลส่วนตัว</a>
+          <a class="btn btn-sm btn-primary" href="{% url 'appl:personal-profile' %}">{% trans 'กรอกข้อมูลส่วนตัว' context 'form link' %}</a>
         </li>
       {% endif %}
       {% if educational_profile %}
         <li>
-          โรงเรียน{{ educational_profile.school_title }}<br />
-          แผนการเรียน: {{ educational_profile.get_education_plan_display }}, GPA: {{ educational_profile.gpa|floatformat:"2" }}<br />
-          <a class="btn btn-sm btn-secondary" href="{% url 'appl:education-profile' %}">แก้ไขข้อมูลการศึกษา</a>
+          {% trans 'โรงเรียน' %}: {{ educational_profile.school_title }}<br />
+          {% trans 'แผนการเรียน' %}: {{ educational_profile.get_education_plan_display }}, GPA: {{ educational_profile.gpa|floatformat:"2" }}<br />
+          <a class="btn btn-sm btn-secondary" href="{% url 'appl:education-profile' %}">{% trans 'แก้ไขข้อมูลการศึกษา' %}</a>
         </li>
       {% else %}
         <li>
-          <a class="btn btn-sm btn-primary" href="{% url 'appl:education-profile' %}">กรอกข้อมูลการศึกษา</a>
+          <a class="btn btn-sm btn-primary" href="{% url 'appl:education-profile' %}">{% trans 'กรอกข้อมูลการศึกษา' context 'form link' %}</a>
         </li>
       {% endif %}
     </ul>

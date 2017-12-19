@@ -1,9 +1,10 @@
-{% extends 'base.html' %}
+{% extends 'appl/base.html' %}
 {% load crispy_forms_tags %}
+{% load i18n %}
 {% block content %}
   <div class="row">
     <div class="col-md-12">
-      <h2>กรอกข้อมูลส่วนตัว</h2>
+      <h2>{% trans 'กรอกข้อมูลส่วนตัว' context 'form title' %}</h2>
     </div>
     {% include 'appl/include/form_instruction.html' %}
     <div class="col-md-12">
