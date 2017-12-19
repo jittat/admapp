@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-12-20 02:08+0700\n"
+"POT-Creation-Date: 2017-12-20 03:33+0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -167,6 +167,156 @@ msgctxt "form title"
 msgid "กรอกข้อมูลส่วนตัว"
 msgstr "Personal information"
 
+#: appl/templates/appl/include/active_application.html:65
+msgid "อัพโหลดเอกสาร"
+msgstr "Upload documents"
+
+#: appl/templates/appl/include/application_document_status.html:4
+msgctxt "appl status"
+msgid "สถานะการสมัครและค่าสมัคร"
+msgstr "Application and payment statuses"
+
+#: appl/templates/appl/include/application_document_status.html:6
+#: appl/templates/appl/include/documents_incomplete.html:2
+msgctxt "appl status"
+msgid "สถานะการสมัคร"
+msgstr "Application status"
+
+#: appl/templates/appl/include/application_document_status.html:13
+msgctxt "appl status"
+msgid "กรุณาเลือกสาขาก่อนพิมพ์ใบชำระเงินค่าสมัคร"
+msgstr "Please choose preferred major(s) before printing the payment form."
+
+#: appl/templates/appl/include/application_document_status.html:15
+msgctxt "appl status"
+msgid "ยังไม่ได้เลือกสาขา"
+msgstr "No major chosen."
+
+#: appl/templates/appl/include/documents_incomplete.html:2
+msgctxt "appl status"
+msgid "เอกสารไม่เรียบร้อย"
+msgstr "Incomplete application"
+
+#: appl/templates/appl/include/documents_incomplete.html:3
+msgctxt "appl status"
+msgid "เนื่องจาก"
+msgstr "Reason(s)"
+
+#: appl/templates/appl/include/major_selection_item.html:3
+msgid "สาขาที่สมัคร"
+msgstr "Applied major(s) or program(s)"
+
+#: appl/templates/appl/include/major_selection_item.html:5
+#, python-format
+msgid ""
+"\n"
+"      สามารถเลือกได้ %(counter)s สาขา สาขาที่คุณเลือกคือ<br />\n"
+"    "
+msgid_plural ""
+"\n"
+"      สามารถเลือกได้ %(counter)s สาขา สาขาที่คุณเลือกคือ<br />\n"
+"    "
+msgstr[0] ""
+"\n"
+"      You can choose %(counter)s major. Your choice is:<br />\n"
+"    "
+msgstr[1] ""
+"\n"
+"      You can choose %(counter)s majors. Your choices are:<br />\n"
+"    "
+
+#: appl/templates/appl/include/major_selection_item.html:31
+msgctxt "major link"
+msgid "แก้ไขสาขาที่เลือก"
+msgstr "Edit major choice(s)"
+
+#: appl/templates/appl/include/major_selection_item.html:34
+#: appl/templates/appl/include/major_selection_item.html:47
+msgid "หมดเขตการรับสมัครแล้ว ขณะนี้ไม่สามารถแก้ไขอันดับที่เลือกได้"
+msgstr ""
+"The application deadline has been passed.  You cannot change your "
+"selection(s)."
+
+#: appl/templates/appl/include/major_selection_item.html:39
+#, python-format
+msgid ""
+"\n"
+"      คุณยังไม่ได้เลือกสาขาที่จะสมัคร (เลือกได้ %(counter)s สาขา)<br />\n"
+"    "
+msgid_plural ""
+"\n"
+"      คุณยังไม่ได้เลือกสาขาที่จะสมัคร (เลือกได้ %(counter)s สาขา)<br />\n"
+"    "
+msgstr[0] ""
+"\n"
+"      You have not made any major selection. (You can choose %(counter)s "
+"major.)<br />\n"
+"    "
+msgstr[1] ""
+"\n"
+"      You have not made any major selection. (You can choose %(counter)s "
+"majors.)<br />\n"
+"    "
+
+#: appl/templates/appl/include/major_selection_item.html:45
+msgctxt "major link"
+msgid "เลือกสาขา"
+msgstr "Choose majors to apply"
+
+#: appl/templates/appl/include/payment_item.html:6
+msgid "การชำระค่าสมัคร"
+msgstr "Payment"
+
+#: appl/templates/appl/include/payment_item.html:7
+#, python-format
+msgid ""
+"\n"
+"  ค่าสมัคร %(fee)s บาท\n"
+"  ชำระแล้ว %(paid_amount)s บาท\n"
+msgstr ""
+"\n"
+"  Admission fee: %(fee)s Baht.\n"
+"  Paid: %(paid_amount)s Baht.\n"
+
+#: appl/templates/appl/include/payment_item.html:12
+#, python-format
+msgid ""
+"\n"
+"    ต้องชำระเพิ่ม %(additional_payment)s บาท<br />\n"
+"  "
+msgstr ""
+"\n"
+"    Additional payment: %(additional_payment)s Baht.<br />\n"
+"  "
+
+#: appl/templates/appl/include/payment_item.html:15
+msgid "พิมพ์ใบชำระเงิน"
+msgstr "Print payment form"
+
+#: appl/templates/appl/include/payment_item.html:16
+msgid "ชำระได้ถึงวันที่"
+msgstr "Payment last date:"
+
+#: appl/templates/appl/include/payment_item.html:18
+msgid "ไม่ต้องชำระเพิ่ม"
+msgstr "No additional fee."
+
+#: appl/templates/appl/include/project_cancel_div.html:3
+msgid "คุณแน่ใจที่จะยกเลิกการสมัครโครงการนี้"
+msgstr "Are you sure you want to cancel this application?"
+
+#: appl/templates/appl/include/project_cancel_div.html:6
+msgid "แน่ใจและยกเลิกการสมัคร"
+msgstr "Cancel application"
+
+#: appl/templates/appl/include/project_cancel_div.html:7
+msgid "ไม่ยกเลิก"
+msgstr "Do not cancel"
+
+#: appl/templates/appl/include/project_cancel_link.html:3
+msgid "ยกเลิกการสมัคร"
+msgstr "Cancel application"
+
 #: appl/templates/appl/include/project_list.html:2
 msgid "รายการโครงการรับสมัคร"
 msgstr "Admission projects for "
@@ -190,6 +340,22 @@ msgstr "I confirm my application"
 #: appl/templates/appl/include/project_list.html:27
 msgid "ยกเลิก"
 msgstr "Cancel"
+
+#: appl/templates/appl/include/selected_major_details.html:5
+msgctxt "single major details"
+msgid "รายละเอียดสาขาที่สมัคร"
+msgstr "Application information for your selected major"
+
+#: appl/templates/appl/include/selected_major_details.html:6
+msgid "กรุณาพิจารณาเกณฑ์และรายการเอกสารเพิ่มเติมที่ต้องอัพโหลด"
+msgstr ""
+"You should consider the following criteria and conditions. Please make sure "
+"that you have uploaded all required and optional documents."
+
+#: appl/templates/appl/include/selected_major_details.html:7
+msgctxt "single major details"
+msgid "สาขาที่สมัคร"
+msgstr "Applied major or program"
 
 #: appl/templates/appl/index.html:6
 msgid "ยินดีต้อนรับ"

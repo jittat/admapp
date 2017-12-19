@@ -1,7 +1,12 @@
+{% load i18n %}
 <div class="project-appl-sections bborder-superlight">
-  <h4>สาขาที่สมัคร</h4>
+  <h4>{% trans 'สาขาที่สมัคร' %}</h4>
   {% if major_selection %}
-    สามารถเลือกได้ {{ active_application.admission_project.max_num_selections }} สาขา สาขาที่คุณเลือกคือ<br />
+    {% blocktrans count counter=active_application.admission_project.max_num_selections %}
+      สามารถเลือกได้ {{ counter }} สาขา สาขาที่คุณเลือกคือ<br />
+    {% plural %}
+      สามารถเลือกได้ {{ counter }} สาขา สาขาที่คุณเลือกคือ<br />
+    {% endblocktrans %}
     {% for m in major_selection.get_majors %}
       <div>
         {{ forloop.counter }}.
@@ -23,19 +28,23 @@
     {% endfor %}
     <div class="mt5">
       {% if not is_deadline_passed %}
-        <a class="btn btn-sm btn-primary" href="{% url 'appl:major-selection' admission_round.id %}">แก้ไขสาขาที่เลือก</a>
+        <a class="btn btn-sm btn-primary" href="{% url 'appl:major-selection' admission_round.id %}">{% trans 'แก้ไขสาขาที่เลือก' context 'major link' %}</a>
       {% else %}
         <small>
-          หมดเขตการรับสมัครแล้ว ขณะนี้ไม่สามารถแก้ไขอันดับที่เลือกได้
+          {% trans 'หมดเขตการรับสมัครแล้ว ขณะนี้ไม่สามารถแก้ไขอันดับที่เลือกได้' %}
         </small>
       {% endif %}
     </div>
   {% else %}
-    คุณยังไม่ได้เลือกสาขาที่จะสมัคร (เลือกได้ {{ active_application.admission_project.max_num_selections }} สาขา)<br />
+    {% blocktrans count counter=active_application.admission_project.max_num_selections%}
+      คุณยังไม่ได้เลือกสาขาที่จะสมัคร (เลือกได้ {{ counter }} สาขา)<br />
+    {% plural %}
+      คุณยังไม่ได้เลือกสาขาที่จะสมัคร (เลือกได้ {{ counter }} สาขา)<br />
+    {% endblocktrans %}
     {% if not is_deadline_passed %}
-      <a class="btn btn-sm btn-primary" href="{% url 'appl:major-selection' admission_round.id %}">เลือกสาขา</a>
+      <a class="btn btn-sm btn-primary" href="{% url 'appl:major-selection' admission_round.id %}">{%  trans 'เลือกสาขา' context 'major link' %}</a>
     {% else %}
-      หมดเขตการรับสมัครแล้ว ขณะนี้ไม่สามารถแก้ไขอันดับที่เลือกได้
+      {% trans 'หมดเขตการรับสมัครแล้ว ขณะนี้ไม่สามารถแก้ไขอันดับที่เลือกได้' %}
     {% endif %}
   {% endif %}
 </div>

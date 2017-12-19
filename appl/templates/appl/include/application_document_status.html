@@ -1,17 +1,18 @@
+{% load i18n %}
 <div class="project-appl-sections">
   {% if active_application.admission_fee != 0 %}
-    <h4>สถานะการสมัครและค่าสมัคร</h4>
+    <h4>{%  trans 'สถานะการสมัครและค่าสมัคร' context 'appl status' %}</h4>
   {% else %}
-    <h4>สถานะการสมัคร</h4>
+    <h4>{% trans 'สถานะการสมัคร' context 'appl status' %}</h4>
   {% endif %}
   {% if documents_complete_status.status %}
     {% if major_selection %}
       {% include 'appl/include/payment_item.html' %}
     {% else %}
       {% if active_application.admission_fee != 0 %}
-        กรุณาเลือกสาขาก่อนพิมพ์ใบชำระเงินค่าสมัคร
+        {% trans 'กรุณาเลือกสาขาก่อนพิมพ์ใบชำระเงินค่าสมัคร' context 'appl status' %}
       {% else %}
-        ยังไม่ได้เลือกสาขา
+        {% trans 'ยังไม่ได้เลือกสาขา' context 'appl status' %}
       {% endif %}
     {% endif %}
   {% else %}

@@ -1,5 +1,6 @@
-สถานะการสมัคร: <span class="badge badge-danger">เอกสารไม่เรียบร้อย</span><br />
-เนื่องจาก:
+{% load i18n %}
+{% trans 'สถานะการสมัคร' context 'appl status' %}: <span class="badge badge-danger">{% trans 'เอกสารไม่เรียบร้อย' context 'appl status' %}</span><br />
+{% trans 'เนื่องจาก' context 'appl status' %}:
 {% for msg in documents_complete_status.errors %}
   {{ msg }}{% if not forloop.last %},{% endif %}
 {% endfor %}

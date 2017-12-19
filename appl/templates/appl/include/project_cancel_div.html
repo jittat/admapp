@@ -1,8 +1,9 @@
+{% load i18n %}
 <div class="p10 border-a0 bg-warn canceling-confirmations mb5" style="display:none;">
-  คุณแน่ใจที่จะยกเลิกการสมัครโครงการนี้
+  {% trans 'คุณแน่ใจที่จะยกเลิกการสมัครโครงการนี้' %}
   <form class="d-inline" method="post" action="{% url 'appl:cancel-project' active_application.admission_project.id active_application.admission_round.id %}">
     {% csrf_token %}
-    <input type="submit" name="ok" class="btn btn-sm btn-danger" value="แน่ใจและยกเลิกการสมัคร" />
-    <input type="submit" name="cancel" class="btn btn-sm btn-secondary" value="ไม่ยกเลิก" />
+    <input type="submit" name="ok" class="btn btn-sm btn-danger" value="{% trans 'แน่ใจและยกเลิกการสมัคร' %}" />
+    <input type="submit" name="cancel" class="btn btn-sm btn-secondary" value="{% trans 'ไม่ยกเลิก' %}" />
   </form>
 </div>

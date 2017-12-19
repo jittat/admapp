@@ -1,3 +1,4 @@
+{% load i18n %}
 <div class="row">
   <div class="col-md-12  tborder-a0 mt5 pt5">
     {% if not is_deadline_passed %}
@@ -61,7 +62,7 @@
   </div>
   {% if project_uploaded_documents %}
     <div class="col-md-7">
-      <h4>อัพโหลดเอกสาร</h4>
+      <h4>{% trans 'อัพโหลดเอกสาร' %}</h4>
       <div class="all-document-upload-forms">
         {% for project_uploaded_document in project_uploaded_documents %}
           {% include 'appl/include/document_upload_form.html' %}
