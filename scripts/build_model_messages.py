@@ -1,13 +1,16 @@
 from django_bootstrap import bootstrap
 bootstrap()
 
-from appl.models import Campus, Faculty, Major, AdmissionProject
+from appl.models import Campus, Faculty, Major, AdmissionProject, AdmissionRound
 
 def dump_data(objects, varname, fields):
     items = []
     for o in objects:
         for f in fields:
-            items.append(getattr(o,f))
+            if f != '*':
+                items.append(getattr(o,f))
+            else:
+                items.append(o)
 
     print(varname,'= [')
     for i in items:
@@ -32,6 +35,9 @@ def main():
     project = AdmissionProject.objects.get(pk=1)
     dump_data(project.major_set.all(), 'MAJORS', ['title'])
 
+    dump_data([project], 'PROJECTS', ['title'])
+
+    dump_data([str(r) for r in AdmissionRound.objects.all()], 'ADMROUNDS', ['*'])
     
 if __name__ == '__main__':
     main()

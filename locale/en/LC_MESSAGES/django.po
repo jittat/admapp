@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-12-20 10:31+0700\n"
+"POT-Creation-Date: 2017-12-21 00:07+0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -179,10 +179,10 @@ msgstr "Mechanical Engineering (International Program)"
 
 #: appl/db_messages/model_messages.py:46
 msgid "วิศวกรรมไฟฟ้าเครื่องกลการผลิต (นานาชาติ)"
-msgstr "Electrical - Mechanical Manufacturing Engineering (International Program)"
+msgstr ""
+"Electrical - Mechanical Manufacturing Engineering (International Program)"
 
 #: appl/db_messages/model_messages.py:47
-#| msgid "เครดิตรูปภาพ: KU-Photo และภาพจากเว็บไซต์วิทยาเขต"
 msgid "วิศวกรรมซอฟต์แวร์และความรู้ (นานาชาติ)"
 msgstr "Software and Knowledge Engineering (International Program)"
 
@@ -200,7 +200,8 @@ msgstr "Environmental Engineering (English Program)"
 
 #: appl/db_messages/model_messages.py:51
 msgid "วิศวกรรมการบินและอวกาศ-บริหารธุรกิจ (นานาชาติ)"
-msgstr "Aerospace Engineering and Business Administration (International Program)"
+msgstr ""
+"Aerospace Engineering and Business Administration (International Program)"
 
 #: appl/db_messages/model_messages.py:52
 msgid "เศรษฐศาสตร์การประกอบการ (นานาชาติ)"
@@ -222,127 +223,155 @@ msgstr "Integrated Tourism Management (International Program)"
 msgid "การตลาด (นานาชาติ)"
 msgstr "Marketing (International Program)"
 
-#: appl/models.py:379
+#: appl/db_messages/model_messages.py:59
+msgid "หลักสูตรนานาชาติ/ภาคภาษาอังกฤษ"
+msgstr "International Programs/English Programs"
+
+#: appl/db_messages/model_messages.py:62
+msgid "รอบที่ 1/1"
+msgstr "TCAS Round 1/1"
+
+#: appl/db_messages/model_messages.py:63
+msgid "รอบที่ 1/2"
+msgstr "TCAS Round 1/2"
+
+#: appl/db_messages/model_messages.py:64
+msgid "รอบที่ 2"
+msgstr "TCAS Round 2"
+
+#: appl/db_messages/model_messages.py:65
+msgid "รอบที่ 3"
+msgstr "TCAS Round 3"
+
+#: appl/db_messages/model_messages.py:66
+msgid "รอบที่ 4"
+msgstr "TCAS Round 4"
+
+#: appl/db_messages/model_messages.py:67
+msgid "รอบที่ 5"
+msgstr "TCAS Round 5"
+
+#: appl/models.py:387
 msgid "กำลังศึกษาชั้นมัธยมศึกษาปีที่ 6 หรือเทียบเท่า"
 msgstr "Currently in grade 12 (Mathayom 6) or equivalent"
 
-#: appl/models.py:380
+#: appl/models.py:388
 msgid "จบการศึกษาชั้นมัธยมศึกษาปีที่ 6 หรือเทียบเท่า"
 msgstr "Graduated from grade 12 (Mathayom 6) or equivalent"
 
-#: appl/models.py:383
+#: appl/models.py:391
 msgid "วิทย์-คณิต"
 msgstr "Science-Math"
 
-#: appl/models.py:384
+#: appl/models.py:392
 msgid "ศิลป์-คำนวณ"
 msgstr "Art-Math"
 
-#: appl/models.py:385
+#: appl/models.py:393
 msgid "ศิลป์-ภาษา"
 msgstr "Art-Language"
 
-#: appl/models.py:386
+#: appl/models.py:394
 msgid "อาชีวศึกษา"
 msgstr "Vocational Education"
 
-#: appl/models.py:391
+#: appl/models.py:399
 msgid "ระดับการศึกษา"
 msgstr "Educational level"
 
-#: appl/models.py:393
+#: appl/models.py:401
 msgid "แผนการศึกษา"
 msgstr "Study plan"
 
-#: appl/models.py:398 appl/models.py:468
+#: appl/models.py:406 appl/models.py:476
 msgid "จังหวัด"
 msgstr "Province"
 
-#: appl/models.py:400 appl/templates/appl/index.html:38
+#: appl/models.py:408 appl/templates/appl/index.html:38
 msgid "โรงเรียน"
 msgstr "School"
 
-#: appl/models.py:427
+#: appl/models.py:435
 msgid "คำนำหน้า (อังกฤษ)"
 msgstr "Prefix (English)"
 
-#: appl/models.py:430
+#: appl/models.py:438
 msgid "ชื่อ (อังกฤษ)"
 msgstr "Name (English)"
 
-#: appl/models.py:432
+#: appl/models.py:440
 msgid "ชื่อกลาง (อังกฤษ, ถ้ามี)"
 msgstr "Middle name (English, optional)"
 
-#: appl/models.py:435
+#: appl/models.py:443
 msgid "นามสกุล (อังกฤษ)"
 msgstr "Last name (English)"
 
-#: appl/models.py:437
+#: appl/models.py:445
 msgid "หมายเลข Passport (ถ้ามี)"
 msgstr "Passport number (optional)"
 
-#: appl/models.py:439
+#: appl/models.py:447
 msgid "วันเดือนปีเกิด"
 msgstr "Date of birth"
 
-#: appl/models.py:441
+#: appl/models.py:449
 msgid "คำนำหน้าชื่อบิดา"
 msgstr "Prefix of father's name"
 
-#: appl/models.py:443
+#: appl/models.py:451
 msgid "ชื่อบิดา"
 msgstr "Father first name"
 
-#: appl/models.py:445
+#: appl/models.py:453
 msgid "นามสกุลบิดา"
 msgstr "Father last name"
 
-#: appl/models.py:447
+#: appl/models.py:455
 msgid "คำนำหน้าชื่อมารดา"
 msgstr "Prefix of mother's name"
 
-#: appl/models.py:449
+#: appl/models.py:457
 msgid "ชื่อมารดา"
 msgstr "Mother first name"
 
-#: appl/models.py:451
+#: appl/models.py:459
 msgid "นามสกุลมารดา"
 msgstr "Mother last name"
 
-#: appl/models.py:453
+#: appl/models.py:461
 msgid "บ้านเลขที่"
 msgstr "House number"
 
-#: appl/models.py:455
+#: appl/models.py:463
 msgid "หมู่"
 msgstr "Village"
 
-#: appl/models.py:458
+#: appl/models.py:466
 msgid "ซอย"
 msgstr "Avenue"
 
-#: appl/models.py:461
+#: appl/models.py:469
 msgid "ถนน"
 msgstr "Road"
 
-#: appl/models.py:464
+#: appl/models.py:472
 msgid "ตำบล/แขวง"
 msgstr "Sub-district (Tumbon)"
 
-#: appl/models.py:466
+#: appl/models.py:474
 msgid "อำเภอ/เขต"
 msgstr "District (Ampher)"
 
-#: appl/models.py:470
+#: appl/models.py:478
 msgid "รหัสไปรษณีย์"
 msgstr "Postal code"
 
-#: appl/models.py:473
+#: appl/models.py:481
 msgid "เบอร์โทรศัพท์ที่ติดต่อได้"
 msgstr "Contact phone"
 
-#: appl/models.py:477
+#: appl/models.py:485
 msgid "เบอร์โทรศัพท์มือถือ"
 msgstr "Mobile phone"
 
@@ -364,7 +393,7 @@ msgctxt "form title"
 msgid "กรอกข้อมูลส่วนตัว"
 msgstr "Personal information"
 
-#: appl/templates/appl/include/active_application.html:65
+#: appl/templates/appl/include/active_application.html:66
 msgid "อัพโหลดเอกสาร"
 msgstr "Upload documents"
 
@@ -522,6 +551,10 @@ msgstr "Admission projects for "
 msgid "หมดเวลารับสมัคร"
 msgstr "Deadline passed"
 
+#: appl/templates/appl/include/project_list.html:14
+msgid "เปิดรับสมัครวันที่"
+msgstr "Applying period:"
+
 #: appl/templates/appl/include/project_list.html:17
 msgid "สมัครโครงการนี้"
 msgstr "Apply"
@@ -535,6 +568,7 @@ msgid "ยืนยันการสมัคร"
 msgstr "I confirm my application"
 
 #: appl/templates/appl/include/project_list.html:27
+#: appl/templates/appl/major_selection.html:63
 msgid "ยกเลิก"
 msgstr "Cancel"
 
@@ -584,6 +618,48 @@ msgctxt "form link"
 msgid "กรอกข้อมูลการศึกษา"
 msgstr "Enter educational information"
 
+#: appl/templates/appl/major_selection.html:14
+msgid "เลือกสาขาโครงการ"
+msgstr "Major selection: "
+
+#: appl/templates/appl/major_selection.html:15
+msgid "ผู้สมัคร"
+msgstr "Applicant"
+
+#: appl/templates/appl/major_selection.html:15
+msgid "จำนวนสาขาที่เลือกได้"
+msgstr "Maximum number of majors that you can choose: "
+
+#: appl/templates/appl/major_selection.html:21
+#: appl/templates/appl/major_selection.html:117
+msgid "สาขาที่เลือกคือ"
+msgstr "Chosen major"
+
+#: appl/templates/appl/major_selection.html:25
+msgid "ยังไม่ได้เลือกสาขา สามารถเลือกได้ 1 สาขา"
+msgstr "You have not made any major selection. (You can choose 1 major.)"
+
+#: appl/templates/appl/major_selection.html:30
+msgctxt "major selection"
+msgid "เลือกคณะเพื่อเลือกสาขา"
+msgstr "Choose the faculty to see the list of majors"
+
+#: appl/templates/appl/major_selection.html:32
+msgctxt "major selection"
+msgid "เลือกคณะ"
+msgstr "Choose the faculty"
+
+#: appl/templates/appl/major_selection.html:55
+#: appl/templates/appl/major_selection.html:96
+msgctxt "major selection"
+msgid "เลือกสาขานี้"
+msgstr "Apply"
+
+#: appl/templates/appl/major_selection.html:62 appl/views/general_forms.py:61
+#: appl/views/general_forms.py:169
+msgid "จัดเก็บ"
+msgstr "Save"
+
 #: appl/views/general_forms.py:39
 msgid "ข้อมูลโรงเรียน"
 msgstr "School information"
@@ -599,10 +675,6 @@ msgstr ""
 #: appl/views/general_forms.py:56
 msgid "แสดงรายการเฉพาะโรงเรียนในโครงการช้างเผือก"
 msgstr "Show only schools eligible to โครงการช้างเผือก"
-
-#: appl/views/general_forms.py:61 appl/views/general_forms.py:169
-msgid "จัดเก็บ"
-msgstr "Save"
 
 #: appl/views/general_forms.py:89 appl/views/general_forms.py:93
 #: appl/views/general_forms.py:96 regis/views.py:77
@@ -834,3 +906,7 @@ msgstr "Incorrect password confirmation"
 #: regis/views.py:268
 msgid "ไม่พบข้อมูลผู้สมัครที่ระบุหรืออีเมลที่ระบุไม่ถูกต้อง"
 msgstr "Account information is not found, or you entered an incorrect email."
+
+#~ msgctxt "active app main"
+#~ msgid "โครงการ"
+#~ msgstr "-"

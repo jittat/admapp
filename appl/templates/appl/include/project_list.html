@@ -1,5 +1,5 @@
 {% load i18n %}
-<h2>{% trans 'รายการโครงการรับสมัคร' %}{% if admission_round %}{{ admission_round }}{% endif %}</h2>
+<h2>{% trans 'รายการโครงการรับสมัคร' %}{% if admission_round %}{{ admission_round.title_trans }}{% endif %}</h2>
 {% if admission_round %}
   {% if cupt_confirmation_status.is_wait %}
     {% include 'appl/include/cupt_confirmation_wait.html' %}
@@ -10,8 +10,8 @@
         {% if project.is_deadline_passed %}
           <span class="badge badge-info">{% trans 'หมดเวลารับสมัคร' %}</span>
         {% endif %}
-        {{ project.title }}
-        (เปิดรับสมัครวันที่ {{ project.project_round.admission_dates }})
+        {{ project.title_trans }}
+        ({% trans 'เปิดรับสมัครวันที่' %} {{ project.project_round.admission_dates }})
         {% if cupt_confirmation_status.is_not_required or cupt_confirmation_status.is_free %}
           {% if project.is_open and project.eligibility.is_eligible %}
             <a class="btn btn-primary btn-sm applying-links" href="#">{% trans 'สมัครโครงการนี้' %}</a>

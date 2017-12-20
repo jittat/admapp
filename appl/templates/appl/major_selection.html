@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load i18n %}
 {% block content %}
 <div class="row">
   {% if error_message %}
@@ -10,25 +11,25 @@
     </div>
   {% endif %}
   <div class="col-md-12">
-    <h1>เลือกสาขาโครงการ{{ admission_project }}</h1>
-    ผู้สมัคร: {{ applicant }} จำนวนสาขาที่เลือกได้ {{ admission_project.max_num_selections }}
+    <h1>{% trans 'เลือกสาขาโครงการ' %}{{ admission_project.title_trans }}</h1>
+    {% trans 'ผู้สมัคร' %}: {{ applicant }} {% trans 'จำนวนสาขาที่เลือกได้' %} {{ admission_project.max_num_selections }}
     <form style="margin-top: 10px;" action="{% url 'appl:major-selection' admission_round.id %}" method="post">
       {% csrf_token %}
       <div id="selected" class="form-group">
         {% if selected_majors %}
           <div class="alert alert-info">
-            สาขาที่เลือกคือ: {{ selected_majors.faculty.title }} - {{ selected_majors.title }}
+            {% trans 'สาขาที่เลือกคือ' %}: {{ selected_majors.faculty.title_trans }} - {{ selected_majors.title_trans }}
           </div>
         {% else %}
           <div class="alert alert-warning">
-            ยังไม่ได้เลือกสาขา สามารถเลือกได้ 1 สาขา
+            {% trans 'ยังไม่ได้เลือกสาขา สามารถเลือกได้ 1 สาขา' %}
           </div>          
         {% endif %}
       </div>
       <div class="form-group">
-        เลือกคณะเพื่อเลือกสาขา
+        {% trans 'เลือกคณะเพื่อเลือกสาขา' context 'major selection' %}
         <select name="falculty" class="form-control" onchange="changeFaculty(this)">
-          <option value="">เลือกคณะ</option>            
+          <option value="">{% trans 'เลือกคณะ' context 'major selection' %}</option>            
           {% for f in faculties %}
             <option 
               value="{{ f.id }}"
@@ -36,7 +37,7 @@
                 selected
               {% endif %}
             >
-              {{ f.title }}
+              {{ f.title_trans }}
             </option>
           {% endfor %}
         </select>
@@ -50,16 +51,16 @@
             {% for m in all_majors %}
               {% if selected_majors and selected_majors.faculty_id == m.faculty_id %}
                 <li class="list-group-item d-flex col col-lg-3 col-12 justify-content-between">
-                  {{ m.title }}
-                  <button type="button" class="btn btn-outline-success" onclick="selectMajor(this)" value="{{ forloop.counter }}">เลือกสาขานี้</button>
+                  {{ m.title_trans }}
+                  <button type="button" class="btn btn-outline-success" onclick="selectMajor(this)" value="{{ forloop.counter }}">{% trans 'เลือกสาขานี้' context 'major selection' %}</button>
                 </li>
               {% endif %}  
             {% endfor %}
           </ul>
       </div>
       <div class="form-group">
-        <input type="submit" name="save" class="btn btn-success" value="จัดเก็บ" />
-        <input type="submit" name="cancel" class="btn btn-danger" value="ยกเลิก" />
+        <input type="submit" name="save" class="btn btn-success" value="{% trans 'จัดเก็บ' %}" />
+        <input type="submit" name="cancel" class="btn btn-danger" value="{% trans 'ยกเลิก' %}" />
       </div>
     </form>
   </div>
@@ -70,7 +71,7 @@
   {% for m in all_majors %}
     majors[{{ m.number }}] = {
       number: "{{ m.number }}",
-      title: "{{ m.title|escapejs }}",
+      title: "{{ m.title_trans|escapejs }}",
       faculty_id: "{{ m.faculty_id }}"
     };
   {% endfor %}
@@ -78,7 +79,7 @@
   faculties = [];
   {% for f in faculties %}
     faculties[{{ f.id }}] = {
-      title: "{{ f.title|escapejs }}"
+      title: "{{ f.title_trans|escapejs }}"
     }
   {% endfor %}
   
@@ -92,7 +93,7 @@
         majorWrapper.setAttribute('class', 'list-group-item d-flex col col-lg-3 col-12 justify-content-between');
         
         var majorButton = document.createElement('button');
-        majorButton.innerHTML = 'เลือกสาขานี้';
+        majorButton.innerHTML = '{% trans 'เลือกสาขานี้' context 'major selection' %}';
         majorButton.setAttribute('value', index);
         majorButton.setAttribute('class', 'btn btn-outline-success major-button')
         majorButton.onclick = function(e) {
@@ -113,7 +114,7 @@
 
     var selectedElement = document.getElementById('selected');
     var major = majors[target.value];
-    selectedElement.innerHTML = '<div class="alert alert-info" role="alert">' + 'สาขาที่เลือกคือ: ' + faculties[major.faculty_id].title + ' - ' + majors[target.value].title + '</div>';
+    selectedElement.innerHTML = '<div class="alert alert-info" role="alert">' + '{% trans 'สาขาที่เลือกคือ' %}: ' + faculties[major.faculty_id].title + ' - ' + majors[target.value].title + '</div>';
     var inputElement = document.createElement('input');
     inputElement.setAttribute('type', 'hidden');
     inputElement.setAttribute('name', 'major');

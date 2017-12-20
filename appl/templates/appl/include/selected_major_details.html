@@ -4,7 +4,7 @@
     <div class="project-appl-sections bborder-superlight">
       <h4>{% trans 'รายละเอียดสาขาที่สมัคร' context 'single major details' %}</h4>
       <small>{% trans 'กรุณาพิจารณาเกณฑ์และรายการเอกสารเพิ่มเติมที่ต้องอัพโหลด' %}</small><br />
-      <b>{% trans 'สาขาที่สมัคร' context 'single major details' %}:</b> {{ major.faculty }} - สาขา{{ major.title }}<br />
+      <b>{% trans 'สาขาที่สมัคร' context 'single major details' %}:</b> {{ major.faculty.title_trans }} - {{ major.title_trans }}<br />
       {{ major.get_detail_items_as_list_display|safe }}
     </div>
   {% endwith %}

@@ -77,7 +77,9 @@ class AdmissionRound(models.Model):
             return 'รอบที่ %d' % (self.number,)
         else:
             return 'รอบที่ %d/%d' % (self.number, self.subround_number)
-
+    def title_trans(self):
+        return _(str(self))
+        
     def get_full_number(self):
         if self.subround_number == 0:
             return '%d' % (self.number,)
@@ -134,6 +136,9 @@ class AdmissionProject(models.Model):
     
     def __str__(self):
         return self.title
+
+    def title_trans(self):
+        return _(self.title)
 
     def get_admission_rounds_display(self):
         return ','.join([str(r) for r in self.admission_rounds.all()])
@@ -252,6 +257,9 @@ class Major(models.Model):
 
     def __str__(self):
         return self.title
+
+    def title_trans(self):
+        return _(self.title)
 
     @staticmethod
     def get_by_project_number(project, number):

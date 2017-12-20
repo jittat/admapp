@@ -6,7 +6,8 @@
     {% else %}
       {% include 'appl/include/project_deadline_announcement.html' %}
     {% endif %}
-    <h2>โครงการ{{ active_application.admission_project }} ({{ admission_round }})</h2>
+    {% get_current_language as LANGUAGE_CODE %}
+    <h2>{% if LANGUAGE_CODE == 'th' %}โครงการ{% endif %}{{ active_application.admission_project.title_trans }} ({{ admission_round.title_trans }})</h2>
     {% include 'appl/include/project_cancel_div.html' %}
   </div>
 </div>
