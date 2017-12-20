@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-12-20 03:33+0700\n"
+"POT-Creation-Date: 2017-12-20 10:31+0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,127 +25,343 @@ msgstr "ไทย"
 msgid "English"
 msgstr "อังกฤษ"
 
-#: appl/models.py:374
+#: appl/db_messages/model_messages.py:3
+msgid "วิทยาเขตบางเขน"
+msgstr "Bangkhen Campus"
+
+#: appl/db_messages/model_messages.py:4
+msgid "วิทยาเขตกำแพงแสน"
+msgstr "Kamphaeng Saen Campus"
+
+#: appl/db_messages/model_messages.py:5
+msgid "วิทยาเขตศรีราชา"
+msgstr "Sri Racha Campus"
+
+#: appl/db_messages/model_messages.py:6
+msgid "วิทยาเขตเฉลิมพระเกียรติ จังหวัดสกลนคร"
+msgstr "Sakon Nakhon Province Campus"
+
+#: appl/db_messages/model_messages.py:7 appl/db_messages/model_messages.py:39
+msgid "โครงการจัดตั้งวิทยาเขตสุพรรณบุรี"
+msgstr "Suphan Buri Campus"
+
+#: appl/db_messages/model_messages.py:10
+msgid "คณะเกษตร"
+msgstr "Faculty of Agriculture"
+
+#: appl/db_messages/model_messages.py:11
+msgid "คณะประมง"
+msgstr "Faculty of Fisheries"
+
+#: appl/db_messages/model_messages.py:12
+msgid "คณะวนศาสตร์"
+msgstr "Faculty of Forestry"
+
+#: appl/db_messages/model_messages.py:13
+msgid "คณะวิทยาศาสตร์"
+msgstr "Faculty of Science"
+
+#: appl/db_messages/model_messages.py:14
+msgid "คณะวิศวกรรมศาสตร์"
+msgstr "Faculty of Engineering"
+
+#: appl/db_messages/model_messages.py:15
+msgid "คณะศึกษาศาสตร์"
+msgstr "Faculty of Education"
+
+#: appl/db_messages/model_messages.py:16
+msgid "คณะเศรษฐศาสตร์"
+msgstr "Faculty of Economics"
+
+#: appl/db_messages/model_messages.py:17
+msgid "คณะสังคมศาสตร์"
+msgstr "Faculty of Social Science"
+
+#: appl/db_messages/model_messages.py:18
+msgid "คณะสัตวแพทยศาสตร์"
+msgstr "Faculty of Veterinary Medicine"
+
+#: appl/db_messages/model_messages.py:19
+msgid "คณะอุตสาหกรรมเกษตร"
+msgstr "Faculty of Agro-Industry"
+
+#: appl/db_messages/model_messages.py:20
+msgid "คณะมนุษยศาสตร์"
+msgstr "Faculty of Humanities"
+
+#: appl/db_messages/model_messages.py:21
+msgid "คณะบริหารธุรกิจ"
+msgstr "Faculty of Business Administration"
+
+#: appl/db_messages/model_messages.py:22
+msgid "คณะเทคนิคการสัตวแพทย์"
+msgstr "Faculty Veterinary Technology"
+
+#: appl/db_messages/model_messages.py:23
+msgid "คณะสิ่งแวดล้อม"
+msgstr "Faculty of Environment"
+
+#: appl/db_messages/model_messages.py:24
+msgid "คณะสถาปัตยกรรมศาสตร์"
+msgstr "Faculty of Architecture"
+
+#: appl/db_messages/model_messages.py:25
+msgid "คณะเกษตร กำแพงแสน"
+msgstr ""
+
+#: appl/db_messages/model_messages.py:26
+msgid "คณะวิศวกรรมศาสตร์ กำแพงแสน"
+msgstr ""
+
+#: appl/db_messages/model_messages.py:27
+msgid "คณะศิลปศาสตร์และวิทยาศาสตร์"
+msgstr ""
+
+#: appl/db_messages/model_messages.py:28
+msgid "คณะศึกษาศาสตร์และพัฒนศาสตร์"
+msgstr ""
+
+#: appl/db_messages/model_messages.py:29
+msgid "คณะวิทยาศาสตร์การกีฬา"
+msgstr ""
+
+#: appl/db_messages/model_messages.py:30
+msgid "คณะวิทยาการจัดการ"
+msgstr ""
+
+#: appl/db_messages/model_messages.py:31
+msgid "คณะวิศวกรรมศาสตร์ศรีราชา"
+msgstr ""
+
+#: appl/db_messages/model_messages.py:32
+msgid "คณะวิทยาศาสตร์ ศรีราชา"
+msgstr ""
+
+#: appl/db_messages/model_messages.py:33
+msgid "คณะเศรษฐศาสตร์ ศรีราชา"
+msgstr ""
+
+#: appl/db_messages/model_messages.py:34
+msgid "คณะพาณิชยนาวีนานาชาติ"
+msgstr ""
+
+#: appl/db_messages/model_messages.py:35
+msgid "คณะทรัพยากรธรรมชาติและอุตสาหกรรมเกษตร"
+msgstr ""
+
+#: appl/db_messages/model_messages.py:36
+msgid "คณะวิทยาศาสตร์และวิศวกรรมศาสตร์"
+msgstr ""
+
+#: appl/db_messages/model_messages.py:37
+msgid "คณะศิลปศาสตร์และวิทยาการจัดการ"
+msgstr ""
+
+#: appl/db_messages/model_messages.py:38
+msgid "คณะสาธารณสุขศาสตร์"
+msgstr ""
+
+#: appl/db_messages/model_messages.py:42
+#, fuzzy
+#| msgid "คณะอุตสาหกรรมเกษตร"
+msgid "เกษตรเขตร้อน (นานาชาติ)"
+msgstr "Faculty of Agro-Industry"
+
+#: appl/db_messages/model_messages.py:43
+#, fuzzy
+#| msgid "วิทยาเขตเฉลิมพระเกียรติ จังหวัดสกลนคร"
+msgid "วิทยาศาสตร์ชีวภาพและเทคโนโลยี (นานาชาติ)"
+msgstr "Sakon Nakhon Province Campus"
+
+#: appl/db_messages/model_messages.py:44
+msgid "เคมีบูรณาการ (นานาชาติ)"
+msgstr ""
+
+#: appl/db_messages/model_messages.py:45
+msgid "วิศวกรรมเครื่องกล (นานาชาติ)"
+msgstr ""
+
+#: appl/db_messages/model_messages.py:46
+msgid "วิศวกรรมไฟฟ้าเครื่องกลการผลิต (นานาชาติ)"
+msgstr ""
+
+#: appl/db_messages/model_messages.py:47
+#, fuzzy
+#| msgid "เครดิตรูปภาพ: KU-Photo และภาพจากเว็บไซต์วิทยาเขต"
+msgid "วิศวกรรมซอฟต์แวร์และความรู้ (นานาชาติ)"
+msgstr "Photo credit: KU-Photo and campus websites"
+
+#: appl/db_messages/model_messages.py:48
+#, fuzzy
+#| msgid "ข้อมูลผู้สมัครภาษาอังกฤษ"
+msgid "วิศวกรรมไฟฟ้า (โครงการภาษาอังกฤษ)"
+msgstr "Applicant information (in English)"
+
+#: appl/db_messages/model_messages.py:49
+#, fuzzy
+#| msgid "ข้อมูลผู้สมัครภาษาอังกฤษ"
+msgid "วิศวกรรมอุตสาหการ (โครงการภาษาอังกฤษ)"
+msgstr "Applicant information (in English)"
+
+#: appl/db_messages/model_messages.py:50
+#, fuzzy
+#| msgid "ข้อมูลผู้สมัครภาษาอังกฤษ"
+msgid "วิศวกรรมสิ่งแวดล้อม (โครงการภาษาอังกฤษ)"
+msgstr "Applicant information (in English)"
+
+#: appl/db_messages/model_messages.py:51
+#, fuzzy
+#| msgid "ฝ่ายรับเข้าศึกษา สำนักทะเบียนและประมวลผล มหาวิทยาลัยเกษตรศาสตร์"
+msgid "วิศวกรรมการบินและอวกาศ-บริหารธุรกิจ (นานาชาติ)"
+msgstr "Admission Department, Office of the Registrar, Kasetsart University"
+
+#: appl/db_messages/model_messages.py:52
+#, fuzzy
+#| msgid "เครดิตรูปภาพ: KU-Photo และภาพจากเว็บไซต์วิทยาเขต"
+msgid "เศรษฐศาสตร์การประกอบการ (นานาชาติ)"
+msgstr "Photo credit: KU-Photo and campus websites"
+
+#: appl/db_messages/model_messages.py:53
+#, fuzzy
+#| msgid "ข้อมูลผู้สมัครภาษาอังกฤษ"
+msgid "เศรษฐศาสตร์ (โครงการภาษาอังกฤษ)"
+msgstr "Applicant information (in English)"
+
+#: appl/db_messages/model_messages.py:54
+msgid "นวัตกรรมและเทคโนโลยีอุตสาหกรรมเกษตร (นานาชาติ)"
+msgstr ""
+
+#: appl/db_messages/model_messages.py:55
+#, fuzzy
+#| msgid "โครงการจัดตั้งวิทยาเขตสุพรรณบุรี"
+msgid "การจัดการท่องเที่ยวเชิงบูรณาการ (นานาชาติ)"
+msgstr "Suphan Buri Campus"
+
+#: appl/db_messages/model_messages.py:56
+msgid "การตลาด (นานาชาติ)"
+msgstr ""
+
+#: appl/models.py:379
 msgid "กำลังศึกษาชั้นมัธยมศึกษาปีที่ 6 หรือเทียบเท่า"
 msgstr "Currently in grade 12 (Mathayom 6) or equivalent"
 
-#: appl/models.py:375
+#: appl/models.py:380
 msgid "จบการศึกษาชั้นมัธยมศึกษาปีที่ 6 หรือเทียบเท่า"
 msgstr "Graduated from grade 12 (Mathayom 6) or equivalent"
 
-#: appl/models.py:378
+#: appl/models.py:383
 msgid "วิทย์-คณิต"
 msgstr "Science-Math"
 
-#: appl/models.py:379
+#: appl/models.py:384
 msgid "ศิลป์-คำนวณ"
 msgstr "Art-Math"
 
-#: appl/models.py:380
+#: appl/models.py:385
 msgid "ศิลป์-ภาษา"
 msgstr "Art-Language"
 
-#: appl/models.py:381
+#: appl/models.py:386
 msgid "อาชีวศึกษา"
 msgstr "Vocational Education"
 
-#: appl/models.py:386
+#: appl/models.py:391
 msgid "ระดับการศึกษา"
 msgstr "Educational level"
 
-#: appl/models.py:388
+#: appl/models.py:393
 msgid "แผนการศึกษา"
 msgstr "Study plan"
 
-#: appl/models.py:393 appl/models.py:463
+#: appl/models.py:398 appl/models.py:468
 msgid "จังหวัด"
 msgstr "Province"
 
-#: appl/models.py:395 appl/templates/appl/index.html:38
+#: appl/models.py:400 appl/templates/appl/index.html:38
 msgid "โรงเรียน"
 msgstr "School"
 
-#: appl/models.py:422
+#: appl/models.py:427
 msgid "คำนำหน้า (อังกฤษ)"
 msgstr "Prefix (English)"
 
-#: appl/models.py:425
+#: appl/models.py:430
 msgid "ชื่อ (อังกฤษ)"
 msgstr "Name (English)"
 
-#: appl/models.py:427
+#: appl/models.py:432
 msgid "ชื่อกลาง (อังกฤษ, ถ้ามี)"
 msgstr "Middle name (English, optional)"
 
-#: appl/models.py:430
+#: appl/models.py:435
 msgid "นามสกุล (อังกฤษ)"
 msgstr "Last name (English)"
 
-#: appl/models.py:432
+#: appl/models.py:437
 msgid "หมายเลข Passport (ถ้ามี)"
 msgstr "Passport number (optional)"
 
-#: appl/models.py:434
+#: appl/models.py:439
 msgid "วันเดือนปีเกิด"
 msgstr "Date of birth"
 
-#: appl/models.py:436
+#: appl/models.py:441
 msgid "คำนำหน้าชื่อบิดา"
 msgstr "Prefix of father's name"
 
-#: appl/models.py:438
+#: appl/models.py:443
 msgid "ชื่อบิดา"
 msgstr "Father first name"
 
-#: appl/models.py:440
+#: appl/models.py:445
 msgid "นามสกุลบิดา"
 msgstr "Father last name"
 
-#: appl/models.py:442
+#: appl/models.py:447
 msgid "คำนำหน้าชื่อมารดา"
 msgstr "Prefix of mother's name"
 
-#: appl/models.py:444
+#: appl/models.py:449
 msgid "ชื่อมารดา"
 msgstr "Mother first name"
 
-#: appl/models.py:446
+#: appl/models.py:451
 msgid "นามสกุลมารดา"
 msgstr "Mother last name"
 
-#: appl/models.py:448
+#: appl/models.py:453
 msgid "บ้านเลขที่"
 msgstr "House number"
 
-#: appl/models.py:450
+#: appl/models.py:455
 msgid "หมู่"
 msgstr "Village"
 
-#: appl/models.py:453
+#: appl/models.py:458
 msgid "ซอย"
 msgstr "Avenue"
 
-#: appl/models.py:456
+#: appl/models.py:461
 msgid "ถนน"
 msgstr "Road"
 
-#: appl/models.py:459
+#: appl/models.py:464
 msgid "ตำบล/แขวง"
 msgstr "Sub-district (Tumbon)"
 
-#: appl/models.py:461
+#: appl/models.py:466
 msgid "อำเภอ/เขต"
 msgstr "District (Ampher)"
 
-#: appl/models.py:465
+#: appl/models.py:470
 msgid "รหัสไปรษณีย์"
 msgstr "Postal code"
 
-#: appl/models.py:468
+#: appl/models.py:473
 msgid "เบอร์โทรศัพท์ที่ติดต่อได้"
 msgstr "Contact phone"
 
-#: appl/models.py:472
+#: appl/models.py:477
 msgid "เบอร์โทรศัพท์มือถือ"
 msgstr "Mobile phone"
 

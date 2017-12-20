@@ -28,7 +28,9 @@ class Campus(models.Model):
     def __str__(self):
         return self.short_title
 
-
+    def title_trans(self):
+        return _(self.title)
+    
 
 class Faculty(models.Model):
     title = models.CharField(max_length=100)
@@ -43,6 +45,9 @@ class Faculty(models.Model):
     def __str__(self):
         return self.title
 
+    def title_trans(self):
+        return _(self.title)
+    
 
 class AdmissionRound(models.Model):
     number = models.IntegerField()
