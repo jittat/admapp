@@ -2,10 +2,24 @@
 {% load i18n %}
 {% load crispy_forms_tags %}
 {% block content %}
+{% get_current_language as LANGUAGE_CODE %}
 <div class="row">
   <div class="col-md-12">
-    <h1>{% trans 'ยินดีต้อนรับสู่รั้วนนทรี' %}</h1>
+    <h1>
+      {% trans 'ยินดีต้อนรับสู่รั้วนนทรี' %} 
+    </h1>
+
     {% trans 'เข้าใช้ระบบรับสมัคร' %}
+    {% if LANGUAGE_CODE == 'th' %}
+      {% language 'en' %}
+      <a class="btn btn-xsm btn-outline-secondary" href="{% url 'main-index' %}">Apply in English</a>
+      {% endlanguage %}
+    {% else %}
+      {% language 'th' %}
+      <a class="btn btn-xsm btn-outline-secondary" href="{% url 'main-index' %}">ใช้ระบบรับสมัครเป็นภาษาไทย</a>
+      {% endlanguage %}
+    {% endif %}
+    <div class="mb10"></div>
     {% if error_message %}
       <div class="alert alert-danger">
         {% if error_message == 'no-login' %}
