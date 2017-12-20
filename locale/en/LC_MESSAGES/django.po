@@ -107,59 +107,59 @@ msgstr "Faculty of Architecture"
 
 #: appl/db_messages/model_messages.py:25
 msgid "คณะเกษตร กำแพงแสน"
-msgstr ""
+msgstr "Faculty of Agriculture at Kamphaeng Saen"
 
 #: appl/db_messages/model_messages.py:26
 msgid "คณะวิศวกรรมศาสตร์ กำแพงแสน"
-msgstr ""
+msgstr "Faculty of Engineering at Kamphaeng Saen"
 
 #: appl/db_messages/model_messages.py:27
 msgid "คณะศิลปศาสตร์และวิทยาศาสตร์"
-msgstr ""
+msgstr "Faculty of Liberal Arts and Science"
 
 #: appl/db_messages/model_messages.py:28
 msgid "คณะศึกษาศาสตร์และพัฒนศาสตร์"
-msgstr ""
+msgstr "Faculty of Education and Development Sciences"
 
 #: appl/db_messages/model_messages.py:29
 msgid "คณะวิทยาศาสตร์การกีฬา"
-msgstr ""
+msgstr "Faculty of Sports Science"
 
 #: appl/db_messages/model_messages.py:30
 msgid "คณะวิทยาการจัดการ"
-msgstr ""
+msgstr "Faculty of Management Sciences"
 
 #: appl/db_messages/model_messages.py:31
 msgid "คณะวิศวกรรมศาสตร์ศรีราชา"
-msgstr ""
+msgstr "Faculty of Engineering at Si Racha"
 
 #: appl/db_messages/model_messages.py:32
 msgid "คณะวิทยาศาสตร์ ศรีราชา"
-msgstr ""
+msgstr "Faculty of Science at Si Racha"
 
 #: appl/db_messages/model_messages.py:33
 msgid "คณะเศรษฐศาสตร์ ศรีราชา"
-msgstr ""
+msgstr "Faculty of Economics at Si Racha"
 
 #: appl/db_messages/model_messages.py:34
 msgid "คณะพาณิชยนาวีนานาชาติ"
-msgstr ""
+msgstr "International Maritime College"
 
 #: appl/db_messages/model_messages.py:35
 msgid "คณะทรัพยากรธรรมชาติและอุตสาหกรรมเกษตร"
-msgstr ""
+msgstr "Faculty of Natural Resource and Agro-Industry"
 
 #: appl/db_messages/model_messages.py:36
 msgid "คณะวิทยาศาสตร์และวิศวกรรมศาสตร์"
-msgstr ""
+msgstr "Faculty of Science and Engineering"
 
 #: appl/db_messages/model_messages.py:37
 msgid "คณะศิลปศาสตร์และวิทยาการจัดการ"
-msgstr ""
+msgstr "Faculty of Liberal Arts and Management Sciences"
 
 #: appl/db_messages/model_messages.py:38
 msgid "คณะสาธารณสุขศาสตร์"
-msgstr ""
+msgstr "Faculty of Public Health"
 
 #: appl/db_messages/model_messages.py:42
 #, fuzzy
