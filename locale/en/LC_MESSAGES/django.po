@@ -162,84 +162,65 @@ msgid "คณะสาธารณสุขศาสตร์"
 msgstr "Faculty of Public Health"
 
 #: appl/db_messages/model_messages.py:42
-#, fuzzy
-#| msgid "คณะอุตสาหกรรมเกษตร"
 msgid "เกษตรเขตร้อน (นานาชาติ)"
-msgstr "Faculty of Agro-Industry"
+msgstr "Tropical Agriculture (International Program)"
 
 #: appl/db_messages/model_messages.py:43
-#, fuzzy
-#| msgid "วิทยาเขตเฉลิมพระเกียรติ จังหวัดสกลนคร"
 msgid "วิทยาศาสตร์ชีวภาพและเทคโนโลยี (นานาชาติ)"
-msgstr "Sakon Nakhon Province Campus"
+msgstr "Bioscience and Technology (International Program)"
 
 #: appl/db_messages/model_messages.py:44
 msgid "เคมีบูรณาการ (นานาชาติ)"
-msgstr ""
+msgstr "Integrated Chemistry (International Program)"
 
 #: appl/db_messages/model_messages.py:45
 msgid "วิศวกรรมเครื่องกล (นานาชาติ)"
-msgstr ""
+msgstr "Mechanical Engineering (International Program)"
 
 #: appl/db_messages/model_messages.py:46
 msgid "วิศวกรรมไฟฟ้าเครื่องกลการผลิต (นานาชาติ)"
-msgstr ""
+msgstr "Electrical - Mechanical Manufacturing Engineering (International Program)"
 
 #: appl/db_messages/model_messages.py:47
-#, fuzzy
 #| msgid "เครดิตรูปภาพ: KU-Photo และภาพจากเว็บไซต์วิทยาเขต"
 msgid "วิศวกรรมซอฟต์แวร์และความรู้ (นานาชาติ)"
-msgstr "Photo credit: KU-Photo and campus websites"
+msgstr "Software and Knowledge Engineering (International Program)"
 
 #: appl/db_messages/model_messages.py:48
-#, fuzzy
-#| msgid "ข้อมูลผู้สมัครภาษาอังกฤษ"
 msgid "วิศวกรรมไฟฟ้า (โครงการภาษาอังกฤษ)"
-msgstr "Applicant information (in English)"
+msgstr "Electrical Engineering (English Program)"
 
 #: appl/db_messages/model_messages.py:49
-#, fuzzy
-#| msgid "ข้อมูลผู้สมัครภาษาอังกฤษ"
 msgid "วิศวกรรมอุตสาหการ (โครงการภาษาอังกฤษ)"
-msgstr "Applicant information (in English)"
+msgstr "Industrial Engineering (English Program)"
 
 #: appl/db_messages/model_messages.py:50
-#, fuzzy
-#| msgid "ข้อมูลผู้สมัครภาษาอังกฤษ"
 msgid "วิศวกรรมสิ่งแวดล้อม (โครงการภาษาอังกฤษ)"
-msgstr "Applicant information (in English)"
+msgstr "Environmental Engineering (English Program)"
 
 #: appl/db_messages/model_messages.py:51
-#, fuzzy
-#| msgid "ฝ่ายรับเข้าศึกษา สำนักทะเบียนและประมวลผล มหาวิทยาลัยเกษตรศาสตร์"
 msgid "วิศวกรรมการบินและอวกาศ-บริหารธุรกิจ (นานาชาติ)"
-msgstr "Admission Department, Office of the Registrar, Kasetsart University"
+msgstr "Aerospace Engineering and Business Administration (International Program)"
 
 #: appl/db_messages/model_messages.py:52
-#, fuzzy
-#| msgid "เครดิตรูปภาพ: KU-Photo และภาพจากเว็บไซต์วิทยาเขต"
 msgid "เศรษฐศาสตร์การประกอบการ (นานาชาติ)"
-msgstr "Photo credit: KU-Photo and campus websites"
+msgstr "Entrepreneurial Economics (International Program)"
 
 #: appl/db_messages/model_messages.py:53
-#, fuzzy
-#| msgid "ข้อมูลผู้สมัครภาษาอังกฤษ"
 msgid "เศรษฐศาสตร์ (โครงการภาษาอังกฤษ)"
-msgstr "Applicant information (in English)"
+msgstr "Economics (English Program)"
 
 #: appl/db_messages/model_messages.py:54
 msgid "นวัตกรรมและเทคโนโลยีอุตสาหกรรมเกษตร (นานาชาติ)"
-msgstr ""
+msgstr "Agro-Industrial Innovation and Technology (International Program)"
 
 #: appl/db_messages/model_messages.py:55
-#, fuzzy
-#| msgid "โครงการจัดตั้งวิทยาเขตสุพรรณบุรี"
 msgid "การจัดการท่องเที่ยวเชิงบูรณาการ (นานาชาติ)"
-msgstr "Suphan Buri Campus"
+msgstr "Integrated Tourism Management (International Program)"
 
 #: appl/db_messages/model_messages.py:56
 msgid "การตลาด (นานาชาติ)"
-msgstr ""
+msgstr "Marketing (International Program)"
 
 #: appl/models.py:379
 msgid "กำลังศึกษาชั้นมัธยมศึกษาปีที่ 6 หรือเทียบเท่า"
