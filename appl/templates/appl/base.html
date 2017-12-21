@@ -16,11 +16,17 @@
         <li class="nav-item">
           {% if LANGUAGE_CODE == 'th' %}
             {% language 'en' %}
-              <a class="btn btn-sm btn-outline-secondary mr10" href="{% url 'appl:index' %}">Switch to English</a>
+              <div class="btn-group mr10">
+                <span class="btn btn-sm btn-secondary">TH</span>
+                <a class="btn btn-sm btn-outline-secondary" href="{% url 'appl:index' %}">EN</a>
+              </div>
             {% endlanguage %}
           {% else %}
             {% language 'th' %}
-              <a class="btn btn-sm btn-outline-secondary mr10" href="{% url 'appl:index' %}">สลับเป็นภาษาไทย</a>
+              <div class="btn-group mr10">
+                <a class="btn btn-sm btn-outline-secondary" href="{% url 'appl:index' %}">TH</a>
+                <span class="btn btn-sm btn-secondary">EN</span>
+              </div>
             {% endlanguage %}
           {% endif %}
         </li>

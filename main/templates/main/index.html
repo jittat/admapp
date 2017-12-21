@@ -12,11 +12,17 @@
     {% trans 'เข้าใช้ระบบรับสมัคร' %}
     {% if LANGUAGE_CODE == 'th' %}
       {% language 'en' %}
-      <a class="btn btn-xsm btn-outline-secondary" href="{% url 'main-index' %}">Apply in English</a>
+      <div class="btn-group">
+        <a class="btn btn-xsm btn-primary" href="{% url 'main-index' %}">EN</a>
+        <a class="btn btn-xsm btn-outline-primary" href="{% url 'main-index' %}">Apply in English</a>
+      </div>
       {% endlanguage %}
     {% else %}
       {% language 'th' %}
-      <a class="btn btn-xsm btn-outline-secondary" href="{% url 'main-index' %}">ใช้ระบบรับสมัครเป็นภาษาไทย</a>
+        <div class="btn-group">
+          <a class="btn btn-xsm btn-primary" href="{% url 'main-index' %}">TH</a>
+          <a class="btn btn-xsm btn-outline-primary" href="{% url 'main-index' %}">ใช้ระบบรับสมัครเป็นภาษาไทย</a>
+        </div>
       {% endlanguage %}
     {% endif %}
     <div class="mb10"></div>
