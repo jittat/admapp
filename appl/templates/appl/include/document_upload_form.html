@@ -1,3 +1,4 @@
+{% load i18n %}
 <div class="project-document-upload-forms mb5" id="accordion" role="tablist" aria-multiselectable="true">
   {% load appl_tags %}
   {% with project_uploaded_document as doc %}
@@ -6,10 +7,10 @@
       <div class="card-header p10" role="tab" id="accordian-upload-header">
         {% if doc.is_required and doc.applicant_uploaded_documents|length > 0 %}<i class="fa fa-check text-success"></i>{% endif %}
 	<b>{{ doc.title }}{% if doc.is_required %}*{% endif %}</b>
-        {% if doc.applicant_uploaded_documents|length > 0 %}<span class="badge badge-secondary">{{ doc.applicant_uploaded_documents|length }} ไฟล์</span>{% endif %}
+        {% if doc.applicant_uploaded_documents|length > 0 %}<span class="badge badge-secondary">{{ doc.applicant_uploaded_documents|length }} {% trans 'ไฟล์' context 'upload form' %}</span>{% endif %}
         <small>{{ doc.descriptions|linebreaksbr }}</small>
         <a class="btn btn-xsm btn-outline-primary" data-toggle="collapse" data-parent="#accordian" href="#accordian-upload-form-{{ doc.id }}" aria-expanded="true" aria-controls="accordian-upload-form-{{ doc.id }}" role="button">
-          รายละเอียด <i class="fa fa-caret-down"></i>
+          {% trans 'รายละเอียด' context 'upload form link' %} <i class="fa fa-caret-down"></i>
         </a>
       </div>
 
@@ -21,22 +22,22 @@
             {% if not  is_deadline_passed %}
               <div class="form-group">
                 {% if doc.is_detail_required %}
-                  <small><b>ชื่อหรือคำอธิบายเอกสาร*</b></small>
+                  <small><b>{% trans 'ชื่อหรือคำอธิบายเอกสาร' %}*</b></small>
                 {% else %} 
-                  <small>ชื่อหรือคำอธิบายเอกสาร (สามารถละไว้ได้)</small>
+                  <small>{% trans 'ชื่อหรือคำอธิบายเอกสาร (สามารถละไว้ได้)' %}</small>
                 {% endif %}
                 <input type="text" class="form-control" name="detail" value="" />
                 {% if doc.is_url_document %}
   	          <small><b>{{ doc.specifications }}</b></small>
   	          <br />
                   <input type="text" class="form-control col-md-8 d-inline" name="document_url" value="" />
-  	          <input type="submit" class="btn btn-success btn-sm upload-form-submit-buttons" value="จัดเก็บ" />
+  	          <input type="submit" class="btn btn-success btn-sm upload-form-submit-buttons" value="{% trans 'จัดเก็บ' %}" />
                 {% endif %}
               </div>
 
               {% if not doc.is_url_document %}
   	        <input type="file" class="input-files" name="uploaded_file" required id="id_uploaded_file" />
-  	        <input type="submit" class="btn btn-success btn-sm upload-form-submit-buttons" value="อัพโหลด" />
+  	        <input type="submit" class="btn btn-success btn-sm upload-form-submit-buttons" value="{% trans 'อัพโหลด' %}" />
   	        <br />
   	        <small>{{ doc.specifications }}</small>
   	        <br />
@@ -54,11 +55,11 @@
                     {% else %}
                       {{ d.detail }}
                       &nbsp;
-                      <a href="{{ d.document_url }}" class="btn btn-sm btn-info" target="_blank">ดูลิงก์</a>
+                      <a href="{{ d.document_url }}" class="btn btn-sm btn-info" target="_blank">{% trans 'ดูลิงก์' %}</a>
                     {% endif %}
                     &nbsp;
                     {% if not is_deadline_passed %}
-  		      <a data-delete-url="{% url 'appl:document-delete' applicant.id doc.id d.id %}" href="#" class="upload-form-delete-buttons btn btn-sm btn-secondary"><i class="fa fa-trash"></i> ลบ</a>
+  		      <a data-delete-url="{% url 'appl:document-delete' applicant.id doc.id d.id %}" href="#" class="upload-form-delete-buttons btn btn-sm btn-secondary"><i class="fa fa-trash"></i> {% trans 'ลบ' %}</a>
                     {% endif %}
   		  </li>
   		{% endfor %}

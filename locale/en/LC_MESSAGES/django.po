@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-12-21 00:07+0700\n"
+"POT-Creation-Date: 2017-12-21 16:00+0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -375,11 +375,11 @@ msgstr "Contact phone"
 msgid "เบอร์โทรศัพท์มือถือ"
 msgstr "Mobile phone"
 
-#: appl/templates/appl/base.html:10
+#: appl/templates/appl/base.html:11
 msgid "หน้าหลัก"
 msgstr "Main application"
 
-#: appl/templates/appl/base.html:16
+#: appl/templates/appl/base.html:34
 msgid "ออกจากระบบ"
 msgstr "Log out"
 
@@ -393,7 +393,7 @@ msgctxt "form title"
 msgid "กรอกข้อมูลส่วนตัว"
 msgstr "Personal information"
 
-#: appl/templates/appl/include/active_application.html:66
+#: appl/templates/appl/include/active_application.html:78
 msgid "อัพโหลดเอกสาร"
 msgstr "Upload documents"
 
@@ -417,6 +417,42 @@ msgstr "Please choose preferred major(s) before printing the payment form."
 msgctxt "appl status"
 msgid "ยังไม่ได้เลือกสาขา"
 msgstr "No major chosen."
+
+#: appl/templates/appl/include/document_upload_form.html:10
+msgctxt "upload form"
+msgid "ไฟล์"
+msgstr "file(s)"
+
+#: appl/templates/appl/include/document_upload_form.html:13
+msgctxt "upload form link"
+msgid "รายละเอียด"
+msgstr "See details"
+
+#: appl/templates/appl/include/document_upload_form.html:25
+msgid "ชื่อหรือคำอธิบายเอกสาร"
+msgstr "Document title or description"
+
+#: appl/templates/appl/include/document_upload_form.html:27
+msgid "ชื่อหรือคำอธิบายเอกสาร (สามารถละไว้ได้)"
+msgstr "Document title or description (optional)"
+
+#: appl/templates/appl/include/document_upload_form.html:34
+#: appl/templates/appl/major_selection.html:62 appl/views/general_forms.py:61
+#: appl/views/general_forms.py:169
+msgid "จัดเก็บ"
+msgstr "Save"
+
+#: appl/templates/appl/include/document_upload_form.html:40
+msgid "อัพโหลด"
+msgstr "Upload"
+
+#: appl/templates/appl/include/document_upload_form.html:58
+msgid "ดูลิงก์"
+msgstr "See link"
+
+#: appl/templates/appl/include/document_upload_form.html:62
+msgid "ลบ"
+msgstr "Delete"
 
 #: appl/templates/appl/include/documents_incomplete.html:2
 msgctxt "appl status"
@@ -655,11 +691,6 @@ msgctxt "major selection"
 msgid "เลือกสาขานี้"
 msgstr "Apply"
 
-#: appl/templates/appl/major_selection.html:62 appl/views/general_forms.py:61
-#: appl/views/general_forms.py:169
-msgid "จัดเก็บ"
-msgstr "Save"
-
 #: appl/views/general_forms.py:39
 msgid "ข้อมูลโรงเรียน"
 msgstr "School information"
@@ -727,45 +758,45 @@ msgstr "Tel. 0 2942 8200 ext. 8046 - 8051   E-mail: admission@ku.ac.th"
 msgid "เครดิตรูปภาพ: KU-Photo และภาพจากเว็บไซต์วิทยาเขต"
 msgstr "Photo credit: KU-Photo and campus websites"
 
-#: main/templates/main/index.html:7
+#: main/templates/main/index.html:9
 msgid "ยินดีต้อนรับสู่รั้วนนทรี"
 msgstr "Welcome to Kasetsart"
 
-#: main/templates/main/index.html:8
+#: main/templates/main/index.html:12
 msgid "เข้าใช้ระบบรับสมัคร"
 msgstr "Start using the admission system"
 
-#: main/templates/main/index.html:12
+#: main/templates/main/index.html:32
 msgid "กรุณา login เข้าใช้ระบบก่อนใช้งาน"
 msgstr "Please login to start using the admission system."
 
-#: main/templates/main/index.html:15
+#: main/templates/main/index.html:35
 msgid "ขออภัย ไม่สามารถเข้าใช้ระบบได้ เนื่องจากรหัสผ่านหรือรหัสประจำตัวประชาชนผิดพลาด"
 msgstr ""
 "Sorry.  You cannot login because you entered a wrong national ID or an "
 "incorrect password."
 
-#: main/templates/main/index.html:18
+#: main/templates/main/index.html:38
 msgid "ขออภัย ไม่สามารถเข้าใช้ระบบได้ เนื่องจากฟอร์มผิดพลาด"
 msgstr "Sorry.  Incorrect login form."
 
-#: main/templates/main/index.html:25
+#: main/templates/main/index.html:45
 msgid "เข้าใช้ระบบ"
 msgstr "Log in"
 
-#: main/templates/main/index.html:27
+#: main/templates/main/index.html:47
 msgid "หรือลงทะเบียนสำหรับผู้ใช้ใหม่"
 msgstr "For a new user, you have to register."
 
-#: main/templates/main/index.html:28 regis/views.py:127
+#: main/templates/main/index.html:48 regis/views.py:127
 msgid "ลงทะเบียน"
 msgstr "Register"
 
-#: main/templates/main/index.html:29
+#: main/templates/main/index.html:49
 msgid "ถ้าลืมรหัสผ่าน"
 msgstr "If you forget your password,"
 
-#: main/templates/main/index.html:29
+#: main/templates/main/index.html:49
 msgid "สามารถขอรหัสผ่านใหม่ได้"
 msgstr "request a new password here."
 
@@ -906,7 +937,3 @@ msgstr "Incorrect password confirmation"
 #: regis/views.py:268
 msgid "ไม่พบข้อมูลผู้สมัครที่ระบุหรืออีเมลที่ระบุไม่ถูกต้อง"
 msgstr "Account information is not found, or you entered an incorrect email."
-
-#~ msgctxt "active app main"
-#~ msgid "โครงการ"
-#~ msgstr "-"
