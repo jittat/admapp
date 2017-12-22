@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-12-21 16:00+0700\n"
+"POT-Creation-Date: 2017-12-23 04:42+0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -275,103 +275,107 @@ msgstr "Art-Language"
 msgid "อาชีวศึกษา"
 msgstr "Vocational Education"
 
-#: appl/models.py:399
+#: appl/models.py:395
+msgid "ไม่ระบุ"
+msgstr "Not specified"
+
+#: appl/models.py:400
 msgid "ระดับการศึกษา"
 msgstr "Educational level"
 
-#: appl/models.py:401
+#: appl/models.py:402
 msgid "แผนการศึกษา"
 msgstr "Study plan"
 
-#: appl/models.py:406 appl/models.py:476
+#: appl/models.py:407 appl/models.py:477
 msgid "จังหวัด"
 msgstr "Province"
 
-#: appl/models.py:408 appl/templates/appl/index.html:38
+#: appl/models.py:409 appl/templates/appl/index.html:38
 msgid "โรงเรียน"
 msgstr "School"
 
-#: appl/models.py:435
+#: appl/models.py:436
 msgid "คำนำหน้า (อังกฤษ)"
 msgstr "Prefix (English)"
 
-#: appl/models.py:438
+#: appl/models.py:439
 msgid "ชื่อ (อังกฤษ)"
 msgstr "Name (English)"
 
-#: appl/models.py:440
+#: appl/models.py:441
 msgid "ชื่อกลาง (อังกฤษ, ถ้ามี)"
 msgstr "Middle name (English, optional)"
 
-#: appl/models.py:443
+#: appl/models.py:444
 msgid "นามสกุล (อังกฤษ)"
 msgstr "Last name (English)"
 
-#: appl/models.py:445
+#: appl/models.py:446
 msgid "หมายเลข Passport (ถ้ามี)"
 msgstr "Passport number (optional)"
 
-#: appl/models.py:447
+#: appl/models.py:448
 msgid "วันเดือนปีเกิด"
 msgstr "Date of birth"
 
-#: appl/models.py:449
+#: appl/models.py:450
 msgid "คำนำหน้าชื่อบิดา"
 msgstr "Prefix of father's name"
 
-#: appl/models.py:451
+#: appl/models.py:452
 msgid "ชื่อบิดา"
 msgstr "Father first name"
 
-#: appl/models.py:453
+#: appl/models.py:454
 msgid "นามสกุลบิดา"
 msgstr "Father last name"
 
-#: appl/models.py:455
+#: appl/models.py:456
 msgid "คำนำหน้าชื่อมารดา"
 msgstr "Prefix of mother's name"
 
-#: appl/models.py:457
+#: appl/models.py:458
 msgid "ชื่อมารดา"
 msgstr "Mother first name"
 
-#: appl/models.py:459
+#: appl/models.py:460
 msgid "นามสกุลมารดา"
 msgstr "Mother last name"
 
-#: appl/models.py:461
+#: appl/models.py:462
 msgid "บ้านเลขที่"
 msgstr "House number"
 
-#: appl/models.py:463
+#: appl/models.py:464
 msgid "หมู่"
 msgstr "Village"
 
-#: appl/models.py:466
+#: appl/models.py:467
 msgid "ซอย"
 msgstr "Avenue"
 
-#: appl/models.py:469
+#: appl/models.py:470
 msgid "ถนน"
 msgstr "Road"
 
-#: appl/models.py:472
+#: appl/models.py:473
 msgid "ตำบล/แขวง"
 msgstr "Sub-district (Tumbon)"
 
-#: appl/models.py:474
+#: appl/models.py:475
 msgid "อำเภอ/เขต"
 msgstr "District (Ampher)"
 
-#: appl/models.py:478
+#: appl/models.py:479
 msgid "รหัสไปรษณีย์"
 msgstr "Postal code"
 
-#: appl/models.py:481
+#: appl/models.py:482
 msgid "เบอร์โทรศัพท์ที่ติดต่อได้"
 msgstr "Contact phone"
 
-#: appl/models.py:485
+#: appl/models.py:486
 msgid "เบอร์โทรศัพท์มือถือ"
 msgstr "Mobile phone"
 
@@ -393,7 +397,7 @@ msgctxt "form title"
 msgid "กรอกข้อมูลส่วนตัว"
 msgstr "Personal information"
 
-#: appl/templates/appl/include/active_application.html:78
+#: appl/templates/appl/include/active_application.html:68
 msgid "อัพโหลดเอกสาร"
 msgstr "Upload documents"
 
@@ -437,8 +441,8 @@ msgid "ชื่อหรือคำอธิบายเอกสาร (ส�
 msgstr "Document title or description (optional)"
 
 #: appl/templates/appl/include/document_upload_form.html:34
-#: appl/templates/appl/major_selection.html:62 appl/views/general_forms.py:61
-#: appl/views/general_forms.py:169
+#: appl/templates/appl/major_selection.html:62 appl/views/general_forms.py:67
+#: appl/views/general_forms.py:175
 msgid "จัดเก็บ"
 msgstr "Save"
 
@@ -691,58 +695,65 @@ msgctxt "major selection"
 msgid "เลือกสาขานี้"
 msgstr "Apply"
 
-#: appl/views/general_forms.py:39
+#: appl/views/general_forms.py:35
+msgid ""
+"ถ้าจบจากโรงเรียนนานาชาติหรือต่างประเทศและไม่มี GPA สามารถกรอกเป็น 0 ได้ "
+"และสามารถเลือกแผนการเรียนเป็นไม่ระบุได้"
+msgstr ""
+"If the GPA is not available, you can put in 0.  You can also select 'Not specified' for study plan."
+
+#: appl/views/general_forms.py:45
 msgid "ข้อมูลโรงเรียน"
 msgstr "School information"
 
-#: appl/views/general_forms.py:45
+#: appl/views/general_forms.py:51
 msgid ""
 "ในกรณีที่สมัครโครงการช้างเผือก สามารถเลือกให้แสดงเฉพาะโรงเรียนที่เข้าโครงการได้ "
 "โดยกดปุ่มตอนท้าย"
 msgstr ""
-"If you are applying to the KU Talent program you can filter only eligible schools "
-"below."
+"If you are applying to the KU Talent program you can filter only eligible "
+"schools below."
 
-#: appl/views/general_forms.py:56
+#: appl/views/general_forms.py:62
 msgid "แสดงรายการเฉพาะโรงเรียนในโครงการช้างเผือก"
 msgstr "Show only schools eligible to KU Talent program"
 
-#: appl/views/general_forms.py:89 appl/views/general_forms.py:93
-#: appl/views/general_forms.py:96 regis/views.py:77
+#: appl/views/general_forms.py:95 appl/views/general_forms.py:99
+#: appl/views/general_forms.py:102 regis/views.py:77
 msgid "คำนำหน้า"
 msgstr "Prefix"
 
-#: appl/views/general_forms.py:90 appl/views/general_forms.py:94
-#: appl/views/general_forms.py:97
+#: appl/views/general_forms.py:96 appl/views/general_forms.py:100
+#: appl/views/general_forms.py:103
 msgid "ชื่อต้น"
 msgstr "First name"
 
-#: appl/views/general_forms.py:91
+#: appl/views/general_forms.py:97
 msgid "ชื่อกลาง (ถ้ามี)"
 msgstr "Middle name (optional)"
 
-#: appl/views/general_forms.py:92 appl/views/general_forms.py:95
-#: appl/views/general_forms.py:98 regis/views.py:83
+#: appl/views/general_forms.py:98 appl/views/general_forms.py:101
+#: appl/views/general_forms.py:104 regis/views.py:83
 msgid "นามสกุล"
 msgstr "Last name"
 
-#: appl/views/general_forms.py:115
+#: appl/views/general_forms.py:121
 msgid "ข้อมูลผู้สมัครภาษาอังกฤษ"
 msgstr "Applicant information (in English)"
 
-#: appl/views/general_forms.py:124
+#: appl/views/general_forms.py:130
 msgid "ข้อมูลส่วนตัว"
 msgstr "Personal information"
 
-#: appl/views/general_forms.py:132
+#: appl/views/general_forms.py:138
 msgid "ข้อมูลบิดา (ภาษาไทย)"
 msgstr "Father information"
 
-#: appl/views/general_forms.py:140
+#: appl/views/general_forms.py:146
 msgid "ข้อมูลมารดา (ภาษาไทย)"
 msgstr "Mother information"
 
-#: appl/views/general_forms.py:148
+#: appl/views/general_forms.py:154
 msgid "ข้อมูลที่อยู่"
 msgstr "Address"
 

@@ -45,8 +45,6 @@ def main():
         if token_filename != '':
             save_token(token_filename, token)
             
-    print('Token:', token)
-
     while queue_item:
         applicant = queue_item.applicant
 

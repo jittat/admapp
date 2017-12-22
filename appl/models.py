@@ -392,6 +392,7 @@ class EducationalProfile(models.Model):
             (2,_('ศิลป์-คำนวณ')),
             (3,_('ศิลป์-ภาษา')),
             (4,_('อาชีวศึกษา')),
+            (5,_('ไม่ระบุ')),
     ]
 
     applicant = models.OneToOneField(Applicant)
@@ -401,7 +402,7 @@ class EducationalProfile(models.Model):
                                          verbose_name=_('แผนการศึกษา'))
     gpa = models.FloatField(default=0,
                             verbose_name='GPA',
-                            validators=[MinValueValidator(0.0), MaxValueValidator(4.0)])
+                            validators=[MinValueValidator(0.0), MaxValueValidator(5.0)])
     province = models.ForeignKey(Province,
                                  verbose_name=_('จังหวัด'))
     school_title = models.CharField(max_length=80,

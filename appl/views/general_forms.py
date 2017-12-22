@@ -31,6 +31,12 @@ class EducationForm(ModelForm):
         self.helper.layout = Layout(
             'education_level',
             Row(
+                Div(
+                    HTML(format_lazy('<small>{0}</small>', _('ถ้าจบจากโรงเรียนนานาชาติหรือต่างประเทศและไม่มี GPA สามารถกรอกเป็น 0 ได้ และสามารถเลือกแผนการเรียนเป็นไม่ระบุได้'))),
+                    css_class='col-md-12 form-text mb5',
+                ),
+            ),
+            Row(
                 Div('education_plan', css_class='col-md-6'),
                 Div('gpa', css_class='col-md-6'),
             ),
