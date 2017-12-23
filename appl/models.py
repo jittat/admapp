@@ -703,6 +703,8 @@ class AdmissionResult(models.Model):
     clearing_house_code = models.CharField(max_length=10,
                                            blank=True)
     clearing_house_code_number = models.IntegerField(default=0)
+
+    has_confirmed = models.NullBooleanField(default=None)
     
     class Meta:
         indexes = [

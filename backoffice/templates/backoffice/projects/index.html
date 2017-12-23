@@ -33,6 +33,9 @@
               <td class="text-right">
                 รับจริง
               </td>
+              <td class="text-right">
+                ยืนยัน
+              </td>
             {% endif %}
             {% for r in ranks %}
               <td class="text-right">
@@ -69,6 +72,9 @@
               </td>
               <td class="text-right">
                 {{ major.accepted_count }}
+              </td>
+              <td class="text-right">
+                {{ major.confirmed_count }}
               </td>
             {% endif %}
             {% for stat in major.stats %}
