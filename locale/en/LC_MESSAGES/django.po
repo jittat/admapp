@@ -253,11 +253,11 @@ msgstr "TCAS Round 5"
 
 #: appl/models.py:387
 msgid "กำลังศึกษาชั้นมัธยมศึกษาปีที่ 6 หรือเทียบเท่า"
-msgstr "Currently in grade 12 (Mathayom 6) or equivalent"
+msgstr "Currently in Grade 12 (Mathayom 6) or equivalent"
 
 #: appl/models.py:388
 msgid "จบการศึกษาชั้นมัธยมศึกษาปีที่ 6 หรือเทียบเท่า"
-msgstr "Graduated from grade 12 (Mathayom 6) or equivalent"
+msgstr "Graduated from Grade 12 (Mathayom 6) or equivalent"
 
 #: appl/models.py:391
 msgid "วิทย์-คณิต"
@@ -305,7 +305,7 @@ msgstr "Name (English)"
 
 #: appl/models.py:441
 msgid "ชื่อกลาง (อังกฤษ, ถ้ามี)"
-msgstr "Middle name (English, optional)"
+msgstr "Middle name (English, if any)"
 
 #: appl/models.py:444
 msgid "นามสกุล (อังกฤษ)"
@@ -313,7 +313,7 @@ msgstr "Last name (English)"
 
 #: appl/models.py:446
 msgid "หมายเลข Passport (ถ้ามี)"
-msgstr "Passport number (optional)"
+msgstr "Passport number (if any)"
 
 #: appl/models.py:448
 msgid "วันเดือนปีเกิด"
