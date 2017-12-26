@@ -253,11 +253,11 @@ msgstr "TCAS Round 5"
 
 #: appl/models.py:387
 msgid "กำลังศึกษาชั้นมัธยมศึกษาปีที่ 6 หรือเทียบเท่า"
-msgstr "Currently in grade 12 (Mathayom 6) or equivalent"
+msgstr "Currently in Grade 12 (Mathayom 6) or equivalent"
 
 #: appl/models.py:388
 msgid "จบการศึกษาชั้นมัธยมศึกษาปีที่ 6 หรือเทียบเท่า"
-msgstr "Graduated from grade 12 (Mathayom 6) or equivalent"
+msgstr "Graduated from Grade 12 (Mathayom 6) or equivalent"
 
 #: appl/models.py:391
 msgid "วิทย์-คณิต"
@@ -305,7 +305,7 @@ msgstr "Name (English)"
 
 #: appl/models.py:441
 msgid "ชื่อกลาง (อังกฤษ, ถ้ามี)"
-msgstr "Middle name (English, optional)"
+msgstr "Middle name (English, if any)"
 
 #: appl/models.py:444
 msgid "นามสกุล (อังกฤษ)"
@@ -313,7 +313,7 @@ msgstr "Last name (English)"
 
 #: appl/models.py:446
 msgid "หมายเลข Passport (ถ้ามี)"
-msgstr "Passport number (optional)"
+msgstr "Passport number (if any)"
 
 #: appl/models.py:448
 msgid "วันเดือนปีเกิด"
@@ -325,11 +325,11 @@ msgstr "Prefix of father's name"
 
 #: appl/models.py:452
 msgid "ชื่อบิดา"
-msgstr "Father first name"
+msgstr "Father's first name"
 
 #: appl/models.py:454
 msgid "นามสกุลบิดา"
-msgstr "Father last name"
+msgstr "Father's last name"
 
 #: appl/models.py:456
 msgid "คำนำหน้าชื่อมารดา"
@@ -337,11 +337,11 @@ msgstr "Prefix of mother's name"
 
 #: appl/models.py:458
 msgid "ชื่อมารดา"
-msgstr "Mother first name"
+msgstr "Mother's first name"
 
 #: appl/models.py:460
 msgid "นามสกุลมารดา"
-msgstr "Mother last name"
+msgstr "Mother's last name"
 
 #: appl/models.py:462
 msgid "บ้านเลขที่"
@@ -700,7 +700,8 @@ msgid ""
 "ถ้าจบจากโรงเรียนนานาชาติหรือต่างประเทศและไม่มี GPA สามารถกรอกเป็น 0 ได้ "
 "และสามารถเลือกแผนการเรียนเป็นไม่ระบุได้"
 msgstr ""
-"If the GPA is not available, you can put in 0.  You can also select 'Not specified' for study plan."
+"Fill 0 for the GPA if your school did not determine your GPA. Select 'Not specified' for the study"
+"plan if your school did not determined the plan."
 
 #: appl/views/general_forms.py:45
 msgid "ข้อมูลโรงเรียน"
@@ -711,7 +712,7 @@ msgid ""
 "ในกรณีที่สมัครโครงการช้างเผือก สามารถเลือกให้แสดงเฉพาะโรงเรียนที่เข้าโครงการได้ "
 "โดยกดปุ่มตอนท้าย"
 msgstr ""
-"If you are applying to the KU Talent program you can filter only eligible "
+"If you are applying to the KU Talent program, you can filter only eligible "
 "schools below."
 
 #: appl/views/general_forms.py:62
@@ -784,12 +785,12 @@ msgstr "Please login to start using the admission system."
 #: main/templates/main/index.html:35
 msgid "ขออภัย ไม่สามารถเข้าใช้ระบบได้ เนื่องจากรหัสผ่านหรือรหัสประจำตัวประชาชนผิดพลาด"
 msgstr ""
-"Sorry.  You cannot login because you entered a wrong national ID or an "
+"Sorry,  you cannot login because you entered a wrong national ID or an "
 "incorrect password."
 
 #: main/templates/main/index.html:38
 msgid "ขออภัย ไม่สามารถเข้าใช้ระบบได้ เนื่องจากฟอร์มผิดพลาด"
-msgstr "Sorry.  Incorrect login form."
+msgstr "Sorry, you cannot login due to an incorrect login form."
 
 #: main/templates/main/index.html:45
 msgid "เข้าใช้ระบบ"
@@ -927,7 +928,7 @@ msgstr "Incorrect national ID"
 
 #: regis/views.py:161
 msgid "รหัสประจำตัวประชาชนที่ยืนยันไม่ตรงกัน"
-msgstr "Incorrect national ID confirmation"
+msgstr "National ID does not match the confirmation"
 
 #: regis/views.py:170 regis/views.py:179
 msgid "เลขที่หนังสือเดินทางผิดรูปแบบ"
@@ -935,16 +936,16 @@ msgstr "Incorrect passport number"
 
 #: regis/views.py:182
 msgid "เลขที่หนังสือเดินทางที่ยืนยันไม่ตรงกัน"
-msgstr "Incorrect passport number confirmation"
+msgstr "Passport number does not match the confirmation"
 
 #: regis/views.py:187
 msgid "อีเมลที่ยืนยันไม่ตรงกัน"
-msgstr "Incorrect email confirmation"
+msgstr "Email does not match the confirmation"
 
 #: regis/views.py:202
 msgid "รหัสผ่านที่ยืนยันไม่ตรงกัน"
-msgstr "Incorrect password confirmation"
+msgstr "Password does not match the confirmation"
 
 #: regis/views.py:268
 msgid "ไม่พบข้อมูลผู้สมัครที่ระบุหรืออีเมลที่ระบุไม่ถูกต้อง"
-msgstr "Account information is not found, or you entered an incorrect email."
+msgstr "Account information is not found, or you've entered an incorrect email."
