@@ -325,11 +325,11 @@ msgstr "Prefix of father's name"
 
 #: appl/models.py:452
 msgid "ชื่อบิดา"
-msgstr "Father first name"
+msgstr "Father's first name"
 
 #: appl/models.py:454
 msgid "นามสกุลบิดา"
-msgstr "Father last name"
+msgstr "Father's last name"
 
 #: appl/models.py:456
 msgid "คำนำหน้าชื่อมารดา"
@@ -337,11 +337,11 @@ msgstr "Prefix of mother's name"
 
 #: appl/models.py:458
 msgid "ชื่อมารดา"
-msgstr "Mother first name"
+msgstr "Mother's first name"
 
 #: appl/models.py:460
 msgid "นามสกุลมารดา"
-msgstr "Mother last name"
+msgstr "Mother's last name"
 
 #: appl/models.py:462
 msgid "บ้านเลขที่"
