@@ -42,8 +42,23 @@
         <br />
       {% endfor %}
     </td>
-    <td></td>
-    <td></td>
+    {% if applicant.is_accepted %}
+      <td>
+        <span class="badge badge-success">รับเข้าศึกษา</span>
+        <br />
+        <small>{{ applicant.accepted_result.major }}</small>
+      </td>
+      {% if applicant.accepted_result.has_confirmed %}
+        <td>
+          <span class="badge badge-success">ยืนยัน</span>
+        </td>
+      {% else %}
+        <td></td>
+      {% endif %}
+    {% else %}
+      <td></td>
+      <td></td>
+    {% endif %}
   {% endif %}
 {% else %}
   <td></td>

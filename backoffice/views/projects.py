@@ -271,6 +271,12 @@ def load_check_marks_and_results(applicants, admission_project, admission_round)
         a.admission_results = result_map.get(a.id, None)
         a.check_marks = check_marks.get(a.id, None)
 
+        a.is_accepted = False
+        for res in a.admission_results:
+            if res.is_accepted:
+                a.is_accepted = True
+                a.accepted_result = res
+
 
 @user_login_required
 def list_applicants(request, project_id, round_id):
