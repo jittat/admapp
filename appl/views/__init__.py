@@ -120,7 +120,8 @@ def index_with_active_application(request, active_application, admission_round=N
                                                         list(common_uploaded_documents) + list(project_uploaded_documents))
         
     admission_projects = []
-
+    has_confirmed = False
+    
     if project_round.accepted_for_interview_result_shown:
         admission_results = AdmissionResult.find_by_application(active_application)
         is_accepted_for_interview = False
@@ -134,6 +135,9 @@ def index_with_active_application(request, active_application, admission_round=N
                 if res.is_accepted:
                     is_accepted = True
                     accepted_result = res
+
+                    if res.has_confirmed:
+                        has_confirmed = True
 
         mresults = dict([(res.major_id, res) for res in admission_results])
         if major_selection:
@@ -192,6 +196,7 @@ def index_with_active_application(request, active_application, admission_round=N
                     'accepted_result_shown': project_round.accepted_result_shown,
                     'is_accepted': is_accepted,
                     'accepted_result': accepted_result,
+                    'has_confirmed': has_confirmed,
                   })
 
 

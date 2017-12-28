@@ -12,14 +12,16 @@
   </div>
 </div>
 
-{% if active_application.admission_project.descriptions %}
-  <div class="row">
-    <div class="col-md-12">
-      <div class="border-a0 p5 mb10 pl10 pr10">
-        {{ active_application.admission_project.descriptions|safe }}
+{% if not has_confirmed %}
+  {% if active_application.admission_project.descriptions %}
+    <div class="row">
+      <div class="col-md-12">
+        <div class="border-a0 p5 mb10 pl10 pr10">
+          {{ active_application.admission_project.descriptions|safe }}
+        </div>
       </div>
     </div>
-  </div>
+  {% endif %}
 {% endif %}
 
 {% if accepted_result_shown %}
