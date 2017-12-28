@@ -13,10 +13,22 @@
           {% endif %}
         {% endif %}
       </td>
+      <td>
+        {% if applicant.admission_results.0.is_accepted %}
+          {% if applicant.admission_results.0.has_confirmed %}
+            <span class="badge badge-success">ยืนยัน</span>
+          {% else %}
+            {% if applicant.admission_results.0.has_confirmed == False %}
+              <span class="badge badge-success">สละสิทธิ์</span>
+            {% endif %}
+          {% endif %}
+        {% endif %}
+      </td>
     {% else %}
       <td>
         {% if applicant.admission_results.0.is_accepted_for_interview == False %}<span class="badge badge-danger">ไม่เรียก</span>{% endif %}
       </td>
+      <td></td>
       <td></td>
     {% endif %}
   {% else %}
@@ -31,8 +43,10 @@
       {% endfor %}
     </td>
     <td></td>
+    <td></td>
   {% endif %}
 {% else %}
+  <td></td>
   <td></td>
   <td></td>
 {% endif %}
