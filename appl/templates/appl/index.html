@@ -46,13 +46,20 @@
       {% endif %}
     </ul>
   </div>
-  <div class="col-md-6">
-    <div class="all-document-upload-forms">
-      {% for project_uploaded_document in common_uploaded_documents %}
-        {% include 'appl/include/document_upload_form.html' %}
-      {% endfor %}
+
+  {% if common_uploaded_documents %}
+    <div class="col-md-6">
+      <div class="all-document-upload-forms">
+        {% for project_uploaded_document in common_uploaded_documents %}
+          {% include 'appl/include/document_upload_form.html' %}
+        {% endfor %}
+      </div>
     </div>
-  </div>
+  {% endif %}
+  
+  {% if other_application_rounds %}
+    {% include 'appl/include/other_application_rounds.html' %}
+  {% endif %}
 </div>
 
 {% if active_application %}

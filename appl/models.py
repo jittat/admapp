@@ -61,7 +61,10 @@ class AdmissionRound(models.Model):
                                        blank=True,
                                        verbose_name='กำหนดการ')
 
-    is_available = models.BooleanField(default=False)
+    is_available = models.BooleanField(default=False,
+                                       verbose_name='แสดงเป็นรอบการรับสมัครต่อผู้สมัคร')
+    is_application_available = models.BooleanField(default=False,
+                                                   verbose_name='ยังแสดงใบสมัครจากรอบนี้ในรอบสมัครอื่น ๆ')
 
     clearing_house_description = models.TextField(blank=True,
                                                   verbose_name='ข้อมูลการยืนยันสิทธิ์')

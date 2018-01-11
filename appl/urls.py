@@ -9,6 +9,7 @@ from appl.views import print_views
 app_name = 'appl'
 urlpatterns = [
     url(r'^$', views.index, name='index'),
+    url(r'^round/(?P<admission_round_id>\d+)$', views.index, name='index-with-round'),
 
     url(r'^personal/$', general_forms.personal_profile, name='personal-profile'),
 

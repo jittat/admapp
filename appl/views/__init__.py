@@ -73,7 +73,16 @@ def check_project_documents(applicant,
     return { 'status': status,
              'errors': errors }
 
-        
+def load_applications_in_other_round(applicant, current_admission_round):
+    admission_rounds = AdmissionRound.objects.filter(is_application_available=True).all()
+    results = []
+    for a in admission_rounds:
+        if a.id != current_admission_round.id:
+            active_application = applicant.get_active_application(a)
+            if active_application:
+                results.append((a, active_application))
+    return results
+
 def index_outside_round(request):
     return HttpResponseForbidden()
 
@@ -157,7 +166,9 @@ def index_with_active_application(request, active_application, admission_round=N
         interview_descriptions = None
         is_accepted = False
         accepted_result = None
-    
+
+    other_application_rounds = load_applications_in_other_round(applicant,
+                                                                admission_round)
     notice = request.session.pop('notice', None)
 
     return render(request,
@@ -165,6 +176,8 @@ def index_with_active_application(request, active_application, admission_round=N
                   { 'notice': notice,
                     'applicant': applicant,
 
+                    'other_application_rounds': other_application_rounds,
+                    
                     'is_deadline_passed': is_deadline_passed,
                     
                     'personal_profile': applicant.get_personal_profile(),
@@ -201,7 +214,7 @@ def index_with_active_application(request, active_application, admission_round=N
 
 
 @appl_login_required
-def index(request):
+def index(request, admission_round_id='0'):
     applicant = request.applicant
 
     if applicant.confirmed_application:
@@ -209,7 +222,10 @@ def index(request):
         admission_round = active_application.admission_round
         return index_with_active_application(request, active_application, admission_round)
 
-    admission_round = AdmissionRound.get_available()
+    if admission_round_id == '0':
+        admission_round = AdmissionRound.get_available()
+    else:
+        admission_round = get_object_or_404(AdmissionRound, pk=admission_round_id)
 
     if not admission_round:
         return index_outside_round(request)
@@ -225,7 +241,7 @@ def index(request):
     active_application = applicant.get_active_application(admission_round)
 
     if active_application:
-        return index_with_active_application(request, active_application)
+        return index_with_active_application(request, active_application, admission_round)
 
     common_uploaded_documents = ProjectUploadedDocument.get_common_documents()
     prepare_uploaded_document_forms(applicant, common_uploaded_documents)
@@ -258,6 +274,8 @@ def index(request):
     paid_amount = sum([p.amount for p in payments])
     additional_payment = 0
 
+    other_application_rounds = load_applications_in_other_round(applicant,
+                                                                admission_round)
     notice = request.session.pop('notice', None)
 
     return render(request,
@@ -266,6 +284,9 @@ def index(request):
                     'applicant': applicant,
                     'personal_profile': personal_profile,
                     'educational_profile': educational_profile,
+
+                    'other_application_rounds': other_application_rounds,
+                    
                     'common_uploaded_documents': common_uploaded_documents,
 
                     'admission_round': admission_round,

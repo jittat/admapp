@@ -1,0 +1,13 @@
+{% load i18n %}
+<div class="col-md-6">
+  <div class="alert alert-info">
+    นอกจากใบสมัครใน{{ admission_round }} แล้วคุณยังมีใบสมัครในรอบอื่น ๆ อยู่ดังนี้:
+    <ul>
+      {% for r,a in other_application_rounds %}
+        <li>
+          <a class="btn btn-sm btn-primary" href="{% url 'appl:index-with-round' r.id %}">{{ r }}</a> - {{ a.admission_project }} <a class="btn btn-sm btn-primary" href="{% url 'appl:index-with-round' r.id %}">พิจารณา</a><br />
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
