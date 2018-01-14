@@ -227,3 +227,43 @@ def el_print(request):
                     'majors': majors })
 
 
+@appl_login_required
+def gen_sport_print(request):
+    applicant = request.applicant
+    admission_round = AdmissionRound.get_available()
+    
+    personal_profile = applicant.get_personal_profile()
+    educational_profile = applicant.get_educational_profile()
+
+    active_application = applicant.get_active_application(admission_round)
+    admission_project = active_application.admission_project
+
+    major_selection = active_application.get_major_selection()
+    majors = major_selection.get_majors()
+    supplement_configs = load_supplement_configs_with_instance(applicant,
+                                                               admission_project)
+
+    sport_type = supplement_configs[0].supplement_instance.get_data()
+
+    try:
+        from supplements.views.forms.gen_sport import GEN_SPORT_LEVEL_CHOICES
+        sport_level = dict(GEN_SPORT_LEVEL_CHOICES)[str(sport_type['gen_sport_level'])]
+    except:
+        sport_level = ''
+        
+    sport_history = supplement_configs[1].supplement_instance.get_data()
+
+    return render(request,
+                  'appl/print/gensport_print.html',
+                  { 'applicant': applicant,
+                    'personal_profile': personal_profile,
+                    'educational_profile': educational_profile,
+                    'majors': majors,
+
+                    'sport_type': sport_type,
+                    'sport_level': sport_level,
+                    'sport_history': sport_history, })
+
+
+
+

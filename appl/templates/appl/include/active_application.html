@@ -63,6 +63,13 @@
           <a href="{% url 'appl:natsport-print' %}" target="_blank" class="btn btn-sm btn-success">พิมพ์ใบสมัคร</a>
         </div>
       {% endif %}
+      {% if active_application.admission_project.id == 18 %}
+        <div class="project-appl-sections">
+          <h4>พิมพ์ใบสมัคร</h4>
+          คุณกรอกข้อมูลครบถ้วนแล้ว<br />
+          <a href="{% url 'appl:gensport-print' %}" target="_blank" class="btn btn-sm btn-success">พิมพ์ใบสมัคร</a>
+        </div>
+      {% endif %}
     {% endif %}
   </div>
   {% if project_uploaded_documents %}

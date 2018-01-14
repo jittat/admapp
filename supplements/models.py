@@ -159,6 +159,24 @@ PROJECT_SUPPLEMENTS = {
                                 'supplements.views.forms.nat_sport.process_sport_history_form',
                                 'supplements/backoffice/nat_sport/sport_history.html'),
     ],
+    'โควตานักกีฬาดีเด่นฯ': [
+        ProjectSupplementConfig('gen_sport_type',
+                                'ประเภทกีฬาและระดับ',
+                                True,
+                                'supplements/gen_sport/sport_type.html',
+                                'gen_sport_type_',
+                                'supplements.views.forms.gen_sport.init_sport_type_form',
+                                'supplements.views.forms.gen_sport.process_sport_type_form',
+                                'supplements/backoffice/gen_sport/sport_type.html'),
+        ProjectSupplementConfig('gen_sport_history',
+                                'ผลการแข่งขัน',
+                                True,
+                                'supplements/gen_sport/sport_history.html',
+                                'gen_sport_history_',
+                                'supplements.views.forms.gen_sport.init_sport_history_form',
+                                'supplements.views.forms.gen_sport.process_sport_history_form',
+                                'supplements/backoffice/gen_sport/sport_history.html'),
+    ],
 }
 
 

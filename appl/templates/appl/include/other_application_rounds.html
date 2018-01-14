@@ -1,7 +1,7 @@
 {% load i18n %}
 <div class="col-md-6">
   <div class="alert alert-info">
-    นอกจากใบสมัครใน{{ admission_round }} แล้วคุณยังมีใบสมัครในรอบอื่น ๆ อยู่ดังนี้:
+    นอกจาก{{ admission_round }} แล้วคุณยังมีใบสมัครในรอบอื่น ๆ อยู่ดังนี้:
     <ul>
       {% for r,a in other_application_rounds %}
         <li>
