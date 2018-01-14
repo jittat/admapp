@@ -177,6 +177,16 @@ PROJECT_SUPPLEMENTS = {
                                 'supplements.views.forms.gen_sport.process_sport_history_form',
                                 'supplements/backoffice/gen_sport/sport_history.html'),
     ],
+    'โควตาศิลปวัฒนธรรมฯ': [
+        ProjectSupplementConfig('cultural_type',
+                                'ประเภทศิลปวัฒนธรรม',
+                                True,
+                                'supplements/cultural/cultural_type.html',
+                                'cultural_type_',
+                                'supplements.views.forms.cultural.init_cultural_type_form',
+                                'supplements.views.forms.cultural.process_cultural_type_form',
+                                'supplements/backoffice/cultural/cultural_type.html'),
+    ],
 }
 
 
