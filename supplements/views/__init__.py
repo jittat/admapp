@@ -41,7 +41,7 @@ def render_supplement_for_backoffice(supplement_config, supplement):
     except:
         data = None
         
-    html = template.render({ 'instance': supplement.get_data() })
+    html = template.render({ 'instance': data })
 
     return html
 
