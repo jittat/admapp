@@ -26,17 +26,31 @@
       {% endif %}
       
       ด้านล่างเป็นรายการโครงการรับสมัครที่คุณรับผิดชอบที่เปิดรับสมัครตอนนี้
-      
-      <ul>
-        {% for project in admission_projects %}
-          <li>
-            {{ project }}
-            {% for round in project.admission_rounds.all %}
-              <a class="btn btn-sm btn-success" href="{% url 'backoffice:projects-index' project.id round.id %}">{{ round }}</a>
+
+      <table class="table table-sm table-striped">
+        <thead class="thead-dark">
+          <tr>
+            <th>โครงการ</th>
+            <th>รอบสมัคร</th>
+            <th>จำนวนผู้สมัคร</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for project in admission_projects %}
+            {% for round, stats in project.admission_round_stats %}
+              <tr>
+                <td>{{ project }}</td>
+                <td>{{ round }}</td>
+                <td>{{ stats.num_applicants }}</td>
+                <td>
+                  <a class="btn btn-sm btn-success" href="{% url 'backoffice:projects-index' project.id round.id %}">พิจารณา</a>
+                </td>
+              </tr>
             {% endfor %}
-          </li>
-        {% endfor %}
-      </ul>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
   </div>
 {% endblock %}

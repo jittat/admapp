@@ -17,9 +17,12 @@ class AdmissionProjectAdmin(admin.ModelAdmin):
     ordering = ['id']
     actions = [make_available]
     inlines = (ProjectUploadedDocumentInline,)
-    
+
+class ProjectUploadedDocumentAdmin(admin.ModelAdmin):
+    list_display = ['title', 'notes', 'file_prefix']
+
 admin.site.register(AdmissionProject, AdmissionProjectAdmin)
 admin.site.register(AdmissionRound)
 admin.site.register(AdmissionProjectRound)
-admin.site.register(ProjectUploadedDocument)
+admin.site.register(ProjectUploadedDocument, ProjectUploadedDocumentAdmin)
 admin.site.register(Faculty)

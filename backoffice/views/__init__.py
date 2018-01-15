@@ -7,9 +7,9 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit, ButtonHolder, Row, Div
 
 from regis.models import Applicant, LogItem
-from appl.models import AdmissionProject,ProjectApplication,EducationalProfile,PersonalProfile, Payment
-from supplements.models import load_supplement_configs_with_instance
+from appl.models import AdmissionProject, ProjectApplication, EducationalProfile, PersonalProfile, Payment
 
+from supplements.models import load_supplement_configs_with_instance
 from supplements.views import render_supplement_for_backoffice
 
 from backoffice.models import Profile
@@ -30,6 +30,30 @@ class ApplicantForm(forms.Form):
     last_name = forms.CharField(label='นามสกุล',
                                 max_length=200)
 
+
+def compute_project_stats(admission_projects):
+    stat_keys = {}
+    
+    for project in admission_projects:
+        admission_round_stats = []
+        c = 0
+        for r in project.admission_rounds.all():
+            stats = {'num_applicants': 0}
+            admission_round_stats.append((r, stats))
+
+            stat_keys[(project.id, r.id)] = (project, c)
+
+            c += 1
+            
+        project.admission_round_stats = admission_round_stats
+
+    applications = ProjectApplication.objects.filter(is_canceled=False).all()
+    for a in applications:
+        k = (a.admission_project_id, a.admission_round_id)
+        if k in stat_keys:
+            project, c = stat_keys[k]
+            project.admission_round_stats[c][1]['num_applicants'] += 1
+            
 
 @user_login_required
 def index(request):
@@ -52,7 +76,9 @@ def index(request):
         admission_projects = AdmissionProject.objects.filter(is_available=True).all()
         stats['applicant_count'] = Applicant.objects.count()
         stats['project_application_count'] = ProjectApplication.objects.filter(is_canceled=False).count()
-    
+
+    compute_project_stats(admission_projects)
+        
     return render(request,
                   'backoffice/index.html',
                   { 'admission_projects': admission_projects,
