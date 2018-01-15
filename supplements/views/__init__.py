@@ -36,6 +36,11 @@ def render_supplement_for_backoffice(supplement_config, supplement):
     from django.template.loader import get_template
 
     template = get_template(supplement_config.backoffice_template)
+    try:
+        data = supplement.get_data()
+    except:
+        data = None
+        
     html = template.render({ 'instance': supplement.get_data() })
 
     return html
