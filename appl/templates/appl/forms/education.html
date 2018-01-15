@@ -81,6 +81,19 @@
                  });
                });
   }
+
+  var addNoStudyPlanWarning = function() {
+    $("#div_id_education_plan").append('<div id="id_no_plan_warning" style="display:none;"><span class="badge badge-danger">คำเตือน</span> <small>การไม่ระบุแผนการเรียน อาจทำให้ไม่ผ่านเกณฑ์ขั้นพื้นฐานในการสมัครบางสาขา กรุณาตรวจสอบ</small></div>')
+  };
+
+  var updateNoStudyPlanWarning = function() {
+    var p = $("#id_education_plan").val();
+    if(p=='5') {
+      $('#id_no_plan_warning').show();
+    } else {
+      $('#id_no_plan_warning').hide();
+    }
+  }
   
   $(function(){
     $("#id_school_title").after(schoolSelectStr);
@@ -106,6 +119,10 @@
     
     populateSchoolSelect();
     updateSchoolInput();
+
+    addNoStudyPlanWarning();
+    updateNoStudyPlanWarning();
+    $('#id_education_plan').change(updateNoStudyPlanWarning);
   });
 </script>
 {% endblock %}
