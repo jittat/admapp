@@ -265,5 +265,29 @@ def gen_sport_print(request):
                     'sport_history': sport_history, })
 
 
+@appl_login_required
+def kus_print(request):
+    applicant = request.applicant
+    admission_round = AdmissionRound.get_available()
+    
+    personal_profile = applicant.get_personal_profile()
+    educational_profile = applicant.get_educational_profile()
+
+    active_application = applicant.get_active_application(admission_round)
+    admission_project = active_application.admission_project
+
+    major_selection = active_application.get_major_selection()
+    majors = major_selection.get_majors()
+
+    return render(request,
+                  'appl/print/kus_print.html',
+                  { 'applicant': applicant,
+                    'personal_profile': personal_profile,
+                    'educational_profile': educational_profile,
+                    'majors': majors, })
+
+
+
+
 
 

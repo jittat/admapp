@@ -405,8 +405,9 @@ class EducationalProfile(models.Model):
     education_plan = models.IntegerField(choices=EDUCATION_PLAN_CHOICES,
                                          verbose_name=_('แผนการศึกษา'))
     gpa = models.FloatField(default=0,
-                            verbose_name='GPA',
-                            validators=[MinValueValidator(0.0), MaxValueValidator(5.0)])
+                            verbose_name='GPAX',
+                            validators=[MinValueValidator(0.0), MaxValueValidator(5.0)],
+                            help_text=_('ในกรณีที่กำลังศึกษาชั้นม.6 ให้กรอกเกรดเฉลี่ย 5 ภาคการศึกษา ถ้าจบการศึกษาแล้วให้กรอกเกรดเฉลี่ย 6 ภาคการศึกษา'))
     province = models.ForeignKey(Province,
                                  verbose_name=_('จังหวัด'))
     school_title = models.CharField(max_length=80,
