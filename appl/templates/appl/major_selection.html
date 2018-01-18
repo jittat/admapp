@@ -52,7 +52,7 @@
               {% if selected_majors and selected_majors.faculty_id == m.faculty_id %}
                 <li class="list-group-item d-flex col col-lg-3 col-12 justify-content-between">
                   {{ m.title_trans }}
-                  <button type="button" class="btn btn-outline-success" onclick="selectMajor(this)" value="{{ forloop.counter }}">{% trans 'เลือกสาขานี้' context 'major selection' %}</button>
+                  <button type="button" class="btn btn-outline-success" onclick="selectMajor(this)" value="{{ m.number }}">{% trans 'เลือกสาขานี้' context 'major selection' %}</button>
                 </li>
               {% endif %}  
             {% endfor %}
