@@ -3,6 +3,10 @@
 {% if admission_round %}
   {% if cupt_confirmation_status.is_wait %}
     {% include 'appl/include/cupt_confirmation_wait.html' %}
+  {% else %}
+    {% if not cupt_confirmation_status.is_free %}
+      {% include 'appl/include/cupt_confirmation_not_free.html' %}
+    {% endif %}
   {% endif %}
   {% for project in admission_projects %}
     {% if not project.eligibility.is_hidden %}

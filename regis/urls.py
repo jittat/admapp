@@ -12,4 +12,6 @@ urlpatterns = [
     url(r'^logout/$', views.logout, name='logout'),
 
     url(r'^checkcupt/(\d+)/$', views.check_cupt_confirmation_available, name='cupt-check'),
+
+    url(r'^resetcupt/$', views.reset_cupt_confirmation, name='reset-cupt-check'),
 ]

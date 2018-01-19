@@ -21,6 +21,8 @@ from .validators import is_valid_national_id
 from .validators import is_valid_passport_number
 from .models import Applicant, LogItem
 
+from .decorators import appl_login_required
+
 class LoginForm(forms.Form):
     national_id = forms.CharField(label=_('รหัสประจำตัวประชาชนหรือหมายเลขพาสปอร์ต'),
                                   max_length=20)
@@ -334,4 +336,17 @@ def check_cupt_confirmation_available(request, national_id):
         return HttpResponse('OK')
     else:
         return HttpResponse('WAIT')
+
+@appl_login_required    
+def reset_cupt_confirmation(request):
+    from datetime import datetime, timedelta
     
+    applicant = request.applicant
+    if hasattr(applicant,'cupt_confirmation'):
+        confirmation = applicant.cupt_confirmation
+        yesterday = datetime.now() - timedelta(1)
+        if confirmation.updated_at < yesterday:
+            confirmation.delete()
+
+    return redirect('appl:index')
+
