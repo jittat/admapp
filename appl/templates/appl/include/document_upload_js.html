@@ -37,6 +37,8 @@
         success: function(data) {
           if (data.result == 'OK') {
             $(div).replaceWith(data.html);
+          } else if (data.result == 'APPLICATION_ERROR') {
+            $(uploadErrorDiv).show().html('<b>ฟอร์มอัพโหลดมีปัญหา กรุณาเข้าระบบใหม่</b>');
           } else if (data.result == 'FORM_ERROR') {
             $(uploadErrorDiv).show().html('<b>ไม่ได้ระบุไฟล์ที่อัพโหลด</b>');
           } else if (data.result == 'EXT_ERROR') {
