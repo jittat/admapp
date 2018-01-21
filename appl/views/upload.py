@@ -67,7 +67,8 @@ def upload(request, document_id):
     active_application = applicant.get_active_application(admission_round)
     if active_application == None:
         LogItem.create('active application missing', applicant, request)
-        return {'result': 'FORM_ERROR'}
+        return HttpResponse(json.dumps({'result': 'FORM_ERROR'}),
+                            content_type='application/json')
     
     admission_project = active_application.admission_project
     project_round = admission_project.get_project_round_for(admission_round)
