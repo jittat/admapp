@@ -66,7 +66,7 @@ def upload(request, document_id):
 
     active_application = applicant.get_active_application(admission_round)
     if active_application == None:
-        LogItem.create('active application missing', application, request)
+        LogItem.create('active application missing', applicant, request)
         return {'result': 'FORM_ERROR'}
     
     admission_project = active_application.admission_project
