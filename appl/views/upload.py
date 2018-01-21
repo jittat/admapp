@@ -9,7 +9,7 @@ from django.conf import settings
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
 
-from regis.models import Applicant
+from regis.models import Applicant, LogItem
 from regis.decorators import appl_login_required
 
 from appl.models import AdmissionProject, ProjectUploadedDocument, UploadedDocument, AdmissionRound
@@ -65,6 +65,10 @@ def upload(request, document_id):
     admission_round = AdmissionRound.get_available()
 
     active_application = applicant.get_active_application(admission_round)
+    if active_application == None:
+        LogItem.create('active application missing', application, request)
+        return {'result': 'FORM_ERROR'}
+    
     admission_project = active_application.admission_project
     project_round = admission_project.get_project_round_for(admission_round)
     is_deadline_passed = project_round.is_deadline_passed()
