@@ -17,56 +17,6 @@ from backoffice.decorators import user_login_required
 from .projects import load_major_applicants, load_check_marks_and_results
 
 
-@user_login_required
-def download_applicants_sheet(request, project_id, round_id, major_number):
-    user = request.user
-    project = get_object_or_404(AdmissionProject, pk=project_id)
-    admission_round = get_object_or_404(AdmissionRound, pk=round_id)
-    major = Major.get_by_project_number(project, major_number)
-
-    if not can_user_view_applicants_in_major(user, project, major):
-        return HttpResponseForbidden()
-
-    filename = 'applicants-{}-{}-{}.csv'.format(project_id, round_id, major_number)
-    response = HttpResponse(content_type='text/csv; charset=utf-8')
-    response['Content-Disposition'] = 'attachment; filename="{}"'.format(filename)
-    writer = csv.writer(response)
-
-    applicants = load_major_applicants(project, admission_round, major)
-    writer.writerow(['รหัสประจำตัวประชาชน',
-                     'หมายเลขหนังสือเดินทาง',
-                     'คำนำหน้า',
-                     'ชื่อต้น',
-                     'นามสกุล',
-                     'E-mail',
-                     'เบอร์โทรที่ติดต่อได้',
-                     'เบอร์โทรมือถือ',
-                     'แผนการเรียน',
-                     'โรงเรียน',
-                     'จังหวัด',
-                     'GPA',
-                     'การชำระเงินค่าสมัคร',])
-    for applicant in applicants:
-        if applicant.has_paid:
-            payment_message = 'ชำระแล้ว'
-        else:
-            payment_message = 'ยังไม่ได้ชำระ'
-        writer.writerow([applicant.national_id,
-                         applicant.personalprofile.passport_number,
-                         applicant.prefix,
-                         applicant.first_name,
-                         applicant.last_name,
-                         applicant.email,
-                         applicant.personalprofile.contact_phone,
-                         applicant.personalprofile.mobile_phone,
-                         applicant.educationalprofile.get_education_plan_display(),
-                         applicant.educationalprofile.school_title,
-                         applicant.educationalprofile.province.title,
-                         applicant.educationalprofile.gpa,
-                         payment_message,])
-    return response
-
-
 def set_column_widths(sheet,widths):
     c = 0
     for w in widths:
@@ -78,6 +28,80 @@ def write_sheet_row(sheet, row, items, cell_format=None):
     for i in items:
         sheet.write(row,c,i,cell_format)
         c += 1
+
+
+@user_login_required
+def download_applicants_sheet(request, project_id, round_id, major_number):
+    import xlsxwriter
+    import io
+    
+    user = request.user
+    project = get_object_or_404(AdmissionProject, pk=project_id)
+    admission_round = get_object_or_404(AdmissionRound, pk=round_id)
+    major = Major.get_by_project_number(project, major_number)
+
+    if not can_user_view_applicants_in_major(user, project, major):
+        return HttpResponseForbidden()
+
+    output = io.BytesIO()
+    workbook = xlsxwriter.Workbook(output, {'in_memory': True})
+    app_worksheet = workbook.add_worksheet('ข้อมูลผู้สมัคร')
+    
+    bordered_cell_format = workbook.add_format()
+    bordered_cell_format.set_border(1)
+    
+    applicants = load_major_applicants(project, admission_round, major)
+
+    set_column_widths(app_worksheet, [15,8,8,12,22,15,13,13,10,25,10,6,10])
+    write_sheet_row(app_worksheet,1,
+                    ['รหัสประจำตัวประชาชน',
+                     'หมายเลขหนังสือเดินทาง',
+                     'คำนำหน้า',
+                     'ชื่อต้น',
+                     'นามสกุล',
+                     'E-mail',
+                     'เบอร์โทรที่ติดต่อได้',
+                     'เบอร์โทรมือถือ',
+                     'แผนการเรียน',
+                     'โรงเรียน',
+                     'จังหวัด',
+                     'GPA',
+                     'การชำระเงินค่าสมัคร',],
+                    bordered_cell_format)
+
+    r = 2
+    for applicant in applicants:
+        if applicant.has_paid:
+            payment_message = 'ชำระแล้ว'
+        else:
+            payment_message = 'ยังไม่ได้ชำระ'
+        write_sheet_row(app_worksheet, r,
+                        [applicant.national_id,
+                         applicant.personalprofile.passport_number,
+                         applicant.prefix,
+                         applicant.first_name,
+                         applicant.last_name,
+                         applicant.email,
+                         applicant.personalprofile.contact_phone,
+                         applicant.personalprofile.mobile_phone,
+                         str(applicant.educationalprofile.get_education_plan_display()),
+                         applicant.educationalprofile.school_title,
+                         applicant.educationalprofile.province.title,
+                         applicant.educationalprofile.gpa,
+                         payment_message,],
+                        bordered_cell_format)
+        r += 1
+
+    workbook.close()
+    output.seek(0)
+    
+    filename = 'applicants-{}-{}-{}.xlsx'.format(project_id, round_id, major_number)
+    response = HttpResponse(output.read(),
+                            content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename="{}"'.format(filename)
+
+    return response
+
 
 def write_applicant_rows(sheet, start_row, applicants, major, cell_format, show_national_id=True):
     faculty = major.faculty
