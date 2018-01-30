@@ -8,7 +8,16 @@
     <h1>
       {% trans 'ยินดีต้อนรับสู่รั้วนนทรี' %} 
     </h1>
-
+    
+    <div class="row">
+      <div class="col-md-12">
+        <div class="alert alert-primary">
+          <span class="badge badge-primary">ใกล้หมดเวลารับสมัครแล้ว</span>
+          หมดเวลาการรับสมัครรอบที่ 2 วันที่ 31 ม.ค. 2560 <b>เวลา 20:00 น.</b>
+        </div>
+      </div>
+    </div>
+    
     {% trans 'เข้าใช้ระบบรับสมัคร' %}
     {% if LANGUAGE_CODE == 'th' %}
       {% language 'en' %}
@@ -19,10 +28,10 @@
       {% endlanguage %}
     {% else %}
       {% language 'th' %}
-        <div class="btn-group">
-          <a class="btn btn-xsm btn-primary" href="{% url 'main-index' %}">TH</a>
-          <a class="btn btn-xsm btn-outline-primary" href="{% url 'main-index' %}">ใช้ระบบรับสมัครเป็นภาษาไทย</a>
-        </div>
+      <div class="btn-group">
+        <a class="btn btn-xsm btn-primary" href="{% url 'main-index' %}">TH</a>
+        <a class="btn btn-xsm btn-outline-primary" href="{% url 'main-index' %}">ใช้ระบบรับสมัครเป็นภาษาไทย</a>
+      </div>
       {% endlanguage %}
     {% endif %}
     <div class="mb10"></div>
