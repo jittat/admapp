@@ -719,6 +719,7 @@ class AdmissionResult(models.Model):
             models.Index(fields=['admission_project']),
             models.Index(fields=['applicant']),
         ]
+        unique_together = (('applicant','admission_project','major'),)
 
     def has_interview_rank(self):
         return self.interview_rank != 0
