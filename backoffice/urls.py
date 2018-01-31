@@ -12,6 +12,7 @@ urlpatterns = [
     url(r'^$', views.index, name='index'),
 
     url(r'^payment/$', payments.index, name='payment-index'),
+    url(r'^payment/update/(?P<payment_id>\d+)/$', payments.update, name='payment-update'),
 
     url(r'^applicants/(\d+)/$', views.show, name='show-applicant'),
     url(r'^applicants/(\d+)/(\d+)/$', views.show, name='show-applicant-in-project'),

@@ -509,6 +509,11 @@ class ProjectApplication(models.Model):
 
     verification_number = models.CharField(max_length=20,
                                            blank=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['verification_number']),
+        ]
     
     ID_OFFSET_MAGIC = 104341
 
@@ -677,7 +682,7 @@ class Payment(models.Model):
     paid_at = models.DateTimeField()
 
     has_payment_error = models.BooleanField(default=False)
-
+    updated_at = models.DateTimeField(null=True)
 
     def __str__(self):
         return '{0} ({1}/{2})'.format(self.amount, self.id, self.paid_at)

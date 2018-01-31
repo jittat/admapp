@@ -1,9 +1,11 @@
-from django.shortcuts import render, redirect
+import json
+
+from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
-from django.http import HttpResponseForbidden
+from django.http import HttpResponseForbidden, HttpResponse
 from django import forms
 
-from regis.models import Applicant
+from regis.models import Applicant, LogItem
 from appl.models import Payment, AdmissionRound, ProjectApplication
 from backoffice.models import Profile
 
@@ -134,3 +136,52 @@ def index(request):
                     'all_payment_count': all_payment_count,
                     'error_payments': error_payments,
                   })
+
+
+@super_admin_login_required
+def update(request, payment_id):
+    from datetime import datetime
+    
+    user = request.user
+    if not user.is_super_admin:
+        return HttpResponseForbidden()
+
+    if request.method != 'POST':
+        return HttpResponseForbidden()
+
+    payment = get_object_or_404(Payment, pk=payment_id)
+    if payment.applicant != None:
+        return HttpResponseForbidden()
+
+    result = {'result': 'ERROR'}
+
+    verification_number = request.POST.get('number','').strip()
+    if verification_number == '':
+        result['msg'] = 'FORM-ERROR'
+        application = None
+    else:
+        application_number = verification_number[:6]
+        application = ProjectApplication.find_by_number(application_number)
+        if application:
+            if application.get_verification_number() != verification_number:
+                result['msg'] = 'INCORRECT-VERIFICATION'
+                application = None
+        else:
+            result['msg'] = 'NOT-FOUND'
+            
+    if application:
+        payment.applicant = application.applicant
+        payment.has_payment_error = True
+        payment.updated_at = datetime.now()
+        payment.save()
+
+        send_payment_email(application.applicant, '%.2f' % (payment.amount,), str(payment.paid_at))
+        
+        LogItem.create('Admin updated payment (id:{0} {1}/{2})'.format(payment_id, payment.national_id, payment.verification_number),
+                       application.applicant, request)
+            
+        result['result'] = 'OK'
+        result['full_name'] = application.applicant.get_full_name()
+
+    return HttpResponse(json.dumps(result),
+                        content_type='application/json')

@@ -33,13 +33,24 @@
       
       <table class="table table-striped">
         {% for p in error_payments %}
-          <tr>
+          <tr id="error_row_{{ p.id }}">
             <td>{{ forloop.counter }}</td>
             <td>{{ p.national_id }}</td>
             <td>{{ p.verification_number }}</td>
             <td>{{ p.paid_at }}</td>
             <td>{{ p.payment_name }}</td>
             <td>{{ p.amount|floatformat:"2" }}</td>
+            <td>
+              <button data-payment-id="{{ p.id }}" class="btn btn-xsm btn-outline-secondary edit-toggle-buttons"><i class="fa fa-edit"></i>แก้ไข</button>
+            </td>
+          </tr>
+          <tr style="display:none;"></tr>
+          <tr style="display:none;" id="edit_row_{{ p.id }}" class="edit-rows">
+            <td></td>
+            <td class="edit-forms" colspan="6">
+              <input id="verification_number_{{ p.id }}" type="text" />
+              <button data-payment-id="{{ p.id }}" class="btn btn-secondary btn-sm edit-buttons">จัดเก็บ</button>
+            </td>
           </tr>
         {% empty %}
           <tr>
@@ -47,6 +58,46 @@
           </tr>
         {% endfor %}
       </table>
+      {% csrf_token %}
     </div>
   </div>
+  <script>
+    var baseURL = '{% url 'backoffice:payment-update' 0 %}';
+    $(function(){
+      $('.edit-toggle-buttons').click(function(){
+        var paymentId = $(this).data('paymentId');
+        $('.edit-rows').hide();
+        $('#edit_row_' + paymentId).slideDown();
+      });
+      $('.edit-buttons').click(function(){
+        var paymentId = $(this).data('paymentId');
+        var verificationNumber = $('#verification_number_'+paymentId).val();
+        var url = baseURL.replace('/0/','/'+paymentId+'/');
+        jQuery.post(url, {
+          number: verificationNumber,
+          csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value
+        },
+                    function(data) {
+                      var msg = '';
+                      if(data.result == 'OK') {
+                        msg = '<i class="fa fa-check"></i>แก้ไขข้อมูลการชำระเงินของ ' + data.full_name + ' เรียบร้อย';
+                        $('#edit_row_'+paymentId+' .edit-forms input').hide();
+                        $('#edit_row_'+paymentId+' .edit-forms button').hide();
+                      } else {
+                        var resultMsg = data.msg;
+                        if(resultMsg == 'INCORRECT-VERIFICATION') {
+                          msg = 'รหัสยืนยันผิดพลาด';
+                        } else if(resultMsg == 'NOT-FOUND') {
+                          msg = 'ไม่พบผู้สมัครที่รหัสยืนยันนี้';
+                        } else if(resultMsg == 'FORM-ERROR') {
+                          msg = 'ฟอร์มมีปัญหา';
+                        } else {
+                          msg = 'พบปัญหาบางอย่าง';
+                        }
+                      }
+                      $('#edit_row_'+paymentId+' .edit-forms').append('<p>'+msg+'</p>'); 
+                    });
+      });
+    });
+  </script>
 {% endblock %}
