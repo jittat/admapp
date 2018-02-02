@@ -163,7 +163,7 @@ def update(request, payment_id):
         application_number = verification_number[:6]
         application = ProjectApplication.find_by_number(application_number)
         if application:
-            if application.get_verification_number() != verification_number:
+            if application.verification_number != verification_number:
                 result['msg'] = 'INCORRECT-VERIFICATION'
                 application = None
         else:
