@@ -1,17 +1,18 @@
+{% load i18n %}
 <div class="row">
   <div class="col-md-12">
     <div class="border-a0 p5 mb10 pl10 pr10 bg-light">
       {% if is_accepted_for_interview %}
-        <h3>ขอแสดงความยินดีด้วย</h3>
+        <h3>{% trans 'ขอแสดงความยินดีด้วย' %}</h3>
         <i class="text-success fa fa-check"></i>
-        คุณผ่านการคัดเลือกมีสิทธิ์เข้าสอบสัมภาษณ์ ในสาขาต่อไปนี้
+        {% trans 'คุณผ่านการคัดเลือกมีสิทธิ์เข้าสอบสัมภาษณ์ ในสาขาต่อไปนี้' %}
         <ul>
           {% for result in admission_results %}
             {% if result.is_accepted_for_interview %}
               <li>
-                {{ result.major.faculty }} - {{ result.major.title }}
+                {{ result.major.faculty.title_trans }} - {{ result.major.title_trans }}
                 {% if result.has_interview_rank %}
-                  (สัมภาษณ์ลำดับที่ {{ result.interview_rank }})
+                  ({% trans 'สัมภาษณ์ลำดับที่' %} {{ result.interview_rank }})
                 {% endif %}
               </li>
             {% endif %}
@@ -19,13 +20,15 @@
         </ul>
         {% if interview_descriptions %}
           <div>
-            <b>สถานที่และเวลา:</b> {{ interview_descriptions.descriptions|linebreaksbr }}
+            <b>{% trans 'สถานที่และเวลา:' %}</b> {{ interview_descriptions.descriptions|linebreaksbr }}
           </div>
         {% endif %}
         {{ project_round.accepted_for_interview_instructions|safe }}
       {% else %}
-        <h3>ขอแสดงความเสียใจด้วย</h3>
-        คุณไม่ผ่านการพิจารณาคัดเลือกให้เข้าสอบสัมภาษณ์ มหาวิทยาลัยเกษตรศาสตร์ขอขอบคุณผู้สมัครที่สนใจเข้าศึกษาต่อที่มหาวิทยาลัยเกษตรศาสตร์ นอกจากโครงการนี้แล้วยังมีโครงการรับสมัครในรอบการคัดเลือกอื่น ๆ อีก สามารถติดตามข้อมูลได้จากเว็บไซต์ admission.ku.ac.th
+        <h3>{% trans 'ขอแสดงความเสียใจด้วย' %}</h3>
+        {% blocktrans %}
+          คุณไม่ผ่านการพิจารณาคัดเลือกให้เข้าสอบสัมภาษณ์ มหาวิทยาลัยเกษตรศาสตร์ขอขอบคุณผู้สมัครที่สนใจเข้าศึกษาต่อที่มหาวิทยาลัยเกษตรศาสตร์ นอกจากโครงการนี้แล้วยังมีโครงการรับสมัครในรอบการคัดเลือกอื่น ๆ อีก สามารถติดตามข้อมูลได้จากเว็บไซต์ admission.ku.ac.th
+        {% endblocktrans %}
       {% endif %}
     </div>
   </div>

@@ -37,4 +37,5 @@ urlpatterns = [
     url(r'^gensport/print/$', print_views.gen_sport_print, name='gensport-print'),
     url(r'^kus/print/$', print_views.kus_print, name='kus-print'),
     url(r'^culture/print/$', print_views.culture_print, name='culture-print'),
+    url(r'^inter/print/$', print_views.inter_print, name='inter-print'),
 ]
