@@ -603,7 +603,7 @@ msgstr "Congratulations"
 
 #: appl/templates/appl/include/project_accepted_for_interview_result.html:8
 msgid "คุณผ่านการคัดเลือกมีสิทธิ์เข้าสอบสัมภาษณ์ ในสาขาต่อไปนี้"
-msgstr "You have be accepted for an interview for the following major(s)"
+msgstr "You have been accepted for an interview for the following major(s)"
 
 #: appl/templates/appl/include/project_accepted_for_interview_result.html:15
 msgid "สัมภาษณ์ลำดับที่"
