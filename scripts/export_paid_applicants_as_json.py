@@ -56,7 +56,12 @@ def extract_education(applicant):
                                     '$province': 'school_province'})
     data['study_plan'] = EDUPLAN_MAP[data['study_plan']]
     return data
-    
+
+def extract_major_selection(applicant, application):
+    major_selection = application.get_major_selection()
+    numbers = major_selection.get_major_numbers()
+    return numbers
+
 def extract_applicant(applicant):
     return extract_with(applicant, {'id': 'id',
                                     'national_id': 'national_id',
@@ -66,11 +71,12 @@ def extract_applicant(applicant):
                                     'last_name': 'lastname'})
 
 
-def extract_applicant_info(applicant, admission_project):
+def extract_applicant_info(applicant, admission_project, application):
     supplements = load_supplement_configs_with_instance(applicant, admission_project)
     
     return { 'applicant': extract_applicant(applicant),
              'edu': extract_education(applicant),
+             'major_selection': extract_major_selection(applicant, application),
              'supplements': dict([(s.name, json.loads(s.supplement_instance.json_data))
                                   for s in supplements]) }
 
@@ -81,15 +87,15 @@ def main():
     admission_project = AdmissionProject.objects.get(pk=project_id)
     admission_round = AdmissionRound.objects.get(pk=round_id)
 
-    applicants = ProjectApplication.objects.filter(admission_project=admission_project,
-                                                   admission_round=admission_round,
-                                                   is_canceled=False).order_by('applicant_id').all()
+    applications = ProjectApplication.objects.filter(admission_project=admission_project,
+                                                     admission_round=admission_round,
+                                                     is_canceled=False).order_by('applicant_id').all()
 
     amount_paid = compute_amount_paid(admission_round)
 
     data = []
     
-    for app in applicants:
+    for app in applications:
         national_id = app.applicant.national_id
         majors = app.get_major_selection()
         if not majors:
@@ -102,7 +108,7 @@ def main():
         if amount_paid[national_id] < admission_fee:
             continue
 
-        data.append(extract_applicant_info(app.applicant, admission_project))
+        data.append(extract_applicant_info(app.applicant, admission_project, app))
 
     print(json.dumps(data, indent=1))
 
