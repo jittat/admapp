@@ -101,7 +101,7 @@ SPORT_MAJOR_NUMBER_MAP = {
 @appl_login_required
 def sport_print(request):
     applicant = request.applicant
-    admission_round = AdmissionRound.get_available()
+    admission_round = AdmissionRound.objects.get(pk=1)
     
     personal_profile = applicant.get_personal_profile()
     educational_profile = applicant.get_educational_profile()
@@ -137,7 +137,7 @@ def sport_print(request):
 @appl_login_required
 def ap_print(request):
     applicant = request.applicant
-    admission_round = AdmissionRound.get_available()
+    admission_round = AdmissionRound.objects.get(pk=1)
     
     personal_profile = applicant.get_personal_profile()
     educational_profile = applicant.get_educational_profile()
@@ -185,7 +185,7 @@ def ap_print(request):
 @appl_login_required
 def el_print(request):
     applicant = request.applicant
-    admission_round = AdmissionRound.get_available()
+    admission_round = AdmissionRound.objects.get(pk=1)
     
     personal_profile = applicant.get_personal_profile()
     educational_profile = applicant.get_educational_profile()
@@ -230,7 +230,7 @@ def el_print(request):
 @appl_login_required
 def gen_sport_print(request):
     applicant = request.applicant
-    admission_round = AdmissionRound.get_available()
+    admission_round = AdmissionRound.objects.get(pk=3)
     
     personal_profile = applicant.get_personal_profile()
     educational_profile = applicant.get_educational_profile()
@@ -268,7 +268,7 @@ def gen_sport_print(request):
 @appl_login_required
 def kus_print(request):
     applicant = request.applicant
-    admission_round = AdmissionRound.get_available()
+    admission_round = AdmissionRound.objects.get(pk=3)
     
     personal_profile = applicant.get_personal_profile()
     educational_profile = applicant.get_educational_profile()
@@ -290,7 +290,7 @@ def kus_print(request):
 @appl_login_required
 def culture_print(request):
     applicant = request.applicant
-    admission_round = AdmissionRound.get_available()
+    admission_round = AdmissionRound.objects.get(pk=3)
     
     personal_profile = applicant.get_personal_profile()
     educational_profile = applicant.get_educational_profile()
