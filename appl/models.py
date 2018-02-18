@@ -212,6 +212,8 @@ class AdmissionProjectRound(models.Model):
     accepted_for_interview_instructions = models.TextField(blank=True,
                                                            verbose_name='รายละเอียดแสดงกับผู้สมัครที่ผ่านการคัดเลือก')
 
+    accepted_result_frozen = models.BooleanField(default=False,
+                                                  verbose_name='ปิดการแก้ไขผลการรับเข้าศึกษากับผู้สมัคร')
     accepted_result_shown = models.BooleanField(default=False,
                                                 verbose_name='แสดงผลการรับเข้าศึกษากับผู้สมัคร')
 

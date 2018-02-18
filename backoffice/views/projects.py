@@ -636,6 +636,9 @@ def set_acceptance(request, project_id, round_id, national_id, major_number, dec
     if request.project_round.accepted_result_shown:
         return HttpResponseForbidden()
     
+    if request.project_round.accepted_result_frozen:
+        return HttpResponseForbidden()
+
     admission_result = AdmissionResult.get_for_application_and_major(application, major)
     if not admission_result:
         return HttpResponseForbidden()
