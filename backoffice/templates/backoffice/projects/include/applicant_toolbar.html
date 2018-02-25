@@ -6,31 +6,46 @@
   &nbsp;
   ผลการพิจารณา:
   {% if has_paid %}
-    {% if frozen_results and frozen_results.interview %}
-      {% if is_accepted_for_interview %}
-        <span class="badge badge-success"><i class="fa fa-check"></i></span> เรียกสัมภาษณ์
-      {% else %}
-        <span class="badge badge-danger"><i class="fa fa-close"></i></span> ไม่เรียกสัมภาษณ์
+    {% if frozen_results %}
+      <!-- previous results -->
+      {% if frozen_results.criteria_check_required and frozen_results.criteria %}
+        {% include 'backoffice/projects/include/toolbar/criteria_result.html' %}
+      {% endif %}
+      {% if frozen_results.interview %}
+        {% include 'backoffice/projects/include/toolbar/interview_result.html' %}
       {% endif %}
       {% if frozen_results.acceptance %}
-        {% if is_accepted %}
-          <span class="badge badge-success"><i class="fa fa-check"></i></span> รับเข้าศึกษา
-        {% else %}
-          <span class="badge badge-danger"><i class="fa fa-close"></i></span> ไม่รับเข้าศึกษา
+        {% include 'backoffice/projects/include/toolbar/acceptance_result.html' %}
+      {% endif %}
+
+      <!-- buttons -->
+
+      {% if frozen_results.criteria_check_required and not frozen_results.criteria %}
+        เกณฑ์ขั้นต่ำ
+        <div id="criteria_button_group_id" class="d-inline-block">
+          {% include 'backoffice/projects/include/criteria_buttons.html' %}
+        </div>
+      {% endif %}
+      {% if not frozen_results.criteria_check_required or frozen_results.criteria %}
+        {% if is_criteria_passed %}
+          {% if not frozen_results.interview %}
+            {% if frozen_results.criteria_check_required %}|{% endif %}
+            การสัมภาษณ์
+            <div id="interview_button_group_id" class="d-inline-block">
+              {% include 'backoffice/projects/include/interview_buttons.html' %}
+            </div>
+          {% endif %}
         {% endif %}
-      {% else %}
-        {% if is_accepted_for_interview %}
+      {% endif %}
+      {% if frozen_results.interview and is_accepted_for_interview %}
+        {% if not frozen_results.acceptance %}
           | การรับเข้าศึกษา
           <div id="acceptance_button_group_id" class="d-inline-block">
             {% include 'backoffice/projects/include/acceptance_buttons.html' %}
           </div>
         {% endif %}
       {% endif %}
-    {% else %}
-      การสัมภาษณ์
-      <div id="interview_button_group_id" class="d-inline-block">
-        {% include 'backoffice/projects/include/interview_buttons.html' %}
-      </div>
+
     {% endif %}
   {% else %}
     ไม่เรียกสัมภาษณ์
@@ -39,6 +54,7 @@
 </div>
 <script>
   var baseToggleUrl = '{% url 'backoffice:projects-check-mark-toggle' project.id admission_round.id applicant.national_id major.number 0 %}';
+  var baseSetCriteriaUrl = '{% url 'backoffice:projects-set-criteria-result' project.id admission_round.id applicant.national_id major.number 'x' %}';
   var baseSetInterviewUrl = '{% url 'backoffice:projects-set-call-for-interview' project.id admission_round.id applicant.national_id major.number 'x' %}';
   var baseSetAcceptanceUrl = '{% url 'backoffice:projects-set-acceptance' project.id admission_round.id applicant.national_id major.number 'x' %}';
 
@@ -50,7 +66,9 @@
                 function(data) {
                   if(data.result == 'OK') {
                     $(buttonGroupSelector).html(data.html);
-                    $(countSelector).text(data.count);
+                    if(countSelector != undefined) {
+                      $(countSelector).text(data.count);
+                    }
                   }
                 });
     return false;
@@ -70,6 +88,11 @@
       return false;
     });
     
+    $('#criteria_button_group_id').on('click','.criteria-selection-buttons', function() {
+      saveResult(this, baseSetCriteriaUrl, '#criteria_button_group_id');
+      return false;
+    });
+
     $('#interview_button_group_id').on('click','.interview-selection-buttons', function() {
       saveResult(this, baseSetInterviewUrl, '#interview_button_group_id', '#accepted_for_interview_count_id');
       return false;

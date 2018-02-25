@@ -46,10 +46,12 @@ urlpatterns = [
         projects.delete_comment,
         name='projects-delete-comment'),
 
+    url(r'^projects/applicants/(\d+)/(\d+)/(\d+)/(\d+)/criteria/(.+)/$',
+        projects.set_criteria_result,
+        name='projects-set-criteria-result'),
     url(r'^projects/applicants/(\d+)/(\d+)/(\d+)/(\d+)/interview/(.+)/$',
         projects.set_call_for_interview,
         name='projects-set-call-for-interview'),
-
     url(r'^projects/applicants/(\d+)/(\d+)/(\d+)/(\d+)/acceptance/(.+)/$',
         projects.set_acceptance,
         name='projects-set-acceptance'),

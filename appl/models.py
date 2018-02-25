@@ -204,6 +204,12 @@ class AdmissionProjectRound(models.Model):
     applicant_info_viewable = models.BooleanField(default=False,
                                                   verbose_name='สามารถดูรายละเอียดผู้สมัครได้')
 
+    criteria_check_required = models.BooleanField(default=False,
+                                                  verbose_name='มีการตรวจเกณฑ์พื้นฐานก่อน')
+
+    criteria_check_frozen = models.BooleanField(default=False,
+                                                  verbose_name='ปิดการแก้ไขผลการตรวจเกณฑ์พื้นฐาน')
+
     accepted_for_interview_result_frozen = models.BooleanField(default=False,
                                                                verbose_name='ปิดการแก้ไขผลการเรียกสัมภาษณ์')
     accepted_for_interview_result_shown = models.BooleanField(default=False,
@@ -705,6 +711,9 @@ class AdmissionResult(models.Model):
     major = models.ForeignKey(Major)
     major_rank = models.IntegerField(default=1)
 
+    is_criteria_passed = models.NullBooleanField(default=None)
+    updated_criteria_passed_at = models.DateTimeField(null=True)
+    
     is_accepted_for_interview = models.NullBooleanField(default=None)
     updated_accepted_for_interview_at = models.DateTimeField(null=True)
     interview_rank = models.IntegerField(default=0)
@@ -737,7 +746,7 @@ class AdmissionResult(models.Model):
             return read_clearing_code(self.clearing_house_code)
         else:
             return ''
-    
+
     @staticmethod
     def find_by_admission_round_and_major(admission_round, major):
         return AdmissionResult.objects.filter(admission_round=admission_round,

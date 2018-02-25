@@ -422,20 +422,29 @@ def show_applicant(request, project_id, round_id, major_number, rank):
 
     admission_result = AdmissionResult.get_for_application_and_major(application, major)
     if admission_result:
+        is_criteria_passed = admission_result.is_criteria_passed
         is_accepted_for_interview = admission_result.is_accepted_for_interview
         is_accepted = admission_result.is_accepted
     else:
+        is_criteria_passed = None
         is_accepted_for_interview = None
         is_accepted = False
 
+    if not project_round.criteria_check_required:
+        is_criteria_passed = True
+        
     major_accepted_for_interview_count = AdmissionResult.accepted_for_interview_count(admission_round,
                                                                                       major)
 
     major_accepted_count = AdmissionResult.accepted_count(admission_round,
                                                           major)
 
-    frozen_results = { 'interview': project_round.accepted_for_interview_result_frozen,
-                       'acceptance': project_round.accepted_result_shown }
+    frozen_results = {
+        'criteria_check_required': project_round.criteria_check_required,
+        'criteria': (not project_round.criteria_check_required) or project_round.criteria_check_frozen,
+        'interview': project_round.accepted_for_interview_result_frozen,
+        'acceptance': project_round.accepted_result_frozen or project_round.accepted_result_shown
+    }
 
     return render(request,
                   'backoffice/projects/show_applicant.html',
@@ -457,6 +466,7 @@ def show_applicant(request, project_id, round_id, major_number, rank):
                     'education': education,
                     'personal': personal,
 
+                    'is_criteria_passed': is_criteria_passed,
                     'is_accepted_for_interview': is_accepted_for_interview,
                     'is_accepted': is_accepted,
 
@@ -670,6 +680,59 @@ def set_acceptance(request, project_id, round_id, national_id, major_number, dec
     return HttpResponse(json.dumps({ 'result': 'OK',
                                      'html': html,
                                      'count': major_accepted_count }),
+                        content_type='application/json')
+
+
+@user_login_required
+def set_criteria_result(request, project_id, round_id, national_id, major_number, decision):
+    can_view, error_response = load_applicant_application_and_check_permission(request,
+                                                                               project_id,
+                                                                               round_id,
+                                                                               national_id,
+                                                                               major_number)
+    if not can_view:
+        return error_response
+
+    user = request.user
+    applicant = request.applicant
+    admission_round = request.admission_round
+    major = request.major
+    application = request.application
+
+    if request.project_round.criteria_check_frozen:
+        return HttpResponseForbidden()
+
+    admission_result = AdmissionResult.get_for_application_and_major(application, major)
+    if not admission_result:
+        admission_result = AdmissionResult(applicant=applicant,
+                                           application=application,
+                                           admission_project=request.project,
+                                           admission_round=admission_round,
+                                           major=major)
+
+    if decision == 'accepted':
+        admission_result.is_criteria_passed = True
+    else:
+        admission_result.is_criteria_passed = False
+
+    admission_result.updated_criteria_passed_at = datetime.now()
+    admission_result.save()
+
+    LogItem.create('Criteria decision (major: {0} {1}) by {2}'.format(major_number,
+                                                                      decision,
+                                                                      user.username),
+                   applicant,
+                   request)
+
+    is_criteria_passed = admission_result.is_criteria_passed
+
+    from django.template import loader
+    template = loader.get_template('backoffice/projects/include/criteria_buttons.html')
+
+    html = template.render({ 'is_criteria_passed': is_criteria_passed }, request)
+
+    return HttpResponse(json.dumps({ 'result': 'OK',
+                                     'html': html }),
                         content_type='application/json')
 
 
