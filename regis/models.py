@@ -83,6 +83,7 @@ class Applicant(models.Model):
                                          admission_project=admission_project,
                                          admission_round=admission_round)
         application.applied_at = datetime.now()
+        application.save()
         application.verification_number = application.get_verification_number()
         application.save()
         

@@ -278,8 +278,8 @@ def index(request, admission_round_id='0'):
                                                                 admission_round)
 
     # TODO: fix this hack
-    if len(other_application_rounds) != 0:
-        return redirect(reverse('appl:index-with-round', args=[other_application_rounds[0][0].id]))
+    #if len(other_application_rounds) != 0:
+    #    return redirect(reverse('appl:index-with-round', args=[other_application_rounds[0][0].id]))
     
     notice = request.session.pop('notice', None)
 
