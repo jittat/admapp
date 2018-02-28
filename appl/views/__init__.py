@@ -269,6 +269,10 @@ def index(request, admission_round_id='0'):
                                           admission_round,
                                           applicant)
 
+    admission_projects = [a[2] for a in
+                          sorted([({True: 1, False: 0}[p.is_deadline_passed()],
+                                   p.id, p) for p in admission_projects])]
+    
     admission_fee = 0
     payments = Payment.find_for_applicant_in_round(applicant, admission_round)
     paid_amount = sum([p.amount for p in payments])
