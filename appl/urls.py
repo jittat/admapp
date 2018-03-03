@@ -20,6 +20,8 @@ urlpatterns = [
     url(r'^apply/(\d+)/(\d+)/$', views.apply_project, name='apply-project'),
     url(r'^cancel/(\d+)/(\d+)/$', views.cancel_project, name='cancel-project'),
 
+    url(r'^cancelsp/(\d+)/(\d+)/$', views.cancel_project_special, name='cancel-project-special'),
+
     url(r'^select/(\d+)/$', major_selection.select, name='major-selection'),
 
     url(r'^payment/(\d+)/$', views.payment, name='payment'),

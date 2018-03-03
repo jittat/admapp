@@ -1,0 +1,33 @@
+{% if admission_round.number == 2%}
+  {% if active_application and active_application.admission_project_id != 29 and active_application.admission_project_id != 30 %}
+    <div class="alert alert-info">
+      การสมัครรอบที่ 2 มีการเพิ่มการรับสมัครโครงการพสวท. คณะวิทยาศาสตร์
+      (<a href="http://admission.ku.ac.th/admmedia/announcements/2018/02/23/KU-TCAS-2-DPST.pdf">อ่านรายละเอียด</a>)
+      และโครงการโอลิมปิกวิชาการ คณะวิทยาศาสตร์
+      (<a href="http://admission.ku.ac.th/admmedia/announcements/2018/02/23/KU-TCAS-2-Academic_Olympics.pdf">อ่านรายละเอียด</a>)
+      ถ้าผู้สมัครโครงการอื่นในรอบนี้ต้องการสมัครโครงการดังกล่าว จะต้องยกเลิกการสมัครโครงการอื่นก่อน (ไม่ต้องชำระเงินใหม่)
+      ถ้าผู้สมัครต้องการยกเลิก กรุณากดที่นี่ <a id="special_cancel_link_id" class="btn btn-sm btn-warning" href=#">ยกเลิกการสมัคร</a>
+
+      <div class="p10 border-a0 bg-warn special-canceling-confirmations" style="display:none;">
+        คุณแน่ใจที่จะยกเลิกการสมัครโครงการนี้ เมื่อคุณตัดสินใจแล้วแล้วจะกลับมาสมัครใหม่ไม่ได้อีก
+        <form class="d-inline" method="post" action="{% url 'appl:cancel-project-special' active_application.admission_project.id active_application.admission_round.id %}">
+          {% csrf_token %}
+          <input type="submit" id="special_cancel_confirm_link_id" name="ok" class="btn btn-sm btn-danger" value="แน่ใจและยกเลิกการสมัคร" />
+          <input type="submit" name="cancel" class="btn btn-sm btn-secondary" value="ไม่ยกเลิก" />
+        </form>
+      </div>
+    </div>
+  {% endif %}
+{% endif %}
+<script>
+  $(function(){
+    $("#special_cancel_link_id").click(function() {
+      $(".special-canceling-confirmations").slideDown();
+      $("#special_cancel_link_id").hide();
+      return false;
+    });
+    $("#special_cancel_confirm_link_id").click(function() {
+      return confirm("คุณแน่ใจที่จะยกเลิกเพื่อไปสมัครโครงการพสวท.หรือโครงการโอลิมปิก โดยคณะวิทยาศาสตร์ เมื่อยกเลิกแล้วจะกลับมาแก้ไขไม่ได้อีก")
+    });
+  });
+</script>

@@ -56,10 +56,14 @@
       </div>
     </div>
   {% endif %}
-  
-  {% if other_application_rounds %}
-    {% include 'appl/include/other_application_rounds.html' %}
-  {% endif %}
+
+  <div class="col-md-6">
+    {% if other_application_rounds %}
+      {% include 'appl/include/other_application_rounds.html' %}
+    {% endif %}
+
+    {% include 'appl/include/special_cancel_hook.html'  %}
+  </div>
 </div>
 
 {% if active_application %}

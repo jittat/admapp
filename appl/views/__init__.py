@@ -373,6 +373,38 @@ def cancel_project(request, project_id, admission_round_id):
     return redirect(reverse('appl:index'))
 
 
+@appl_login_required
+def cancel_project_special(request, project_id, admission_round_id):
+    if request.method != 'POST':
+        return HttpResponseForbidden()
+
+    if 'ok' not in request.POST:
+        return redirect(reverse('appl:index'))
+    
+    applicant = request.applicant
+    project = get_object_or_404(AdmissionProject, pk=project_id)
+    admission_round = get_object_or_404(AdmissionRound, pk=admission_round_id)
+
+    project_round = project.get_project_round_for(admission_round)
+    if (not project_round) or (admission_round.number != 2):
+        return redirect(reverse('appl:index'))
+    
+    active_application = applicant.get_active_application(admission_round)
+    
+    if ((not active_application) or
+        (active_application.admission_project.id != project.id) or
+        (active_application.admission_round.id != admission_round.id)):
+        return redirect(reverse('appl:index'))
+
+    active_application.is_canceled = True
+    active_application.cancelled_at = datetime.now()
+    active_application.save()
+    
+    LogItem.create('Special canceled application to project %d' % (project.id,), applicant, request)
+
+    return redirect(reverse('appl:index'))
+
+
 def random_barcode_stub():
     from random import randint
     return str(1000000 + randint(1,8000000))
