@@ -95,6 +95,7 @@ def main():
                                study_type_code)
 
             full_major_title = ' '.join(['มหาวิทยาลัยเกษตรศาสตร์',
+                                         'วิทยาเขตบางเขน',
                                          'โครงการ' + admission_project.title,
                                          faculty.title,
                                          major_data['name'].strip(),

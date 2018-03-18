@@ -102,10 +102,10 @@ def send_clearing_house_email(applicant, result, clearing_code, username):
 เรียนผู้สมัคร {full_name}
 
 ผู้สมัครผ่านการคัดเลือกมีสิทธิ์เข้าศึกษาต่อในสาขาวิชา: {major_title} ({major_faculty})
-ในปีการศึกษา 2561 ผ่านทางการคัดเลือกในรอบ 1/1
+ในปีการศึกษา 2561 ผ่านทางการคัดเลือกในรอบ 1/2
 
 ผู้สมัครจะต้องยืนยันสิทธิ์ผ่านระบบยืนยันสิทธิ์ของทปอ. http://app.cupt.net/tcas/
-ระหว่างวันที่ 15 - 19 ธ.ค. 2560
+ระหว่างวันที่ 19 - 22 มี.ค. 2561
 โดยใช้เลขประจำตัวประชาชนหรือหมายเลขพาสปอร์ต (กรณีไม่มีเลขประจำตัวประชาชน)
 และรหัสผ่านดังนี้
 
@@ -124,6 +124,37 @@ def send_clearing_house_email(applicant, result, clearing_code, username):
            username=username,
            clearing_code=clearing_code,
            clearing_code_read=read_clearing_code(clearing_code))
+
+    send_mail_to_applicant(applicant,
+                           subject,
+                           body)
+
+    
+def send_major_confirmation_email(applicant, application, majors):
+    if len(majors)==1:
+        major_str = '{major} ({fac})'.format(major=majors[0].title, fac=majors[0].faculty)
+    else:
+        items = []
+        count = 1
+        for m in majors:
+            items.append('{count}. {major} ({fac})'.format(count=count, major=m.title, fac=m.faculty))
+            count += 1
+        major_str = "\n".join(items)
+    
+    subject = 'แจ้งยืนยันสาขาที่สมัคร ' + ADMISSION_SHORT_TITLE
+    body = """
+เรียนผู้สมัคร {full_name}
+
+ผู้สมัครได้สมัครเข้าศึกษาต่อมหาวิทยาลัยเกษตรศาสตร์ ผ่านทางโครงการ {project}
+โดยเลือกสาขาวิชาดังนี้
+{major_str}
+
+กรุณาตรวจสอบสาขาที่สมัครดังกล่าว ถ้ามีปัญหากรุณาติดต่อฝ่ายรับเข้า ภายในวันที่ 23 มี.ค. 2561
+
+-ทีมงานระบบรับสมัคร
+""".format(full_name=applicant.get_full_name(),
+           project=str(application.admission_project),
+           major_str=major_str)
 
     send_mail_to_applicant(applicant,
                            subject,
