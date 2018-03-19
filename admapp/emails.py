@@ -149,7 +149,10 @@ def send_major_confirmation_email(applicant, application, majors):
 โดยเลือกสาขาวิชาดังนี้
 {major_str}
 
-กรุณาตรวจสอบสาขาที่สมัครดังกล่าว ถ้ามีปัญหากรุณาติดต่อฝ่ายรับเข้า ภายในวันที่ 23 มี.ค. 2561
+กรุณาตรวจสอบสาขาที่สมัครดังกล่าว ถ้ามีปัญหากรุณาติดต่อฝ่ายรับเข้าศึกษา สำนักทะเบียนและประมวลผล 
+ภายในวันที่ 30 มี.ค. 2561 ทางอีเมล admission@ku.ac.th 
+หรือทาง Facebook https://www.facebook.com/kuadmission
+หรือทาง โทร. 02 118 0100 ต่อ 8046-8050
 
 -ทีมงานระบบรับสมัคร
 """.format(full_name=applicant.get_full_name(),
