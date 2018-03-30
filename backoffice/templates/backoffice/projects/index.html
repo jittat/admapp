@@ -27,6 +27,11 @@
               จำนวนรับ
             </td>
             {% if applicant_info_viewable %}
+              {% if has_criteria_check %}
+                <td class="text-right">
+                  ผ่านเกณฑ์
+                </td>
+              {% endif %}
               <td class="text-right">
                 เรียกสัมภาษณ์
               </td>
@@ -67,6 +72,11 @@
               {{ major.slots }}{% if major.slots_comments %}*{% endif %}
             </td>
             {% if applicant_info_viewable %}
+              {% if has_criteria_check %}
+                <td class="text-right">
+                  {{ major.criteria_passed_count }}
+                </td>
+              {% endif %}
               <td class="text-right">
                 {{ major.accepted_for_interview_count }}
               </td>

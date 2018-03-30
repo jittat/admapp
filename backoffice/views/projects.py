@@ -173,6 +173,7 @@ def load_accepted_applicant_counts(admission_round, admission_project, majors):
     mmap = dict([(majors[i].id,i) for i in range(len(majors))])
 
     for m in majors:
+        m.criteria_passed_count = 0
         m.accepted_for_interview_count = 0
         m.accepted_count = 0
         m.confirmed_count = 0
@@ -180,6 +181,11 @@ def load_accepted_applicant_counts(admission_round, admission_project, majors):
     results = AdmissionResult.objects.filter(admission_round=admission_round,
                                              admission_project=admission_project)
     for r in results:
+        if r.is_criteria_passed:
+            if r.major_id in mmap:
+                midx = mmap[r.major_id]
+                majors[midx].criteria_passed_count += 1
+
         if r.is_accepted_for_interview:
             if r.major_id in mmap:
                 midx = mmap[r.major_id]
@@ -241,6 +247,7 @@ def index(request, project_id, round_id):
                     'ranks': ranks,
 
                     'applicant_info_viewable': applicant_info_viewable,
+                    'has_criteria_check': project_round.criteria_check_required,
 
                     'user_major_number': user_major_number,
                     'any_major': user.profile.ANY_MAJOR,
@@ -347,6 +354,8 @@ def list_applicants(request, project_id, round_id):
                     'info_col_count': info_col_count,
                     'info_template': info_template,
                     'info_header_template': info_header_template,
+
+                    'has_criteria_check': project_round.criteria_check_required,
 
                     'sorted_by_majors': sorted_by_majors,
                     'applicant_info_viewable': applicant_info_viewable,

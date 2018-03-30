@@ -1,5 +1,15 @@
 {% if applicant.admission_results %}
   {% if project.max_num_selections == 1 %}
+    {% if has_criteria_check %}
+      <td>
+        {% if applicant.admission_results.0.is_criteria_passed %}
+          <span class="badge badge-success">ผ่าน</span>
+        {% endif %}
+        {% if applicant.admission_results.0.is_criteria_passed == False%}
+          <span class="badge badge-danger">ไม่ผ่าน</span>
+        {% endif %}
+      </td>
+    {% endif %}
     {% if applicant.admission_results.0.is_accepted_for_interview %}
       <td>
         <span class="badge badge-success">เรียก</span>
