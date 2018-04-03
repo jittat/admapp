@@ -375,6 +375,8 @@ def cancel_project(request, project_id, admission_round_id):
 
 @appl_login_required
 def cancel_project_special(request, project_id, admission_round_id):
+    return redirect(reverse('appl:index'))
+
     if request.method != 'POST':
         return HttpResponseForbidden()
 
