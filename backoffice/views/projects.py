@@ -846,3 +846,20 @@ def delete_comment(request, project_id, round_id, national_id, major_number, com
                                      'html': html }),
                         content_type='application/json')
 
+
+def show_scores(request, project_id, round_id, major_number):
+    user = request.user
+    project = get_object_or_404(AdmissionProject, pk=project_id)
+    admission_round = get_object_or_404(AdmissionRound, pk=round_id)
+    project_round = project.get_project_round_for(admission_round)
+    major = Major.get_by_project_number(project, major_number)
+
+    if not can_user_view_applicants_in_major(user, project, major):
+        return redirect(reverse('backoffice:index'))
+
+    return render(request,
+                  'backoffice/projects/show_applicant_scores.html',
+                  { 'project': project,
+                    'admission_round': admission_round,
+                    'major': major,
+                  })

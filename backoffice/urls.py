@@ -28,7 +28,10 @@ urlpatterns = [
     url(r'^projects/(\d+)/(\d+)/$', projects.index, name='projects-index'),
     url(r'^projects/(\d+)/(\d+)/list/$', projects.list_applicants, name='projects-list'),
 
-    url(r'^projects/applicants/(\d+)/(\d+)/(\d+)/(\d+)/$',
+    url(r'^projects/scores/(?P<project_id>\d+)/(?P<round_id>\d+)/(?P<major_number>\d+)/$',
+        projects.show_scores, name='projects-show-scores'),
+
+    url(r'^projects/applicants/(?P<project_id>\d+)/(?P<round_id>\d+)/(?P<major_number>\d+)/(?P<rank>\d+)/$',
         projects.show_applicant, name='projects-show-applicant'),
 
     url(r'^projects/applicants/(\d+)/(\d+)/(\d+)/doc/(\d+)/(\d+)/(\d+)/$',
