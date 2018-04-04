@@ -176,6 +176,11 @@ class AdmissionProject(models.Model):
         
         return table_header_as_list_template(self.column_descriptions)
 
+    def get_major_description_table_header(self):
+        from .header_utils import table_header
+        
+        return table_header(self.column_descriptions, tr_class="table-active")
+
     def get_majors_as_dict(self):
         return dict([(m.number,m) for m in self.major_set.all()])
 

@@ -61,7 +61,7 @@ def traverse(node, depth, rows=None):
     return leaf_count
     
 
-def table_header(header, prefix_columns=None, postfix_columns=None):
+def table_header(header, prefix_columns=None, postfix_columns=None, tr_class=None):
     nodes = parse_header(header)
     rows = {}
 
@@ -70,7 +70,10 @@ def table_header(header, prefix_columns=None, postfix_columns=None):
     output = []
     row_count = len(rows)
     for r in range(row_count):
-        output.append('<tr>')
+        if tr_class == None:
+            output.append('<tr>')
+        else:
+            output.append('<tr class="' + tr_class + '">')
         if (r == 0) and (prefix_columns):
             for c in prefix_columns:
                 output.append('<th rowspan="' + str(row_count) + '">' +

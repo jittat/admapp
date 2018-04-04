@@ -1,0 +1,12 @@
+<table class="table table-bordered table-sm table-responsive">
+  <thead>
+    {{ project.get_major_description_table_header|safe }}
+  </thead>
+  <tbody>
+    <tr>
+      {% for item in major.get_detail_items %}
+        <td>{{ item }}</td>
+      {% endfor %}
+    </tr>
+  </tbody>
+</table>

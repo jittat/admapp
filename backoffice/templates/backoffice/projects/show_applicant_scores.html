@@ -3,7 +3,19 @@
 {% block content %}
   <div class="row" style="margin-top: -10px;">
     <div class="col-md-12">
-      <b>คะแนนผู้สมัครโครงการ{{ project }} {{ admission_round}} | สาขา{{ major.title }}</b>
+      <b>คะแนนผู้สมัครโครงการ{{ project }} {{ admission_round}} | สาขา{{ major.title }}</b><br />
+      เกณฑ์การคัดเลือก: <a id="selection_criteria_toggle_id" class="btn btn-sm btn-outline-secondary" href="#">ดูเกณฑ์</a>
+      <div id="selection_criteria_table_id" style="display: none;">
+        {% include "backoffice/projects/include/selection_criteria_table.html" %}
+      </div>
     </div>
   </div>
+  <script>
+    $(function(){
+      $("#selection_criteria_toggle_id").click(function(){
+        $("#selection_criteria_table_id").slideToggle();
+        return false;
+      });
+    });
+  </script>
 {% endblock %}
