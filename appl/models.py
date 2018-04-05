@@ -858,3 +858,56 @@ class Eligibility(object):
 
         self.is_eligible = True
         self.is_hidden = False
+
+
+class ExamScore(models.Model):
+    applicant = models.ForeignKey(Applicant)
+    exam_type = models.CharField(max_length=20)
+    exam_round = models.CharField(max_length=20)
+
+    exam_list = models.TextField(blank=True)
+    score_list = models.TextField(blank=True)
+
+    NO_SCORE = -1
+    
+    def extract_scores(self):
+        self._exams = []
+        self._scores = []
+        self._exam_scores = {}
+
+        if self.exam_list:
+            eitems = self.exam_list.split(',')
+        else:
+            eitems = []
+
+        if self.score_list:
+            sitems = self.score_list.split(',')
+        else:
+            sitems = []
+
+        for i in range(len(eitems)):
+            self._exams.append(eitems[i])
+            if sitems[i] == '-':
+                sc = ExamScore.NO_SCORE
+            else:
+                sc = float(sitems[i])
+            self._scores.append(sc)
+            self._exam_scores[eitems[i]] = sc
+    
+    def get_exams(self):
+        if not hasattr(self,'_exams'):
+            self.extract_scores()
+
+        return self._exams
+
+    def get_scores(self):
+        if not hasattr(self,'_scores'):
+            self.extract_scores()
+
+        return self._scores
+
+    def get_exam_score(self, exam):
+        if not hasattr(self,'_exam_scores'):
+            self.extract_scores()
+
+        return self._exam_scores.get(exam, ExamScore.NO_SCORE)
