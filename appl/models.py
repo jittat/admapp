@@ -869,6 +869,12 @@ class ExamScore(models.Model):
     score_list = models.TextField(blank=True)
 
     NO_SCORE = -1
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['applicant','exam_type']),
+        ]
+        unique_together = (('applicant','exam_type','exam_round'),)
     
     def extract_scores(self):
         self._exams = []
