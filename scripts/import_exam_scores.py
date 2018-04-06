@@ -34,7 +34,8 @@ def main():
                 print('ERROR not found', nat_id)
                 continue
 
-            old_scores = applicant.examscore_set.filter(exam_type=exam_type).all()
+            old_scores = applicant.examscore_set.filter(exam_type=exam_type,
+                                                        exam_round=items[4]).all()
             for o in old_scores:
                 o.delete()
 

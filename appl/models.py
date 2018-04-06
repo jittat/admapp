@@ -875,7 +875,9 @@ class ExamScore(models.Model):
             models.Index(fields=['applicant','exam_type']),
         ]
         unique_together = (('applicant','exam_type','exam_round'),)
-    
+        ordering = ['exam_round']
+
+
     def extract_scores(self):
         self._exams = []
         self._scores = []
@@ -917,3 +919,54 @@ class ExamScore(models.Model):
             self.extract_scores()
 
         return self._exam_scores.get(exam, ExamScore.NO_SCORE)
+
+
+class ExamScoreProvider(object):
+    def __init__(self, applicant):
+        self.applicant = applicant
+        self.load_scores()
+
+    def process_pat7(self, arr):
+        scores = []
+        for i in range(self.get_gatpat_round_count()):
+            items = []
+            for j in range(1,7):
+                key = 'pat7_' + str(j)
+                if key in arr:
+                    if arr[key][i] != -1:
+                        items.append('7.' + str(j) + '=' + ('%.2f' % arr[key][i]))
+            if len(items) > 0:
+                scores.append(','.join(items))
+            else:
+                scores.append('-')
+        return scores
+                    
+
+    def load_scores(self):
+        self.scores = self.applicant.examscore_set.all()
+        for s in self.scores:
+            if not hasattr(self, s.exam_type):
+                setattr(self, s.exam_type, {})
+                setattr(self, s.exam_type + '_array', {})
+
+            for ex in s.get_exams():
+                if '.' in ex:
+                    ex = ex.replace('.','_')
+                d = getattr(self, s.exam_type)
+                d[ex] = s.get_exam_score(ex)
+                darr = getattr(self, s.exam_type + '_array')
+                if ex not in darr:
+                    darr[ex] = []
+                darr[ex].append(s.get_exam_score(ex))
+
+        self.gatpat_rounds = [s.exam_round
+                              for s in self.scores
+                              if s.exam_type == 'gatpat']
+
+        if hasattr(self,'gatpat_array'):
+            ar = getattr(self,'gatpat_array')
+            ar['pat7'] = self.process_pat7(ar)
+                
+        
+    def get_gatpat_round_count(self):
+        return len(self.gatpat_rounds)

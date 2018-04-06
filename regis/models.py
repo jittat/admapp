@@ -174,7 +174,15 @@ class Applicant(models.Model):
 
         return results
 
+    def get_all_exam_scores(self):
+        from appl.models import ExamScoreProvider
 
+        if not hasattr(self,'exam_score_provider'):
+            self.exam_score_provider = ExamScoreProvider(self)
+        
+        return self.exam_score_provider
+
+    
 class CuptConfirmation(models.Model):
     applicant = models.OneToOneField(Applicant,
                                      related_name='cupt_confirmation')
@@ -267,4 +275,5 @@ class LogItem(models.Model):
     
     def __str__(self):
         return '(%s) %s' % (self.created_at, self.message)
+
 

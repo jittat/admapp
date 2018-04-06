@@ -857,9 +857,13 @@ def show_scores(request, project_id, round_id, major_number):
     if not can_user_view_applicants_in_major(user, project, major):
         return redirect(reverse('backoffice:index'))
 
+    applicants = load_major_applicants(project, admission_round, major)
+    
     return render(request,
                   'backoffice/projects/show_applicant_scores.html',
                   { 'project': project,
                     'admission_round': admission_round,
                     'major': major,
+
+                    'applicants': applicants,
                   })
