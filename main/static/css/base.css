@@ -105,3 +105,18 @@ p.invalid-feedback {
     border-top: 1px solid #a0a0a0;
 }
 
+td.onet-odd {
+    background: #fffbd8;
+}
+
+td.onet-even {
+    background: #fcf5b8;
+}
+
+td.gatpat-odd {
+    background: #edfffc;
+}
+
+td.gatpat-even {
+    background: #bdfcf5;
+}

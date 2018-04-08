@@ -897,6 +897,8 @@ class ExamScore(models.Model):
             self._exams.append(eitems[i])
             if sitems[i] == '-':
                 sc = ExamScore.NO_SCORE
+            elif sitems[i] == '':
+                sc = ExamScore.NO_SCORE
             else:
                 sc = float(sitems[i])
             self._scores.append(sc)

@@ -1,10 +1,10 @@
 {% load score_extras %}
-<td>{{ applicant.get_all_exam_scores.gatpat_rounds|round_array }}</td>
-<td>{{ applicant.get_all_exam_scores.gatpat_array.gat|score_array }}</td>
-<td>{{ applicant.get_all_exam_scores.gatpat_array.pat1|score_array }}</td>
-<td>{{ applicant.get_all_exam_scores.gatpat_array.pat2|score_array }}</td>
-<td>{{ applicant.get_all_exam_scores.gatpat_array.pat3|score_array }}</td>
-<td>{{ applicant.get_all_exam_scores.gatpat_array.pat4|score_array }}</td>
-<td>{{ applicant.get_all_exam_scores.gatpat_array.pat5|score_array }}</td>
-<td>{{ applicant.get_all_exam_scores.gatpat_array.pat6|score_array }}</td>
-<td>{{ applicant.get_all_exam_scores.gatpat_array.pat7|round_array }}</td>
+<td class="gatpat-odd">{{ applicant.get_all_exam_scores.gatpat_rounds|round_array }}</td>
+<td class="gatpat-even">{{ applicant.get_all_exam_scores.gatpat_array.gat|score_array }}</td>
+<td class="gatpat-odd">{{ applicant.get_all_exam_scores.gatpat_array.pat1|score_array }}</td>
+<td class="gatpat-even">{{ applicant.get_all_exam_scores.gatpat_array.pat2|score_array }}</td>
+<td class="gatpat-odd">{{ applicant.get_all_exam_scores.gatpat_array.pat3|score_array }}</td>
+<td class="gatpat-even">{{ applicant.get_all_exam_scores.gatpat_array.pat4|score_array }}</td>
+<td class="gatpat-odd">{{ applicant.get_all_exam_scores.gatpat_array.pat5|score_array }}</td>
+<td class="gatpat-even">{{ applicant.get_all_exam_scores.gatpat_array.pat6|score_array }}</td>
+<td class="gatpat-odd">{{ applicant.get_all_exam_scores.gatpat_array.pat7|round_array }}</td>
