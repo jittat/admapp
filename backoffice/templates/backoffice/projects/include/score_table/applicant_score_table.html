@@ -4,6 +4,8 @@
       <th></th>
       <th>เลขประจำตัว</th>
       <th>ชื่อ-นามสกุล</th>
+      <th>แผนการเรียน</th>
+      <th>GPAX</th>
       {% include "backoffice/projects/include/score_table/onet_header.html" %}
       {% include "backoffice/projects/include/score_table/gatpat_header.html" %}
     </tr>
@@ -14,6 +16,8 @@
         <td>{{ forloop.counter }}</td>
         <td>{{ a.national_id }}</td>
         <td>{{ a.get_full_name }}</td>
+        <td>{{ a.educationalprofile.get_education_plan_display }}</td>
+        <td>{{ a.educationalprofile.gpa|floatformat:"2" }}</td>
         {% with a as applicant %}
           {% include "backoffice/projects/include/score_table/onet_cells.html" %}
           {% include "backoffice/projects/include/score_table/gatpat_cells.html" %}
