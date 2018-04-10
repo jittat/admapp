@@ -208,13 +208,14 @@ class AdmissionProjectRound(models.Model):
 
     applicant_info_viewable = models.BooleanField(default=False,
                                                   verbose_name='สามารถดูรายละเอียดผู้สมัครได้')
-
     criteria_check_required = models.BooleanField(default=False,
                                                   verbose_name='มีการตรวจเกณฑ์พื้นฐานก่อน')
-
     criteria_check_frozen = models.BooleanField(default=False,
                                                   verbose_name='ปิดการแก้ไขผลการตรวจเกณฑ์พื้นฐาน')
 
+    applicant_score_viewable = models.BooleanField(default=False,
+                                                   verbose_name='แสดงคะแนนสำหรับการคัดเลือก')
+    
     accepted_for_interview_result_frozen = models.BooleanField(default=False,
                                                                verbose_name='ปิดการแก้ไขผลการเรียกสัมภาษณ์')
     accepted_for_interview_result_shown = models.BooleanField(default=False,
@@ -730,6 +731,8 @@ class AdmissionResult(models.Model):
                                            blank=True)
     clearing_house_code_number = models.IntegerField(default=0)
 
+    calculated_score = models.FloatField(default=0)
+    
     has_confirmed = models.NullBooleanField(default=None)
     
     class Meta:

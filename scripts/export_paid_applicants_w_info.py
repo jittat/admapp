@@ -27,7 +27,7 @@ def compute_amount_paid(admission_round):
 def print_applicant_info(applicant, major_numbers):
     items = ['"%s"' % applicant.national_id, applicant.get_full_name()]
     education = applicant.educationalprofile
-    items.append('%.2f' % education.gpa)
+    items.append('%.3f' % education.gpa)
     items.append(str(education.education_plan))
     items.append(str(education.get_education_plan_display()))
     items.append(str(education.province.id))

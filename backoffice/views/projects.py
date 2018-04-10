@@ -847,6 +847,7 @@ def delete_comment(request, project_id, round_id, national_id, major_number, com
                         content_type='application/json')
 
 
+@user_login_required
 def show_scores(request, project_id, round_id, major_number):
     user = request.user
     project = get_object_or_404(AdmissionProject, pk=project_id)
