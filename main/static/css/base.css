@@ -120,3 +120,7 @@ td.gatpat-odd {
 td.gatpat-even {
     background: #bdfcf5;
 }
+
+table.applicant-score-tables td {
+    font-size: 80%;
+}

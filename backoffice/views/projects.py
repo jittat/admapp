@@ -279,11 +279,15 @@ def load_check_marks_and_results(applicants, admission_project, admission_round)
         a.check_marks = check_marks.get(a.id, None)
 
         a.is_accepted = False
+        a.is_criteria_passed = False
         if a.admission_results:
             for res in a.admission_results:
                 if res.is_accepted:
                     a.is_accepted = True
                     a.accepted_result = res
+                if res.is_criteria_passed:
+                    a.is_criteria_passed = True
+                a.admission_result = res
 
 
 @user_login_required
@@ -846,6 +850,14 @@ def delete_comment(request, project_id, round_id, national_id, major_number, com
                                      'html': html }),
                         content_type='application/json')
 
+def sort_applicants_by_calculated_scores(applicants):
+    passed_applicants = [x[2] for x in
+                         sorted([(-a.admission_result.calculated_score, a.national_id, a)
+                                 for a in applicants if a.is_criteria_passed])]
+    not_passed_applicants = [a for a in applicants if not a.is_criteria_passed]
+
+    return passed_applicants + not_passed_applicants
+
 
 @user_login_required
 def show_scores(request, project_id, round_id, major_number):
@@ -860,6 +872,11 @@ def show_scores(request, project_id, round_id, major_number):
 
     applicants = load_major_applicants(project, admission_round, major)
     
+    applicant_score_viewable = project_round.applicant_score_viewable
+    load_check_marks_and_results(applicants, project, admission_round)
+    if applicant_score_viewable:
+        applicants = sort_applicants_by_calculated_scores(applicants)
+
     return render(request,
                   'backoffice/projects/show_applicant_scores.html',
                   { 'project': project,
@@ -867,4 +884,6 @@ def show_scores(request, project_id, round_id, major_number):
                     'major': major,
 
                     'applicants': applicants,
+                    
+                    'applicant_score_viewable': applicant_score_viewable,
                   })

@@ -1,4 +1,4 @@
-<table class="table table-sm table-striped">
+<table class="table table-sm table-striped applicant-score-tables">
   <thead class="thead-inverse">
     <tr>
       <th></th>
@@ -8,6 +8,11 @@
       <th>GPAX</th>
       {% include "backoffice/projects/include/score_table/onet_header.html" %}
       {% include "backoffice/projects/include/score_table/gatpat_header.html" %}
+      {% if applicant_score_viewable %}
+        <th>คะแนน</th>
+      {% else %}
+        <th></th>
+      {% endif %}
     </tr>
   </thead>
   <tbody>
@@ -22,6 +27,15 @@
           {% include "backoffice/projects/include/score_table/onet_cells.html" %}
           {% include "backoffice/projects/include/score_table/gatpat_cells.html" %}
         {% endwith %}
+        {% if not a.is_criteria_passed %}
+          <td>ไม่ผ่านเกณฑ์</td>
+        {% else %}
+          {% if applicant_score_viewable %}
+            <td>{{ a.admission_result.calculated_score_display }}</td>
+          {% else %}
+            <td></td>
+          {% endif %}
+        {% endif %}
       </tr>
     {% endfor %}
   </tbody>

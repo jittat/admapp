@@ -755,6 +755,12 @@ class AdmissionResult(models.Model):
         else:
             return ''
 
+    def calculated_score_display(self):
+        if self.calculated_score < 0:
+            return 'ไม่ผ่านเกณฑ์'
+        else:
+            return '%.3f' % (self.calculated_score,)
+        
     @staticmethod
     def find_by_admission_round_and_major(admission_round, major):
         return AdmissionResult.objects.filter(admission_round=admission_round,
