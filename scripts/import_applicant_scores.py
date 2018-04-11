@@ -19,7 +19,8 @@ def main():
     all_applications = {}
 
     for application in (ProjectApplication.objects.filter(admission_project=admission_project,
-                                                          admission_round=admission_round)
+                                                          admission_round=admission_round,
+                                                          is_canceled=False)
                         .select_related('applicant')
                         .select_related('major_selection')
                         .all()):
@@ -36,11 +37,27 @@ def main():
             
             application = all_applications[nat_id]
             results = application.admissionresult_set.all()
-            if len(results) != 1:
+            if len(results) > 1:
                 print('ERROR too many results', nat_id)
                 continue
 
-            result = results[0]
+            if len(results) == 1:
+                result = results[0]
+            else:
+                majors = application.major_selection.get_majors()
+                if len(majors)!=1:
+                    print('ERROR too many majors', nat_id)
+                    continue
+                if majors[0].number != int(items[1]):
+                    print('ERROR wrong majors',nat_id, items[1])
+                    continue
+                result = AdmissionResult(applicant=application.applicant,
+                                         application=application,
+                                         admission_project=admission_project,
+                                         admission_round=admission_round,
+                                         major_rank=1,
+                                         major=majors[0])
+
             result.calculated_score = float(items[2])
             result.save()
             
