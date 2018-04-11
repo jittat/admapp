@@ -895,6 +895,7 @@ def show_scores(request, project_id, round_id, major_number):
                   'backoffice/projects/show_applicant_scores.html',
                   { 'project': project,
                     'admission_round': admission_round,
+                    'project_round': project_round,
                     'major': major,
 
                     'applicants': applicants,
