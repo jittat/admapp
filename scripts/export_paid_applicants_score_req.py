@@ -44,7 +44,7 @@ def write_sheet_row(sheet, row, items, cell_format=None):
 def write_applicant(sheet, row, applicant, counter):
     write_sheet_row(sheet, row,
                     [counter,
-                     int(applicant.national_id),
+                     applicant.national_id,
                      applicant.prefix,
                      applicant.first_name,
                      applicant.last_name])
