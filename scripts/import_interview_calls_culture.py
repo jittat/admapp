@@ -26,6 +26,8 @@ def main():
                         .all()):
         all_applications[application.applicant.national_id] = application
 
+    accepted_applications = set()
+    
     counter = 0
     with open(result_filename) as csvfile:
         reader = csv.reader(csvfile, delimiter=',')
@@ -66,6 +68,7 @@ def main():
                                              major_rank=i+1,
                                              major=majors[i])
 
+                m=majors[i]
                 if m.title == called_major and m.faculty.title == 'คณะ' + called_faculty:
                     result.is_accepted_for_interview = True
                 else:
@@ -76,8 +79,20 @@ def main():
                 counter += 1
             print(application.applicant)
 
+            accepted_applications.add(application.id)
+
     print('Imported',counter,'results')
-        
+
+    for app in all_applications.values():
+        if app.id not in accepted_applications:
+            old_results = AdmissionResult.objects.filter(application=app,
+                                                         admission_project=admission_project).all()
+            for res in old_results:
+                if res.is_accepted_for_interview:
+                    res.is_accepted_for_interview = False
+                    res.save()
+                    print('cleared', res.id, app.applicant.national_id)
+    
 
 if __name__ == '__main__':
     main()
