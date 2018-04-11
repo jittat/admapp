@@ -25,15 +25,22 @@
         <div id="criteria_button_group_id" class="d-inline-block">
           {% include 'backoffice/projects/include/criteria_buttons.html' %}
         </div>
+        {% if only_bulk_interview_acceptance %}
+          พิจารณาเรียกสัมภาษณ์สาขานี้ที่หน้า <a class="btn btn-sm btn-outline-primary" href="{% url 'backoffice:projects-show-scores' project.id admission_round.id major.number %}">รายงานคะแนน</a>
+        {% endif %}
       {% endif %}
       {% if not frozen_results.criteria_check_required or frozen_results.criteria %}
         {% if is_criteria_passed %}
           {% if not frozen_results.interview %}
             {% if frozen_results.criteria_check_required %}|{% endif %}
-            การสัมภาษณ์
-            <div id="interview_button_group_id" class="d-inline-block">
-              {% include 'backoffice/projects/include/interview_buttons.html' %}
-            </div>
+            {% if not only_bulk_interview_acceptance %}
+              การสัมภาษณ์
+              <div id="interview_button_group_id" class="d-inline-block">
+                {% include 'backoffice/projects/include/interview_buttons.html' %}
+              </div>
+            {% else %}
+              พิจารณาเรียกสัมภาษณ์สาขานี้ที่หน้า <a class="btn btn-sm btn-outline-primary" href="{% url 'backoffice:projects-show-scores' project.id admission_round.id major.number %}">รายงานคะแนน</a>
+            {% endif %}
           {% endif %}
         {% endif %}
       {% endif %}

@@ -215,7 +215,10 @@ class AdmissionProjectRound(models.Model):
 
     applicant_score_viewable = models.BooleanField(default=False,
                                                    verbose_name='แสดงคะแนนสำหรับการคัดเลือก')
-    
+
+    only_bulk_interview_acceptance = models.BooleanField(default=False,
+                                                         verbose_name='เรียกสัมภาษณ์ตามคะแนนเท่านั้น')
+
     accepted_for_interview_result_frozen = models.BooleanField(default=False,
                                                                verbose_name='ปิดการแก้ไขผลการเรียกสัมภาษณ์')
     accepted_for_interview_result_shown = models.BooleanField(default=False,

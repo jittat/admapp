@@ -459,6 +459,8 @@ def show_applicant(request, project_id, round_id, major_number, rank):
         'acceptance': project_round.accepted_result_frozen or project_round.accepted_result_shown
     }
 
+    only_bulk_interview_acceptance = project_round.only_bulk_interview_acceptance
+
     return render(request,
                   'backoffice/projects/show_applicant.html',
                   { 'project': project,
@@ -484,6 +486,8 @@ def show_applicant(request, project_id, round_id, major_number, rank):
                     'is_accepted': is_accepted,
 
                     'frozen_results': frozen_results,
+
+                    'only_bulk_interview_acceptance': only_bulk_interview_acceptance,
 
                     'check_mark_group': check_mark_group,
                     'judge_comments': judge_comments,
@@ -600,6 +604,9 @@ def set_call_for_interview(request, project_id, round_id, national_id, major_num
     application = request.application
 
     if request.project_round.accepted_for_interview_result_frozen:
+        return HttpResponseForbidden()
+
+    if request.project_round.only_bulk_interview_acceptance:
         return HttpResponseForbidden()
 
     admission_result = AdmissionResult.get_for_application_and_major(application, major)
