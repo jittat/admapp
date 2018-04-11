@@ -66,7 +66,7 @@ def main():
                                              major_rank=i+1,
                                              major=majors[i])
 
-                if m.title == called_major and m.faculty.title == called_faculty:
+                if m.title == called_major and m.faculty.title == 'คณะ' + called_faculty:
                     result.is_accepted_for_interview = True
                 else:
                     result.is_accepted_for_interview = False
