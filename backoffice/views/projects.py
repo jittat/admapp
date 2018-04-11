@@ -857,11 +857,17 @@ def delete_comment(request, project_id, round_id, national_id, major_number, com
                                      'html': html }),
                         content_type='application/json')
 
-def sort_applicants_by_calculated_scores(applicants):
-    passed_applicants = [x[2] for x in
-                         sorted([(-a.admission_result.calculated_score, a.national_id, a)
-                                 for a in applicants if a.is_criteria_passed])]
-    not_passed_applicants = [a for a in applicants if not a.is_criteria_passed]
+def sort_applicants_by_calculated_scores(applicants, criteria_check_required):
+    if criteria_check_required:
+        passed_applicants = [x[2] for x in
+                             sorted([(-a.admission_result.calculated_score, a.national_id, a)
+                                     for a in applicants if a.is_criteria_passed])]
+        not_passed_applicants = [a for a in applicants if not a.is_criteria_passed]
+    else:
+        passed_applicants = [x[2] for x in
+                             sorted([(-a.admission_result.calculated_score, a.national_id, a)
+                                     for a in applicants if hasattr(a,'admission_result')])]
+        not_passed_applicants = [a for a in applicants if not hasattr(a,'admission_result')]
 
     return passed_applicants + not_passed_applicants
 
@@ -882,7 +888,8 @@ def show_scores(request, project_id, round_id, major_number):
     applicant_score_viewable = project_round.applicant_score_viewable
     load_check_marks_and_results(applicants, project, admission_round)
     if applicant_score_viewable:
-        applicants = sort_applicants_by_calculated_scores(applicants)
+        applicants = sort_applicants_by_calculated_scores(applicants,
+                                                          project_round.criteria_check_required)
 
     return render(request,
                   'backoffice/projects/show_applicant_scores.html',

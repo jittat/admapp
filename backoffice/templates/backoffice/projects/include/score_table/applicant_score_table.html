@@ -27,7 +27,7 @@
           {% include "backoffice/projects/include/score_table/onet_cells.html" %}
           {% include "backoffice/projects/include/score_table/gatpat_cells.html" %}
         {% endwith %}
-        {% if not a.is_criteria_passed %}
+        {% if project_round.criteria_check_required and not a.is_criteria_passed %}
           <td>ไม่ผ่านเกณฑ์</td>
         {% else %}
           {% if applicant_score_viewable %}
