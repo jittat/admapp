@@ -758,6 +758,25 @@ class AdmissionResult(models.Model):
         else:
             return ''
 
+    def scoring_criteria_passed(self):
+        return self.calculated_score >= 0
+
+    def is_interview_callable(self):
+        return self.scoring_criteria_passed()
+    
+    def criteria_failed_display(self):
+        error_map = {
+            -10000: 'gpa',
+            -20000: 'แผนการเรียน',
+            -31000: 'onet',
+            -32000: 'gatpat',
+            -40000: 'ไม่ใช่ม.6',
+        }
+        if int(self.calculated_score) in error_map:
+            return error_map[int(self.calculated_score)]
+        else:
+            return 'ไม่ผ่านเกณฑ์'
+            
     def calculated_score_display(self):
         if self.calculated_score < 0:
             return 'ไม่ผ่านเกณฑ์'

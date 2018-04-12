@@ -28,9 +28,6 @@ urlpatterns = [
     url(r'^projects/(\d+)/(\d+)/$', projects.index, name='projects-index'),
     url(r'^projects/(\d+)/(\d+)/list/$', projects.list_applicants, name='projects-list'),
 
-    url(r'^projects/scores/(?P<project_id>\d+)/(?P<round_id>\d+)/(?P<major_number>\d+)/$',
-        projects.show_scores, name='projects-show-scores'),
-
     url(r'^projects/applicants/(?P<project_id>\d+)/(?P<round_id>\d+)/(?P<major_number>\d+)/(?P<rank>\d+)/$',
         projects.show_applicant, name='projects-show-applicant'),
 
@@ -66,6 +63,11 @@ urlpatterns = [
     url(r'^projects/applicants/(\d+)/(\d+)/(\d+)/interview-sheet$',
         reports.download_applicants_interview_sheet,
         name='projects-download-app-interview-sheet'),
+
+    url(r'^projects/scores/(?P<project_id>\d+)/(?P<round_id>\d+)/(?P<major_number>\d+)/$',
+        projects.show_scores, name='projects-show-scores'),
+    url(r'^projects/scores/(?P<project_id>\d+)/(?P<round_id>\d+)/(?P<major_number>\d+)/interview_score/$',
+        projects.update_interview_call_score, name='projects-interview-call-score-update'),
 
     url(r'^users/$', users.index, name='users-index'),
 ]

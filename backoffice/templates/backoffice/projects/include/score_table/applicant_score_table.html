@@ -10,16 +10,20 @@
       {% include "backoffice/projects/include/score_table/gatpat_header.html" %}
       {% if applicant_score_viewable %}
         <th>คะแนน</th>
+        <th>เรียก<br />สัมภาษณ์</th>
       {% else %}
+        <th></th>
         <th></th>
       {% endif %}
     </tr>
   </thead>
   <tbody>
     {% for a in applicants %}
-      <tr>
-        <td>{{ forloop.counter }}</td>
-        <td>{{ a.national_id }}</td>
+      <tr class="{% if a.is_called_for_interview %}app-interview-called{%else %}app-interview-not-called{% endif %}">
+        <td class="ranks">{{ forloop.counter }}</td>
+        <td class="national-ids">
+          {{ a.national_id }}
+        </td>
         <td>{{ a.get_full_name }}</td>
         <td>{{ a.educationalprofile.get_education_plan_display }}</td>
         <td>{{ a.educationalprofile.gpa|floatformat:"2" }}</td>
@@ -27,16 +31,68 @@
           {% include "backoffice/projects/include/score_table/onet_cells.html" %}
           {% include "backoffice/projects/include/score_table/gatpat_cells.html" %}
         {% endwith %}
-        {% if project_round.criteria_check_required and not a.is_criteria_passed %}
-          <td>ไม่ผ่านเกณฑ์</td>
+        {% if not a.is_criteria_passed %}
+          <td><i class="fa fa-times" style="color: red;"></i> ไม่ผ่านเกณฑ์</td>
+          <td></td>
         {% else %}
           {% if applicant_score_viewable %}
-            <td>{{ a.admission_result.calculated_score_display }}</td>
+            <td class="scores">
+              {% if a.admission_result.scoring_criteria_passed %}
+                {{ a.admission_result.calculated_score_display }}
+              {% else %}
+                <i class="fa fa-times" style="color: red;"></i> {{ a.admission_result.criteria_failed_display }}
+              {% endif %}
+            </td>
+            <td class="chboxes">
+              {% if a.is_interview_callable %}
+                <input class="call-checkboxes" id="applicant_call_{{ a.national_id }}" data-natid="{{ a.national_id }}" type="checkbox" {% if a.is_called_for_interview %}checked{% endif %} />
+              {% endif %}
+            </td>
           {% else %}
-            <td></td>
+            <td class="scores"></td>
+            <td class="chboxes"></td>
           {% endif %}
         {% endif %}
       </tr>
     {% endfor %}
   </tbody>
 </table>
+<script>
+  var updateCall = function(count) {
+    $('.call-checkboxes').each(function(i, elt) {
+      if(i < count) {
+        $(elt).prop('checked', true);
+      } else {
+        $(elt).prop('checked', false);
+      }
+      
+      var row = $(elt).parents('tr').first();
+      if($(elt).prop('checked')) {
+        $(row).addClass('app-interview-called');
+        $(row).removeClass('app-interview-not-called');
+      } else {
+        $(row).addClass('app-interview-not-called');
+        $(row).removeClass('app-interview-called');
+      }
+    });
+  };
+  
+  $(function(){
+    var url = '{% url 'backoffice:projects-interview-call-score-update' project.id admission_round.id major.number %}';
+    $('.call-checkboxes').click(function(){
+      var status = $(this).prop('checked') ? 'selected' : 'not-selected';
+      var nationalId = $(this).data('natid');
+
+      $('#data_load_notice_id').html('<span style="color: red;">กำลังจัดเก็บข้อมูล...</span>').show();
+      jQuery.post(url, {
+        nationalId: nationalId,
+        status: status,
+        csrfmiddlewaretoken: '{{ csrf_token }}'
+      }, function(data) {
+        updateCall(data);
+        $('.interview-count-spans').text(data);
+        $('#data_load_notice_id').html('<span style="color: green;">จัดเก็บข้อมูลเสร็จแล้ว</span>').delay(3000).fadeOut();
+      });
+    });
+  });
+</script>

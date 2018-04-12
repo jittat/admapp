@@ -3,9 +3,9 @@
 {% block content %}
   <div class="row" style="margin-top: -10px;">
     <div class="col-md-12">
-      <b>คะแนนผู้สมัครโครงการ{{ project }} {{ admission_round}} | สาขา{{ major.title }} | จำนวนรับ {{ major.slots }} คน</b><br />
+      <b>คะแนนผู้สมัครโครงการ{{ project }} {{ admission_round}} | สาขา{{ major.title }} | จำนวนรับ {{ major.slots }} คน | เรียกสัมภาษณ์ <span class="interview-count-spans">{{ interview_call_count }}</span> คน</b><br />
       เกณฑ์การคัดเลือก: <a id="selection_criteria_toggle_id" class="btn btn-sm btn-outline-secondary" href="#">ดูเกณฑ์</a>
-      <span class="badge badge-primary">ประกาศ</span> <b>จะสามารถเลือกลำดับที่ต้องการเรียกสัมภาษณ์ได้ที่หน้านี้ (ภายในวันที่ 12 เม.ย.)</b>
+      <span id="data_load_notice_id"></span>
       <div id="selection_criteria_table_id" style="display: none;">
         {% include "backoffice/projects/include/selection_criteria_table.html" %}
       </div>

@@ -14,7 +14,7 @@ from appl.models import ProjectUploadedDocument, UploadedDocument
 from backoffice.views.permissions import can_user_view_project, can_user_view_applicant_in_major, can_user_view_applicants_in_major
 from backoffice.decorators import user_login_required
 
-from backoffice.models import CheckMarkGroup, JudgeComment
+from backoffice.models import CheckMarkGroup, JudgeComment, MajorInterviewCallDecision
 
 def load_applicant_round_paid_amount(admission_round):
     round_payments = Payment.objects.filter(admission_round=admission_round)
@@ -254,7 +254,32 @@ def index(request, project_id, round_id):
                   })
 
 
-def load_check_marks_and_results(applicants, admission_project, admission_round):
+def update_applicant_status(applicant, admission_results, admission_project_round):
+    applicant.admission_results = admission_results
+
+    applicant.is_accepted = False
+    applicant.is_criteria_passed = False
+    applicant.is_interview_callable = False
+    if applicant.admission_results:
+        for res in applicant.admission_results:
+            if res.is_accepted:
+                applicant.is_accepted = True
+                applicant.accepted_result = res
+            if res.is_criteria_passed:
+                applicant.is_criteria_passed = True
+            if res.is_interview_callable():
+                applicant.is_interview_callable = True
+            applicant.admission_result = res
+
+    if not admission_project_round.criteria_check_required:
+        if hasattr(applicant, 'admission_result'):
+            applicant.is_criteria_passed = True
+
+
+def load_check_marks_and_results(applicants,
+                                 admission_project,
+                                 admission_round,
+                                 project_round):
     result_map = {}
 
     for r in AdmissionResult.objects.filter(admission_project=admission_project,
@@ -275,19 +300,8 @@ def load_check_marks_and_results(applicants, admission_project, admission_round)
         check_marks[c.applicant_id] = c
 
     for a in applicants:
-        a.admission_results = result_map.get(a.id, None)
+        update_applicant_status(a, result_map.get(a.id, None), project_round)
         a.check_marks = check_marks.get(a.id, None)
-
-        a.is_accepted = False
-        a.is_criteria_passed = False
-        if a.admission_results:
-            for res in a.admission_results:
-                if res.is_accepted:
-                    a.is_accepted = True
-                    a.accepted_result = res
-                if res.is_criteria_passed:
-                    a.is_criteria_passed = True
-                a.admission_result = res
 
 
 @user_login_required
@@ -314,7 +328,10 @@ def list_applicants(request, project_id, round_id):
     applicant_info_viewable = project_round.applicant_info_viewable
 
     if applicant_info_viewable:
-        load_check_marks_and_results(applicants, project, admission_round)
+        load_check_marks_and_results(applicants,
+                                     project,
+                                     admission_round,
+                                     project_round)
 
     applicants = sorted_applicants(applicants)
 
@@ -858,20 +875,24 @@ def delete_comment(request, project_id, round_id, national_id, major_number, com
                         content_type='application/json')
 
 def sort_applicants_by_calculated_scores(applicants, criteria_check_required):
-    if criteria_check_required:
-        passed_applicants = [x[2] for x in
-                             sorted([(-a.admission_result.calculated_score, a.national_id, a)
-                                     for a in applicants if a.is_criteria_passed])]
-        not_passed_applicants = [a for a in applicants if not a.is_criteria_passed]
-    else:
-        passed_applicants = [x[2] for x in
-                             sorted([(-a.admission_result.calculated_score, a.national_id, a)
-                                     for a in applicants if hasattr(a,'admission_result')])]
-        not_passed_applicants = [a for a in applicants if not hasattr(a,'admission_result')]
+    passed_applicants = [x[2] for x in
+                         sorted([(-a.admission_result.calculated_score, a.national_id, a)
+                                 for a in applicants if a.is_criteria_passed])]
+    not_passed_applicants = [a for a in applicants if not a.is_criteria_passed]
 
     return passed_applicants + not_passed_applicants
 
 
+def update_interview_call_status(applicants, decision):
+    for a in applicants:
+        if not decision:
+            a.is_called_for_interview = False
+        elif not a.is_interview_callable:
+            a.is_called_for_interview = False
+        else:
+            a.is_called_for_interview = a.admission_result.calculated_score > decision.interview_call_min_score - MajorInterviewCallDecision.FLOAT_DELTA
+
+            
 @user_login_required
 def show_scores(request, project_id, round_id, major_number):
     user = request.user
@@ -886,11 +907,20 @@ def show_scores(request, project_id, round_id, major_number):
     applicants = load_major_applicants(project, admission_round, major)
     
     applicant_score_viewable = project_round.applicant_score_viewable
-    load_check_marks_and_results(applicants, project, admission_round)
+    load_check_marks_and_results(applicants,
+                                 project,
+                                 admission_round,
+                                 project_round)
+
+    interview_call_count = 0
     if applicant_score_viewable:
         applicants = sort_applicants_by_calculated_scores(applicants,
                                                           project_round.criteria_check_required)
+        call_decision = MajorInterviewCallDecision.get_for(major, admission_round)
+        update_interview_call_status(applicants, call_decision)
 
+        interview_call_count = len([a for a in applicants if a.is_called_for_interview])
+        
     return render(request,
                   'backoffice/projects/show_applicant_scores.html',
                   { 'project': project,
@@ -899,6 +929,87 @@ def show_scores(request, project_id, round_id, major_number):
                     'major': major,
 
                     'applicants': applicants,
+                    'interview_call_count': interview_call_count,
                     
                     'applicant_score_viewable': applicant_score_viewable,
                   })
+
+@user_login_required
+def update_interview_call_score(request, project_id, round_id, major_number):
+    user = request.user
+    project = get_object_or_404(AdmissionProject, pk=project_id)
+    admission_round = get_object_or_404(AdmissionRound, pk=round_id)
+    project_round = project.get_project_round_for(admission_round)
+    major = Major.get_by_project_number(project, major_number)
+
+    if not can_user_view_applicants_in_major(user, project, major):
+        return HttpResponseForbidden()
+
+    applicant_score_viewable = project_round.applicant_score_viewable
+    if not applicant_score_viewable:
+        return HttpResponseForbidden()
+
+    applicants = load_major_applicants(project, admission_round, major)
+    load_check_marks_and_results(applicants,
+                                 project,
+                                 admission_round,
+                                 project_round)
+
+    applicants = sort_applicants_by_calculated_scores(applicants,
+                                                      project_round.criteria_check_required)
+    call_decision = MajorInterviewCallDecision.get_for(major, admission_round)
+    update_interview_call_status(applicants, call_decision)
+    if not call_decision:
+        call_decision = MajorInterviewCallDecision(admission_round=admission_round,
+                                                   major=major,
+                                                   admission_project=project)
+
+    national_id = request.POST['nationalId']
+    selection_status = request.POST['status']
+
+    selected_applicants = [a for a in applicants if a.national_id == national_id]
+    if len(selected_applicants) == 0:
+        return HttpResponseForbidden()
+
+    applicant = selected_applicants[0]
+
+    if not applicant.is_interview_callable:
+        return HttpResponseForbidden()
+
+    if selection_status == 'selected':
+        if applicant.is_called_for_interview:
+            return HttpResponseForbidden()
+
+        call_decision.interview_call_min_score = applicant.admission_result.calculated_score
+    else:
+        if not applicant.is_called_for_interview:
+            return HttpResponseForbidden()
+
+        a_app = None
+        for a in applicants:
+            if a.is_interview_callable:
+                if a.admission_result.calculated_score > applicant.admission_result.calculated_score:
+                    a_app = a
+        if a_app:
+            call_decision.interview_call_min_score = a_app.admission_result.calculated_score
+        else:
+            call_decision.interview_call_min_score = applicant.admission_result.calculated_score + 1
+            
+    update_interview_call_status(applicants, call_decision)
+    call_decision.interview_call_count = len([a for a in applicants if a.is_called_for_interview])
+
+    from datetime import datetime
+    call_decision.updated_at = datetime.now()
+    call_decision.save()
+
+    LogItem.create('Updated interview decision ({0}/{1}) to {2} by {3}'.format(major.number,
+                                                                               project.id,
+                                                                               call_decision.interview_call_min_score,
+                                                                               user.username),
+                   applicant,
+                   request)
+
+    return HttpResponse(str(call_decision.interview_call_count))
+        
+
+    

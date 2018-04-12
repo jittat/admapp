@@ -124,3 +124,20 @@ td.gatpat-even {
 table.applicant-score-tables td {
     font-size: 80%;
 }
+
+table.applicant-score-tables tr.app-interview-called td.ranks {
+    background: #c6ffd0;
+}
+table.applicant-score-tables tr.app-interview-called td.scores {
+    background: #c6ffd0;
+}
+table.applicant-score-tables tr.app-interview-called td.national-ids {
+    background: #c6ffd0;
+}
+table.applicant-score-tables tr.app-interview-called td.chboxes {
+    background: #c6ffd0;
+}
+
+table.applicant-score-tables tr.app-interview-not-called .called-checks {
+    display: none;
+}

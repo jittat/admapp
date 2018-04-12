@@ -128,3 +128,33 @@ class JudgeComment(models.Model):
     
     class Meta:
         ordering = ['-created_at']
+
+
+class MajorInterviewCallDecision(models.Model):
+    FLOAT_DELTA = 0.000001
+    
+    admission_project = models.ForeignKey(AdmissionProject)
+    admission_round = models.ForeignKey(AdmissionRound)
+    major = models.ForeignKey(Major)
+
+    interview_call_count = models.IntegerField(default=0)
+    interview_call_min_score = models.FloatField(default=0)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField()
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['major','admission_round']),
+        ]
+        unique_together = (('major','admission_round'),)
+    
+    @staticmethod
+    def get_for(major, admission_round):
+        decisions = MajorInterviewCallDecision.objects.filter(major=major,
+                                                              admission_round=admission_round).all()
+        if len(decisions) > 0:
+            return decisions[0]
+        else:
+            return None
+    
