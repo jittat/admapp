@@ -28,7 +28,7 @@ def save_token(filename, token):
 def main():
     token_filename = ''
     if len(sys.argv) >= 4:
-        token_filename = sys.argv[4]
+        token_filename = sys.argv[3]
 
     if token_filename != '':
         token = read_token(token_filename)
