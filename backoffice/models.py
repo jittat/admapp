@@ -146,6 +146,7 @@ class MajorInterviewCallDecision(models.Model):
     class Meta:
         indexes = [
             models.Index(fields=['major','admission_round']),
+            models.Index(fields=['admission_round','admission_project']),
         ]
         unique_together = (('major','admission_round'),)
     
