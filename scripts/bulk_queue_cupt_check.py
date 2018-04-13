@@ -7,6 +7,7 @@ from datetime import datetime
 
 from regis.models import Applicant, LogItem
 from appl.models import AdmissionProject, AdmissionResult, AdmissionRound, ProjectApplication
+from regis.models import CuptConfirmation, CuptRequestQueueItem
 
 def main():
     filename = sys.argv[1]
