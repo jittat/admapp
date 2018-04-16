@@ -1,10 +1,10 @@
 {% load i18n %}
-<h2>{% trans 'รายการโครงการรับสมัคร' %}{% if admission_round %}{{ admission_round.title_trans }}{% endif %}</h2>
+<h2>{% trans 'รายการโครงการรับสมัคร' %}<!--{% if admission_round %}{{ admission_round.title_trans }}{% endif %}--></h2>
 {% if admission_round %}
   {% if cupt_confirmation_status.is_wait %}
     {% include 'appl/include/cupt_confirmation_wait.html' %}
   {% else %}
-    {% if not cupt_confirmation_status.is_free %}
+    {% if not cupt_confirmation_status.is_free and not cupt_confirmation_status.is_not_required %}
       {% include 'appl/include/cupt_confirmation_not_free.html' %}
     {% endif %}
   {% endif %}

@@ -35,26 +35,35 @@ class EducationForm(ModelForm):
                     HTML(format_lazy('<small>{0}</small>', _('ถ้าจบจากโรงเรียนนานาชาติหรือต่างประเทศและไม่มี GPA สามารถกรอกเป็น 0 ได้ และสามารถเลือกแผนการเรียนเป็นไม่ระบุได้'))),
                     css_class='col-md-12 form-text mb5',
                 ),
+                style="display: none;"
             ),
             Row(
                 Div('education_plan', css_class='col-md-6'),
                 Div('gpa', css_class='col-md-6'),
+                style="display: none;"
             ),
             Row(
                 Div(
                     HTML(format_lazy('<b>{0}</b>',_('ข้อมูลโรงเรียน'))),
                     css_class='col-md-12',
                 ),
+                style="display: none;"
             ),
             Row(
                 Div(
                     HTML(format_lazy('<small>{0}</small>', _('ในกรณีที่สมัครโครงการช้างเผือก สามารถเลือกให้แสดงเฉพาะโรงเรียนที่เข้าโครงการได้ โดยกดปุ่มตอนท้าย'))),
                     css_class='col-md-12 form-text mb5',
                 ),
+                style="display: none;"
             ),
+            #Row(
+            #    Div('province', css_class='col-md-6'),
+            #    Div('school_title', css_class='col-md-6'),
+            #),
             Row(
-                Div('province', css_class='col-md-6'),
-                Div('school_title', css_class='col-md-6'),
+                Div('province', css_class='col-md-6', style="display: none;"),
+                Div('school_title', css_class='col-md-12'),
+                style="display: none;"
             ),
             Row(
                 Div(
@@ -62,6 +71,7 @@ class EducationForm(ModelForm):
                     HTML(_('แสดงรายการเฉพาะโรงเรียนในโครงการช้างเผือก')),
                     css_class='col-md-12 mb5',
                 ),
+                style="display: none;"
             ),
             ButtonHolder(
                 Submit('submit', _('จัดเก็บ'), css_class='btn btn-primary')
@@ -278,7 +288,13 @@ def education_profile(request):
             request.session['notice'] = 'จัดเก็บข้อมูลการศึกษาเรียบร้อย'
             return redirect(reverse('appl:index'))
     else:
-        form = EducationForm(instance=profile)
+        if not profile:
+            form = EducationForm(initial={ 'gpa': 0.0,
+                                           'province': Province.objects.first(),
+                                           'school_title': 'ไม่ระบุ',
+                                           'education_plan': 5 })
+        else:
+            form = EducationForm(instance=profile)
 
     return render(request,
                   'appl/forms/education.html',
