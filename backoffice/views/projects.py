@@ -275,10 +275,10 @@ def update_applicant_status(applicant, admission_results, admission_project_roun
             if res.is_accepted:
                 applicant.is_accepted = True
                 applicant.accepted_result = res
-            if res.is_criteria_passed:
+            if (res.is_criteria_passed) or (not admission_project_round.criteria_check_required):
                 applicant.is_criteria_passed = True
-            if res.is_interview_callable():
-                applicant.is_interview_callable = True
+                if res.is_interview_callable():
+                    applicant.is_interview_callable = True
             applicant.admission_result = res
 
     if not admission_project_round.criteria_check_required:
@@ -900,7 +900,7 @@ def update_interview_call_status(applicants, decision):
         elif not a.is_interview_callable:
             a.is_called_for_interview = False
         else:
-            a.is_called_for_interview = a.admission_result.calculated_score > decision.interview_call_min_score - MajorInterviewCallDecision.FLOAT_DELTA
+            a.is_called_for_interview = a.admission_result.calculated_score > (decision.interview_call_min_score - MajorInterviewCallDecision.FLOAT_DELTA)
 
             
 @user_login_required
