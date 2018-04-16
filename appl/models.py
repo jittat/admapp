@@ -769,7 +769,7 @@ class AdmissionResult(models.Model):
             -10000: 'gpa',
             -20000: 'แผนการเรียน',
             -31000: 'onet',
-            -32000: 'gatpat',
+            -32000: 'gatpat/udat',
             -40000: 'ไม่ใช่ม.6',
         }
         if int(self.calculated_score) in error_map:
