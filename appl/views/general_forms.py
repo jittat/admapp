@@ -105,7 +105,7 @@ class PersonalProfileForm(ModelForm):
         }
         exclude = ['applicant']
         widgets = {
-            'birthday': ThaiSelectDateWidget(years=range(1990,2010))
+            'birthday': ThaiSelectDateWidget(years=range(1920,2010))
         }
 
     def _show_passport_field(self):
@@ -140,7 +140,8 @@ class PersonalProfileForm(ModelForm):
                     Div('father_prefix', css_class='col-md-2'),
                     Div('father_first_name', css_class='col-md-5'),
                     Div('father_last_name', css_class='col-md-5'),
-                )
+                ),
+                style="display: none;",
             ),
             Fieldset(
                 _('ข้อมูลมารดา (ภาษาไทย)'),
@@ -148,7 +149,8 @@ class PersonalProfileForm(ModelForm):
                     Div('mother_prefix', css_class='col-md-2'),
                     Div('mother_first_name', css_class='col-md-5'),
                     Div('mother_last_name', css_class='col-md-5'),
-                )
+                ),
+                style="display: none;",
             ),
             Fieldset(
                 _('ข้อมูลที่อยู่'),
@@ -220,6 +222,12 @@ def personal_profile(request):
         instruction_step = 2
         profile = PersonalProfile()
         profile.applicant = applicant
+        profile.father_prefix = '--'
+        profile.father_first_name = 'ไม่ต้องกรอก'
+        profile.father_last_name = 'ไม่ต้องกรอก'
+        profile.mother_prefix = '--'
+        profile.mother_first_name = 'ไม่ต้องกรอก'
+        profile.mother_last_name = 'ไม่ต้องกรอก'
     else:
         instruction_step = None
 
