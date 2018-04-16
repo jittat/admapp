@@ -121,6 +121,14 @@ td.gatpat-even {
     background: #bdfcf5;
 }
 
+td.udat-odd {
+    background: #ffedfc;
+}
+
+td.udat-even {
+    background: #fcddf5;
+}
+
 table.applicant-score-tables td {
     font-size: 80%;
 }

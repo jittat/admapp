@@ -8,6 +8,7 @@
       <th>GPAX</th>
       {% include "backoffice/projects/include/score_table/onet_header.html" %}
       {% include "backoffice/projects/include/score_table/gatpat_header.html" %}
+      {% include "backoffice/projects/include/score_table/additional_hack_header.html" %}
       {% if applicant_score_viewable %}
         <th>คะแนน</th>
         <th>เรียก<br />สัมภาษณ์</th>
@@ -30,6 +31,7 @@
         {% with a as applicant %}
           {% include "backoffice/projects/include/score_table/onet_cells.html" %}
           {% include "backoffice/projects/include/score_table/gatpat_cells.html" %}
+          {% include "backoffice/projects/include/score_table/additional_hack_cells.html" %}
         {% endwith %}
         {% if not a.is_criteria_passed %}
           <td><i class="fa fa-times" style="color: red;"></i> ไม่ผ่านเกณฑ์</td>
