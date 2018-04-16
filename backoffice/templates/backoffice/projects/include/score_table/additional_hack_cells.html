@@ -1,0 +1,18 @@
+{% if project.id == 17 %}
+  <td>{{ applicant.educationalprofile.province }}</td>
+{% endif %}
+{% if project.id == 13 %}
+  {% if major.number == 11 or major.number == 21 or major.number == 41 %}
+    {% include "backoffice/projects/include/score_table/udat_cells.html" %}
+  {% endif %}
+{% endif %}
+{% if project.id == 14 %}
+  {% if major.number == 6 or major.number == 30 or major.number == 33 %}
+    {% include "backoffice/projects/include/score_table/udat_cells.html" %}
+  {% endif %}
+{% endif %}
+{% if project.id == 15 %}
+  {% if major.number == 4 %}
+    {% include "backoffice/projects/include/score_table/udat_cells.html" %}
+  {% endif %}
+{% endif %}
