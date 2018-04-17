@@ -9,6 +9,13 @@
         {% endif %}
       </h2>
 
+      <div class="alert alert-warning">
+        <span class="badge badge-warning">
+          ทีมงานขออภัยเป็นอย่างยิ่ง
+        </span>
+        ไฟล์สำหรับการสัมภาษณ์และคะแนนจะสามารถดาวน์โหลดได้ภายในวันที่ 18 เม.ย. 2561
+      </div>
+      
       <p>
         ผู้สมัครทั้งหมด {{ applicant_count }} ผู้สมัครที่ชำระเงินแล้ว {{ paid_applicant_count }}
         รายละเอียดแยกตามสาขาแสดงด้านล่าง (แสดงจำนวนที่ชำระเงินแล้ว / จำนวนที่เลือกทั้งหมด)
@@ -110,7 +117,7 @@
                     <a class="btn btn-sm btn-outline-secondary dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">ดาวน์โหลด</a>
                     <div class="dropdown-menu">
                       <a class="dropdown-item" href="{% url 'backoffice:projects-download-app-sheet' project.id admission_round.id major.number %}">ดาวน์โหลดข้อมูล</a>
-                      <a class="dropdown-item" href="{% url 'backoffice:projects-download-app-interview-sheet' project.id admission_round.id major.number %}">ดาวน์โหลดฟอร์มสัมภาษณ์</a>
+                      <a class="dropdown-item interview-sheet-download-links" href="{% url 'backoffice:projects-download-app-interview-sheet' project.id admission_round.id major.number %}">ดาวน์โหลดฟอร์มสัมภาษณ์</a>
                     </div>
                 {% endif %}
               </td>
@@ -120,4 +127,12 @@
       </table>
     </div>
   </div>
+  <script>
+    $(function(){
+      $(".interview-sheet-download-links").click(function(){
+        alert("ทีมงานขออภัย จะสามารถดาวน์โหลดได้ภายในวันที่ 18 เม.ย. 61");
+        return false;
+      });
+    });
+  </script>
 {% endblock %}
