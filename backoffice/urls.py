@@ -64,6 +64,10 @@ urlpatterns = [
         reports.download_applicants_interview_sheet,
         name='projects-download-app-interview-sheet'),
 
+    url(r'^projects/applicants/(?P<project_id>\d+)/(?P<round_id>\d+)/(?P<major_number>\d+)/interview-score-sheet$',
+        reports.download_applicants_interview_score_sheet,
+        name='projects-download-app-interview-score-sheet'),
+
     url(r'^projects/scores/(?P<project_id>\d+)/(?P<round_id>\d+)/(?P<major_number>\d+)/$',
         projects.show_scores, name='projects-show-scores'),
     url(r'^projects/scores/(?P<project_id>\d+)/(?P<round_id>\d+)/(?P<major_number>\d+)/interview_score/$',

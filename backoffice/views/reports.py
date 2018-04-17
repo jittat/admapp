@@ -87,7 +87,7 @@ def download_applicants_sheet(request, project_id, round_id, major_number):
                          str(applicant.educationalprofile.get_education_plan_display()),
                          applicant.educationalprofile.school_title,
                          applicant.educationalprofile.province.title,
-                         applicant.educationalprofile.gpa,
+                         '%0.2f' % (applicant.educationalprofile.gpa,),
                          payment_message,],
                         bordered_cell_format)
         r += 1
@@ -116,7 +116,7 @@ def write_applicant_rows(sheet, start_row, applicants, major, cell_format, show_
                   applicant.educationalprofile.get_education_plan_display(),
                   faculty.title,
                   major.title,
-                  '',
+                  ' ',
         ]
         if not show_national_id:
             del items[1]
@@ -142,7 +142,7 @@ def write_registration_sheet(sheet, project, applicants, major, cell_format):
     sheet.set_landscape()
     sheet.write(0,0,'ใบลงชื่อผู้มีสิทธิ์สอบสัมภาษณ์ โครงการ' +
                 project.title +
-                ' มหาวิทยาลัยเกษตรศาสตร์ ปีการศึกษา 2561 (TCAS รอบที่ 1/1)')
+                ' มหาวิทยาลัยเกษตรศาสตร์ ปีการศึกษา 2561 (TCAS รอบที่ 2)')
     set_column_widths(sheet,[4,15,8,12,22,5,10,12,12,12])
     write_registration_table_header(sheet, cell_format)
     write_applicant_rows(sheet, 2, applicants, major, cell_format)
@@ -178,7 +178,7 @@ def write_interview_result_sheet(sheet, project, applicants, major, cell_format)
     sheet.set_landscape()
     sheet.write(0,0,'ใบลงชื่อผู้มีสิทธิ์สอบสัมภาษณ์ โครงการ' +
                 project.title +
-                ' มหาวิทยาลัยเกษตรศาสตร์ ปีการศึกษา 2561 (TCAS รอบที่ 1/1)')
+                ' มหาวิทยาลัยเกษตรศาสตร์ ปีการศึกษา 2561 (TCAS รอบที่ 2)')
     set_column_widths(sheet,[4,8,12,22,5,10,12,15,25])
     write_result_table_header(sheet, cell_format)
     write_applicant_rows(sheet, 3, applicants, major, cell_format, False)
@@ -202,6 +202,7 @@ def download_applicants_interview_sheet(request, project_id, round_id, major_num
     user = request.user
     project = get_object_or_404(AdmissionProject, pk=project_id)
     admission_round = get_object_or_404(AdmissionRound, pk=round_id)
+    project_round = project.get_project_round_for(admission_round)
     major = Major.get_by_project_number(project, major_number)
 
     if not can_user_view_applicants_in_major(user, project, major):
@@ -216,7 +217,10 @@ def download_applicants_interview_sheet(request, project_id, round_id, major_num
     bordered_cell_format.set_border(1)
     
     all_applicants = load_major_applicants(project, admission_round, major)
-    load_check_marks_and_results(all_applicants, project, admission_round)
+    load_check_marks_and_results(all_applicants,
+                                 project,
+                                 admission_round,
+                                 project_round)
 
     applicants = []
     
@@ -240,3 +244,159 @@ def download_applicants_interview_sheet(request, project_id, round_id, major_num
     return response
 
 
+def major_with_udat(major):
+    if major.admission_project_id == 13:
+        return major.number in [11, 21, 41]
+    elif major.admission_project_id == 14:
+        return major.number in [6, 30, 33]
+    elif major.admission_project_id == 15:
+        return major.number == 4
+    else:
+        return False
+
+
+def write_score_report_header(sheet, major, cell_format):
+    items = ['ลำดับ',
+             'เลขประจำตัวประชาชน',
+             'คำนำหน้า',
+             'ชื่อ',
+             'นามสกุล',
+             'GPAX',
+             'แผนการเรียน',
+             'ONET(03)',
+             'GP-Round',
+             'GAT',
+             'P1','P2','P3','P4','P5','P6','P7',
+             ]
+    if major_with_udat(major):
+        items += [
+            '09',
+            '19',
+            '29',
+            '39',
+            '49',
+            '59',
+            '69',
+        ]
+    items += ['คะแนนรวม']
+    write_sheet_row(sheet,2,
+                    items,
+                    cell_format)
+
+def write_score_report_sheet(sheet, project, applicants, major, cell_format):
+    from backoffice.templatetags.score_extras import score as score_filter
+    from backoffice.templatetags.score_extras import score_array as score_array_filter
+    from backoffice.templatetags.score_extras import round_array as round_array_filter
+    
+    sheet.set_landscape()
+    set_column_widths(sheet,[3,11,6,9,14,4,8,
+                             4,
+                             5,5,5,5,5,5,5,5,5,
+                             3.5,3.5,3.5,3.5,3.5,3.5,3.5,
+                             5])
+    sheet.write(0,0,'รายงานคะแนนผู้มีสิทธิ์สอบสัมภาษณ์ โครงการ' + project.title)
+    sheet.write(1,0, 'สาขา' + major.title)
+
+    write_score_report_header(sheet, major, cell_format)
+
+    r = 1
+    for applicant in applicants:
+        scores = applicant.get_all_exam_scores()
+
+        items = [str(r),
+                 applicant.national_id,
+                 applicant.prefix,
+                 applicant.first_name,
+                 applicant.last_name,
+                 '%0.2f' % (applicant.educationalprofile.gpa,),
+                 str(applicant.educationalprofile.get_education_plan_display()),]
+
+        gp_round_count = len(scores.gatpat_rounds)
+        
+        items += [ score_filter(scores.onet['x03']),]
+
+        items += [
+            round_array_filter(scores.gatpat_rounds, False),
+            score_array_filter(scores.gatpat_array['gat'], False),
+            score_array_filter(scores.gatpat_array['pat1'], False),
+            score_array_filter(scores.gatpat_array['pat2'], False),
+            score_array_filter(scores.gatpat_array['pat3'], False),
+            score_array_filter(scores.gatpat_array['pat4'], False),
+            score_array_filter(scores.gatpat_array['pat5'], False),
+            score_array_filter(scores.gatpat_array['pat6'], False),
+            round_array_filter(scores.gatpat_array['pat7'], False),
+        ]
+
+        if major_with_udat(major):
+            items += [
+                score_filter(scores.udat['u09']),
+                score_filter(scores.udat['u19']),
+                score_filter(scores.udat['u29']),
+                score_filter(scores.udat['u39']),
+                score_filter(scores.udat['u49']),
+                score_filter(scores.udat['u59']),
+                score_filter(scores.udat['u69']),
+            ]
+        items += [ score_filter(applicant.admission_result.calculated_score) ]
+
+        write_sheet_row(sheet, r + 2, items, cell_format)
+
+        if gp_round_count > 1:
+            sheet.set_row(r + 2, gp_round_count * 14)
+            
+        r += 1
+
+
+@user_login_required
+def download_applicants_interview_score_sheet(request,
+                                              project_id,
+                                              round_id,
+                                              major_number):
+    import xlsxwriter
+    import io
+    
+    user = request.user
+    project = get_object_or_404(AdmissionProject, pk=project_id)
+    admission_round = get_object_or_404(AdmissionRound, pk=round_id)
+    project_round = project.get_project_round_for(admission_round)
+    major = Major.get_by_project_number(project, major_number)
+
+    if not can_user_view_applicants_in_major(user, project, major):
+        return redirect(reverse('backoffice:index'))
+
+    all_applicants = load_major_applicants(project, admission_round, major)
+    
+    load_check_marks_and_results(all_applicants,
+                                 project,
+                                 admission_round,
+                                 project_round)
+
+    applicants = []
+    for applicant in all_applicants:
+        if applicant.admission_results:
+            for res in applicant.admission_results:
+                if (res.major == major) and res.is_accepted_for_interview:
+                    applicants.append(applicant)
+
+    output = io.BytesIO()
+    workbook = xlsxwriter.Workbook(output, {'in_memory': True})
+    score_worksheet = workbook.add_worksheet('คะแนนสอบ')
+    
+    bordered_cell_format = workbook.add_format()
+    bordered_cell_format.set_border(1)
+    bordered_cell_format.set_font_size(9)
+
+    write_score_report_sheet(score_worksheet,
+                             project,
+                             applicants,
+                             major,
+                             bordered_cell_format)
+    workbook.close()
+    output.seek(0)
+
+    filename = 'interview-score-{}-{}-{}.xlsx'.format(project_id, round_id, major_number)
+    response = HttpResponse(output.read(),
+                            content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename="{}"'.format(filename)
+
+    return response

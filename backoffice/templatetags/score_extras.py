@@ -16,15 +16,19 @@ def score(value):
     return format_single_score(value)
 
 @register.filter(name='score_array')
-def score_array(value):
+def score_array(value, html_format=True):
     if value == '':
         return ''
-    else:
+    elif html_format:
         return mark_safe('<br/>'.join([format_single_score(s) for s in value]))
+    else:
+        return '\n'.join([format_single_score(s) for s in value])
     
 @register.filter(name='round_array')
-def round_array(value):
+def round_array(value, html_format=True):
     if value == '':
         return ''
-    else:
+    elif html_format:
         return mark_safe('<br/>'.join([str(s) for s in value]))
+    else:
+        return '\n'.join([str(s) for s in value])
