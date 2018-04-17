@@ -25,8 +25,13 @@ def main():
             major_number = int(items[0])
             major = Major.objects.filter(admission_project=project, number=major_number)[0]
 
-            desc = MajorInterviewDescription(major=major,
-                                             admission_round=admission_round)
+            old_descs = MajorInterviewDescription.objects.filter(major=major,
+                                                                 admission_round=admission_round).all()
+            if len(old_descs) > 0:
+                desc = old_descs[0]
+            else:
+                desc = MajorInterviewDescription(major=major,
+                                                 admission_round=admission_round)
             desc.descriptions = items[7]
             desc.save()
 

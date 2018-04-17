@@ -14,7 +14,7 @@ from backoffice.views.projects import load_check_marks_and_results
 from backoffice.views.projects import sort_applicants_by_calculated_scores
 from backoffice.views.projects import update_interview_call_status
 
-def make_decision(project, admission_round, project_round, major, decision):
+def make_decision(project, admission_round, project_round, major, decision, fake=True):
     applicants = load_major_applicants(project, admission_round, major)
     load_check_marks_and_results(applicants,
                                  project,
@@ -36,11 +36,33 @@ def make_decision(project, admission_round, project_round, major, decision):
               decision.interview_call_min_score,
               decision.interview_call_count,
               'Mismatch %d from %d' % (call_count,decision.interview_call_count))
+    if fake:
+        return
+
+    count = 0
+    for a in applicants:
+        if a.is_called_for_interview:
+            res = a.admission_result
+            res.is_accepted_for_interview = True
+            res.updated_accepted_for_interview_at = datetime.now()
+            res.save()
+            count += 1
+        else:
+            if hasattr(a, 'admission_result'):
+                res = a.admission_result
+                res.is_accepted_for_interview = False
+                res.updated_accepted_for_interview_at = datetime.now()
+                res.save()
+                count += 1
+    print('Updated', count)
+            
 
 def main():
     project_id = sys.argv[1]
     round_id = sys.argv[2]
 
+    is_fake = len(sys.argv) < 4 or (sys.argv[3] != 'real')
+    
     admission_project = AdmissionProject.objects.get(pk=project_id)
     admission_round = AdmissionRound.objects.get(pk=round_id)
     project_round = admission_project.get_project_round_for(admission_round)
@@ -52,7 +74,12 @@ def main():
     for number, major in sorted([(m.number,m) for m in majors]):
         decision = interview_decisions[number]
         if decision:
-            make_decision(admission_project, admission_round, project_round, major, decision)
+            make_decision(admission_project,
+                          admission_round,
+                          project_round,
+                          major,
+                          decision,
+                          is_fake)
         else:
             print(number, major.title, 'NO-CALL')
     
