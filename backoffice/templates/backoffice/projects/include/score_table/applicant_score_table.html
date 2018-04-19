@@ -47,7 +47,11 @@
             </td>
             <td class="chboxes">
               {% if a.is_interview_callable %}
-                <input class="call-checkboxes" id="applicant_call_{{ a.national_id }}" data-natid="{{ a.national_id }}" type="checkbox" {% if a.is_called_for_interview %}checked{% endif %} />
+                {% if accepted_for_interview_result_frozen %}
+                  {% if a.is_called_for_interview %}<i class="fa fa-check" style="color: green;"></i>{% else %}<i class="fa fa-times" style="color: red;"></i>{% endif %}
+                {% else %}
+                  <input class="call-checkboxes" id="applicant_call_{{ a.national_id }}" data-natid="{{ a.national_id }}" type="checkbox" {% if a.is_called_for_interview %}checked{% endif %} />
+                {% endif %}
               {% endif %}
             </td>
           {% else %}

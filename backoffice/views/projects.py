@@ -125,15 +125,24 @@ def sorted_applicants(applicants, with_interview_call_results=False):
     for a in applicants:
         if not hasattr(a,'major_number'):
             a.major_number = 0
-    sorted_applicant_ids = [x[3] for x in sorted([(applicant.major_number,
-                                                   ({True: 0, False: 1}[applicant.has_paid]),
-                                                   applicant.national_id,
-                                                   applicant.id) for applicant
-                                                  in applicants])]
+    if not with_interview_call_results:
+        sorted_applicant_ids = [x[3] for x in sorted([(applicant.major_number,
+                                                       ({True: 0, False: 1}[applicant.has_paid]),
+                                                       applicant.national_id,
+                                                       applicant.id) for applicant
+                                                      in applicants])]
+    else:
+        sorted_applicant_ids = [x[4] for x in sorted([(applicant.major_number,
+                                                       ({True: 0, False: 1}[applicant.has_paid]),
+                                                       ({True: 0, False: 1}[applicant.is_accepted_for_interview]),
+                                                       applicant.national_id,
+                                                       applicant.id) for applicant
+                                                      in applicants])]
+        
     return [amaps[i] for i in sorted_applicant_ids]
 
 
-def load_major_applicants(project, admission_round, major):
+def load_major_applicants(project, admission_round, major, with_interview_call_results=False):
     project_applications = ProjectApplication.find_for_project_and_round(project,
                                                                          admission_round,
                                                                          True)
@@ -155,7 +164,7 @@ def load_major_applicants(project, admission_round, major):
 
             applicants.append(applicant)
 
-    return sorted_applicants(applicants)
+    return sorted_applicants(applicants, with_interview_call_results)
 
 
 def load_major_applicant_with_major_stats(project, admission_round, major, num):
@@ -268,6 +277,7 @@ def update_applicant_status(applicant, admission_results, admission_project_roun
     applicant.admission_results = admission_results
 
     applicant.is_accepted = False
+    applicant.is_accepted_for_interview = False
     applicant.is_criteria_passed = False
     applicant.is_interview_callable = False
     if applicant.admission_results:
@@ -279,6 +289,8 @@ def update_applicant_status(applicant, admission_results, admission_project_roun
                 applicant.is_criteria_passed = True
                 if res.is_interview_callable():
                     applicant.is_interview_callable = True
+            if res.is_accepted_for_interview:
+                applicant.is_accepted_for_interview = True
             applicant.admission_result = res
 
     if not admission_project_round.criteria_check_required:
@@ -344,7 +356,7 @@ def list_applicants(request, project_id, round_id):
                                      project_round)
 
     applicants = sorted_applicants(applicants)
-
+    
     old_num = -1
     r = 0
     for a in applicants:
@@ -420,7 +432,10 @@ def show_applicant(request, project_id, round_id, major_number, rank):
     if real_rank < 0:
         return redirect(reverse('backoffice:projects-show-applicant',args=[project_id, round_id, major_number, 1]))
 
-    applicant, major_stat = load_major_applicant_with_major_stats(project, admission_round, major, real_rank)
+    applicant, major_stat = load_major_applicant_with_major_stats(project,
+                                                                  admission_round,
+                                                                  major,
+                                                                  real_rank)
 
     if not applicant:
         return redirect(reverse('backoffice:projects-show-applicant',args=[project_id, round_id, major_number, 1]))
@@ -930,7 +945,7 @@ def show_scores(request, project_id, round_id, major_number):
         update_interview_call_status(applicants, call_decision)
 
         interview_call_count = len([a for a in applicants if a.is_called_for_interview])
-        
+
     return render(request,
                   'backoffice/projects/show_applicant_scores.html',
                   { 'project': project,
@@ -942,6 +957,8 @@ def show_scores(request, project_id, round_id, major_number):
                     'interview_call_count': interview_call_count,
                     
                     'applicant_score_viewable': applicant_score_viewable,
+                    'accepted_for_interview_result_frozen':
+                    project_round.accepted_for_interview_result_frozen,
                   })
 
 @user_login_required
@@ -957,6 +974,9 @@ def update_interview_call_score(request, project_id, round_id, major_number):
 
     applicant_score_viewable = project_round.applicant_score_viewable
     if not applicant_score_viewable:
+        return HttpResponseForbidden()
+
+    if project_round.accepted_for_interview_result_frozen:
         return HttpResponseForbidden()
 
     applicants = load_major_applicants(project, admission_round, major)

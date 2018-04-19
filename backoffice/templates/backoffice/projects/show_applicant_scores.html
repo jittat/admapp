@@ -6,6 +6,9 @@
       <b>คะแนนผู้สมัครโครงการ{{ project }} {{ admission_round}} | สาขา{{ major.title }} | จำนวนรับ {{ major.slots }} คน | เรียกสัมภาษณ์ <span class="interview-count-spans">{{ interview_call_count }}</span> คน</b><br />
       เกณฑ์การคัดเลือก: <a id="selection_criteria_toggle_id" class="btn btn-sm btn-outline-secondary" href="#">ดูเกณฑ์</a>
       <span id="data_load_notice_id"></span>
+      {% if accepted_for_interview_result_frozen %}
+        ในการระบุการรับผู้สมัคร ขณะนี้ให้ใช้หน้าพิจารณาผู้สมัครรายคน <a class="btn btn-outline-secondary btn-sm" href="{% url 'backoffice:projects-show-applicant' project.id admission_round.id major.number 1 %}">พิจารณาผลการคัดเลือก</a>
+      {% endif %}
       <div id="selection_criteria_table_id" style="display: none;">
         {% include "backoffice/projects/include/selection_criteria_table.html" %}
       </div>
