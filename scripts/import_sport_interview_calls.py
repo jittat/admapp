@@ -46,12 +46,20 @@ def main():
 
             found = False
             for i in range(len(majors)):
-                result = AdmissionResult(applicant=application.applicant,
-                                         application=application,
-                                         admission_project=admission_project,
-                                         admission_round=admission_round,
-                                         major_rank=i+1,
-                                         major=majors[i])
+                old_results = AdmissionResult.objects.filter(application=application,
+                                                             admission_project=admission_project,
+                                                             admission_round=admission_round,
+                                                             major=majors[i])
+
+                if len(old_results) > 0:
+                    result = old_results[0]
+                else:
+                    result = AdmissionResult(applicant=application.applicant,
+                                             application=application,
+                                             admission_project=admission_project,
+                                             admission_round=admission_round,
+                                             major_rank=i+1,
+                                             major=majors[i])
                 if majors[i].number != interview_major_num:
                     result.is_accepted_for_interview = False
                 else:
