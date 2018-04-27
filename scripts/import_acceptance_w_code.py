@@ -83,7 +83,10 @@ def main():
 
             result = results[0]
 
-            result.is_accepted_for_interview = True
+            if not result.is_accepted_for_interview:
+                print('ERROR', nat_id, 'did not pass for the interview')
+                continue
+
             result.is_accepted = True
             result.updated_accepted_at = datetime.now()
             result.clearing_house_code = items[3]
