@@ -23,11 +23,26 @@ def read_major_codes(filename):
                 }
     return majors
 
+def read_app_major_codes(filename):
+    app_majors = {}
+    with open(filename) as csvfile:
+        reader = csv.reader(csvfile, delimiter=',')
+        lines = [l for l in reader]
+        for items in lines:
+            app_majors[int(items[0])] = {
+                'app_number': items[0],
+                'study_type': items[1].strip(),
+                'major_cupt_code': items[2].strip(),
+            }
+            
+    return app_majors
+
 def main():
     project_id = sys.argv[1]
     round_id = sys.argv[2]
 
-    major_codes = read_major_codes(sys.argv[3])
+    app_majors = read_app_major_codes(sys.argv[3])
+    major_codes = read_major_codes(sys.argv[4])
     
     admission_project = AdmissionProject.objects.get(pk=project_id)
     admission_round = AdmissionRound.objects.get(pk=round_id)
@@ -66,19 +81,17 @@ def main():
             else:
                 g = 'F'
 
-            major_cupt_code = '{0:0>3}'.format(major.cupt_code)
-            study_type_code = major.cupt_study_type_code
-
-            major_data = major_codes[major_cupt_code]
+            app_major_data = app_majors[application.get_number()]
+            major_data = major_codes[app_major_data['major_cupt_code']]
             
-            study_type = {'1': 'ภาคปกติ',
-                          '2': 'ภาคพิเศษ',
-                          '3': 'นานาชาติ'}[study_type_code]
+            study_type_code = {'ภาคปกติ': '1',
+                               'ภาคพิเศษ': '2',
+                               'นานาชาติ': '3'}[app_major_data['study_type']]
             
             full_major_code = ('002' +
                                admission_project.cupt_code +
                                faculty.cupt_code +
-                               major_cupt_code + 
+                               app_major_data['major_cupt_code'] +
                                study_type_code)
 
             full_major_title = ' '.join(['มหาวิทยาลัยเกษตรศาสตร์',
@@ -86,7 +99,7 @@ def main():
                                          'โครงการ' + admission_project.title,
                                          faculty.title,
                                          major_data['name'].strip(),
-                                         '(' + study_type + ')'])
+                                         '(' + app_major_data['study_type'] + ')'])
             
             items = [count,
                      admission_round.get_full_number(),
@@ -111,7 +124,7 @@ def main():
                      major_data['ku_code'],
                      major.title,
                      admission_project.title,
-                     study_type,
+                     app_major_data['study_type'],
                      full_major_code,
                      full_major_title,
                      apply_date,
