@@ -101,7 +101,7 @@ def main():
                      personal_profile.mobile_phone,
                      personal_profile.contact_phone,
                      educational_profile.school_code,
-                     '"%s"' % (educational_profile.school_title,),
+                     '"%s"' % (educational_profile.school_title.replace('"','""'),),
                      '002',
                      res.clearing_house_code,
                      'มหาวิทยาลัยเกษตรศาสตร์',
