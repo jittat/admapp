@@ -12,7 +12,7 @@
       <p>
         ผู้สมัครทั้งหมด {{ applicant_count }} ผู้สมัครที่ชำระเงินแล้ว {{ paid_applicant_count }}
         รายละเอียดแยกตามสาขาแสดงด้านล่าง (แสดงจำนวนที่ชำระเงินแล้ว / จำนวนที่เลือกทั้งหมด)
-        <a class="btn btn-sm btn-primary" href="{% url 'backoffice:projects-list' project.id admission_round.id %}">แสดงรายการผู้สมัครทั้งหมด</a>
+        <a style="display: none;" class="btn btn-sm btn-primary" href="{% url 'backoffice:projects-list' project.id admission_round.id %}">แสดงรายการผู้สมัครทั้งหมด</a>
       </p>
       
       <table class="table table-striped table-sm">
