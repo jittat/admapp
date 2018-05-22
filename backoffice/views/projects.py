@@ -88,7 +88,10 @@ def load_project_applicants(project, admission_round, faculty):
     return applicants
 
 
-def process_applicant_stats(majors, applicants, max_num_selections):
+def process_applicant_stats(majors,
+                            applicants,
+                            max_num_selections,
+                            rank_combined=False):
     mnum_map = {}
     midx = 0
     for m in majors:
@@ -116,7 +119,8 @@ def process_applicant_stats(majors, applicants, max_num_selections):
                         faculty_stats[m.faculty_id]['paid'] += 1
 
                     majors[mnum_map[m.number]].faculty_stat = faculty_stats[m.faculty_id]
-            r += 1
+            if not rank_combined:
+                r += 1
     return majors
 
 
@@ -241,10 +245,17 @@ def index(request, project_id, round_id):
     if faculty:
         majors = [m for m in majors if m.faculty_id == faculty.id]
 
-    project_max_num_selections = project.max_num_selections
+    if not project.has_selections_with_no_ranks:
+        project_max_num_selections = project.max_num_selections
+    else:
+        project_max_num_selections = 1
     applicants = load_project_applicants(project, admission_round, faculty)
 
-    process_applicant_stats(majors, applicants, project_max_num_selections)
+    process_applicant_stats(majors,
+                            applicants,
+                            project_max_num_selections,
+                            project.has_selections_with_no_ranks)
+
     ranks = range(1, project_max_num_selections+1)
 
     applicant_info_viewable = project_round.applicant_info_viewable

@@ -132,10 +132,15 @@ class AdmissionProject(models.Model):
     max_num_selections = models.IntegerField(default=1,
                                              verbose_name='จำนวนสาขาที่เลือกได้')
 
+    has_selections_with_no_ranks = models.BooleanField(default=False)
+    cross_majors_acceptance_visible = models.BooleanField(default=False)
+    applicant_details_hidden = models.BooleanField(default=False)
+
     base_fee = models.IntegerField(default=0,
                                    verbose_name='ค่าสมัคร')
 
     cupt_code = models.CharField(max_length=10, blank=True)
+
     
     def __str__(self):
         return self.title

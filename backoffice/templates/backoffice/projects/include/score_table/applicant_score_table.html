@@ -3,8 +3,10 @@
     <tr>
       <th></th>
       <th>เลขประจำตัว</th>
-      <th>ชื่อ-นามสกุล</th>
-      <th>แผนการเรียน</th>
+      {% if not project.applicant_details_hidden %}
+        <th>ชื่อ-นามสกุล</th>
+        <th>แผนการเรียน</th>
+      {% endif %}
       <th>GPAX</th>
       {% include "backoffice/projects/include/score_table/onet_header.html" %}
       {% include "backoffice/projects/include/score_table/gatpat_header.html" %}
@@ -25,8 +27,10 @@
         <td class="national-ids">
           {{ a.national_id }}
         </td>
-        <td>{{ a.get_full_name }}</td>
-        <td>{{ a.educationalprofile.get_education_plan_display }}</td>
+        {% if not project.applicant_details_hidden %}
+          <td>{{ a.get_full_name }}</td>
+          <td>{{ a.educationalprofile.get_education_plan_display }}</td>
+        {% endif %}
         <td>{{ a.educationalprofile.gpa|floatformat:"2" }}</td>
         {% with a as applicant %}
           {% include "backoffice/projects/include/score_table/onet_cells.html" %}

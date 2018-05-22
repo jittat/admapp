@@ -7,7 +7,7 @@ from random import choice
 from datetime import datetime
 
 from regis.models import Applicant
-from appl.models import Major, MajorSelection, ProjectApplication, AdmissionProjectRound
+from appl.models import Major, MajorSelection, ProjectApplication, AdmissionProjectRound, EducationalProfile
 
 def random_email():
     return ''.join([choice('abcdefghijklmnopqrstuvwxyz') for i in range(10)]) + '@ku.ac.th'
@@ -22,9 +22,13 @@ def read_applicants(filename):
                 'natid': items[0],
                 'prefix': items[1],
                 'first_name': items[2],
-                'last_name': items[3]
+                'last_name': items[3],
             }
-            a['majors'] = [int(x) for x in items[5:]]
+            try:
+                a['gpa'] = float(items[4])
+            except:
+                a['gpa'] = 0
+            a['majors'] = [int(x) for x in items[6:]]
             applicants.append(a)
             
     return applicants
@@ -91,6 +95,18 @@ def main():
                                     in a['majors']])
         major_selection.save()
 
+        if hasattr(app,'educationalprofile'):
+            education = app.educationalprofile
+        else:
+            education = EducationalProfile()
+            education.applicant = app
+
+        education.gpa = a['gpa']
+        education.education_level = 1
+        education.education_plan = 5
+        education.province_id = 1
+        education.save()
+        
         print(a['natid'])
             
 
