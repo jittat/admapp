@@ -27,8 +27,11 @@ def main():
         
         for items in lines[2:]:
             
-            if len(items) < 5:
+            if len(items) < 4:
                 continue
+
+            if len(items) == 4:
+                items.append('')
 
             number = items[0]
             faculty_title = items[1].strip()
@@ -50,7 +53,11 @@ def main():
                 continue
                 
             title = items[2].strip()
-            slots = int(items[3])
+            if items[3].strip() != '-':
+                slots = int(items[3].strip())
+            else:
+                slots = 0
+            
             slots_comments = items[4]
 
             details_items = items[5:]
