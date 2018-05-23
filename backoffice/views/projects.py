@@ -9,7 +9,7 @@ from django.http import HttpResponse, HttpResponseForbidden, HttpResponseNotFoun
 from regis.models import Applicant, LogItem
 from appl.models import AdmissionProject, AdmissionRound
 from appl.models import ProjectApplication, Payment, Major, AdmissionResult, Faculty
-from appl.models import ProjectUploadedDocument, UploadedDocument
+from appl.models import ProjectUploadedDocument, UploadedDocument, ExamScoreProvider
 
 from backoffice.views.permissions import can_user_view_project, can_user_view_applicant_in_major, can_user_view_applicants_in_major
 from backoffice.decorators import user_login_required
@@ -146,7 +146,7 @@ def sorted_applicants(applicants, with_interview_call_results=False):
     return [amaps[i] for i in sorted_applicant_ids]
 
 
-def load_major_applicants(project, admission_round, major, with_interview_call_results=False):
+def load_major_applicants_no_cache(project, admission_round, major, with_interview_call_results=False):
     project_applications = ProjectApplication.find_for_project_and_round(project,
                                                                          admission_round,
                                                                          True)
@@ -167,6 +167,68 @@ def load_major_applicants(project, admission_round, major, with_interview_call_r
             applicant.has_paid = applicant_paid_amount.get(applicant.id,0) >= admission_fee
 
             applicants.append(applicant)
+
+    return sorted_applicants(applicants, with_interview_call_results)
+
+
+def load_major_applicants(project,
+                          admission_round,
+                          major,
+                          with_interview_call_results=False,
+                          load_results=False):
+    from backoffice.models import ApplicantMajorResult, ApplicantMajorScore
+    
+    project_round = project.get_project_round_for(admission_round)
+
+    major_results = (ApplicantMajorResult
+                     .objects
+                     .filter(admission_project=project,
+                             major=major)
+                     .select_related('project_application')
+                     .select_related('admission_result')
+                     .select_related('applicant')
+                     .select_related('applicant__educationalprofile')
+                     .all())
+
+    scores = {}
+
+    for ascore in (ApplicantMajorScore
+                   .objects
+                   .filter(admission_project=project,
+                           major=major)
+                   .select_related('exam_score')
+                   .all()):
+        if ascore.applicant_id not in scores:
+            scores[ascore.applicant_id] = []
+        scores[ascore.applicant_id].append(ascore.exam_score)
+    
+    for m in major_results:
+        applicant = m.applicant
+        if load_results:
+            applicant.is_criteria_passed = False
+            applicant.is_interview_callable = False
+            applicant.admission_result = m.admission_result
+            if applicant.admission_result != None:
+                result = applicant.admission_result
+                if (result.is_criteria_passed) or (not project_round.criteria_check_required):
+                    applicant.is_criteria_passed = True
+                    applicant.is_interview_callable = result.is_interview_callable()
+        m.project_application.applicant = applicant
+    
+    project_applications = [r.project_application for r in major_results]
+    applicant_paid_amount = load_applicant_round_paid_amount(admission_round)
+    major_map = project.get_majors_as_dict()
+
+    applicants = []
+    for application in project_applications:
+        applicant = application.applicant
+        admission_fee = application.admission_fee(project_base_fee=project.base_fee,
+                                                  majors=[major])
+        applicant.has_paid = applicant_paid_amount.get(applicant.id,0) >= admission_fee
+
+        applicant.exam_score_provider = ExamScoreProvider(applicant, scores.get(applicant.id,[]))
+        
+        applicants.append(applicant)
 
     return sorted_applicants(applicants, with_interview_call_results)
 
@@ -940,14 +1002,13 @@ def show_scores(request, project_id, round_id, major_number):
     if not can_user_view_applicants_in_major(user, project, major):
         return redirect(reverse('backoffice:index'))
 
-    applicants = load_major_applicants(project, admission_round, major)
+    applicants = load_major_applicants(project,
+                                       admission_round,
+                                       major,
+                                       load_results=True)
     
     applicant_score_viewable = project_round.applicant_score_viewable
-    load_check_marks_and_results(applicants,
-                                 project,
-                                 admission_round,
-                                 project_round)
-
+    
     interview_call_count = 0
     if applicant_score_viewable:
         applicants = sort_applicants_by_calculated_scores(applicants,
@@ -990,12 +1051,10 @@ def update_interview_call_score(request, project_id, round_id, major_number):
     if project_round.accepted_for_interview_result_frozen:
         return HttpResponseForbidden()
 
-    applicants = load_major_applicants(project, admission_round, major)
-    load_check_marks_and_results(applicants,
-                                 project,
-                                 admission_round,
-                                 project_round)
-
+    applicants = load_major_applicants(project,
+                                       admission_round,
+                                       major,
+                                       load_results=True)
     applicants = sort_applicants_by_calculated_scores(applicants,
                                                       project_round.criteria_check_required)
     call_decision = MajorInterviewCallDecision.get_for(major, admission_round)

@@ -9,7 +9,7 @@ from django.dispatch import receiver
 from regis.models import Applicant
 from appl.models import Campus, Faculty
 from appl.models import AdmissionProject, AdmissionRound, ProjectApplication 
-from appl.models import Major
+from appl.models import Major, AdmissionResult, ExamScore
 
 class Profile(models.Model):
     ANY_MAJOR = 0
@@ -158,4 +158,38 @@ class MajorInterviewCallDecision(models.Model):
             return decisions[0]
         else:
             return None
+
+
+class ApplicantMajorResult(models.Model):
+    admission_project = models.ForeignKey(AdmissionProject)
+    major = models.ForeignKey(Major)
+    applicant = models.ForeignKey(Applicant)
+    project_application = models.ForeignKey(ProjectApplication,
+                                            null=True)
+    admission_result = models.ForeignKey(AdmissionResult,
+                                         null=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['major','admission_project']),
+            models.Index(fields=['applicant']),
+            models.Index(fields=['admission_project','applicant']),
+            models.Index(fields=['major','admission_project','applicant']),
+        ]
+        unique_together = (('major','admission_project','applicant'),)
+
+        
+class ApplicantMajorScore(models.Model):
+    admission_project = models.ForeignKey(AdmissionProject)
+    major = models.ForeignKey(Major)
+    applicant = models.ForeignKey(Applicant)
+
+    exam_score = models.ForeignKey(ExamScore)
+    
+    class Meta:
+        indexes = [
+            models.Index(fields=['major','admission_project']),
+            models.Index(fields=['applicant']),
+            models.Index(fields=['major','admission_project','applicant']),
+        ]
     

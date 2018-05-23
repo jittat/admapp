@@ -960,9 +960,9 @@ class ExamScore(models.Model):
 
 
 class ExamScoreProvider(object):
-    def __init__(self, applicant):
+    def __init__(self, applicant, scores=None):
         self.applicant = applicant
-        self.load_scores()
+        self.load_scores(scores)
 
     def process_pat7(self, arr):
         scores = []
@@ -980,8 +980,11 @@ class ExamScoreProvider(object):
         return scores
                     
 
-    def load_scores(self):
-        self.scores = self.applicant.examscore_set.all()
+    def load_scores(self, scores=None):
+        if scores == None:
+            self.scores = self.applicant.examscore_set.all()
+        else:
+            self.scores = scores
         for s in self.scores:
             if not hasattr(self, s.exam_type):
                 setattr(self, s.exam_type, {})
