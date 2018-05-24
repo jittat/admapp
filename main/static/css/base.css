@@ -149,3 +149,8 @@ table.applicant-score-tables tr.app-interview-called td.chboxes {
 table.applicant-score-tables tr.app-interview-not-called .called-checks {
     display: none;
 }
+
+table.applicant-score-tables .major-markers.accepted {
+    color: green;
+}
+

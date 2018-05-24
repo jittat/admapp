@@ -132,6 +132,21 @@
       }
     });
   };
+
+  var updateMajorMarkers = function() {
+    $('.major-markers').each(function(idx) {
+      var elt = $(this);
+      var mnum = $(this).data('mnum');
+      var score = $(this).data('score');
+      if(minMajorScore[mnum] < score) {
+        elt.addClass('accepted');
+        elt.html('*');
+      } else {
+        elt.removeClass('accepted');
+        elt.html('&#8226;');
+      }
+    });
+  };
   
   $(function(){
     var url = '{% url 'backoffice:projects-interview-call-score-update' project.id admission_round.id major.number %}';
@@ -150,5 +165,7 @@
         $('#data_load_notice_id').html('<span style="color: green;">จัดเก็บข้อมูลเสร็จแล้ว</span>').delay(3000).fadeOut();
       });
     });
+
+    updateMajorMarkers();
   });
 </script>

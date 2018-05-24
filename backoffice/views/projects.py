@@ -1049,7 +1049,8 @@ def show_scores(request, project_id, round_id, major_number):
     cross_major_titles = dict([(m, major_map[m].title_with_faculty()) for m in cross_majors])
     cross_major_scores = dict([(m,100000) for m in cross_majors])
     for decision in interview_call_decisions:
-        cross_major_scores[decision.major.number] = decision.interview_call_min_score
+        cross_major_scores[decision.major.number] = decision.interview_call_min_score - MajorInterviewCallDecision.FLOAT_DELTA
+        
     return render(request,
                   'backoffice/projects/show_applicant_scores.html',
                   { 'project': project,
