@@ -1,8 +1,12 @@
+{% load score_extras %}
 <table class="table table-sm table-striped applicant-score-tables">
   <thead class="thead-inverse">
     <tr>
       <th></th>
       <th>เลขประจำตัว</th>
+      {% if project.cross_majors_acceptance_visible %}
+        <th></th>
+      {% endif %}
       {% if not project.applicant_details_hidden %}
         <th>ชื่อ-นามสกุล</th>
         <th>แผนการเรียน</th>
@@ -10,7 +14,10 @@
       <th>GPAX</th>
       {% include "backoffice/projects/include/score_table/onet_header.html" %}
       {% include "backoffice/projects/include/score_table/gatpat_header.html" %}
+      {% include "backoffice/projects/include/score_table/udat_header.html" %}
+      {% comment %}
       {% include "backoffice/projects/include/score_table/additional_hack_header.html" %}
+      {% endcomment %}
       {% if applicant_score_viewable %}
         <th>คะแนน</th>
         <th>เรียก<br />สัมภาษณ์</th>
@@ -27,15 +34,50 @@
         <td class="national-ids">
           {{ a.national_id }}
         </td>
+        {% if project.cross_majors_acceptance_visible %}
+          <td>
+            {% if a.other_major_info %}
+              <span class="cross-{{ a.national_id }}">
+                {% for m,s in a.other_major_info %}
+                  <span data-appid="{{ a.national_id }}" data-mnum="{{ m }}" data-score="{{ s }}" class="major-markers major-marker-{{ m }}">&#8226;</span>
+                {% endfor %}
+              </span>
+            {% endif %}
+          </td>
+        {% endif %}
         {% if not project.applicant_details_hidden %}
           <td>{{ a.get_full_name }}</td>
           <td>{{ a.educationalprofile.get_education_plan_display }}</td>
         {% endif %}
         <td>{{ a.educationalprofile.gpa|floatformat:"2" }}</td>
         {% with a as applicant %}
-          {% include "backoffice/projects/include/score_table/onet_cells.html" %}
-          {% include "backoffice/projects/include/score_table/gatpat_cells.html" %}
+          <td class="onet-odd">{{ applicant.get_all_exam_scores.onet.x03|score }}</td>
+          
+          <td class="gatpat-odd">{{ applicant.get_all_exam_scores.gatpat_rounds|round_array }}</td>
+          <td class="gatpat-even">{{ applicant.get_all_exam_scores.gatpat_array.gat|score_array }}</td>
+          <td class="gatpat-odd">{{ applicant.get_all_exam_scores.gatpat_array.pat1|score_array }}</td>
+          <td class="gatpat-even">{{ applicant.get_all_exam_scores.gatpat_array.pat2|score_array }}</td>
+          <td class="gatpat-odd">{{ applicant.get_all_exam_scores.gatpat_array.pat3|score_array }}</td>
+          <td class="gatpat-even">{{ applicant.get_all_exam_scores.gatpat_array.pat4|score_array }}</td>
+          <td class="gatpat-odd">{{ applicant.get_all_exam_scores.gatpat_array.pat5|score_array }}</td>
+          <td class="gatpat-odd">{{ applicant.get_all_exam_scores.gatpat_array.pat7|round_array }}</td>
+
+          <td class="udat-even">{{ applicant.get_all_exam_scores.udat.u09|score }}</td>
+          <td class="udat-odd">{{ applicant.get_all_exam_scores.udat.u19|score }}</td>
+          <td class="udat-even">{{ applicant.get_all_exam_scores.udat.u29|score }}</td>
+          <td class="udat-odd">{{ applicant.get_all_exam_scores.udat.u39|score }}</td>
+          <td class="udat-even">{{ applicant.get_all_exam_scores.udat.u49|score }}</td>
+          <td class="udat-odd">{{ applicant.get_all_exam_scores.udat.u59|score }}</td>
+          <td class="udat-even">{{ applicant.get_all_exam_scores.udat.u69|score }}</td>
+
+          {% comment %}
+            {% include "backoffice/projects/include/score_table/onet_cells.html" %}
+            {% include "backoffice/projects/include/score_table/gatpat_cells.html" %}
+            {% include "backoffice/projects/include/score_table/udat_cells.html" %}
+          {% endcomment %}
+          {% comment %}
           {% include "backoffice/projects/include/score_table/additional_hack_cells.html" %}
+          {% endcomment %}
         {% endwith %}
         {% if not a.is_criteria_passed %}
           <td><i class="fa fa-times" style="color: red;"></i> ไม่ผ่านเกณฑ์</td>
@@ -68,6 +110,10 @@
   </tbody>
 </table>
 <script>
+  var minMajorScore = {
+    {% for num, score in cross_major_scores.items %}{{ num }}: {{ score }}{% if not forloop.last %}, {% endif %}{% endfor %}
+  };
+  
   var updateCall = function(count) {
     $('.call-checkboxes').each(function(i, elt) {
       if(i < count) {

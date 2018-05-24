@@ -204,6 +204,14 @@ def load_major_applicants(project,
     
     for m in major_results:
         applicant = m.applicant
+        applicant.major_result = m
+        other_major_numbers = m.get_other_major_numbers()
+        other_major_scores = m.get_other_major_scores()
+        if len(other_major_numbers) != len(other_major_scores):
+            other_major_scores += ([0] * (len(other_major_numbers) - len(other_major_scores)))
+        applicant.other_major_info = zip(other_major_numbers, other_major_scores)
+        applicant.other_major_numbers = other_major_numbers
+        
         if load_results:
             applicant.is_criteria_passed = False
             applicant.is_interview_callable = False
@@ -993,6 +1001,8 @@ def update_interview_call_status(applicants, decision):
             
 @user_login_required
 def show_scores(request, project_id, round_id, major_number):
+    MAX_APPLICANT_SHOWN = 1000
+    
     user = request.user
     project = get_object_or_404(AdmissionProject, pk=project_id)
     admission_round = get_object_or_404(AdmissionRound, pk=round_id)
@@ -1006,7 +1016,7 @@ def show_scores(request, project_id, round_id, major_number):
                                        admission_round,
                                        major,
                                        load_results=True)
-    
+
     applicant_score_viewable = project_round.applicant_score_viewable
     
     interview_call_count = 0
@@ -1018,6 +1028,28 @@ def show_scores(request, project_id, round_id, major_number):
 
         interview_call_count = len([a for a in applicants if a.is_called_for_interview])
 
+    is_truncated = False
+    org_count = len(applicants)
+    if len(applicants) > MAX_APPLICANT_SHOWN:
+        is_truncated = True
+        applicants = applicants[:MAX_APPLICANT_SHOWN]
+
+    cross_majors = set()
+    for a in applicants:
+        for m in a.other_major_numbers:
+            cross_majors.add(m)
+    interview_call_decisions = (MajorInterviewCallDecision
+                                .objects
+                                .select_related('major')
+                                .filter(admission_round=admission_round,
+                                        admission_project=project,
+                                        major__number__in=list(cross_majors)).all())
+
+    major_map = project.get_majors_as_dict(True)
+    cross_major_titles = dict([(m, major_map[m].title_with_faculty()) for m in cross_majors])
+    cross_major_scores = dict([(m,100000) for m in cross_majors])
+    for decision in interview_call_decisions:
+        cross_major_scores[decision.major.number] = decision.interview_call_min_score
     return render(request,
                   'backoffice/projects/show_applicant_scores.html',
                   { 'project': project,
@@ -1031,6 +1063,11 @@ def show_scores(request, project_id, round_id, major_number):
                     'applicant_score_viewable': applicant_score_viewable,
                     'accepted_for_interview_result_frozen':
                     project_round.accepted_for_interview_result_frozen,
+                    'is_truncated': is_truncated,
+                    'org_count': org_count,
+
+                    'cross_major_scores': cross_major_scores,
+                    'cross_major_titles': cross_major_titles,
                   })
 
 @user_login_required

@@ -168,6 +168,12 @@ class ApplicantMajorResult(models.Model):
                                             null=True)
     admission_result = models.ForeignKey(AdmissionResult,
                                          null=True)
+    other_major_numbers = models.CharField(max_length=30,
+                                           blank='',
+                                           default='')
+    other_major_scores = models.CharField(max_length=50,
+                                          blank='',
+                                          default='')
 
     class Meta:
         indexes = [
@@ -178,6 +184,15 @@ class ApplicantMajorResult(models.Model):
         ]
         unique_together = (('major','admission_project','applicant'),)
 
+    def get_other_major_numbers(self):
+        if self.other_major_numbers == '':
+            return []
+        return [int(x) for x in self.other_major_numbers.split(',')]
+        
+    def get_other_major_scores(self):
+        if self.other_major_numbers == '':
+            return []
+        return [float(x) for x in self.other_major_scores.split(',')]
         
 class ApplicantMajorScore(models.Model):
     admission_project = models.ForeignKey(AdmissionProject)

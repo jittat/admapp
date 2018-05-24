@@ -186,8 +186,11 @@ class AdmissionProject(models.Model):
         
         return table_header(self.column_descriptions, tr_class="table-active")
 
-    def get_majors_as_dict(self):
-        return dict([(m.number,m) for m in self.major_set.all()])
+    def get_majors_as_dict(self, with_faculty=False):
+        if not with_faculty:
+            return dict([(m.number,m) for m in self.major_set.all()])
+        else:
+            return dict([(m.number,m) for m in self.major_set.select_related('faculty').all()])
 
     
 class AdmissionProjectRound(models.Model):
@@ -286,6 +289,9 @@ class Major(models.Model):
     def title_trans(self):
         return _(self.title)
 
+    def title_with_faculty(self):
+        return '{} ({})'.format(self.title, self.faculty.title)
+    
     @staticmethod
     def get_by_project_number(project, number):
         majors = Major.objects.filter(admission_project=project,
