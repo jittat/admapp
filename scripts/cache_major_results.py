@@ -23,6 +23,8 @@ def main():
     majors = dict([(m.number, m) for m in
                    Major.objects.filter(admission_project=project).all()])
 
+    counter = 0
+    
     for application in applications:
         a = application.applicant
         major_selection = application.get_major_selection()
@@ -59,8 +61,9 @@ def main():
                 ascore.exam_score = ex
                 ascore.save()
             
-            
-        print(a.national_id)
+        counter += 1
+        if counter % 1000 == 0:
+            print(counter, a.national_id)
 
 if __name__ == '__main__':
     main()

@@ -75,8 +75,9 @@ def main():
                 major_result.save()
                 print('saved',major.number)
             
-            print(application.applicant)
             counter += 1
+            if counter % 1000 == 0:
+                print(counter, application.applicant)
 
     print('Imported',counter,'results')
         

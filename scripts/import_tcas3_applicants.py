@@ -49,7 +49,8 @@ def main():
                    Major.objects.filter(admission_project=project).all()])
     
     check_dup = False
-    
+
+    counter = 0
     for a in applicants:
         old_apps = Applicant.objects.filter(national_id=a['natid']).all()
         if (len(old_apps) != 0) and check_dup:
@@ -107,7 +108,11 @@ def main():
         education.province_id = 1
         education.save()
         
-        print(a['natid'])
+        #print(a['natid'])
+
+        counter += 1
+        if counter % 1000 == 0:
+            print(counter, a['natid'])
             
 
 if __name__ == '__main__':
