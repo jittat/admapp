@@ -190,7 +190,7 @@ class ApplicantMajorResult(models.Model):
         return [int(x) for x in self.other_major_numbers.split(',')]
         
     def get_other_major_scores(self):
-        if self.other_major_numbers == '':
+        if self.other_major_scores == '':
             return []
         return [float(x) for x in self.other_major_scores.split(',')]
         
