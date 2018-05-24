@@ -3,11 +3,19 @@
 {% block content %}
   <div class="row" style="margin-top: -10px;">
     <div class="col-md-12">
-      <b>คะแนนผู้สมัครโครงการ{{ project }} {{ admission_round}} | สาขา{{ major.title }} | จำนวนรับ {{ major.slots }} คน | เรียกสัมภาษณ์ <span class="interview-count-spans">{{ interview_call_count }}</span> คน</b><br />
-      เกณฑ์การคัดเลือก: <a id="selection_criteria_toggle_id" class="btn btn-sm btn-outline-secondary" href="#">ดูเกณฑ์</a>
+      <b>
+        คะแนนผู้สมัครโครงการ{{ project }} {{ admission_round}} | {{ major.title }} | รับ {{ major.slots }} คน | เรียกสัมภาษณ์ <span class="interview-count-spans">{{ interview_call_count }}</span> คน
+        {% if project.cross_majors_acceptance_visible %}
+          | รับพร้อมสาขาอื่น <span id="conflict_count_span_id"></span> คน
+        {% endif %}
+      </b><br />
+      <div style="display: none;">
+        เกณฑ์การคัดเลือก: <a id="selection_criteria_toggle_id" class="btn btn-sm btn-outline-secondary" href="#">ดูเกณฑ์</a>
+      </div>
       {% if is_truncated %}
         แสดงเฉพาะผู้สมัครคะแนนรวมสูงสุด {{ applicants|length }} คนแรก (จากทั้งหมด {{ org_count }} คน)
       {% endif %}
+      <a id="conflict_toggle_id" class="btn btn-sm btn-outline-secondary" href="#">แสดงรายการสาขาที่รับผู้สมัครพร้อมกัน <i class="fa fa-caret-down"></i></a>
       <span id="data_load_notice_id"></span>
       {% if accepted_for_interview_result_frozen %}
         ในการระบุการรับผู้สมัคร ขณะนี้ให้ใช้หน้าพิจารณาผู้สมัครรายคน <a class="btn btn-outline-secondary btn-sm" href="{% url 'backoffice:projects-show-applicant' project.id admission_round.id major.number 1 %}">พิจารณาผลการคัดเลือก</a>
@@ -15,7 +23,13 @@
       <div id="selection_criteria_table_id" style="display: none;">
         {% include "backoffice/projects/include/selection_criteria_table.html" %}
       </div>
-
+      <div id="conflict_list_div_id" class="alert alert-secondary mt5" style="display: none;">
+        <small>
+          จำนวนรับซ้ำแยกตามสาขา (อาจมีการนับผู้สมัครบางคนมากกว่า 1 ครั้งถ้าผ่านการคัดเลือกหลายสาขา)
+          <ul class="conflict-list">
+          </ul>
+        </small>
+      </div>
       {% include "backoffice/projects/include/score_table/applicant_score_table.html" %}
     </div>
   </div>
@@ -23,6 +37,10 @@
     $(function(){
       $("#selection_criteria_toggle_id").click(function(){
         $("#selection_criteria_table_id").slideToggle();
+        return false;
+      });
+      $("#conflict_toggle_id").click(function(){
+        $("#conflict_list_div_id").slideToggle();
         return false;
       });
     });

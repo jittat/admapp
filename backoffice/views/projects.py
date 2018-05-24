@@ -310,7 +310,7 @@ def index(request, project_id, round_id):
         faculty = None
         user_major_number = user.profile.ANY_MAJOR
 
-    majors = project.major_set.all()
+    majors = project.major_set.select_related('faculty').all()
 
     if faculty:
         majors = [m for m in majors if m.faculty_id == faculty.id]

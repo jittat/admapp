@@ -150,7 +150,14 @@ table.applicant-score-tables tr.app-interview-not-called .called-checks {
     display: none;
 }
 
+table.applicant-score-tables .major-markers {
+    margin-right: 1px;
+    padding-left: 1px;
+    padding-right: 1px;
+}
+
 table.applicant-score-tables .major-markers.accepted {
-    color: green;
+    color: white;
+    background: #aa0000;
 }
 

@@ -96,7 +96,8 @@
             {% if applicant_info_viewable %}
               <td>
                 {% if user_major_number == any_major or user_major_number == major.number %}
-                  <div class="dropdown">
+                  <a class="btn btn-sm btn-outline-secondary" href="{% url 'backoffice:projects-show-scores' project.id admission_round.id major.number %}">พิจารณาคะแนน</a>
+                  <div class="dropdown d-none">
                     <a class="btn btn-sm btn-outline-secondary dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">พิจารณา</a>
                     <div class="dropdown-menu">
                       <a class="dropdown-item" href="{% url 'backoffice:projects-show-applicant' project.id admission_round.id major.number 1 %}">พิจารณาข้อมูลผู้สมัคร</a>
@@ -107,7 +108,7 @@
               </td>
               <td>
                 {% if user_major_number == any_major or user_major_number == major.number %}
-                  <div class="dropdown">
+                  <div class="dropdown d-none">
                     <a class="btn btn-sm btn-outline-secondary dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">ดาวน์โหลด</a>
                     <div class="dropdown-menu">
                       <a class="dropdown-item" href="{% url 'backoffice:projects-download-app-sheet' project.id admission_round.id major.number %}">ดาวน์โหลดข้อมูลทั่วไป</a>

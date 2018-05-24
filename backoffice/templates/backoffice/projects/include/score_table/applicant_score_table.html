@@ -29,20 +29,22 @@
   </thead>
   <tbody>
     {% for a in applicants %}
-      <tr class="{% if a.is_called_for_interview %}app-interview-called{%else %}app-interview-not-called{% endif %}">
+      <tr data-appid="{{ a.national_id }}" class="{% if a.is_called_for_interview %}app-interview-called{%else %}app-interview-not-called{% endif %}">
         <td class="ranks">{{ forloop.counter }}</td>
         <td class="national-ids">
           {{ a.national_id }}
         </td>
         {% if project.cross_majors_acceptance_visible %}
           <td>
-            {% if a.other_major_info %}
-              <span class="cross-{{ a.national_id }}">
-                {% for m,s in a.other_major_info %}
-                  <span data-appid="{{ a.national_id }}" data-mnum="{{ m }}" data-score="{{ s }}" class="major-markers major-marker-{{ m }}">&#8226;</span>
-                {% endfor %}
-              </span>
-            {% endif %}
+            {% spaceless %}
+              {% if a.other_major_info %}
+                <span class="cross-{{ a.national_id }}">
+                  {% for m,s in a.other_major_info %}
+                    <span data-appid="{{ a.national_id }}" data-mnum="{{ m }}" data-score="{{ s }}" class="major-markers major-marker-{{ m }}">&#8226;</span>
+                  {% endfor %}
+                </span>
+              {% endif %}
+            {% endspaceless %}
           </td>
         {% endif %}
         {% if not project.applicant_details_hidden %}
@@ -113,7 +115,46 @@
   var minMajorScore = {
     {% for num, score in cross_major_scores.items %}{{ num }}: {{ score }}{% if not forloop.last %}, {% endif %}{% endfor %}
   };
-  
+  var majorTitles = {
+    {% for num, title in cross_major_titles.items %}{{ num }}: "{{ title }}"{% if not forloop.last %}, {% endif %}{% endfor %}
+  };
+
+  var isAcceptedForInterview = {
+    {% for a in applicants %}{{ a.national_id }}: {% if a.is_called_for_interview %}true{% else %}false{% endif %}{% if not forloop.last %}, {% endif %}{% endfor %}
+  };
+
+  var updateConflictCounts = function() {
+    $('.conflict-list li').detach();
+    var counted = {};
+    var mcount = {};
+    var numCount = 0;
+    $('.major-markers').each(function(idx) {
+      var elt = $(this);
+      var appid = $(this).data('appid');
+      var mnum = $(this).data('mnum');
+      var otherAccepted = $(this).data('accepted');
+      if(isAcceptedForInterview[appid] && otherAccepted) {
+        if(! counted[appid]) {
+          counted[appid] = true;
+          numCount++;
+        }
+        if(! mcount[mnum]) {
+          mcount[mnum] = 1;
+        } else {
+          mcount[mnum]++;
+        }
+      }
+    });
+    $('#conflict_count_span_id').text(numCount);
+    for(var num in majorTitles) {
+      if(majorTitles.hasOwnProperty(num)) {
+        if(mcount[num]) {
+          $(".conflict-list").append("<li>" + majorTitles[num] + ": " + mcount[num] + "</li>");
+        }
+      }
+    }
+  };
+      
   var updateCall = function(count) {
     $('.call-checkboxes').each(function(i, elt) {
       if(i < count) {
@@ -123,16 +164,20 @@
       }
       
       var row = $(elt).parents('tr').first();
+      var natid = $(row).data('appid');
       if($(elt).prop('checked')) {
+        isAcceptedForInterview[natid] = true;
         $(row).addClass('app-interview-called');
         $(row).removeClass('app-interview-not-called');
       } else {
+        isAcceptedForInterview[natid] = false;
         $(row).addClass('app-interview-not-called');
         $(row).removeClass('app-interview-called');
       }
     });
+    updateConflictCounts();
   };
-
+  
   var updateMajorMarkers = function() {
     $('.major-markers').each(function(idx) {
       var elt = $(this);
@@ -140,10 +185,10 @@
       var score = $(this).data('score');
       if(minMajorScore[mnum] < score) {
         elt.addClass('accepted');
-        elt.html('*');
+        elt.data('accepted', true);
       } else {
         elt.removeClass('accepted');
-        elt.html('&#8226;');
+        elt.data('accepted', false);
       }
     });
   };
@@ -153,7 +198,7 @@
     $('.call-checkboxes').click(function(){
       var status = $(this).prop('checked') ? 'selected' : 'not-selected';
       var nationalId = $(this).data('natid');
-
+      
       $('#data_load_notice_id').html('<span style="color: red;">กำลังจัดเก็บข้อมูล...</span>').show();
       jQuery.post(url, {
         nationalId: nationalId,
@@ -165,7 +210,8 @@
         $('#data_load_notice_id').html('<span style="color: green;">จัดเก็บข้อมูลเสร็จแล้ว</span>').delay(3000).fadeOut();
       });
     });
-
+    
     updateMajorMarkers();
+    updateConflictCounts();
   });
 </script>
