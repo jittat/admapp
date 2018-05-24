@@ -43,20 +43,21 @@ def main():
             major_result.major = m
             major_result.admission_project = project
             major_result.save()
-
-        old_scores = ApplicantMajorScore.objects.filter(major=m,
-                                                        admission_project=project,
-                                                        applicant=a)
-        for oscore in old_scores:
-            oscore.delete()
+                
+            
+            old_scores = ApplicantMajorScore.objects.filter(major=m,
+                                                            admission_project=project,
+                                                            applicant=a)
+            for oscore in old_scores:
+                oscore.delete()
         
-        for ex in a.examscore_set.all():
-            ascore = ApplicantMajorScore()
-            ascore.applicant = a
-            ascore.major = m
-            ascore.admission_project = project
-            ascore.exam_score = ex
-            ascore.save()
+            for ex in a.examscore_set.all():
+                ascore = ApplicantMajorScore()
+                ascore.applicant = a
+                ascore.major = m
+                ascore.admission_project = project
+                ascore.exam_score = ex
+                ascore.save()
             
             
         print(a.national_id)
