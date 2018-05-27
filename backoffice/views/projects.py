@@ -257,6 +257,7 @@ def load_accepted_applicant_counts(admission_round, admission_project, majors):
 
     for m in majors:
         m.criteria_passed_count = 0
+        m.interviewable_count = 0
         m.accepted_for_interview_count = 0
         m.accepted_count = 0
         m.confirmed_count = 0
@@ -265,23 +266,25 @@ def load_accepted_applicant_counts(admission_round, admission_project, majors):
                                              admission_project=admission_project)
 
     for r in results:
+        if r.major_id not in mmap:
+            continue
+        
+        midx = mmap[r.major_id]
+        
         if r.is_criteria_passed:
-            if r.major_id in mmap:
-                midx = mmap[r.major_id]
-                majors[midx].criteria_passed_count += 1
+            majors[midx].criteria_passed_count += 1
+
+        if r.is_interview_callable():
+            majors[midx].interviewable_count += 1
 
         if r.is_accepted_for_interview:
-            if r.major_id in mmap:
-                midx = mmap[r.major_id]
-                majors[midx].accepted_for_interview_count += 1
+            majors[midx].accepted_for_interview_count += 1
 
         if r.is_accepted:
-            if r.major_id in mmap:
-                midx = mmap[r.major_id]
-                majors[midx].accepted_count += 1
+            majors[midx].accepted_count += 1
 
-                if r.has_confirmed:
-                    majors[midx].confirmed_count += 1
+            if r.has_confirmed:
+                majors[midx].confirmed_count += 1
                     
     decisions = dict([(d.major_id,d) for d in
                       MajorInterviewCallDecision.objects.filter(admission_round=admission_round,

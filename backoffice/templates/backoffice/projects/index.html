@@ -33,6 +33,9 @@
                 </td>
               {% endif %}
               <td class="text-right">
+                ผ่านขั้นต่ำ
+              </td>
+              <td class="text-right">
                 เรียกสัมภาษณ์
               </td>
               <td class="text-right">
@@ -78,6 +81,9 @@
                   {{ major.criteria_passed_count }}
                 </td>
               {% endif %}
+              <td class="text-right">
+                {{ major.interviewable_count }}
+              </td>
               <td class="text-right">
                 {{ major.accepted_for_interview_count }}
               </td>
