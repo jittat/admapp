@@ -10,6 +10,8 @@
       {% if not project.applicant_details_hidden %}
         <th>ชื่อ-นามสกุล</th>
         <th>แผนการเรียน</th>
+      {% else %}
+        <th></th>
       {% endif %}
       <th>GPAX</th>
       {% include "backoffice/projects/include/score_table/onet_header.html" %}
@@ -50,6 +52,8 @@
         {% if not project.applicant_details_hidden %}
           <td>{{ a.get_full_name }}</td>
           <td>{{ a.educationalprofile.get_education_plan_display }}</td>
+        {% else %}
+          <td>{{ a.prefix }}</td>
         {% endif %}
         <td>{{ a.educationalprofile.gpa|floatformat:"2" }}</td>
         {% with a as applicant %}
