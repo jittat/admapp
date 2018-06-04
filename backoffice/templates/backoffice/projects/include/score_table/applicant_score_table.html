@@ -98,7 +98,8 @@
                 {% if admission_result.scoring_criteria_passed %}
                   {{ admission_result.calculated_score_display }}
                 {% else %}
-                  <i class="fa fa-times" style="color: red;"></i> {{ admission_result.criteria_failed_display }}
+                  <i class="fa fa-times" style="color: red;"></i>
+                  ไม่ผ่าน <!-- {{ admission_result.criteria_failed_display }} -->
                 {% endif %}
               </td>
               {% if is_tcas_project %}
