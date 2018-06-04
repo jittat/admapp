@@ -118,6 +118,10 @@
                       {% if admission_result.is_tcas_confirmed == False %}
                         <i class="fa fa-times interview-call-rejected" style="color: red;"></i> <!-- ไม่ยืนยัน -->
                       {% endif %}
+                    {% else %}
+                      {% if admission_result.is_tcas_canceled %}
+                        <i class="fa fa-times-circle interview-call-canceled" style="color: #777777;"></i>
+                      {% endif %}
                     {% endif %}
                   {% else %}
                     <input class="call-checkboxes" id="applicant_call_{{ a.national_id }}" data-natid="{{ a.national_id }}" type="checkbox" {% if a.is_called_for_interview %}checked{% endif %} />
@@ -226,6 +230,17 @@
         var td = $(td_elt);
         td.css('background','#ffe7e7');
         //td.css('text-decoration-line','line-through');
+      });
+    });
+    $('.interview-call-canceled').each(function(i) {
+      var elt = $(this);
+      var row = elt.parents('tr').first();
+      $(row).removeClass('app-interview-called');
+      $(row).addClass('app-interview-not-called');
+      $(row).find('td').each(function(j,td_elt) {
+        var td = $(td_elt);
+        td.css('background','#a0a0a0');
+        td.css('text-decoration-line','line-through');
       });
     });
   };

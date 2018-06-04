@@ -26,11 +26,12 @@ def make_calls(project, admission_round, project_round, major, confirmed_applica
     confirmed_count = 0
     for a in applicants:
         if hasattr(a,'admission_result'):
-            if a.admission_result.is_accepted_for_interview:
-                if a.admission_result.is_tcas_confirmed:
+            result = a.admission_result
+            if result.is_accepted_for_interview and result.tcas_acceptance_round_number == 1:
+                if result.is_tcas_confirmed:
                     confirmed_count += 1
             else:
-                if a.admission_result.calculated_score >= 0:
+                if result.calculated_score >= 0:
                     candidates.append(a)
                     if a.national_id not in confirmed_applicants:
                         free_candidates.append(a)
@@ -51,17 +52,38 @@ def make_calls(project, admission_round, project_round, major, confirmed_applica
 
     accepted_count = len([a for a in free_candidates
                           if a.admission_result.calculated_score > min_score - MajorInterviewCallDecision.FLOAT_DELTA])
-        
-    print(major.number,
-          major.title,
-          slots,
-          confirmed_count,
-          accepted_count)
+
+    if accepted_count > 0:
+        print(major.number,
+              major.title,
+              slots,
+              confirmed_count,
+              accepted_count)
+    else:
+        print(major.number,
+              major.title,
+              slots,
+              confirmed_count,
+              'EMPTY')
         
     if fake:
         return
 
     count = 0
+    for a in candidates:
+        if a.admission_result.calculated_score > min_score - MajorInterviewCallDecision.FLOAT_DELTA:
+            result = a.admission_result
+
+            if a.national_id not in confirmed_applicants:
+                result.is_accepted_for_interview = True
+                result.tcas_acceptance_round_number = 2
+            else:
+                result.is_tcas_canceled = True
+                
+            result.save()
+            count += 1
+
+    
     print('Updated', count)
             
 

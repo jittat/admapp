@@ -1004,6 +1004,9 @@ def update_interview_call_status(applicants, decision):
         else:
             a.is_called_for_interview = a.admission_result.calculated_score > (decision.interview_call_min_score - MajorInterviewCallDecision.FLOAT_DELTA)
 
+            if a.admission_result.is_accepted_for_interview:
+                a.is_called_for_interview = True
+
             
 @user_login_required
 def show_scores(request, project_id, round_id, major_number):

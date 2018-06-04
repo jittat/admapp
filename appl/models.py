@@ -742,6 +742,7 @@ class AdmissionResult(models.Model):
     tcas_acceptance_round_number = models.IntegerField(blank=True,
                                                        null=True)
     is_tcas_confirmed = models.NullBooleanField(default=None)
+    is_tcas_canceled = models.NullBooleanField(default=None)
 
     is_accepted = models.NullBooleanField(default=None)
     updated_accepted_at = models.DateTimeField(null=True)
