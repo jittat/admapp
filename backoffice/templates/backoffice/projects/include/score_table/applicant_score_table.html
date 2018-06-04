@@ -22,6 +22,9 @@
       {% endcomment %}
       {% if applicant_score_viewable %}
         <th>คะแนน</th>
+        {% if is_tcas_project %}
+          <th></th>
+        {% endif %}
         <th>เรียก<br />สัมภาษณ์</th>
       {% else %}
         <th></th>
@@ -77,9 +80,9 @@
           <td class="udat-even">{{ applicant.get_all_exam_scores.udat.u69|score }}</td>
 
           {% comment %}
-            {% include "backoffice/projects/include/score_table/onet_cells.html" %}
-            {% include "backoffice/projects/include/score_table/gatpat_cells.html" %}
-            {% include "backoffice/projects/include/score_table/udat_cells.html" %}
+          {% include "backoffice/projects/include/score_table/onet_cells.html" %}
+          {% include "backoffice/projects/include/score_table/gatpat_cells.html" %}
+          {% include "backoffice/projects/include/score_table/udat_cells.html" %}
           {% endcomment %}
           {% comment %}
           {% include "backoffice/projects/include/score_table/additional_hack_cells.html" %}
@@ -90,22 +93,38 @@
           <td></td>
         {% else %}
           {% if applicant_score_viewable %}
-            <td class="scores">
-              {% if a.admission_result.scoring_criteria_passed %}
-                {{ a.admission_result.calculated_score_display }}
-              {% else %}
-                <i class="fa fa-times" style="color: red;"></i> {{ a.admission_result.criteria_failed_display }}
-              {% endif %}
-            </td>
-            <td class="chboxes">
-              {% if a.is_interview_callable %}
-                {% if accepted_for_interview_result_frozen %}
-                  {% if a.is_called_for_interview %}<i class="fa fa-check" style="color: green;"></i>{% else %}<i class="fa fa-times" style="color: red;"></i>{% endif %}
+            {% with a.admission_result as admission_result %}
+              <td class="scores">
+                {% if admission_result.scoring_criteria_passed %}
+                  {{ admission_result.calculated_score_display }}
                 {% else %}
-                  <input class="call-checkboxes" id="applicant_call_{{ a.national_id }}" data-natid="{{ a.national_id }}" type="checkbox" {% if a.is_called_for_interview %}checked{% endif %} />
+                  <i class="fa fa-times" style="color: red;"></i> {{ admission_result.criteria_failed_display }}
                 {% endif %}
+              </td>
+              {% if is_tcas_project %}
+                <td class="scores">
+                  {% if a.is_called_for_interview %}
+                    <span class="badge badge-pill badge-secondary">
+                      3/{{ admission_result.tcas_acceptance_round_number }}
+                    </span>
+                  {% endif %}
+                </td>
               {% endif %}
-            </td>
+              <td class="chboxes">
+                {% if a.is_interview_callable %}
+                  {% if accepted_for_interview_result_frozen %}
+                    {% if a.is_called_for_interview %}<i class="fa fa-check" style="color: green;"></i>{% else %}<i class="fa fa-times" style="color: red;"></i>{% endif %}
+                    {% if a.is_called_for_interview %}
+                      {% if admission_result.is_tcas_confirmed == False %}
+                        <i class="fa fa-times interview-call-rejected" style="color: red;"></i> ไม่ยืนยัน
+                      {% endif %}
+                    {% endif %}
+                  {% else %}
+                    <input class="call-checkboxes" id="applicant_call_{{ a.national_id }}" data-natid="{{ a.national_id }}" type="checkbox" {% if a.is_called_for_interview %}checked{% endif %} />
+                  {% endif %}
+                {% endif %}
+              </td>
+            {% endwith %}
           {% else %}
             <td class="scores"></td>
             <td class="chboxes"></td>
@@ -158,7 +177,7 @@
       }
     }
   };
-      
+  
   var updateCall = function(count) {
     $('.call-checkboxes').each(function(i, elt) {
       if(i < count) {
@@ -196,6 +215,19 @@
       }
     });
   };
+
+  var updateInterviewConfirmation = function() {
+    $('.interview-call-rejected').each(function(i) {
+      var elt = $(this);
+      var row = elt.parents('tr').first();
+      $(row).removeClass('app-interview-called');
+      $(row).addClass('app-interview-not-called');
+      $(row).find('td').each(function(j,td_elt) {
+        var td = $(td_elt);
+        td.css('background','#ffcccc');
+      });
+    });
+  };
   
   $(function(){
     var url = '{% url 'backoffice:projects-interview-call-score-update' project.id admission_round.id major.number %}';
@@ -217,5 +249,6 @@
     
     updateMajorMarkers();
     updateConflictCounts();
+    updateInterviewConfirmation();
   });
 </script>

@@ -738,6 +738,11 @@ class AdmissionResult(models.Model):
     updated_accepted_for_interview_at = models.DateTimeField(null=True)
     interview_rank = models.IntegerField(default=0)
 
+    is_tcas_result = models.BooleanField(default=False)
+    tcas_acceptance_round_number = models.IntegerField(blank=True,
+                                                       null=True)
+    is_tcas_confirmed = models.NullBooleanField(default=None)
+
     is_accepted = models.NullBooleanField(default=None)
     updated_accepted_at = models.DateTimeField(null=True)
 

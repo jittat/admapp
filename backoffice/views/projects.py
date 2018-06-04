@@ -512,6 +512,9 @@ def show_applicant(request, project_id, round_id, major_number, rank):
     project_round = project.get_project_round_for(admission_round)
     major = Major.get_by_project_number(project, major_number)
 
+    if project.id == 31:
+        return HttpResponseForbidden()
+    
     real_rank = int(rank) - 1
     if real_rank < 0:
         return redirect(reverse('backoffice:projects-show-applicant',args=[project_id, round_id, major_number, 1]))
@@ -1012,6 +1015,8 @@ def show_scores(request, project_id, round_id, major_number):
     project_round = project.get_project_round_for(admission_round)
     major = Major.get_by_project_number(project, major_number)
 
+    is_tcas_project = (project.id == 31)
+    
     if not can_user_view_applicants_in_major(user, project, major):
         return redirect(reverse('backoffice:index'))
 
@@ -1072,6 +1077,8 @@ def show_scores(request, project_id, round_id, major_number):
 
                     'cross_major_scores': cross_major_scores,
                     'cross_major_titles': cross_major_titles,
+
+                    'is_tcas_project': is_tcas_project,
                   })
 
 @user_login_required
