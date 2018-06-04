@@ -42,6 +42,8 @@ def main():
     
     result_lines = open(result_filename).readlines()
 
+    mcount = {}
+    
     counter = 0
     for line in result_lines:
         items = line.strip().split(',')
@@ -73,6 +75,11 @@ def main():
 
         if decision == '1':
             admission_result.is_tcas_confirmed = True
+
+            if major.number not in mcount:
+                mcount[major.number] = 0
+            mcount[major.number] += 1
+            
             if not is_fake:
                 admission_result.save()
 
@@ -81,6 +88,15 @@ def main():
 
         if counter % 1000 == 0:
             print(counter)
-    
+
+
+    for num in sorted(majors.keys()):
+        if num not in mcount:
+            c = 0
+        else:
+            c = mcount[num]
+
+        print("{0},{1},{2}".format(num,majors[num].title,c))
+            
 if __name__ == '__main__':
     main()
