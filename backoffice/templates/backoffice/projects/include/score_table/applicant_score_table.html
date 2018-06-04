@@ -116,7 +116,7 @@
                     {% if a.is_called_for_interview %}<i class="fa fa-check" style="color: green;"></i>{% else %}<i class="fa fa-times" style="color: red;"></i>{% endif %}
                     {% if a.is_called_for_interview %}
                       {% if admission_result.is_tcas_confirmed == False %}
-                        <i class="fa fa-times interview-call-rejected" style="color: red;"></i> ไม่ยืนยัน
+                        <i class="fa fa-times interview-call-rejected" style="color: red;"></i> <!-- ไม่ยืนยัน -->
                       {% endif %}
                     {% endif %}
                   {% else %}
@@ -224,7 +224,8 @@
       $(row).addClass('app-interview-not-called');
       $(row).find('td').each(function(j,td_elt) {
         var td = $(td_elt);
-        td.css('background','#ffcccc');
+        td.css('background','#ffe7e7');
+        //td.css('text-decoration-line','line-through');
       });
     });
   };

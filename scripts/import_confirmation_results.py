@@ -59,6 +59,11 @@ def main():
 
         major = majors[int(major_number)]
 
+        if decision == '1':
+            if major.number not in mcount:
+                mcount[major.number] = 0
+            mcount[major.number] += 1
+
         try:
             applicant = Applicant.objects.get(national_id=sys_nat_id)
         except:
@@ -75,11 +80,10 @@ def main():
 
         if decision == '1':
             admission_result.is_tcas_confirmed = True
-
-            if major.number not in mcount:
-                mcount[major.number] = 0
-            mcount[major.number] += 1
-            
+            if not is_fake:
+                admission_result.save()
+        else:
+            admission_result.is_tcas_confirmed = False
             if not is_fake:
                 admission_result.save()
 
