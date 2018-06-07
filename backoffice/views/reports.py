@@ -196,6 +196,21 @@ def write_interview_result_sheet(sheet, project, applicants, major, cell_format)
     
     sheet.write(count + 8,6,'ลงชื่อ ................................................. กรรมการสอบสัมภาษณ์')
     sheet.write(count + 9,6,'ลงชื่อ ................................................. กรรมการสอบสัมภาษณ์')
+
+def sorted_by_name(applicants):
+    import locale
+
+    locale.setlocale(locale.LC_ALL, 'th_TH.utf8')
+
+    apps = [(locale.strxfrm(a.first_name), locale.strxfrm(a.last_name), a.national_id, a)
+            for a
+            in applicants]
+
+    results = [x[3] for x in sorted(apps)]
+    
+    locale.resetlocale()
+    
+    return results
     
     
 @user_login_required
@@ -250,6 +265,7 @@ def download_applicants_interview_sheet(request, project_id, round_id, major_num
 
     # HACK
     # applicants = [a[2] for a in sorted(applicants)]
+    applicants = sorted_by_name(applicants)
     
     for a in applicants:
         if a.national_id.startswith('T'):
@@ -427,6 +443,8 @@ def download_applicants_interview_score_sheet(request,
     # HACK
     # applicants = [a[2] for a in sorted(applicants)]
     
+    applicants = sorted_by_name(applicants)
+
     for a in applicants:
         if a.national_id.startswith('T'):
             a.national_id = a.national_id[1:]
