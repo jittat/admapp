@@ -242,12 +242,8 @@ def download_applicants_interview_sheet(request, project_id, round_id, major_num
             for res in applicant.admission_results:
                 if (res.major_id == major.id) and res.is_accepted_for_interview:
                     # HACK for TCAS
-                    if ((res.tcas_acceptance_round_number == 1) and
-                        (not res.is_tcas_confirmed)):
+                    if not res.is_tcas_confirmed:
                         continue
-
-                    if res.tcas_acceptance_round_number == 2:
-                        applicant.last_name += ' (3/2)'
                         
                     applicants.append((res.tcas_acceptance_round_number, applicant.national_id, applicant))
 
@@ -420,12 +416,8 @@ def download_applicants_interview_score_sheet(request,
             for res in applicant.admission_results:
                 if (res.major_id == major.id) and res.is_accepted_for_interview:
                     # HACK for TCAS
-                    if ((res.tcas_acceptance_round_number == 1) and
-                        (not res.is_tcas_confirmed)):
+                    if not res.is_tcas_confirmed:
                         continue
-
-                    if res.tcas_acceptance_round_number == 2:
-                        applicant.last_name += ' (3/2)'
                         
                     applicants.append((res.tcas_acceptance_round_number, applicant.national_id, applicant))
 
