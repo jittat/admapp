@@ -23,9 +23,12 @@ def main():
     natid_map_filename = sys.argv[4]
     major_map_filename = sys.argv[5]
 
-    natid_map = dict([(f[0],f[1]) for f in
-                      [l.strip().split(',') for l in
-                       open(natid_map_filename).readlines()]])
+    if natid_map_filename != '-':
+        natid_map = dict([(f[0],f[1]) for f in
+                          [l.strip().split(',') for l in
+                           open(natid_map_filename).readlines()]])
+    else:
+        natid_map = None
 
     major_map = dict([(f[1],f[0]) for f in
                       [l.strip().split(',') for l in
@@ -54,7 +57,11 @@ def main():
         major_id = items[1]
         decision = items[2]
 
-        sys_nat_id = natid_map[nat_id]
+        if natid_map != None:
+            sys_nat_id = natid_map[nat_id]
+        else:
+            sys_nat_id = nat_id
+            
         major_number = major_map[major_id]
 
         major = majors[int(major_number)]
