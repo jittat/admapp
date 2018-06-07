@@ -245,10 +245,12 @@ def download_applicants_interview_sheet(request, project_id, round_id, major_num
                     if not res.is_tcas_confirmed:
                         continue
                         
-                    applicants.append((res.tcas_acceptance_round_number, applicant.national_id, applicant))
+                    #applicants.append((res.tcas_acceptance_round_number, applicant.national_id, applicant))
+                    applicants.append(applicant)
 
     # HACK
-    applicants = [a[2] for a in sorted(applicants)]
+    # applicants = [a[2] for a in sorted(applicants)]
+    
     for a in applicants:
         if a.national_id.startswith('T'):
             a.national_id = a.national_id[1:]
@@ -419,10 +421,12 @@ def download_applicants_interview_score_sheet(request,
                     if not res.is_tcas_confirmed:
                         continue
                         
-                    applicants.append((res.tcas_acceptance_round_number, applicant.national_id, applicant))
+                    #applicants.append((res.tcas_acceptance_round_number, applicant.national_id, applicant))
+                    applicants.append(applicant)
 
     # HACK
-    applicants = [a[2] for a in sorted(applicants)]
+    # applicants = [a[2] for a in sorted(applicants)]
+    
     for a in applicants:
         if a.national_id.startswith('T'):
             a.national_id = a.national_id[1:]
