@@ -251,7 +251,11 @@ def download_applicants_interview_sheet(request, project_id, round_id, major_num
                         
                     applicants.append((res.tcas_acceptance_round_number, applicant.national_id, applicant))
 
+    # HACK
     applicants = [a[2] for a in sorted(applicants)]
+    for a in applicants:
+        if a.national_id.startswith('T'):
+            a.national_id = a.national_id[1:]
 
     write_registration_sheet(reg_worksheet, project, applicants, major, bordered_cell_format)
     write_interview_result_sheet(result_worksheet, project, applicants, major, bordered_cell_format)
@@ -425,7 +429,12 @@ def download_applicants_interview_score_sheet(request,
                         
                     applicants.append((res.tcas_acceptance_round_number, applicant.national_id, applicant))
 
+    # HACK
     applicants = [a[2] for a in sorted(applicants)]
+    for a in applicants:
+        if a.national_id.startswith('T'):
+            a.national_id = a.national_id[1:]
+
 
     output = io.BytesIO()
     workbook = xlsxwriter.Workbook(output, {'in_memory': True})
