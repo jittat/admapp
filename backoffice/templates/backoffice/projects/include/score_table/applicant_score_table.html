@@ -56,7 +56,8 @@
           <td>{{ a.get_full_name }}</td>
           <td>{{ a.educationalprofile.get_education_plan_display }}</td>
         {% else %}
-          <td>{{ a.prefix }}</td>
+          <td>{{ a.get_full_name }}</td>
+          {% comment %}<td>{{ a.prefix }}</td>{% endcomment %}
         {% endif %}
         <td>{{ a.educationalprofile.gpa|floatformat:"2" }}</td>
         {% with a as applicant %}
