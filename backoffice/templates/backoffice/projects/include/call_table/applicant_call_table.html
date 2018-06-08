@@ -56,10 +56,7 @@
       var color = "btn-warning";
     }
 
-    $("tr.app-row-" + appId).find("." + cls).each(function(i,elt) {
-      $(this).removeClass("btn-outline-secondary");
-      $(this).addClass(color);
-    });
+    $("tr.app-row-" + appId).find("." + cls).removeClass("btn-outline-secondary").addClass(color).blur();
   };
   
   $(function(){
