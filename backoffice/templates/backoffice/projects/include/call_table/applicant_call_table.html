@@ -1,0 +1,74 @@
+<table class="table table-sm table-striped">
+  <thead class="thead-inverse">
+    <tr>
+      <th></th>
+      <th>เลขประจำตัว</th>
+      <th>ชื่อ-นามสกุล</th>
+      <th class="d-none">คะแนน</th>
+      <th>ผลการพิจารณา</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for a in applicants %}
+      <tr class="app-row-{{ a.national_id }}" data-appid="{{ a.national_id }}">
+        <td class="ranks">{{ forloop.counter }}</td>
+        <td class="national-ids">
+          {{ a.national_id }}
+        </td>
+        <td>{{ a.get_full_name }}</td>
+        <td class="d-none">{{ a.admission_result.calculated_score }}</td>
+        <td>
+          <div class="btn-group" role="group">
+            <a class="interview-selection-buttons interview-selection-buttons-accepted btn btn-sm btn-outline-secondary" href="#" data-appid="{{ a.national_id }}" data-decision="accepted"><i class="fa fa-check"></i> รับ</a>
+            <a class="interview-selection-buttons interview-selection-buttons-rejected btn btn-sm btn-outline-secondary" href="#" data-appid="{{ a.national_id }}" data-decision="rejected"><i class="fa fa-close"></i> ไม่รับ</a>
+            <a class="interview-selection-buttons interview-selection-buttons-absent btn btn-sm btn-outline-secondary" href="#" data-appid="{{ a.national_id }}" data-decision="absent"><i class="fa fa-ban"></i> ขาดสอบ</a>
+          </div>
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+<script>
+  var applicantStatuses = {
+    {% for a in applicants %}
+    "{{ a.national_id }}": null {% if not forloop.last %},{% endif %}
+    {% endfor %}
+  };
+
+  var updateApplicantDecision = function(appId, decision) {
+    $("tr.app-row-" + appId).find(".interview-selection-buttons").each(function(i,elt) {
+      $(this).removeClass("btn-success");
+      $(this).removeClass("btn-danger");
+      $(this).removeClass("btn-warning");
+      $(this).addClass("btn-outline-secondary");
+    });
+
+    if(decision == "accepted") {
+      var cls = "interview-selection-buttons-accepted";
+      var color = "btn-success";
+    }
+    if(decision == "rejected") {
+      var cls = "interview-selection-buttons-rejected";
+      var color = "btn-danger";
+    }
+    if(decision == "absent") {
+      var cls = "interview-selection-buttons-absent";
+      var color = "btn-warning";
+    }
+
+    $("tr.app-row-" + appId).find("." + cls).each(function(i,elt) {
+      $(this).removeClass("btn-outline-secondary");
+      $(this).addClass(color);
+    });
+  };
+  
+  $(function(){
+    $(".interview-selection-buttons").click(function() {
+      var appId = $(this).data('appid');
+      var decision = $(this).data('decision');
+      applicantStatuses[appId] = decision;
+      updateApplicantDecision(appId, decision);
+      return false;
+    });
+  });
+</script>

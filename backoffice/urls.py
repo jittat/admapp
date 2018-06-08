@@ -73,5 +73,8 @@ urlpatterns = [
     url(r'^projects/scores/(?P<project_id>\d+)/(?P<round_id>\d+)/(?P<major_number>\d+)/interview_score/$',
         projects.update_interview_call_score, name='projects-interview-call-score-update'),
 
+    url(r'^projects/calls/(?P<project_id>\d+)/(?P<round_id>\d+)/(?P<major_number>\d+)/$',
+        projects.list_applicants_for_acceptance_calls, name='projects-list-applicants-for-acceptance-calls'),
+
     url(r'^users/$', users.index, name='users-index'),
 ]

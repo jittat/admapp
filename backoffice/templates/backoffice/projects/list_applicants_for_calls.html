@@ -1,0 +1,15 @@
+{% extends 'backoffice/base.html' %}
+{% load static %}
+{% block content %}
+  <div class="row" style="margin-top: -10px;">
+    <div class="col-md-12">
+      <b>
+        พิจารณาผู้สมัครโครงการ{{ project }} {{ admission_round}} | {{ major.title }} | รับ {{ major.slots }} คน | เรียกสัมภาษณ์ <span class="interview-count-spans">{{ interview_call_count }}</span> คน
+      </b>
+      <br />
+      {% include "backoffice/projects/include/call_table/applicant_call_table.html" %}
+    </div>
+  </div>
+  <script>
+  </script>
+{% endblock %}
