@@ -6,6 +6,7 @@
       <th>ชื่อ-นามสกุล</th>
       <th class="d-none">คะแนน</th>
       <th>ผลการพิจารณา</th>
+      <th style="width: 50px;"></th>
     </tr>
   </thead>
   <tbody>
@@ -24,6 +25,9 @@
             <a class="interview-selection-buttons interview-selection-buttons-absent btn btn-sm btn-outline-secondary" href="#" data-appid="{{ a.national_id }}" data-decision="absent"><i class="fa fa-ban"></i> ขาดสอบ</a>
           </div>
         </td>
+        <td>
+          <span class="interview-selection-spinner-{{ a.national_id }}" style="display: none;"><i class="fa fa-spinner fa-spin"></i></span>
+        </td>
       </tr>
     {% endfor %}
   </tbody>
@@ -35,7 +39,7 @@
     {% endfor %}
   };
 
-  var updateApplicantDecision = function(appId, decision) {
+  var updateApplicantDecisionDisplay = function(appId, decision) {
     $("tr.app-row-" + appId).find(".interview-selection-buttons").each(function(i,elt) {
       $(this).removeClass("btn-success");
       $(this).removeClass("btn-danger");
@@ -57,6 +61,24 @@
     }
 
     $("tr.app-row-" + appId).find("." + cls).removeClass("btn-outline-secondary").addClass(color).blur();
+  };
+  
+  var updateApplicantDecision = function(appId, decision) {
+    var url = '{% url 'backoffice:projects-update-applicant-acceptance-call' project.id admission_round.id major.number %}';
+
+    $('.interview-selection-spinner-' + appId).show();
+    jQuery.post(url, {
+      nationalId: appId,
+      decision: decision,
+      csrfmiddlewaretoken: '{{ csrf_token }}'
+    }, function(data) {
+      updateApplicantDecisionDisplay(appId, decision);
+
+      $('.accepted-count').text(data['accepted']);
+      $('.rejected-count').text(data['rejected']);
+      $('.absent-count').text(data['absent']);
+      $('.interview-selection-spinner-' + appId).delay(3000).hide();
+    });
   };
   
   $(function(){

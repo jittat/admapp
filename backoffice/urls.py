@@ -75,6 +75,8 @@ urlpatterns = [
 
     url(r'^projects/calls/(?P<project_id>\d+)/(?P<round_id>\d+)/(?P<major_number>\d+)/$',
         projects.list_applicants_for_acceptance_calls, name='projects-list-applicants-for-acceptance-calls'),
+    url(r'^projects/calls/(?P<project_id>\d+)/(?P<round_id>\d+)/(?P<major_number>\d+)/update/$',
+        projects.update_applicant_acceptance_call, name='projects-update-applicant-acceptance-call'),
 
     url(r'^users/$', users.index, name='users-index'),
 ]

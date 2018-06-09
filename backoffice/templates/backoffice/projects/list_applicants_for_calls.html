@@ -4,7 +4,10 @@
   <div class="row" style="margin-top: -10px;">
     <div class="col-md-12">
       <b>
-        พิจารณาผู้สมัครโครงการ{{ project }} {{ admission_round}} | {{ major.title }} | รับ {{ major.slots }} คน | เรียกสัมภาษณ์ <span class="interview-count-spans">{{ interview_call_count }}</span> คน
+        พิจารณาผู้สมัครโครงการ{{ project }} {{ admission_round}} | {{ major.title }} | รับ {{ major.slots }} คน | เรียกสัมภาษณ์ <span class="interview-count-spans">{{ interview_call_count }}</span> คน |
+        รับ <span class="accepted-count">{{ acceptance_counters.accepted }}</span> |
+        ไม่รับ <span class="rejected-count">{{ acceptance_counters.rejected }}</span> |
+        ขาดสอบ <span class="absent-count">{{ acceptance_counters.absent }}</span>
       </b>
       <br />
       {% include "backoffice/projects/include/call_table/applicant_call_table.html" %}

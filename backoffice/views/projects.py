@@ -1167,6 +1167,20 @@ def sort_applicants_by_name(applicants):
     from .reports import sorted_by_name
     return sorted_by_name(applicants)
 
+def count_acceptance_status(applicants):
+    counters = { 'accepted': 0,
+                 'rejected': 0,
+                 'absent': 0 }
+    for a in applicants:
+        res = a.admission_result
+        if res.is_interview_absent:
+            counters['absent'] += 1
+        elif res.is_accepted:
+            counters['accepted'] += 1
+        elif res.is_accepted == False:
+            counters['rejected'] += 1
+    return counters
+
 @user_login_required
 def list_applicants_for_acceptance_calls(request, project_id, round_id, major_number):
     user = request.user
@@ -1194,7 +1208,8 @@ def list_applicants_for_acceptance_calls(request, project_id, round_id, major_nu
                 applicants.append(a)
     
     applicants = sort_applicants_by_name(applicants)
-        
+    acceptance_counters = count_acceptance_status(applicants)
+    
     return render(request,
                   'backoffice/projects/list_applicants_for_calls.html',
                   { 'project': project,
@@ -1205,6 +1220,67 @@ def list_applicants_for_acceptance_calls(request, project_id, round_id, major_nu
                     'interview_call_count': len(applicants),
 
                     'applicants': applicants,
+                    'acceptance_counters': acceptance_counters,
                     'is_tcas_project': is_tcas_project,
                   })
 
+@user_login_required
+def update_applicant_acceptance_call(request, project_id, round_id, major_number):
+    user = request.user
+    project = get_object_or_404(AdmissionProject, pk=project_id)
+    admission_round = get_object_or_404(AdmissionRound, pk=round_id)
+    project_round = project.get_project_round_for(admission_round)
+    major = Major.get_by_project_number(project, major_number)
+
+    is_tcas_project = (project.id == 31)
+    
+    if not can_user_view_applicants_in_major(user, project, major):
+        return redirect(reverse('backoffice:index'))
+
+    if not project_round.accepted_for_interview_result_frozen:
+        return HttpResponseForbidden()
+
+    major_applicants = load_major_applicants(project,
+                                             admission_round,
+                                             major,
+                                             load_results=True)
+    applicants = []
+    for a in major_applicants:
+        if a.admission_result and a.admission_result.is_accepted_for_interview:
+            if (not is_tcas_project) or a.admission_result.is_tcas_confirmed:
+                applicants.append(a)
+    
+    national_id = request.POST['nationalId']
+    decision = request.POST['decision']
+
+    selected_applicants = [a for a in applicants if a.national_id == national_id]
+    if len(selected_applicants) == 0:
+        return HttpResponseForbidden()
+
+    applicant = selected_applicants[0]
+    admission_result = applicant.admission_result
+
+    if decision == "accepted":
+        admission_result.is_accepted = True
+        admission_result.is_interview_absent = False
+    elif decision == "rejected":
+        admission_result.is_accepted = False
+        admission_result.is_interview_absent = False
+    elif decision == "absent":
+        admission_result.is_accepted = None
+        admission_result.is_interview_absent = True
+    admission_result.save()
+
+    acceptance_counters = count_acceptance_status(applicants)
+    
+    LogItem.create('Updated acceptance decision ({0}/{1}) for {2} to {3} by {4}'.format(major.number,
+                                                                                        project.id,
+                                                                                        national_id,
+                                                                                        decision,
+                                                                                        user.username),
+                   applicant,
+                   request)
+
+    return HttpResponse(json.dumps(acceptance_counters),
+                        content_type='application/json')
+        

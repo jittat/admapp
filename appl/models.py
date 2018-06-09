@@ -744,6 +744,7 @@ class AdmissionResult(models.Model):
     is_tcas_confirmed = models.NullBooleanField(default=None)
     is_tcas_canceled = models.NullBooleanField(default=None)
 
+    is_interview_absent = models.NullBooleanField(default=None)
     is_accepted = models.NullBooleanField(default=None)
     updated_accepted_at = models.DateTimeField(null=True)
 
