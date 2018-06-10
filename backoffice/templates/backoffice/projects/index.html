@@ -54,6 +54,7 @@
             {% if applicant_info_viewable %}
               <td></td>
               <td></td>
+              <td></td>
             {% endif %}
           </tr>
         </thead>
@@ -102,7 +103,12 @@
             {% if applicant_info_viewable %}
               <td>
                 {% if user_major_number == any_major or user_major_number == major.number %}
-                  <a class="btn btn-sm btn-outline-secondary" href="{% url 'backoffice:projects-show-scores' project.id admission_round.id major.number %}">พิจารณาคะแนน</a>
+                  <a class="btn btn-sm btn-outline-secondary" href="{% url 'backoffice:projects-list-applicants-for-acceptance-calls' project.id admission_round.id major.number %}">กรอกผลสัมภาษณ์</a>
+                {% endif %}
+              </td>
+              <td>
+                {% if user_major_number == any_major or user_major_number == major.number %}
+                  <a class="btn btn-sm btn-outline-secondary" href="{% url 'backoffice:projects-show-scores' project.id admission_round.id major.number %}">คะแนน</a>
                   <div class="dropdown d-none">
                     <a class="btn btn-sm btn-outline-secondary dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">พิจารณา</a>
                     <div class="dropdown-menu">
