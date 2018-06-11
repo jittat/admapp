@@ -42,6 +42,12 @@
                 รับจริง
               </td>
               <td class="text-right">
+                ไม่รับ
+              </td>
+              <td class="text-right">
+                ขาดสอบ
+              </td>
+              <td class="text-right">
                 ยืนยัน
               </td>
             {% endif %}
@@ -90,6 +96,12 @@
               </td>
               <td class="text-right">
                 {{ major.accepted_count }}
+              </td>
+              <td class="text-right">
+                {{ major.rejected_count }}
+              </td>
+              <td class="text-right">
+                {{ major.interview_absent_count }}
               </td>
               <td class="text-right">
                 {{ major.confirmed_count }}
