@@ -566,9 +566,12 @@ class ProjectApplication(models.Model):
 
         from lib.lincodes import gen_verification
 
-        return gen_verification(self.applicant.national_id,
-                                str(self.get_number()),
-                                deadline_str)
+        try:
+            return gen_verification(self.applicant.national_id,
+                                    str(self.get_number()),
+                                    deadline_str)
+        except:
+            return ''
 
     def is_active(self):
         return not self.is_canceled

@@ -14,11 +14,11 @@ urlpatterns = [
     url(r'^payment/$', payments.index, name='payment-index'),
     url(r'^payment/update/(?P<payment_id>\d+)/$', payments.update, name='payment-update'),
 
-    url(r'^applicants/(\d+)/$', views.show, name='show-applicant'),
-    url(r'^applicants/(\d+)/(\d+)/$', views.show, name='show-applicant-in-project'),
+    url(r'^applicants/([0-9a-zA-Z\d]\d+)/$', views.show, name='show-applicant'),
+    url(r'^applicants/(\d+)/([0-9a-zA-Z]\d+)/$', views.show, name='show-applicant-in-project'),
 
-    url(r'^new_password/(\d+)/$', views.new_password, name='new-password'),
-    url(r'^update/(\d+)/$', views.update_applicant, name='update-applicant'),
+    url(r'^new_password/([0-9a-zA-Z]\d+)/$', views.new_password, name='new-password'),
+    url(r'^update/([0-9a-zA-Z]\d+)/$', views.update_applicant, name='update-applicant'),
 
     url(r'^login/(\d+)/(.+)/$', views.login_as_applicant, name='login-as-applicant'),
 
