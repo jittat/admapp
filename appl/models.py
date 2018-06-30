@@ -984,7 +984,7 @@ class ExamScoreProvider(object):
         scores = []
         for i in range(self.get_gatpat_round_count()):
             items = []
-            for j in range(1,7):
+            for j in range(1,8):
                 key = 'pat7_' + str(j)
                 if key in arr:
                     if arr[key][i] != -1:
