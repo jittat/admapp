@@ -116,7 +116,7 @@ def load_supplement_configs_with_instance(applicant, admission_project):
     
     supplement_configs = []
     if admission_project.title in PROJECT_SUPPLEMENTS:
-        supplement_configs = PROJECT_SUPPLEMENTS[admission_project.title]
+        supplement_configs = PROJECT_SUPPLEMENTS[admission_project.short_title]
         for c in supplement_configs:
             if c.name in all_supplements:
                 c.supplement_instance = all_supplements[c.name]
@@ -138,7 +138,20 @@ class ProjectBlockConfig(object):
         self.template_name = template_name
         self.context_init_function = context_init_function
 
+def is_tcas5_gpa_form_required(applicant,
+                               admission_project,
+                               supplement_config):
+    from appl.models import AdmissionRound
+    admission_round = AdmissionRound.objects.get(pk=6)
+    active_application = applicant.get_active_application(admission_round)
+    if not active_application:
+        return False
 
+    major_selection = active_application.get_major_selection()
+    if major_selection and major_selection.major_list == '10':
+        return True
+    
+    return False
     
 PROJECT_SUPPLEMENTS = {
     'นักกีฬาทีมชาติและเยาวชนทีมชาติ': [
@@ -203,6 +216,16 @@ PROJECT_SUPPLEMENTS = {
                                 'supplements.views.forms.cultural.process_cultural_exam_form',
                                 'supplements/backoffice/cultural/cultural_exam.html'),
     ],
+    'รับตรงอิสระ': [
+        ProjectSupplementConfig('tcas5_fisheries',
+                                'ผลการเรียนเฉลี่ยแยกกลุ่มสาระ (สำหรับกรณีที่สมัครคณะประมง)',
+                                is_tcas5_gpa_form_required,
+                                'supplements/tcas5/gpa_form.html',
+                                'tcas5_gpa_',
+                                'supplements.views.forms.tcas5.init_gpa_form',
+                                'supplements.views.forms.tcas5.process_gpa_form',
+                                'supplements/backoffice/tcas5/gpa_form.html'),
+    ],
 }
 
 
@@ -212,6 +235,12 @@ PROJECT_ADDITIONAL_BLOCKS = {
                            'ผลการเรียนจากโครงการเรียนล่วงหน้า',
                            'supplements/ap/course_results.html',
                            'supplements.views.blocks.load_ap_course_results'),
+    ],
+    'รับตรงอิสระ': [
+        ProjectBlockConfig('tcas5_block',
+                           'ข้อมูลเพิ่มเติมสำหรับการสมัคร',
+                           'supplements/tcas5/info.html',
+                           'supplements.views.blocks.load_tcas5_block'),
     ],
 }
 

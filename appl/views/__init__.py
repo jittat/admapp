@@ -44,8 +44,8 @@ def load_supplement_blocks(request, applicant, admission_project, admission_roun
     from supplements.views import render_supplement_block
     
     supplement_blocks = []
-    if admission_project.title in PROJECT_ADDITIONAL_BLOCKS:
-        for config in PROJECT_ADDITIONAL_BLOCKS[admission_project.title]:
+    if admission_project.short_title in PROJECT_ADDITIONAL_BLOCKS:
+        for config in PROJECT_ADDITIONAL_BLOCKS[admission_project.short_title]:
             supplement_blocks.append(render_supplement_block(request,
                                                              applicant,
                                                              admission_project,
@@ -66,7 +66,13 @@ def check_project_documents(applicant,
             errors.append('ยังไม่ได้อัพโหลด' + d.title)
 
     for c in supplement_configs:
-        if c.is_required and (not c.supplement_instance):
+        if callable(c.is_required):
+            is_required = c.is_required(applicant,
+                                        admission_project,
+                                        c)
+        else:
+            is_required = c.is_required
+        if is_required and (not c.supplement_instance):
             status = False
             errors.append('ยังไม่ได้ป้อนข้อมูล' + c.title)
             
