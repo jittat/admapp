@@ -115,7 +115,7 @@ def load_supplement_configs_with_instance(applicant, admission_project):
     all_supplements = ProjectSupplement.get_applicant_supplements_as_dict(applicant)
     
     supplement_configs = []
-    if admission_project.title in PROJECT_SUPPLEMENTS:
+    if admission_project.short_title in PROJECT_SUPPLEMENTS:
         supplement_configs = PROJECT_SUPPLEMENTS[admission_project.short_title]
         for c in supplement_configs:
             if c.name in all_supplements:
