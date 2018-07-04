@@ -94,7 +94,7 @@ def index(request, project_id, round_id):
     admission_round = get_object_or_404(AdmissionRound,
                                         pk=round_id)
     
-    supplement_configs = PROJECT_SUPPLEMENTS[admission_project.title]
+    supplement_configs = PROJECT_SUPPLEMENTS[admission_project.short_title]
     supplements = load_project_supplements(applicant,
                                            admission_project,
                                            supplement_configs)
