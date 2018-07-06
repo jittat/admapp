@@ -344,8 +344,8 @@ def reset_cupt_confirmation(request):
     applicant = request.applicant
     if hasattr(applicant,'cupt_confirmation'):
         confirmation = applicant.cupt_confirmation
-        yesterday = datetime.now() - timedelta(1)
-        if confirmation.updated_at < yesterday:
+        wait_start_time = datetime.now() - timedelta(hours=2)
+        if confirmation.updated_at < wait_start_time:
             confirmation.delete()
 
     return redirect('appl:index')
