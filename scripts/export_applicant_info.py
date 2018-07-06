@@ -5,27 +5,6 @@ import sys
 
 from regis.models import Applicant
 
-def build_address(profile):
-    address_items = []
-    address_items.append(profile.house_number)
-
-    ADDR_ITEMS = [
-        ('หมู่ ','village_number'),
-        ('ซ.','avenue'),
-        ('ถ.','road'),
-        ('','sub_district'),
-        ('','district'),
-        ('','province'),
-        ('','postal_code'),
-    ]
-    
-    for pref, f in ADDR_ITEMS:
-        val = getattr(profile,f)
-        if val.strip() != '' and val.strip() != '-':
-            address_items.append(pref + val)
-           
-    return ' '.join(address_items)
-            
 def main():
     lines = []
     while True:
@@ -39,10 +18,15 @@ def main():
         applicant = Applicant.objects.get(national_id=l)
         profile = applicant.get_personal_profile()
 
-        address = build_address(profile).replace('"','""')
+        address = profile.get_full_address().replace('"','""')
         
         print(','.join([applicant.national_id,
-                        applicant.get_full_name(),
+                        applicant.prefix,
+                        applicant.first_name,
+                        applicant.last_name,
+                        profile.prefix_english,
+                        profile.first_name_english,
+                        profile.last_name_english,
                         applicant.email,
                         profile.contact_phone,
                         profile.mobile_phone,

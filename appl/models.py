@@ -521,6 +521,45 @@ class PersonalProfile(models.Model):
                                     blank=True,
                                     validators=[validate_phonenumber])
 
+    def get_full_address(self):
+        if 'กรุงเทพ' in self.province:
+            sub_district_prefix = 'แขวง'
+            district_prefix = 'เขต'
+        else:
+            sub_district_prefix = 'ตำบล'
+            district_prefix = 'อำเภอ'
+
+        addr_items = []
+        addr_fields = ['house_number',
+                       'village_number',
+                       'avenue',
+                       'road',
+                       'sub_district',
+                       'district',
+                       'province']
+        prefixes = ['บ้านเลขที่',
+                    'หมู่',
+                    'ซอย',
+                    'ถนน',
+                    sub_district_prefix,
+                    district_prefix,
+                    'จังหวัด']
+        for f,pre in zip(addr_fields, prefixes):
+            v = getattr(self,f).strip()
+            if v == '' or v == '-':
+                continue
+            if v.startswith(pre):
+                addr_items.append(v)
+            else:
+                if v[0].isdigit():
+                    addr_items.append(pre + ' ' + v)
+                else:
+                    if pre != 'หมู่':
+                        addr_items.append(pre + v)
+                    else:
+                        addr_items.append('หมู่บ้าน' + v)                        
+                    
+        return ' '.join(addr_items)
 
 
 class ProjectApplication(models.Model):
