@@ -224,7 +224,7 @@ PROJECT_SUPPLEMENTS = {
                                 'tcas5_gpa_',
                                 'supplements.views.forms.tcas5.init_gpa_form',
                                 'supplements.views.forms.tcas5.process_gpa_form',
-                                'supplements/backoffice/tcas5/gpa_form.html'),
+                                'supplements/backoffice/tcas5/gpa.html'),
     ],
 }
 

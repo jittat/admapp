@@ -100,6 +100,7 @@ def process_applicant_stats(majors,
         for i in range(max_num_selections):
             m.stats.append({'sel': 0, 'paid': 0})
         midx += 1
+        m.has_any_applications = False
 
     faculty_stats = {}
 
@@ -108,6 +109,8 @@ def process_applicant_stats(majors,
         for m in a.majors:
             if m.number in mnum_map:
                 majors[mnum_map[m.number]].stats[r]['sel'] += 1
+                majors[mnum_map[m.number]].has_any_applications = True
+                
                 if a.has_paid:
                     majors[mnum_map[m.number]].stats[r]['paid'] += 1
 
@@ -242,7 +245,7 @@ def load_major_applicants(project,
 
 
 def load_major_applicant_with_major_stats(project, admission_round, major, num):
-    sorted_applicants = load_major_applicants(project, admission_round, major)
+    sorted_applicants = load_major_applicants_no_cache(project, admission_round, major)
     stat = {'total': len(sorted_applicants),
             'paid': len([a for a in sorted_applicants if a.has_paid]),}
 
@@ -538,7 +541,11 @@ def show_applicant(request, project_id, round_id, major_number, rank):
                                                                   real_rank)
 
     if not applicant:
-        return redirect(reverse('backoffice:projects-show-applicant',args=[project_id, round_id, major_number, 1]))
+        if real_rank != 0:
+            return redirect(reverse('backoffice:projects-show-applicant',args=[project_id, round_id, major_number, 1]))
+        else:
+            return redirect(reverse('backoffice:projects-index',args=[project_id, round_id]))
+            
 
     application = applicant.get_active_application(admission_round)
 
