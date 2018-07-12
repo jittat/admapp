@@ -64,6 +64,10 @@ def find_applicant(national_id, verification_number, admission_round):
     for a in apps:
         if a.get_verification_number() == verification_number:
             return applicant
+        else:
+            old_verification_number = a.get_verification_number('80712')
+            if old_verification_number == verification_number:
+                return applicant
 
     return None
 

@@ -597,12 +597,13 @@ class ProjectApplication(models.Model):
         except:
             return None
     
-    def get_verification_number(self):
+    def get_verification_number(self, deadline_str=None):
         project_round = self.admission_project.get_project_round_for(self.admission_round)
-        deadline = project_round.payment_deadline
-        deadline_str = "%d%02d%02d" % (deadline.year % 10,
-                                       deadline.month,
-                                       deadline.day)
+        if not deadline_str:
+            deadline = project_round.payment_deadline
+            deadline_str = "%d%02d%02d" % (deadline.year % 10,
+                                           deadline.month,
+                                           deadline.day)
 
         from lib.lincodes import gen_verification
 
