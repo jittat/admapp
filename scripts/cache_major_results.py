@@ -28,6 +28,8 @@ def main():
     for application in applications:
         a = application.applicant
         major_selection = application.get_major_selection()
+        if not major_selection:
+            continue
         majors = major_selection.get_majors()
 
         old = ApplicantMajorResult.objects.filter(applicant=a,

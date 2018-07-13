@@ -9,13 +9,15 @@
           | รับพร้อมสาขาอื่น <span id="conflict_count_span_id"></span> คน
         {% endif %}
       </b><br />
-      <div style="display: none;">
+      <div style="-display: none;">
         เกณฑ์การคัดเลือก: <a id="selection_criteria_toggle_id" class="btn btn-sm btn-outline-secondary" href="#">ดูเกณฑ์</a>
       </div>
       {% if is_truncated %}
         แสดงเฉพาะผู้สมัครคะแนนรวมสูงสุด {{ applicants|length }} คนแรก (จากทั้งหมด {{ org_count }} คน)
       {% endif %}
-      <a id="conflict_toggle_id" class="btn btn-sm btn-outline-secondary" href="#">แสดงรายการสาขาที่รับผู้สมัครพร้อมกัน <i class="fa fa-caret-down"></i></a>
+      {% if project.cross_majors_acceptance_visible %}
+        <a id="conflict_toggle_id" class="btn btn-sm btn-outline-secondary" href="#">แสดงรายการสาขาที่รับผู้สมัครพร้อมกัน <i class="fa fa-caret-down"></i></a>
+      {% endif %}
       <span id="data_load_notice_id"></span>
       {% if accepted_for_interview_result_frozen %}
         ในการระบุการรับผู้สมัคร ขณะนี้ให้ใช้หน้าพิจารณาผู้สมัครรายคน <a class="btn btn-outline-secondary btn-sm" href="{% url 'backoffice:projects-show-applicant' project.id admission_round.id major.number 1 %}">พิจารณาผลการคัดเลือก</a>

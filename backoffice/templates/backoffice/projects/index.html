@@ -124,8 +124,8 @@
                 {% if user_major_number == any_major or user_major_number == major.number %}
                   {% if major.has_any_applications %}
                     <a target="_blank" class="btn btn-sm btn-outline-secondary" href="{% url 'backoffice:projects-show-applicant' project.id admission_round.id major.number 1 %}">พิจารณาข้อมูล</a>
+                    <a class="d-none btn btn-sm btn-outline-secondary" href="{% url 'backoffice:projects-show-scores' project.id admission_round.id major.number %}">พิจารณาคะแนน</a>
                   {% endif %}
-                  <a class="d-none btn btn-sm btn-outline-secondary" href="{% url 'backoffice:projects-show-scores' project.id admission_round.id major.number %}">คะแนน</a>
                   <div class="dropdown d-none">
                     <a class="btn btn-sm btn-outline-secondary dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">พิจารณา</a>
                     <div class="dropdown-menu">
