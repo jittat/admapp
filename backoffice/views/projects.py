@@ -20,13 +20,19 @@ def load_applicant_round_paid_amount(admission_round):
     round_payments = Payment.objects.filter(admission_round=admission_round)
 
     paid_amount = {}
+    paid_at = {}
     for p in round_payments:
         if p.applicant_id:
             if p.applicant_id not in paid_amount:
                 paid_amount[p.applicant_id] = 0
             paid_amount[p.applicant_id] += p.amount
+            if p.applicant_id not in paid_at:
+                paid_at[p.applicant_id] = p.paid_at
+            else:
+                if p.paid_at < paid_at[p.applicant_id]:
+                    paid_at[p.applicant_id] = p.paid_at
 
-    return paid_amount
+    return paid_amount, paid_at
 
 def filter_faculty_applicants(applicants, faculty):
     faculty_applicants = []
@@ -44,7 +50,7 @@ def filter_faculty_applicants(applicants, faculty):
 
 
 def load_project_applicants(project, admission_round, faculty):
-    applicant_paid_amount = load_applicant_round_paid_amount(admission_round)
+    applicant_paid_amount, applicant_paid_at = load_applicant_round_paid_amount(admission_round)
     project_applications = ProjectApplication.find_for_project_and_round(project,
                                                                          admission_round,
                                                                          True)
@@ -79,6 +85,8 @@ def load_project_applicants(project, admission_round, faculty):
         admission_fee = app.admission_fee(project_base_fee=project.base_fee,
                                           majors=applicant.majors)
         applicant.has_paid = applicant_paid_amount.get(applicant.id,0) >= admission_fee
+        if applicant.has_paid:
+            applicant.paid_at = applicant_paid_at[applicant.id]
 
         applicants.append(applicant)
 
@@ -133,8 +141,9 @@ def sorted_applicants(applicants, with_interview_call_results=False):
         if not hasattr(a,'major_number'):
             a.major_number = 0
     if not with_interview_call_results:
-        sorted_applicant_ids = [x[3] for x in sorted([(applicant.major_number,
+        sorted_applicant_ids = [x[4] for x in sorted([(applicant.major_number,
                                                        ({True: 0, False: 1}[applicant.has_paid]),
+                                                       getattr(applicant,'paid_at',None),
                                                        applicant.national_id,
                                                        applicant.id) for applicant
                                                       in applicants])]
@@ -153,7 +162,7 @@ def load_major_applicants_no_cache(project, admission_round, major, with_intervi
     project_applications = ProjectApplication.find_for_project_and_round(project,
                                                                          admission_round,
                                                                          True)
-    applicant_paid_amount = load_applicant_round_paid_amount(admission_round)
+    applicant_paid_amount, applicant_paid_at = load_applicant_round_paid_amount(admission_round)
     major_map = project.get_majors_as_dict()
 
     applicants = []
@@ -168,6 +177,8 @@ def load_major_applicants_no_cache(project, admission_round, major, with_intervi
             admission_fee = application.admission_fee(project_base_fee=project.base_fee,
                                                       majors=application.major_selection.get_majors(major_map))
             applicant.has_paid = applicant_paid_amount.get(applicant.id,0) >= admission_fee
+            if applicant.has_paid:
+                applicant.paid_at = applicant_paid_at[applicant.id]
 
             applicants.append(applicant)
 
@@ -227,7 +238,7 @@ def load_major_applicants(project,
         m.project_application.applicant = applicant
     
     project_applications = [r.project_application for r in major_results]
-    applicant_paid_amount = load_applicant_round_paid_amount(admission_round)
+    applicant_paid_amount, applicant_paid_at = load_applicant_round_paid_amount(admission_round)
     major_map = project.get_majors_as_dict()
 
     applicants = []
@@ -236,6 +247,8 @@ def load_major_applicants(project,
         admission_fee = application.admission_fee(project_base_fee=project.base_fee,
                                                   majors=[major])
         applicant.has_paid = applicant_paid_amount.get(applicant.id,0) >= admission_fee
+        if applicant.has_paid:
+            applicant.paid_at = applicant_paid_at[applicant.id]
 
         applicant.exam_score_provider = ExamScoreProvider(applicant, scores.get(applicant.id,[]))
         
