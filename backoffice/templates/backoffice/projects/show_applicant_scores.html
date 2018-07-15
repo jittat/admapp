@@ -9,9 +9,8 @@
           | รับพร้อมสาขาอื่น <span id="conflict_count_span_id"></span> คน
         {% endif %}
       </b><br />
-      <div style="-display: none;">
-        เกณฑ์การคัดเลือก: <a id="selection_criteria_toggle_id" class="btn btn-sm btn-outline-secondary" href="#">ดูเกณฑ์</a>
-      </div>
+      เกณฑ์การคัดเลือก: <a id="selection_criteria_toggle_id" class="btn btn-sm btn-outline-secondary" href="#">ดูเกณฑ์</a>
+      <a id="onet_extra_toggle_id" class="btn btn-sm btn-outline-secondary" href="#">แสดงคะแนน ONET ทั้งหมด</a>
       {% if is_truncated %}
         แสดงเฉพาะผู้สมัครคะแนนรวมสูงสุด {{ applicants|length }} คนแรก (จากทั้งหมด {{ org_count }} คน)
       {% endif %}
@@ -43,6 +42,10 @@
       });
       $("#conflict_toggle_id").click(function(){
         $("#conflict_list_div_id").slideToggle();
+        return false;
+      });
+      $("#onet_extra_toggle_id").click(function(){
+        $(".onet-extra").toggle();
         return false;
       });
     });

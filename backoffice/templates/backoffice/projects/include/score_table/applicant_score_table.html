@@ -61,7 +61,11 @@
         {% endif %}
         <td>{{ a.educationalprofile.gpa|floatformat:"2" }}</td>
         {% with a as applicant %}
+          <td class="onet-odd onet-extra" style="display: none;">{{ applicant.get_all_exam_scores.onet.x01|score }}</td>
+          <td class="onet-even onet-extra" style="display: none;">{{ applicant.get_all_exam_scores.onet.x02|score }}</td>
           <td class="onet-odd">{{ applicant.get_all_exam_scores.onet.x03|score }}</td>
+          <td class="onet-even onet-extra" style="display: none;">{{ applicant.get_all_exam_scores.onet.x04|score }}</td>
+          <td class="onet-odd onet-extra" style="display: none;">{{ applicant.get_all_exam_scores.onet.x05|score }}</td>
           
           <td class="gatpat-odd">{{ applicant.get_all_exam_scores.gatpat_rounds|round_array }}</td>
           <td class="gatpat-even">{{ applicant.get_all_exam_scores.gatpat_array.gat|score_array }}</td>
