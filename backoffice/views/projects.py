@@ -398,7 +398,11 @@ def update_applicant_status(applicant, admission_results, admission_project_roun
             if res.is_accepted:
                 applicant.is_accepted = True
                 applicant.accepted_result = res
-            if (res.is_criteria_passed) or (not admission_project_round.criteria_check_required):
+
+            ###########################
+            ## HACK for TCAS5 (default to passed)
+            ###########################
+            if (res.is_criteria_passed or (res.is_criteria_passed == None)) or (not admission_project_round.criteria_check_required):
                 applicant.is_criteria_passed = True
                 if res.is_interview_callable():
                     applicant.is_interview_callable = True
@@ -1056,10 +1060,20 @@ def show_scores(request, project_id, round_id, major_number):
     if not can_user_view_applicants_in_major(user, project, major):
         return redirect(reverse('backoffice:index'))
 
-    applicants = load_major_applicants(project,
-                                       admission_round,
-                                       major,
-                                       load_results=True)
+    ### HACK
+    if project.id != 31:
+        applicants = load_major_applicants_no_cache(project,
+                                                    admission_round,
+                                                    major)
+        load_check_marks_and_results(applicants,
+                                     project,
+                                     admission_round,
+                                     project_round)
+    else:
+        applicants = load_major_applicants(project,
+                                           admission_round,
+                                           major,
+                                           load_results=True)
 
     applicant_score_viewable = project_round.applicant_score_viewable
     
@@ -1080,8 +1094,9 @@ def show_scores(request, project_id, round_id, major_number):
 
     cross_majors = set()
     for a in applicants:
-        for m in a.other_major_numbers:
-            cross_majors.add(m)
+        if hasattr(a,'other_major_numbers'):
+            for m in a.other_major_numbers:
+                cross_majors.add(m)
     interview_call_decisions = (MajorInterviewCallDecision
                                 .objects
                                 .select_related('major')
@@ -1135,10 +1150,21 @@ def update_interview_call_score(request, project_id, round_id, major_number):
     if project_round.accepted_for_interview_result_frozen:
         return HttpResponseForbidden()
 
-    applicants = load_major_applicants(project,
-                                       admission_round,
-                                       major,
-                                       load_results=True)
+    ### HACK
+    if project.id != 31:
+        applicants = load_major_applicants_no_cache(project,
+                                                    admission_round,
+                                                    major)
+        load_check_marks_and_results(applicants,
+                                     project,
+                                     admission_round,
+                                     project_round)
+    else:
+        applicants = load_major_applicants(project,
+                                           admission_round,
+                                           major,
+                                           load_results=True)
+
     applicants = sort_applicants_by_calculated_scores(applicants,
                                                       project_round.criteria_check_required)
     call_decision = MajorInterviewCallDecision.get_for(major, admission_round)
