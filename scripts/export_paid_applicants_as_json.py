@@ -78,7 +78,7 @@ def extract_applicant_info(applicant, admission_project, application):
              'edu': extract_education(applicant),
              'major_selection': extract_major_selection(applicant, application),
              'supplements': dict([(s.name, json.loads(s.supplement_instance.json_data))
-                                  for s in supplements]) }
+                                  for s in supplements if s.supplement_instance != None ]) }
 
 def main():
     project_id = sys.argv[1]
