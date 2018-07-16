@@ -10,16 +10,17 @@ from appl.models import AdmissionProject, AdmissionResult, AdmissionRound, Proje
 from backoffice.models import MajorInterviewCallDecision
 
 from backoffice.views.projects import load_major_applicants
+from backoffice.views.projects import load_major_applicants_no_cache
 from backoffice.views.projects import load_check_marks_and_results
 from backoffice.views.projects import sort_applicants_by_calculated_scores
 from backoffice.views.projects import update_interview_call_status
 
 def make_decision(project, admission_round, project_round, major, decision, fake=True):
-    applicants = load_major_applicants(project, admission_round, major, load_results=True)
-    #load_check_marks_and_results(applicants,
-    #                             project,
-    #                             admission_round,
-    #                             project_round)
+    applicants = load_major_applicants_no_cache(project, admission_round, major)
+    load_check_marks_and_results(applicants,
+                                 project,
+                                 admission_round,
+                                 project_round)
     applicants = sort_applicants_by_calculated_scores(applicants,
                                                       project_round.criteria_check_required)
     update_interview_call_status(applicants, decision)
@@ -36,11 +37,11 @@ def make_decision(project, admission_round, project_round, major, decision, fake
               decision.interview_call_min_score,
               decision.interview_call_count,
               'Mismatch %d from %d' % (call_count,decision.interview_call_count))
-        print('--------------------------')
-        for a in applicants:
-            if a.is_called_for_interview:
-                print(a.admission_result.calculated_score, a.admission_result.major)
-        print('--------------------------')
+        #print('--------------------------')
+        #for a in applicants:
+        #    if a.is_called_for_interview:
+        #        print(a.admission_result.calculated_score, a.admission_result.major)
+        #print('--------------------------')
         
     if fake:
         return
