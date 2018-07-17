@@ -86,7 +86,10 @@ def load_project_applicants(project, admission_round, faculty):
                                           majors=applicant.majors)
         applicant.has_paid = applicant_paid_amount.get(applicant.id,0) >= admission_fee
         if applicant.has_paid:
-            applicant.paid_at = applicant_paid_at[applicant.id]
+            if applicant.id in applicant_paid_at:
+                applicant.paid_at = applicant_paid_at[applicant.id]
+            else:
+                applicant.paid_at = None
 
         applicants.append(applicant)
 
@@ -178,7 +181,10 @@ def load_major_applicants_no_cache(project, admission_round, major, with_intervi
                                                       majors=application.major_selection.get_majors(major_map))
             applicant.has_paid = applicant_paid_amount.get(applicant.id,0) >= admission_fee
             if applicant.has_paid:
-                applicant.paid_at = applicant_paid_at[applicant.id]
+                if applicant.id in applicant_paid_at:
+                    applicant.paid_at = applicant_paid_at[applicant.id]
+                else:
+                    applicant.paid_at = None
 
             applicants.append(applicant)
 
