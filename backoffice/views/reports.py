@@ -397,7 +397,10 @@ def write_score_report_sheet(sheet, project, applicants, major, cell_format):
             else:
                 items += [' '] * 5
         else:
-            items += [ score_filter(scores.onet['x03']),]
+            if hasattr(scores,'onet'):
+                items += [ score_filter(scores.onet['x03']),]
+            else:
+                items += [' ']
 
         if hasattr(scores,'gatpat_array'):
             items += [
