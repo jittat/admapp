@@ -13,6 +13,12 @@
     <hr />
   {% endif %}
 {% endif %}
+{% if active_application.admission_project.id == 32 %}
+  <h4>พิมพ์ใบสมัครเพื่อสัมภาษณ์</h4>
+  <a class="btn btn-success btn-sm" target="_blank" href="{% url 'appl:common-print' %}">พิมพ์ใบสมัคร</a><br />
+  เพื่อนำมาประกอบการสัมภาษณ์ในวันที่ 18 ก.ค. 2561
+  <hr />
+{% endif %}
 {% comment %}
 {% if active_application.admission_project.id == 4 %}
 <h4>พิมพ์ใบสมัครเพื่อสัมภาษณ์</h4>
