@@ -14,7 +14,7 @@ from appl.models import ProjectUploadedDocument, UploadedDocument
 from backoffice.views.permissions import can_user_view_project, can_user_view_applicant_in_major, can_user_view_applicants_in_major
 from backoffice.decorators import user_login_required
 
-from .projects import load_major_applicants, load_check_marks_and_results
+from .projects import load_major_applicants, load_check_marks_and_results, load_major_applicants_no_cache
 
 
 def set_column_widths(sheet,widths):
@@ -235,30 +235,35 @@ def download_applicants_interview_sheet(request, project_id, round_id, major_num
     bordered_cell_format = workbook.add_format()
     bordered_cell_format.set_border(1)
     
-    all_applicants = load_major_applicants(project,
-                                           admission_round,
-                                           major,
-                                           load_results=True)
-    #load_check_marks_and_results(all_applicants,
-    #                             project,
-    #                             admission_round,
-    #                             project_round)
+    #all_applicants = load_major_applicants(project,
+    #                                       admission_round,
+    #                                       major,
+    #                                       load_results=True)
+    
+    all_applicants = load_major_applicants_no_cache(project,
+                                                    admission_round,
+                                                    major)
+    load_check_marks_and_results(all_applicants,
+                                 project,
+                                 admission_round,
+                                 project_round)
 
     applicants = []
 
     for applicant in all_applicants:
         # HACK
-        if applicant.admission_result:
-            applicant.admission_results = [applicant.admission_result]
-        else:
-            applicant.admission_results = None
+        if not hasattr(applicant,'admission_results'):
+            if applicant.admission_result:
+                applicant.admission_results = [applicant.admission_result]
+            else:
+                applicant.admission_results = None
         
         if applicant.admission_results:
             for res in applicant.admission_results:
                 if (res.major_id == major.id) and res.is_accepted_for_interview:
                     # HACK for TCAS
-                    if not res.is_tcas_confirmed:
-                        continue
+                    #if not res.is_tcas_confirmed:
+                    #    continue
                         
                     #applicants.append((res.tcas_acceptance_round_number, applicant.national_id, applicant))
                     applicants.append(applicant)
@@ -294,22 +299,47 @@ def major_with_udat(major):
         return major.number == 4
     elif major.admission_project_id == 31:
         return True
+    elif major.admission_project_id == 32:
+        return major.number in [15,19,70]
+    else:
+        return False
+
+def major_with_full_onet(major):
+    if major.admission_project_id == 32:
+        return major.number in [
+            33,34,35,36,37,39,40,41,42,43,44,45,46,
+            52,53,56,57,58,59,60,61,62,71,
+        ]
     else:
         return False
 
 def write_score_report_header(sheet, major, cell_format):
-    items = ['ลำดับ',
-             'เลขประจำตัวประชาชน',
-             'คำนำหน้า',
-             'ชื่อ',
-             'นามสกุล',
-             'GPAX',
-             'แผนการเรียน',
+    items = [
+        'ลำดับ',
+        'เลขประจำตัวประชาชน',
+        'คำนำหน้า',
+        'ชื่อ',
+        'นามสกุล',
+        'GPAX',
+        'แผนการเรียน',
+    ]
+    if major_with_full_onet(major):
+        items += [
+            'O-01',
+            'O-02',
+            'O-03',
+            'O-04',
+            'O-05',
+        ]
+    else:
+        items += [
              'ONET(03)',
-             'GP-Round',
-             'GAT',
-             'P1','P2','P3','P4','P5','P6','P7',
-             ]
+        ]
+    items += [
+        'GP-Round',
+        'GAT',
+        'P1','P2','P3','P4','P5','P6','P7',
+    ]
     if major_with_udat(major):
         items += [
             '09',
@@ -354,8 +384,20 @@ def write_score_report_sheet(sheet, project, applicants, major, cell_format):
                  str(applicant.educationalprofile.get_education_plan_display()),]
 
         gp_round_count = len(scores.gatpat_rounds)
-        
-        items += [ score_filter(scores.onet['x03']),]
+
+        if major_with_full_onet(major):
+            if hasattr(scores,'onet'):
+                items += [
+                    score_filter(scores.onet['x01']),
+                    score_filter(scores.onet['x02']),
+                    score_filter(scores.onet['x03']),
+                    score_filter(scores.onet['x04']),
+                    score_filter(scores.onet['x05']),
+                ]
+            else:
+                items += [' '] * 5
+        else:
+            items += [ score_filter(scores.onet['x03']),]
 
         if hasattr(scores,'gatpat_array'):
             items += [
@@ -412,30 +454,35 @@ def download_applicants_interview_score_sheet(request,
     if not can_user_view_applicants_in_major(user, project, major):
         return redirect(reverse('backoffice:index'))
 
-    all_applicants = load_major_applicants(project,
-                                           admission_round,
-                                           major,
-                                           load_results=True)
-    
-    #load_check_marks_and_results(all_applicants,
-    #                             project,
-    #                             admission_round,
-    #                             project_round)
+    if admission_round.id == 5:
+        all_applicants = load_major_applicants(project,
+                                               admission_round,
+                                               major,
+                                               load_results=True)
+    else:
+        all_applicants = load_major_applicants_no_cache(project,
+                                                        admission_round,
+                                                        major)    
+        load_check_marks_and_results(all_applicants,
+                                     project,
+                                     admission_round,
+                                     project_round)
 
     applicants = []
     for applicant in all_applicants:
         # HACK
-        if applicant.admission_result:
-            applicant.admission_results = [applicant.admission_result]
-        else:
-            applicant.admission_results = None
+        if not hasattr(applicant,'admission_results'):
+            if applicant.admission_result:
+                applicant.admission_results = [applicant.admission_result]
+            else:
+                applicant.admission_results = None
         
         if applicant.admission_results:
             for res in applicant.admission_results:
                 if (res.major_id == major.id) and res.is_accepted_for_interview:
                     # HACK for TCAS
-                    if not res.is_tcas_confirmed:
-                        continue
+                    #if not res.is_tcas_confirmed:
+                    #    continue
                         
                     #applicants.append((res.tcas_acceptance_round_number, applicant.national_id, applicant))
                     applicants.append(applicant)

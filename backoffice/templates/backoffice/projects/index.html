@@ -135,7 +135,7 @@
               </td>
               <td>
                 {% if user_major_number == any_major or user_major_number == major.number %}
-                  <div class="dropdown d-none">
+                  <div class="dropdown">
                     <a class="btn btn-sm btn-outline-secondary dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">ดาวน์โหลด</a>
                     <div class="dropdown-menu">
                       <a class="dropdown-item d-none" href="{% url 'backoffice:projects-download-app-sheet' project.id admission_round.id major.number %}">ดาวน์โหลดข้อมูลทั่วไป</a>
