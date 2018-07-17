@@ -394,7 +394,8 @@ def index(request, project_id, round_id):
 
 def update_applicant_status(applicant, admission_results, admission_project_round):
     applicant.admission_results = admission_results
-
+    applicant.admission_result = None
+    
     applicant.is_accepted = False
     applicant.is_accepted_for_interview = False
     applicant.is_criteria_passed = False
@@ -1262,10 +1263,20 @@ def list_applicants_for_acceptance_calls(request, project_id, round_id, major_nu
     if not project_round.accepted_for_interview_result_frozen:
         return HttpResponseForbidden()
 
-    major_applicants = load_major_applicants(project,
-                                             admission_round,
-                                             major,
-                                             load_results=True)
+    if project.id != 31:
+        major_applicants = load_major_applicants_no_cache(project,
+                                                          admission_round,
+                                                          major)
+        load_check_marks_and_results(major_applicants,
+                                     project,
+                                     admission_round,
+                                     project_round)
+    else:
+        major_applicants = load_major_applicants(project,
+                                                 admission_round,
+                                                 major,
+                                                 load_results=True)
+
     applicants = []
     for a in major_applicants:
         if a.admission_result and a.admission_result.is_accepted_for_interview:
@@ -1305,10 +1316,20 @@ def update_applicant_acceptance_call(request, project_id, round_id, major_number
     if not project_round.accepted_for_interview_result_frozen:
         return HttpResponseForbidden()
 
-    major_applicants = load_major_applicants(project,
-                                             admission_round,
-                                             major,
-                                             load_results=True)
+    if project.id != 31:
+        major_applicants = load_major_applicants_no_cache(project,
+                                                          admission_round,
+                                                          major)
+        load_check_marks_and_results(major_applicants,
+                                     project,
+                                     admission_round,
+                                     project_round)
+    else:
+        major_applicants = load_major_applicants(project,
+                                                 admission_round,
+                                                 major,
+                                                 load_results=True)
+
     applicants = []
     for a in major_applicants:
         if a.admission_result and a.admission_result.is_accepted_for_interview:
