@@ -15,8 +15,8 @@
           <i class="text-success fa fa-check"></i>
           คุณผ่านการสอบสัมภาษณ์และมีสิทธิ์เข้าศึกษาต่อในสาขา:
           <h4>{{ accepted_result.major }} - {{ accepted_result.major.faculty }} ({{ accepted_result.major.faculty.campus.title }})</h4>
-          รหัสยืนยันตัวตนในระบบเคลียริงเฮาส์: {{ accepted_result.clearing_house_code }}<br />
-          คำอ่าน (เพื่อความชัดเจน): {{ accepted_result.read_clearing_house_code }}
+          <!-- รหัสยืนยันตัวตนในระบบเคลียริงเฮาส์: {{ accepted_result.clearing_house_code }}<br />
+          คำอ่าน (เพื่อความชัดเจน): {{ accepted_result.read_clearing_house_code }} -->
           <div class="mt5">
             {{ project_round.accepted_instructions|safe }}
           </div>
