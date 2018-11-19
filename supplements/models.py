@@ -6,7 +6,8 @@ from regis.models import Applicant
 from appl.models import School, AdmissionProject
 
 class TopSchool(models.Model):
-    school = models.OneToOneField(School, on_delete=models.CASCADE)
+    school = models.OneToOneField(School,
+                                  on_delete=models.CASCADE)
 
 
 class AdvancedPlacementApplicant(models.Model):
@@ -25,7 +26,8 @@ class AdvancedPlacementResult(models.Model):
     }
     
     ap_applicant = models.ForeignKey(AdvancedPlacementApplicant,
-                                     related_name='results')
+                                     related_name='results',
+                                     on_delete=models.CASCADE)
     subject_id = models.CharField(max_length=10)
     section_id = models.IntegerField()
     grade = models.CharField(max_length=5)
@@ -37,8 +39,10 @@ class AdvancedPlacementResult(models.Model):
             return ''
 
 class ProjectSupplement(models.Model):
-    applicant = models.ForeignKey(Applicant)
-    admission_project = models.ForeignKey(AdmissionProject)
+    applicant = models.ForeignKey(Applicant,
+                                  on_delete=models.CASCADE)
+    admission_project = models.ForeignKey(AdmissionProject,
+                                          on_delete=models.CASCADE)
     name = models.CharField(max_length=50)
     json_data = models.TextField(blank=True)
 

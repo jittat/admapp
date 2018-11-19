@@ -14,13 +14,15 @@ from appl.models import Major, AdmissionResult, ExamScore
 class Profile(models.Model):
     ANY_MAJOR = 0
 
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User,
+                                on_delete=models.CASCADE)
 
     faculty = models.ForeignKey(Faculty,
                                 verbose_name='คณะที่สังกัด',
                                 default=None,
                                 null=True,
-                                blank=True)
+                                blank=True,
+                                on_delete=models.SET_NULL)
     is_admission_admin = models.BooleanField(verbose_name='ดูแลข้อมูลทุกคณะ',
                                              default=False)
 
@@ -67,9 +69,11 @@ class CheckMarkGroup(models.Model):
               'text-secondary',
               'text-dark']
 
-    applicant = models.ForeignKey(Applicant)
+    applicant = models.ForeignKey(Applicant,
+                                  on_delete=models.CASCADE)
     project_application = models.OneToOneField(ProjectApplication,
-                                               related_name='check_mark_group')
+                                               related_name='check_mark_group',
+                                               on_delete=models.CASCADE)
     check_marks = models.CharField(default='',
                                    max_length=20)
 
@@ -100,9 +104,11 @@ class CheckMarkGroup(models.Model):
 
 
 class JudgeComment(models.Model):
-    applicant = models.ForeignKey(Applicant)
+    applicant = models.ForeignKey(Applicant,
+                                  on_delete=models.CASCADE)
     project_application = models.ForeignKey(ProjectApplication,
-                                            related_name='judge_comment_set')
+                                            related_name='judge_comment_set',
+                                            on_delete=models.CASCADE)
 
     author_username = models.CharField(max_length=30,
                                        blank=True)
@@ -116,15 +122,18 @@ class JudgeComment(models.Model):
     admission_project = models.ForeignKey(AdmissionProject,
                                           blank=True,
                                           null=True,
-                                          default=None)
+                                          default=None,
+                                          on_delete=models.SET_NULL)
     admission_round = models.ForeignKey(AdmissionRound,
                                         blank=True,
                                         null=True,
-                                        default=None)
+                                        default=None,
+                                        on_delete=models.SET_NULL)
     major = models.ForeignKey(Major,
                               blank=True,
                               null=True,
-                              default=None)
+                              default=None,
+                              on_delete=models.SET_NULL)
     
     class Meta:
         ordering = ['-created_at']
@@ -133,9 +142,12 @@ class JudgeComment(models.Model):
 class MajorInterviewCallDecision(models.Model):
     FLOAT_DELTA = 0.000001
     
-    admission_project = models.ForeignKey(AdmissionProject)
-    admission_round = models.ForeignKey(AdmissionRound)
-    major = models.ForeignKey(Major)
+    admission_project = models.ForeignKey(AdmissionProject,
+                                          on_delete=models.CASCADE)
+    admission_round = models.ForeignKey(AdmissionRound,
+                                        on_delete=models.CASCADE)
+    major = models.ForeignKey(Major,
+                              on_delete=models.CASCADE)
 
     interview_call_count = models.IntegerField(default=0)
     interview_call_min_score = models.FloatField(default=0)
@@ -161,13 +173,18 @@ class MajorInterviewCallDecision(models.Model):
 
 
 class ApplicantMajorResult(models.Model):
-    admission_project = models.ForeignKey(AdmissionProject)
-    major = models.ForeignKey(Major)
-    applicant = models.ForeignKey(Applicant)
+    admission_project = models.ForeignKey(AdmissionProject,
+                                          on_delete=models.CASCADE)
+    major = models.ForeignKey(Major,
+                              on_delete=models.CASCADE)
+    applicant = models.ForeignKey(Applicant,
+                                  on_delete=models.CASCADE)
     project_application = models.ForeignKey(ProjectApplication,
-                                            null=True)
+                                            null=True,
+                                            on_delete=models.SET_NULL)
     admission_result = models.ForeignKey(AdmissionResult,
-                                         null=True)
+                                         null=True,
+                                         on_delete=models.SET_NULL)
     other_major_numbers = models.CharField(max_length=30,
                                            blank='',
                                            default='')
@@ -195,11 +212,15 @@ class ApplicantMajorResult(models.Model):
         return [float(x) for x in self.other_major_scores.split(',')]
         
 class ApplicantMajorScore(models.Model):
-    admission_project = models.ForeignKey(AdmissionProject)
-    major = models.ForeignKey(Major)
-    applicant = models.ForeignKey(Applicant)
+    admission_project = models.ForeignKey(AdmissionProject,
+                                          on_delete=models.CASCADE)
+    major = models.ForeignKey(Major,
+                              on_delete=models.CASCADE)
+    applicant = models.ForeignKey(Applicant,
+                                  on_delete=models.CASCADE)
 
-    exam_score = models.ForeignKey(ExamScore)
+    exam_score = models.ForeignKey(ExamScore,
+                                   on_delete=models.CASCADE)
     
     class Meta:
         indexes = [

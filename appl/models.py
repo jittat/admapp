@@ -34,7 +34,8 @@ class Campus(models.Model):
 
 class Faculty(models.Model):
     title = models.CharField(max_length=100)
-    campus = models.ForeignKey('Campus')
+    campus = models.ForeignKey('Campus',
+                               on_delete=models.CASCADE)
 
     ku_code = models.CharField(max_length=10, blank=True)
     cupt_code = models.CharField(max_length=10, blank=True)
@@ -108,7 +109,8 @@ class AdmissionProject(models.Model):
                                               through='AdmissionProjectRound')
     campus = models.ForeignKey('Campus',
                                null=True,
-                               blank=True)
+                               blank=True,
+                               on_delete=models.SET_NULL)
 
     general_conditions = models.TextField(blank=True)
     column_descriptions = models.TextField(blank=True)
@@ -262,8 +264,10 @@ class AdmissionProjectRound(models.Model):
 class Major(models.Model):
     number = models.IntegerField()
     title = models.CharField(max_length=200)
-    faculty = models.ForeignKey('Faculty')
-    admission_project = models.ForeignKey('AdmissionProject')
+    faculty = models.ForeignKey('Faculty',
+                                on_delete=models.CASCADE)
+    admission_project = models.ForeignKey('AdmissionProject',
+                                          on_delete=models.CASCADE)
 
     slots = models.IntegerField()
     slots_comments = models.TextField(blank=True)
@@ -427,7 +431,8 @@ class EducationalProfile(models.Model):
         (5,_('ไม่ระบุ')),
     ]
 
-    applicant = models.OneToOneField(Applicant)
+    applicant = models.OneToOneField(Applicant,
+                                     on_delete=models.CASCADE)
     education_level = models.IntegerField(choices=EDUCATION_LEVEL_CHOICES,
                                           verbose_name=_('ระดับการศึกษา'))
     education_plan = models.IntegerField(choices=EDUCATION_PLAN_CHOICES,
@@ -438,7 +443,8 @@ class EducationalProfile(models.Model):
                             help_text='สำหรับการคัดเลือก TCAS รอบ 5 ให้กรอกเกรดเฉลี่ย 6 ภาคการศึกษา')
                             #_('ในกรณีที่กำลังศึกษาชั้นม.6 ให้กรอกเกรดเฉลี่ย 5 ภาคการศึกษา ถ้าจบการศึกษาแล้วให้กรอกเกรดเฉลี่ย 6 ภาคการศึกษา'))
     province = models.ForeignKey(Province,
-                                 verbose_name=_('จังหวัด'))
+                                 verbose_name=_('จังหวัด'),
+                                 on_delete=models.CASCADE)
     school_title = models.CharField(max_length=80,
                                     verbose_name=_('โรงเรียน'))
     school_code = models.CharField(max_length=20,
@@ -464,7 +470,8 @@ class PersonalProfile(models.Model):
         ('Mrs.', 'Mrs.'),
         ('Miss', 'Miss'),
     )
-    applicant = models.OneToOneField(Applicant)
+    applicant = models.OneToOneField(Applicant,
+                                     on_delete=models.CASCADE)
     prefix_english = models.CharField(max_length=4,
                                       choices=TITLE_CHOICES,
                                       verbose_name=_('คำนำหน้า (อังกฤษ)'),
@@ -568,7 +575,8 @@ class ProjectApplication(models.Model):
                                   related_name='project_applications')
     admission_project = models.ForeignKey(AdmissionProject,
                                           on_delete=models.CASCADE)
-    admission_round = models.ForeignKey(AdmissionRound)
+    admission_round = models.ForeignKey(AdmissionRound,
+                                        on_delete=models.CASCADE)
 
     is_canceled = models.BooleanField(default=False)
     applied_at = models.DateTimeField()
@@ -688,11 +696,15 @@ class ProjectApplication(models.Model):
 
     
 class MajorSelection(models.Model):
-    applicant = models.ForeignKey(Applicant)
+    applicant = models.ForeignKey(Applicant,
+                                  on_delete=models.CASCADE)
     project_application = models.OneToOneField(ProjectApplication,
-                                               related_name='major_selection')
-    admission_project = models.ForeignKey(AdmissionProject)
-    admission_round = models.ForeignKey(AdmissionRound)
+                                               related_name='major_selection',
+                                               on_delete=models.CASCADE)
+    admission_project = models.ForeignKey(AdmissionProject,
+                                          on_delete=models.CASCADE)
+    admission_round = models.ForeignKey(AdmissionRound,
+                                        on_delete=models.CASCADE)
 
     num_selected = models.IntegerField(default=0)
     major_list = models.CharField(max_length=50,
@@ -739,8 +751,10 @@ class MajorSelection(models.Model):
         
 class Payment(models.Model):
     applicant = models.ForeignKey(Applicant,
-                                  null=True)
-    admission_round = models.ForeignKey(AdmissionRound)
+                                  null=True,
+                                  on_delete=models.SET_NULL)
+    admission_round = models.ForeignKey(AdmissionRound,
+                                        on_delete=models.CASCADE)
 
     national_id = models.CharField(max_length=20)
     verification_number = models.CharField(max_length=30)
@@ -767,12 +781,17 @@ class Payment(models.Model):
 
     
 class AdmissionResult(models.Model):
-    applicant = models.ForeignKey(Applicant)
-    application = models.ForeignKey(ProjectApplication)
-    admission_project = models.ForeignKey(AdmissionProject)
-    admission_round = models.ForeignKey(AdmissionRound)
+    applicant = models.ForeignKey(Applicant,
+                                  on_delete=models.CASCADE)
+    application = models.ForeignKey(ProjectApplication,
+                                    on_delete=models.CASCADE)
+    admission_project = models.ForeignKey(AdmissionProject,
+                                          on_delete=models.CASCADE)
+    admission_round = models.ForeignKey(AdmissionRound,
+                                        on_delete=models.CASCADE)
 
-    major = models.ForeignKey(Major)
+    major = models.ForeignKey(Major,
+                              on_delete=models.CASCADE)
     major_rank = models.IntegerField(default=1)
 
     is_criteria_passed = models.NullBooleanField(default=None)
@@ -879,8 +898,10 @@ class AdmissionResult(models.Model):
     
     
 class MajorInterviewDescription(models.Model):
-    major = models.ForeignKey(Major)
-    admission_round = models.ForeignKey(AdmissionRound)
+    major = models.ForeignKey(Major,
+                              on_delete=models.CASCADE)
+    admission_round = models.ForeignKey(AdmissionRound,
+                                        on_delete=models.CASCADE)
     descriptions = models.TextField()
 
     class Meta:
@@ -954,7 +975,8 @@ class Eligibility(object):
 
 
 class ExamScore(models.Model):
-    applicant = models.ForeignKey(Applicant)
+    applicant = models.ForeignKey(Applicant,
+                                  on_delete=models.CASCADE)
     exam_type = models.CharField(max_length=20)
     exam_round = models.CharField(max_length=20)
 

@@ -22,7 +22,8 @@ class Applicant(models.Model):
 
     confirmed_application = models.OneToOneField('appl.ProjectApplication',
                                                  related_name='confirmed_applicant',
-                                                 null=True)
+                                                 null=True,
+                                                 on_delete=models.SET_NULL)
     
     class Meta:
         unique_together = ('national_id', 'passport_number')
@@ -185,7 +186,8 @@ class Applicant(models.Model):
     
 class CuptConfirmation(models.Model):
     applicant = models.OneToOneField(Applicant,
-                                     related_name='cupt_confirmation')
+                                     related_name='cupt_confirmation',
+                                     on_delete=models.CASCADE)
     national_id = models.CharField(max_length=16,
                                    blank=True)
     passport_number = models.CharField(max_length=20,
@@ -230,7 +232,8 @@ class CuptConfirmation(models.Model):
         
 
 class CuptRequestQueueItem(models.Model):
-    applicant = models.OneToOneField(Applicant)
+    applicant = models.OneToOneField(Applicant,
+                                     on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -249,7 +252,8 @@ class CuptRequestQueueItem(models.Model):
 class LogItem(models.Model):
     applicant = models.ForeignKey(Applicant,
                                   blank=True,
-                                  null=True)
+                                  null=True,
+                                  on_delete=models.SET_NULL)
     message = models.CharField(max_length=200)
     
     request_ip = models.CharField(max_length=100)
