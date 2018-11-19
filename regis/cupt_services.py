@@ -1,5 +1,6 @@
 import suds
 import json
+import ssl
 
 from django.conf import settings
 
@@ -9,6 +10,10 @@ def create_cupt_client():
     if url == '':
         return None
 
+
+    if hasattr(ssl, '_create_unverified_context'):
+        ssl._create_default_https_context = ssl._create_unverified_context
+        
     client = suds.Client(url)
     return client
 
