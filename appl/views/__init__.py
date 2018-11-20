@@ -22,6 +22,7 @@ from appl.models import AdmissionResult, MajorInterviewDescription
 from appl.views.upload import upload_form_for
 
 from appl.barcodes import generate
+from appl.qrpayment import generate_qr
 
 from supplements.models import load_supplement_configs_with_instance
 
@@ -465,8 +466,7 @@ def payment(request, application_id):
                     'barcode_stub': random_barcode_stub(),
                   })
 
-@appl_login_required
-def payment_barcode(request, application_id, stub):
+def payment_code_img(request, application_id, stub, code_type):
     applicant = request.applicant
     application = get_object_or_404(ProjectApplication, pk=application_id)
 
@@ -484,6 +484,7 @@ def payment_barcode(request, application_id, stub):
     else:
         additional_payment = 0
 
+
     import os.path
     
     img_filename = os.path.join(settings.BARCODE_DIR,
@@ -491,16 +492,33 @@ def payment_barcode(request, application_id, stub):
                                 str(application.id) + '-' +
                                 stub)
 
-    generate('099400015938201',
-             applicant.national_id,
-             application.get_verification_number(),
-             additional_payment,
-             img_filename)
+    if code_type == 'barcode':
+        generate('099400015938201',
+                 applicant.national_id,
+                 application.get_verification_number(),
+                 additional_payment,
+                 img_filename)
+    else:
+        generate_qr(applicant.national_id,
+                    application.get_verification_number(),
+                    additional_payment,
+                    img_filename)
+
 
     fp = open(img_filename + '.png', 'rb')
     response = HttpResponse(fp)
     response['Content-Type'] = 'image/png'
     return response
+
+
+@appl_login_required
+def payment_barcode(request, application_id, stub):
+    return payment_code_img(request, application_id, stub, 'barcode')
+
+
+@appl_login_required
+def payment_qrcode(request, application_id, stub):
+    return payment_code_img(request, application_id, stub, 'qrcode')
 
 
 @appl_login_required

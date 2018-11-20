@@ -12,8 +12,12 @@
   {% blocktrans %}
     ต้องชำระเพิ่ม {{ additional_payment }} บาท<br />
   {% endblocktrans %}
+  สามารถชำระได้สองช่องทาง<br />
+  <a class="btn btn-sm btn-success" href="#">ชำระด้วย QR Code</a>
   <a target="_blank" class="btn btn-sm btn-success" href="{% url 'appl:payment' active_application.id %}"><i class="fa fa-bank"></i> {% trans 'พิมพ์ใบชำระเงิน' %}</a><br />
   <small>{% trans 'ชำระได้ถึงวันที่' %} {{ payment_deadline|thaidate }}</small>
+  <br />
+  {% include 'appl/include/qr_payment.html' %}
 {% else %}
   {% trans 'ไม่ต้องชำระเพิ่ม' %}
 {% endif %}
