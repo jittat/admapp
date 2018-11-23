@@ -499,8 +499,8 @@ def payment_code_img(request, application_id, stub, code_type):
                  additional_payment,
                  img_filename)
     else:
-        generate_qr(applicant.national_id,
-                    application.get_verification_number(),
+        generate_qr('21' + applicant.national_id,
+                    '0',
                     additional_payment,
                     img_filename)
 

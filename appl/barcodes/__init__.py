@@ -22,7 +22,6 @@ def paint_text(self, xpos, ypos):
 
 def generate(tax_id, nat_id, verification_code, amount, filename):
     amount = str(int(amount)) + '00'
-    print(amount, type(amount))
     writer = ImageWriter()
     writer.hello = types.MethodType(paint_text, writer)
     writer.register_callback('paint_text', writer.hello)

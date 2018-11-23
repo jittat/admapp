@@ -208,6 +208,16 @@ CUPT_SERVICE_URL = ''
 CUPT_USERNAME = ''
 CUPT_PASSWORD = ''
 
+# Settings for QR code generation
+QR_CONFIG = {
+    'START': '',
+    'AID': '',
+    'BILLER_ID': '',
+    'CURRENCY_CODE': '5303764',
+    'COUNTRY_CODE': '5802TH',
+    'CRC_PREFIX': '6304',
+}
+
 # Manipulate Settings with Local Settings
 
 try:
