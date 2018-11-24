@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'mailer',
     'supplements',
+    'qrconfirmations',
 ]
 
 DEBUG_TOOLBAR_PANELS = [
@@ -216,6 +217,8 @@ QR_CONFIG = {
     'CURRENCY_CODE': '5303764',
     'COUNTRY_CODE': '5802TH',
     'CRC_PREFIX': '6304',
+
+    'CONFIRM_ID': '',
 }
 
 # Manipulate Settings with Local Settings

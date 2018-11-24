@@ -1,0 +1,3 @@
+#!/bin/bash
+
+curl -i -X POST -H "Content-Type:application/json" http://localhost:8000/qr/sent/ -d '{"billPaymentRef1": "211234567890121", "billPaymentRef2": "3809482039840323", "amount": "197.00", "transactionId": "123128309213", "transactionDateandTime": "2017-03-13T09:00:00.000+07:00"}'

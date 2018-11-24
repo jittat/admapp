@@ -29,6 +29,9 @@ urlpatterns = i18n_patterns(
     url(r'^appl/', include('appl.urls')),
     url(r'^supp/', include('supplements.urls')),
     url(r'^backoffice/', include('backoffice.urls')),
+
+    url(r'^qr/', include('qrconfirmations.urls')),
+    
     url(r'^admin/', admin.site.urls),
 
     url(r'^accounts/login/$',
