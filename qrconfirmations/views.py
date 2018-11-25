@@ -1,4 +1,5 @@
 from django.shortcuts import render
+
 from django.http import JsonResponse, HttpResponseForbidden
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
@@ -55,7 +56,7 @@ def sent(request):
 
     confirm_id = settings.QR_CONFIG['CONFIRM_ID']
     if request.body:
-        json_data = json.loads(request.body)
+        json_data = json.loads(request.body.decode('utf-8'))
 
         ref1 = json_data.get('billPaymentRef1', '')
         ref2 = json_data.get('billPaymentRef2', '')
