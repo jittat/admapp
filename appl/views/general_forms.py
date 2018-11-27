@@ -49,7 +49,7 @@ class EducationForm(ModelForm):
             Row(
                 Div(
                     HTML(format_lazy('<small>{0}</small>', _('ในกรณีที่สมัครโครงการช้างเผือก สามารถเลือกให้แสดงเฉพาะโรงเรียนที่เข้าโครงการได้ โดยกดปุ่มตอนท้าย'))),
-                    css_class='col-md-12 form-text mb5',
+                    css_class='col-md-12 form-text mb5 d-none',
                 ),
             ),
             Row(
@@ -60,7 +60,7 @@ class EducationForm(ModelForm):
                 Div(
                     HTML('<input id="wh_school_check_id" type="checkbox" /> &nbsp;'),
                     HTML(_('แสดงรายการเฉพาะโรงเรียนในโครงการช้างเผือก')),
-                    css_class='col-md-12 mb5',
+                    css_class='col-md-12 mb5 d-none',
                 ),
             ),
             ButtonHolder(
