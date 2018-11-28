@@ -2,20 +2,29 @@
 <div class="project-document-upload-forms mb5" id="accordion" role="tablist" aria-multiselectable="true">
   {% load appl_tags %}
   {% with project_uploaded_document as doc %}
-    <div class="card">
+    <div class="card" id="upload-card-{{ doc.id }}">
 
-      <div class="card-header p10" role="tab" id="accordian-upload-header">
+      <div class="card-header p10" role="tab" id="accordian-upload-header-{{ doc.id }}">
         {% if doc.is_required and doc.applicant_uploaded_documents|length > 0 %}<i class="fa fa-check text-success"></i>{% endif %}
 	<b>{{ doc.title }}{% if doc.is_required %}*{% endif %}</b>
         {% if doc.applicant_uploaded_documents|length > 0 %}<span class="badge badge-secondary">{{ doc.applicant_uploaded_documents|length }} {% trans 'ไฟล์' context 'upload form' %}</span>{% endif %}
         <small>{{ doc.descriptions|linebreaksbr }}</small>
-        <a class="btn btn-xsm btn-outline-primary" data-toggle="collapse" data-parent="#accordian" href="#accordian-upload-form-{{ doc.id }}" aria-expanded="true" aria-controls="accordian-upload-form-{{ doc.id }}" role="button">
+        <a class="btn btn-xsm btn-outline-primary"
+           data-toggle="collapse"
+           href="#accordian-upload-form-{{ doc.id }}"
+           aria-expanded="true"
+           data-target="#accordian-upload-form-{{ doc.id }}"
+           aria-controls="accordian-upload-form-{{ doc.id }}"
+           role="button">
           {% trans 'รายละเอียด' context 'upload form link' %} <i class="fa fa-caret-down"></i>
         </a>
       </div>
 
-      <div id="accordian-upload-form-{{ doc.id }}" class="collapse {% if toggle %}{{toggle}}{% elif doc.applicant_uploaded_documents %}hide{% else %}show{% endif %}" role="tabpanel" aria-labelledby="accordian-upload-header">
-        <div class="card-block p10">
+      <div id="accordian-upload-form-{{ doc.id }}"
+           class="collapse {% if toggle %}{{toggle}}{% elif doc.applicant_uploaded_documents %}hide{% else %}show{% endif %}" 
+           role="tabpanel"
+           aria-labelledby="accordian-upload-header">
+        <div class="card-body p10">
   	  <form class="upload-forms" action="{% url 'appl:upload' doc.id %}" method="post" data-detail-required="{% if doc.is_detail_required %}true{% endif %}" enctype="multipart/form-data">
   	    {% csrf_token %}
 
