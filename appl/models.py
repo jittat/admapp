@@ -361,13 +361,8 @@ class ProjectUploadedDocument(models.Model):
 
 
 def applicant_document_path(instance, filename):
-    try:
-        project_id = instance.admission_project.id
-    except:
-        project_id = 0
-    return ('documents/applicant_{0}/project_{1}/doc_{2}/{3}'
+    return ('documents/applicant_{0}/doc_{1}/{2}'
             .format(instance.applicant.id,
-                    project_id,
                     instance.project_uploaded_document.id,
                     filename))
 
