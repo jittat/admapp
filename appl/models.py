@@ -338,7 +338,9 @@ class ProjectUploadedDocument(models.Model):
     is_required = models.BooleanField(default=True)
     is_detail_required = models.BooleanField(default=False)
     can_have_multiple_files = models.BooleanField(default=False)
-    
+
+    document_key = models.CharField(max_length=30,
+                                    blank=True)
     class Meta:
         ordering = ['rank']
 
