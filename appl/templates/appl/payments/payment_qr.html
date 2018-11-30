@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block content %}
+<div class="row">
+  <div class="col-md-12">
+    <h1>{% trans 'ชำระเงินค่าสมัครโครงการ' %}{{ admission_project.title_trans }}</h1>
+    {% trans 'ผู้สมัคร' %}: {{ applicant }}
+    <br />
+    <div class="text-center">
+      <img class="img-fluid" src="{% url 'appl:payment-qrcode' application.id barcode_stub %}">
+    </div>
+    <div>
+      <div style="float: right;">
+        {{ payment_amount|floatformat:2 }} บาท
+      </div>
+      มหาวิทยาลัยเกษตรศาสตร์<br/>
+      Biller ID: 099400015938287
+    </div>
+    <a class="btn btn-success btn-block" href="{% url 'appl:index' %}">กลับหน้าหลัก</a>
+  </div>
+</div>
+{% endblock %}
