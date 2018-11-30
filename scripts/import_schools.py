@@ -25,14 +25,17 @@ def main():
             except:
                 pass
 
-            province = Province.objects.get(title=province_title)
+            try:
+                province = Province.objects.get(title=province_title)
             
-            school = School(title=title,
-                            code=code,
-                            province=province)
-            school.save()
+                school = School(title=title,
+                                code=code,
+                                province=province)
+                school.save()
+                counter += 1
+            except:
+                print('ERROR: Province error', code, province_title)
             
-            counter += 1
 
     print('Imported',counter,'schools')
         
