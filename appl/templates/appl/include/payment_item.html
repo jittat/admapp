@@ -12,9 +12,21 @@
   {% blocktrans %}
     ต้องชำระเพิ่ม {{ additional_payment }} บาท<br />
   {% endblocktrans %}
-  สามารถชำระได้สองช่องทาง<br />
-  <a class="btn btn-sm btn-success" href="{% url 'appl:payment-qr' active_application.id %}"><i class="fa fa-qrcode"></i> ชำระด้วย QR Code</a>
-  <a target="_blank" class="btn btn-sm btn-success" href="{% url 'appl:payment' active_application.id %}"><i class="fa fa-bank"></i> {% trans 'พิมพ์ใบชำระเงิน' %}</a><br />
+  สามารถชำระได้สองช่องทาง  เมื่อชำระเงินแล้ว ข้อมูลการชำระเงินจะปรากฏในระบบในวันทำการถัดไป ก่อนเวลา 12:00<br />
+  <div class="row mb-0">
+    <div class="col-md-6 mb-0">
+      <a class="btn btn-success btn-block" href="{% url 'appl:payment-qr' active_application.id %}"><i class="fa fa-qrcode"></i> ชำระด้วย QR Code</a>
+      <small>
+        ชำระด้วย Mobile Banking App ของธนาคารใดก็ได้ ไม่เสียค่าธรรมเนียม
+      </small>
+    </div>
+    <div class="col-md-6 mb-0">
+      <a target="_blank" class="btn btn-success btn-block" href="{% url 'appl:payment' active_application.id %}"><i class="fa fa-bank"></i> {% trans 'พิมพ์ใบชำระเงิน' %}</a>
+      <small>
+        พิมพ์ใบชำระเงิน และจ่ายที่ธนาคารกรุงเทพ หรือ Counter Service ค่าธรรมเนียม 10 บาท
+      </small>
+    </div>
+  </div>
   <small>{% trans 'ชำระได้ถึงวันที่' %} {{ payment_deadline|thaidate }}</small>
 {% else %}
   {% trans 'ไม่ต้องชำระเพิ่ม' %}
