@@ -25,6 +25,7 @@ urlpatterns = [
     url(r'^select/(\d+)/$', major_selection.select, name='major-selection'),
 
     url(r'^payment/(\d+)/$', views.payment, name='payment'),
+    url(r'^payment/(\d+)/qr/$', views.payment_with_qr_code, name='payment-qr'),
     url(r'^payment/(\d+)/barcode/(\d+)\.png$', views.payment_barcode, name='payment-barcode'),
     url(r'^payment/(\d+)/qrcode/(\d+)\.png$', views.payment_qrcode, name='payment-qrcode'),
     

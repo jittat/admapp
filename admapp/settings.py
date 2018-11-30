@@ -217,6 +217,7 @@ QR_CONFIG = {
     'CURRENCY_CODE': '5303764',
     'COUNTRY_CODE': '5802TH',
     'CRC_PREFIX': '6304',
+    'REF2': '0',
 
     'CONFIRM_ID': '',
 }

@@ -420,7 +420,7 @@ def random_barcode_stub():
 
 
 @appl_login_required
-def payment(request, application_id):
+def payment(request, application_id, payment_type=''):
     applicant = request.applicant
     application = get_object_or_404(ProjectApplication, pk=application_id)
 
@@ -447,24 +447,48 @@ def payment(request, application_id):
 
     deadline = project_round.payment_deadline
 
-    LogItem.create('Printed payment form (amount: %d)' % (additional_payment,),
-                   applicant, request)
+    if payment_type == '':
+        LogItem.create('Printed payment form (amount: %d)' % (additional_payment,),
+                       applicant, request)
     
-    return render(request,
-                  'appl/payments/payment.html',
-                  { 'applicant': applicant,
+        return render(request,
+                      'appl/payments/payment.html',
+                      { 'applicant': applicant,
 
-                    'application': application,
-                    'admission_round': admission_round,
-                    'admission_project': admission_project,
-                    'major_selection': major_selection,
+                        'application': application,
+                        'admission_round': admission_round,
+                        'admission_project': admission_project,
+                        'major_selection': major_selection,
+                        
+                        'payment_amount': additional_payment,
+                        'payment_str': number_to_thai_text(int(additional_payment)) + 'บาทถ้วน',
 
-                    'payment_amount': additional_payment,
-                    'payment_str': number_to_thai_text(int(additional_payment)) + 'บาทถ้วน',
+                        'deadline': deadline,
+                        'barcode_stub': random_barcode_stub(),
+                      })
+    else:
+        LogItem.create('Printed QR payment form (amount: %d)' % (additional_payment,),
+                       applicant, request)
+    
+        return render(request,
+                      'appl/payments/payment_qr.html',
+                      { 'applicant': applicant,
 
-                    'deadline': deadline,
-                    'barcode_stub': random_barcode_stub(),
-                  })
+                        'application': application,
+                        'admission_round': admission_round,
+                        'admission_project': admission_project,
+                        'major_selection': major_selection,
+                        
+                        'payment_amount': additional_payment,
+                        'payment_str': number_to_thai_text(int(additional_payment)) + 'บาทถ้วน',
+                        
+                        'deadline': deadline,
+                        'barcode_stub': random_barcode_stub(),
+                      })
+
+
+def payment_with_qr_code(request, application_id):
+    return payment(request, application_id, 'qr')
 
 def payment_code_img(request, application_id, stub, code_type):
     applicant = request.applicant
@@ -500,7 +524,7 @@ def payment_code_img(request, application_id, stub, code_type):
                  img_filename)
     else:
         generate_qr('21' + applicant.national_id,
-                    '0',
+                    '',
                     additional_payment,
                     img_filename)
 

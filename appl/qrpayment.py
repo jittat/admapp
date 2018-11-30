@@ -11,6 +11,10 @@ def len2(st):
 
 def generate_qr_code(ref1, ref2, amount):
     QR_CONFIG = settings.QR_CONFIG
+
+    if ref2=='':
+        ref2 = QR_CONFIG['REF2']
+    
     merchant_subtags = [
         QR_CONFIG['AID'],
         QR_CONFIG['BILLER_ID'],
