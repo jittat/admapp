@@ -24,7 +24,14 @@
           <p class="card-text">
             ชำระด้วย QR Code ผ่านทาง Mobile Banking App ของธนาคารใดก็ได้ ไม่เสียค่าธรรมเนียม
           </p>
-          <a class="btn btn-primary btn-block" href="{% url 'appl:payment-qr' active_application.id %}"><i class="fa fa-qrcode"></i> ชำระด้วย QR Code</a>
+          <a class="btn btn-primary btn-block" href="{% url 'appl:payment-qr' active_application.id %}">
+            <div class="d-lg-none d-xl-inline">
+              <i class="fa fa-qrcode"></i> ชำระด้วย QR Code
+            </div>
+            <div class="d-none d-lg-inline d-xl-none">
+              <i class="fa fa-qrcode"></i> QR Code
+            </div>
+          </a>
         </div>
       </div>
     </div>
@@ -33,9 +40,16 @@
         <div class="card-body">
           <h5 class="card-title">ช่องทางที่ 2</h5>
           <p class="card-text">
-            ชำระด้วยผ่านทางเคาน์เตอร์ธนาคารกรุงเทพ หรือบริการ Counter Service มีค่าธรรมเนียม 10 บาท
+            ชำระผ่านทางเคาน์เตอร์ธนาคารกรุงเทพ หรือบริการ Counter Service มีค่าธรรมเนียม 10 บาท
           </p>
-          <a target="_blank" class="btn btn-primary btn-block" href="{% url 'appl:payment' active_application.id %}"><i class="fa fa-bank"></i> {% trans 'พิมพ์ใบชำระเงิน' %}</a>
+          <a target="_blank" class="btn btn-primary btn-block" href="{% url 'appl:payment' active_application.id %}">
+            <div class="d-lg-none d-xl-inline">
+              <i class="fa fa-bank"></i> {% trans 'พิมพ์ใบชำระเงิน' %}
+            </div>
+            <div class="d-none d-lg-inline d-xl-none">
+              <i class="fa fa-bank"></i> ใบชำระเงิน
+            </div>
+          </a>
         </div>
       </div>
     </div>
