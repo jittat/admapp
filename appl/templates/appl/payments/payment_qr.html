@@ -16,7 +16,37 @@
       มหาวิทยาลัยเกษตรศาสตร์<br/>
       Biller ID: 099400015938287
     </div>
+    <div class="mt10 mb5">
+      <small><button type="button" class="btn btn-sm btn-outline-info" data-toggle="modal" data-target="#paymentInstrModal">วิธีการชำระเงิน</button>
+      <small>เมื่อชำระเงินแล้ว ข้อมูลจะแสดงในระบบในเวลาไม่เกิน 13:00 ของวันทำการถัดไป</small>
+    </div>
     <a class="btn btn-success btn-block" href="{% url 'appl:index' %}">กลับหน้าหลัก</a>
+  </div>
+</div>
+<div class="modal" id="paymentInstrModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">วิธีการชำระเงินผ่านระบบ QR</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>
+          การชำระเงินด้วย QR Code สามารถดำเนินการผ่านทาง Mobile Banking App ของธนาคารใดก็ได้  โดยผู้สมัครจะต้องเลือกใช้การชำระเงินด้วยรหัส QR แล้วสแกนรหัส QR เข้าไปในแอพธนาคาร
+        </p>
+        <p>
+          ในกรณีที่ผู้สมัครใช้โทรศัพท์เคลื่อนที่เครื่องเดียวกันในการสมัคร ให้จัดเก็บ (capture) รูปภาพหน้าจอที่มีรหัส QR ก่อน จากนั้นค่อยเลือกให้แอพธนาคารใช้รูปรหัส QR จากที่ได้จัดเก็บไว้ (ในหน้าจอสแกนรหัสมักจะมีปุ่มให้เลือกรูปภาพได้)
+        </p>
+        <p>
+          เมื่อชำระเงินเรียบร้อย ข้อมูลจะเข้าในระบบรับสมัครภายในเวลาไม่เกิน 13:00 ของวันทำการถัดไป
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">ปิด</button>
+      </div>
+    </div>
   </div>
 </div>
 {% endblock %}
