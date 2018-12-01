@@ -12,7 +12,9 @@
   {% blocktrans %}
     ต้องชำระเพิ่ม {{ additional_payment }} บาท<br />
   {% endblocktrans %}
-  สามารถชำระได้สองช่องทาง  เมื่อชำระเงินแล้ว ข้อมูลการชำระเงินจะปรากฏในระบบในวันทำการถัดไป ก่อนเวลา 12:00<br />
+  <div class="alert alert-info">
+    สามารถชำระได้ 2 ช่องทาง <b>ให้ผู้สมัครเลือกชำระทางใดทางหนึ่งเท่านั้น</b>  เมื่อชำระเงินแล้ว ข้อมูลการชำระเงินจะปรากฏในระบบในวันทำการถัดไป ก่อนเวลา 12:00
+  </div>
   <div class="row mb-0" style="margin-top: 10px;">
     <div class="col-6 mb-0">
       <a class="btn btn-success btn-block" href="{% url 'appl:payment-qr' active_application.id %}"><i class="fa fa-qrcode"></i> ชำระด้วย QR Code</a>
