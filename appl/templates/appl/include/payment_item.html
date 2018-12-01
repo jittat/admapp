@@ -15,27 +15,32 @@
   <div class="alert alert-info">
     สามารถชำระได้ 2 ช่องทาง <b>ให้ผู้สมัครเลือกชำระทางใดทางหนึ่งเท่านั้น</b>  เมื่อชำระเงินแล้ว ข้อมูลการชำระเงินจะปรากฏในระบบในวันทำการถัดไป ก่อนเวลา 12:00
   </div>
-  <div class="row mb-0" style="margin-top: 10px;">
-    <div class="col-6 mb-0">
-      <a class="btn btn-success btn-block" href="{% url 'appl:payment-qr' active_application.id %}"><i class="fa fa-qrcode"></i> ชำระด้วย QR Code</a>
+
+  <div class="row">
+    <div class="col-sm-6">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">ช่องทางที่ 1</h5>
+          <p class="card-text">
+            ชำระด้วย QR Code ผ่านทาง Mobile Banking App ของธนาคารใดก็ได้ ไม่เสียค่าธรรมเนียม
+          </p>
+          <a class="btn btn-primary btn-block" href="{% url 'appl:payment-qr' active_application.id %}"><i class="fa fa-qrcode"></i> ชำระด้วย QR Code</a>
+        </div>
+      </div>
     </div>
-    <div class="col-6 mb-0">
-      <small>
-        ชำระด้วย Mobile Banking App ของธนาคารใดก็ได้ ไม่เสียค่าธรรมเนียม
-      </small>
+    <div class="col-sm-6">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">ช่องทางที่ 2</h5>
+          <p class="card-text">
+            ชำระด้วยผ่านทางเคาน์เตอร์ธนาคารกรุงเทพ หรือบริการ Counter Service มีค่าธรรมเนียม 10 บาท
+          </p>
+          <a target="_blank" class="btn btn-primary btn-block" href="{% url 'appl:payment' active_application.id %}"><i class="fa fa-bank"></i> {% trans 'พิมพ์ใบชำระเงิน' %}</a>
+        </div>
+      </div>
     </div>
   </div>
-  <div class="row mb-0" style="margin-top: 10px;">
-    <div class="col-6 mb-0">
-      <a target="_blank" class="btn btn-success btn-block" href="{% url 'appl:payment' active_application.id %}"><i class="fa fa-bank"></i> {% trans 'พิมพ์ใบชำระเงิน' %}</a>
-    </div>
-    <div class="col-6 mb-0">
-      <small>
-        พิมพ์ใบชำระเงิน และจ่ายที่ธนาคารกรุงเทพ หรือ Counter Service ค่าธรรมเนียม 10 บาท
-      </small>
-    </div>
-  </div>
-  <small><b>{% trans 'ชำระได้ถึงวันที่' %} {{ payment_deadline|thaidate }}</b></small>
+  <b>{% trans 'ชำระได้ถึงวันที่' %} {{ payment_deadline|thaidate }}</b>
 {% else %}
   {% trans 'ไม่ต้องชำระเพิ่ม' %}
 {% endif %}
