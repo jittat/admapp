@@ -71,7 +71,27 @@ def find_applicant(national_id, verification_number, admission_round):
 
     return None
 
+
+def find_qr_applicant(qr_national_id):
+    if not qr_national_id.startswith('21'):
+        return None
+    
+    national_id = qr_national_id[2:]
+    try:
+        applicant = Applicant.objects.get(national_id=national_id)
+        return applicant
+    except:
+        return None
+
+    
 def process_payment_file(f):
+    from django.conf import settings
+
+    try:
+        qr_ref2 = settings.QR_CONFIG['REF2']
+    except:
+        qr_ref2 = None
+    
     payments = read_payment_file(f)
     admission_round = AdmissionRound.get_available()
 
@@ -87,7 +107,10 @@ def process_payment_file(f):
                           amount=p['amount'],
                           paid_at=p['paid_at'])
 
-        applicant = find_applicant(p['nat_id'], p['ver_num'], admission_round)
+        if p['ver_num'] != qr_ref2:
+            applicant = find_applicant(p['nat_id'], p['ver_num'], admission_round)
+        else:
+            applicant = find_qr_applicant(p['nat_id'])
 
         is_duplicated = False
         if applicant:
