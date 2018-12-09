@@ -22,11 +22,11 @@ def extract_national_id(ref1):
 def process_payment(ref1, ref2, amount, transaction_date_and_time):
     national_id = extract_national_id(ref1)
     if national_id == '':
-        return False
+        return None
 
     admission_round = AdmissionRound.get_available()
     if not admission_round:
-        return False
+        return None
 
     try:
         paid_at = dateutil.parser.parse(transaction_date_and_time, ignoretz=True)
@@ -47,7 +47,7 @@ def process_payment(ref1, ref2, amount, transaction_date_and_time):
                       paid_at=paid_at)
     payment.save()
     
-    return True
+    return payment
 
 @csrf_exempt
 def sent(request):
@@ -63,14 +63,15 @@ def sent(request):
         amount = json_data.get('amount', '0.00')
         transaction_date_and_time = json_data.get('transactionDateandTime', '')
 
-        success = process_payment(ref1, ref2, amount, transaction_date_and_time)
+        payment = process_payment(ref1, ref2, amount, transaction_date_and_time)
         
         confirmation = QRConfirmation(bill_payment_ref1=ref1,
                                       bill_payment_ref2=ref2,
                                       remote_addr=request.META.get('REMOTE_ADDR',''),
-                                      body=request.body)
+                                      body=request.body,
+                                      payment=payment)
 
-        if success:
+        if payment:
             confirmation.status = 0
         else:
             confirmation.status = 500

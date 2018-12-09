@@ -1,5 +1,7 @@
 from django.db import models
 
+from appl.models import Payment
+
 class QRConfirmation(models.Model):
     bill_payment_ref1 = models.CharField(max_length=30,
                                          blank=True)
@@ -12,6 +14,11 @@ class QRConfirmation(models.Model):
     status = models.IntegerField(choices=((0,'Success'),
                                           (500,'Error')),
                                  default=0)
+
+    payment = models.ForeignKey(Payment,
+                                default=None,
+                                null=True,
+                                on_delete=models.SET_NULL)
     
     def __str__(self):
         if self.bill_payment_ref1:
