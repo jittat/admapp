@@ -41,12 +41,16 @@
             $(uploadErrorDiv).show().html('<b>ฟอร์มอัพโหลดมีปัญหา กรุณาเข้าระบบใหม่</b>');
           } else if (data.result == 'FORM_ERROR') {
             $(uploadErrorDiv).show().html('<b>ไม่ได้ระบุไฟล์ที่อัพโหลด</b>');
+          } else if (data.result == 'FILENAME_ERROR') {
+            $(uploadErrorDiv).show().html('<b>ไม่สามารถอัพโหลดได้ กรุณาตรวจสอบชื่อไฟล์ เพื่อป้องกันความผิดพลาดกรุณาปรับเป็นชื่อภาษาอังกฤษ</b>');
           } else if (data.result == 'EXT_ERROR') {
             $(uploadErrorDiv).show().html('<b>นามสกุลของไฟล์ไม่ถูกต้อง</b>');
           } else if (data.result == 'SIZE_ERROR') {
             $(uploadErrorDiv).show().html('<b>ขนาดของไฟล์ใหญ่กว่าที่กำหนด</b>');
           } else if (data.result == 'DETAIL_REQUIRE') {
             $(uploadErrorDiv).show().html('<b>โปรดระบุคำอธิบาย</b>');
+          } else if (data.result == 'DETAIL_ERROR') {
+            $(uploadErrorDiv).show().html('<b>ไม่สามารถอัพโหลดได้ กรุณาตรวจสอบคำอธิบาย ให้ลบเครื่องหมายพิเศษออก</b>');
           } else if (data.result == 'URL_INVALID') {
             $(uploadErrorDiv).show().html('<b>URL ที่ระบุไม่ถูกต้อง</b>');
           }

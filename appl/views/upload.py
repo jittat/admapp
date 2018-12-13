@@ -9,6 +9,8 @@ from django.conf import settings
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
 
+from django.db.utils import OperationalError
+
 from regis.models import Applicant, LogItem
 from regis.decorators import appl_login_required
 
@@ -109,23 +111,36 @@ def upload(request, document_id):
 
         if not project_uploaded_document.is_url_document:
             uploaded_document.orginal_filename = uploaded_document.uploaded_file.name
-            
-        uploaded_document.save()
 
-        from django.template import loader
+        error = False
+        result_code = 'OK'
+        try:
+            uploaded_document.save()
+        except OperationalError:
+            error = True
+            result_code = 'DETAIL_ERROR'
+        except UnicodeEncodeError:
+            error = True
+            result_code = 'FILENAME_ERROR'
 
-        template = loader.get_template('appl/include/document_upload_form.html')
+        if not error:
+            from django.template import loader
 
-        project_uploaded_document.form = upload_form_for(project_uploaded_document)
-        project_uploaded_document.applicant_uploaded_documents = project_uploaded_document.get_uploaded_documents_for_applicant(applicant)
-        context = {
-            'applicant': applicant,
-            'project_uploaded_document': project_uploaded_document,
-            'toggle': 'show'
-        }
-        result = {'result': 'OK',
-                            'html': template.render(context, request),
-        }
+            template = loader.get_template('appl/include/document_upload_form.html')
+
+            project_uploaded_document.form = upload_form_for(project_uploaded_document)
+            project_uploaded_document.applicant_uploaded_documents = project_uploaded_document.get_uploaded_documents_for_applicant(applicant)
+            context = {
+                'applicant': applicant,
+                'project_uploaded_document': project_uploaded_document,
+                'toggle': 'show'
+            }
+            result = {
+                'result': 'OK',
+                'html': template.render(context, request),
+            }
+        else:
+            result = {'result': result_code}
     else:
         result = {'result': result_code}
 
