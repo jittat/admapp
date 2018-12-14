@@ -1,5 +1,8 @@
 {% load i18n %}
 <h2>{% trans 'รายการโครงการรับสมัคร' %}{% if admission_round %}{{ admission_round.title_trans }}{% endif %}</h2>
+
+{% include "appl/include/deadline_announcement_hook.html" %}
+
 {% if admission_round %}
   {% if cupt_confirmation_status.is_wait %}
     {% include 'appl/include/cupt_confirmation_wait.html' %}
