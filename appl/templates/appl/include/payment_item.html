@@ -59,7 +59,9 @@
   {% else %}
     <b>{% trans 'ชำระได้ถึงวันที่' %} {{ payment_deadline|thaidate }}</b>
     <br>
-    <span class="badge badge-danger">ขออภัย</span> หมดเขตชำระค่าสมัครแล้ว
+    <div class="alert alert-danger">
+      <span class="badge badge-danger">ขออภัย</span> หมดเขตชำระค่าสมัครแล้ว
+    </div>
   {% endif %}
 {% else %}
   {% trans 'ไม่ต้องชำระเพิ่ม' %}
