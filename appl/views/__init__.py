@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
@@ -94,6 +94,9 @@ def index_outside_round(request):
     return HttpResponseForbidden()
 
 
+def is_payment_deadline_passed(deadline):
+    return datetime.now() > datetime(deadline.year, deadline.month, deadline.day) + timedelta(days=1)
+
 def index_with_active_application(request, active_application, admission_round=None):
     applicant = request.applicant
     if not admission_round:
@@ -104,6 +107,7 @@ def index_with_active_application(request, active_application, admission_round=N
     project_round = admission_project.get_project_round_for(admission_round)
     is_deadline_passed = project_round.is_deadline_passed()
     payment_deadline = project_round.payment_deadline
+    payment_deadline_passed = is_payment_deadline_passed(payment_deadline)
     
     common_uploaded_documents = ProjectUploadedDocument.get_common_documents()
     project_uploaded_documents = admission_project.projectuploadeddocument_set.all()
@@ -207,6 +211,7 @@ def index_with_active_application(request, active_application, admission_round=N
                     'paid_amount': paid_amount,
                     'additional_payment': additional_payment,
                     'payment_deadline': payment_deadline,
+                    'payment_deadline_passed': payment_deadline_passed,
 
                     'accepted_for_interview_result_shown': project_round.accepted_for_interview_result_shown,
                     'admission_results': admission_results,
@@ -467,6 +472,9 @@ def payment(request, application_id, payment_type=''):
                         'barcode_stub': random_barcode_stub(),
                       })
     else:
+        if is_payment_deadline_passed(deadline):
+            return redirect(reverse('appl:index'))
+        
         LogItem.create('Printed QR payment form (amount: %d)' % (additional_payment,),
                        applicant, request)
     
