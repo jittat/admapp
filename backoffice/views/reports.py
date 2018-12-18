@@ -50,7 +50,7 @@ def download_applicants_sheet(request, project_id, round_id, major_number):
     bordered_cell_format = workbook.add_format()
     bordered_cell_format.set_border(1)
     
-    applicants = load_major_applicants(project, admission_round, major)
+    applicants = load_major_applicants_no_cache(project, admission_round, major)
 
     set_column_widths(app_worksheet, [15,8,8,12,22,15,13,13,10,25,10,6,10])
     write_sheet_row(app_worksheet,1,
