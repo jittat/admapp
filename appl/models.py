@@ -283,6 +283,7 @@ class Major(models.Model):
     study_type = models.CharField(max_length=20, blank=True)
     cupt_code = models.CharField(max_length=10, blank=True)
     cupt_study_type_code = models.CharField(max_length=10, blank=True)
+    cupt_full_code = models.CharField(max_length=20, blank=True)
     
     class Meta:
         ordering = ['number']
@@ -315,6 +316,27 @@ class Major(models.Model):
     def get_detail_items_as_list_display(self):
         items = [item.replace("\n","<br />") for item in self.get_detail_items()]
         return self.admission_project.get_major_description_list_template().format(*items)
+
+    def get_full_major_cupt_code(self,
+                                 admission_project=None,
+                                 faculty=None):
+        if self.cupt_full_code:
+            return self.cupt_full_code
+        
+        if not admission_project:
+            admission_project = self.admission_project
+        if not faculty:
+            faculty = self.faculty
+
+        major_cupt_code = '{0:0>3}'.format(self.cupt_code)
+        study_type_code = self.cupt_study_type_code
+        
+        full_major_code = ('002' +
+                           admission_project.cupt_code +
+                           faculty.cupt_code +
+                           major_cupt_code + 
+                           study_type_code)
+        return full_major_code
     
         
 class ProjectUploadedDocument(models.Model):
