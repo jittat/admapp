@@ -19,7 +19,10 @@ def main():
 
     for app in project_applications:
         if app.has_paid():
-            majors =  app.major_selection.get_majors()
+            try:
+                majors =  app.major_selection.get_majors()
+            except:
+                majors = []
             applicant = app.applicant
             if applicant.has_registered_with_passport():
                 nat = applicant.passport_number
