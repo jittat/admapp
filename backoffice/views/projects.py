@@ -143,20 +143,30 @@ def sorted_applicants(applicants, with_interview_call_results=False):
     for a in applicants:
         if not hasattr(a,'major_number'):
             a.major_number = 0
+
+    import locale
+    locale.setlocale(locale.LC_ALL, 'th_TH.utf8')
+
     if not with_interview_call_results:
-        sorted_applicant_ids = [x[4] for x in sorted([(applicant.major_number,
+        sorted_applicant_ids = [x[6] for x in sorted([(applicant.major_number,
                                                        ({True: 0, False: 1}[applicant.has_paid]),
+                                                       locale.strxfrm(applicant.first_name),
+                                                       locale.strxfrm(applicant.last_name),
                                                        getattr(applicant,'paid_at',None),
                                                        applicant.national_id,
                                                        applicant.id) for applicant
                                                       in applicants])]
     else:
-        sorted_applicant_ids = [x[4] for x in sorted([(applicant.major_number,
+        sorted_applicant_ids = [x[6] for x in sorted([(applicant.major_number,
                                                        ({True: 0, False: 1}[applicant.has_paid]),
                                                        ({True: 0, False: 1}[applicant.is_accepted_for_interview]),
+                                                       locale.strxfrm(applicant.first_name),
+                                                       locale.strxfrm(applicant.last_name),
                                                        applicant.national_id,
                                                        applicant.id) for applicant
                                                       in applicants])]
+
+    locale.resetlocale()
         
     return [amaps[i] for i in sorted_applicant_ids]
 
