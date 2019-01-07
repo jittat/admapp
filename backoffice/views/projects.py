@@ -185,6 +185,7 @@ def load_major_applicants_no_cache(project, admission_round, major, with_intervi
         major_numbers = application.major_selection.get_major_numbers()
 
         applicant = application.applicant
+        applicant.major_project_application = application
 
         if major.number in major_numbers:
             admission_fee = application.admission_fee(project_base_fee=project.base_fee,

@@ -10,12 +10,14 @@ from regis.models import Applicant, LogItem
 from appl.models import AdmissionProject, AdmissionRound
 from appl.models import ProjectApplication, Payment, Major, AdmissionResult, Faculty
 from appl.models import ProjectUploadedDocument, UploadedDocument
+from backoffice.models import CheckMarkGroup, JudgeComment
 
 from backoffice.views.permissions import can_user_view_project, can_user_view_applicant_in_major, can_user_view_applicants_in_major
 from backoffice.decorators import user_login_required
 
-from .projects import load_major_applicants, load_check_marks_and_results, load_major_applicants_no_cache
+from .projects import load_major_applicants, load_check_marks_and_results, load_major_applicants_no_cache, load_all_judge_comments
 
+ROW_HEIGHT_SCALE = 20
 
 def set_column_widths(sheet,widths):
     c = 0
@@ -23,12 +25,15 @@ def set_column_widths(sheet,widths):
         sheet.set_column(c,c,w)
         c += 1
 
-def write_sheet_row(sheet, row, items, cell_format=None):
+def write_sheet_row(sheet, row, items,
+                    cell_format=None,
+                    row_height=None):
     c = 0
     for i in items:
         sheet.write(row,c,i,cell_format)
         c += 1
-
+    if row_height != None:
+        sheet.set_row(row, row_height*20)
 
 @user_login_required
 def download_applicants_sheet(request, project_id, round_id, major_number):
@@ -38,6 +43,7 @@ def download_applicants_sheet(request, project_id, round_id, major_number):
     user = request.user
     project = get_object_or_404(AdmissionProject, pk=project_id)
     admission_round = get_object_or_404(AdmissionRound, pk=round_id)
+    project_round = project.get_project_round_for(admission_round)
     major = Major.get_by_project_number(project, major_number)
 
     if not can_user_view_applicants_in_major(user, project, major):
@@ -51,8 +57,29 @@ def download_applicants_sheet(request, project_id, round_id, major_number):
     bordered_cell_format.set_border(1)
     
     applicants = load_major_applicants_no_cache(project, admission_round, major)
+    load_check_marks_and_results(applicants,
+                                 project,
+                                 admission_round,
+                                 project_round)
 
-    set_column_widths(app_worksheet, [15,8,8,12,22,15,13,13,10,25,10,6,10])
+    
+    
+    check_mark_cell_formats = [
+        workbook.add_format(),
+        workbook.add_format(),
+        workbook.add_format(),
+        workbook.add_format(),
+        workbook.add_format(),
+        workbook.add_format(),
+    ]
+
+    mark_colors = ['blue', 'green', 'yellow', 'red', 'gray', 'black']
+    for i in range(6):
+        check_mark_cell_formats[i].set_bg_color(mark_colors[i])
+        check_mark_cell_formats[i].set_border(1)
+    
+    set_column_widths(app_worksheet, [15,8,8,12,22,15,13,13,10,25,10,6,12,
+                                      2,2,2,2,2,2])
     write_sheet_row(app_worksheet,1,
                     ['รหัสประจำตัวประชาชน',
                      'หมายเลขหนังสือเดินทาง',
@@ -66,7 +93,15 @@ def download_applicants_sheet(request, project_id, round_id, major_number):
                      'โรงเรียน',
                      'จังหวัด',
                      'GPA',
-                     'การชำระเงินค่าสมัคร',],
+                     'การชำระเงินค่าสมัคร',
+                     'o',
+                     'o',
+                     'o',
+                     'o',
+                     'o',
+                     'o',
+                     'ความเห็นกรรมการ',
+                    ],
                     bordered_cell_format)
 
     r = 2
@@ -75,6 +110,17 @@ def download_applicants_sheet(request, project_id, round_id, major_number):
             payment_message = 'ชำระแล้ว'
         else:
             payment_message = 'ยังไม่ได้ชำระ'
+
+        comments = load_all_judge_comments(applicant.major_project_application,
+                                           project,
+                                           admission_round,
+                                           major)
+        combined_comments = '\n'.join([comment.report_display()
+                                       for comment in comments])
+        if len(comments) > 1:
+            row_height = len(comments)
+        else:
+            row_height = None
         write_sheet_row(app_worksheet, r,
                         [applicant.national_id,
                          applicant.personalprofile.passport_number,
@@ -88,8 +134,20 @@ def download_applicants_sheet(request, project_id, round_id, major_number):
                          applicant.educationalprofile.school_title,
                          applicant.educationalprofile.province.title,
                          '%0.2f' % (applicant.educationalprofile.gpa,),
-                         payment_message,],
-                        bordered_cell_format)
+                         payment_message,
+                         '','','','','','',
+                         combined_comments,
+                        ],
+                        bordered_cell_format,
+                        row_height=row_height)
+        if applicant.check_marks:
+            mcount = 0
+            for mark in applicant.check_marks.get_check_mark_list():
+                mcount += 1
+                if mark['is_checked']:
+                    app_worksheet.write(r, 12+mcount,
+                                        'o',
+                                        check_mark_cell_formats[mcount-1])
         r += 1
 
     workbook.close()

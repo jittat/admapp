@@ -138,6 +138,12 @@ class JudgeComment(models.Model):
     class Meta:
         ordering = ['-created_at']
 
+    def report_display(self):
+        if self.author_username:
+            return self.body + ' - ' + self.author_username
+        else:
+            return self.body
+
 
 class MajorInterviewCallDecision(models.Model):
     FLOAT_DELTA = 0.000001
