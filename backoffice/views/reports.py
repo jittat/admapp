@@ -33,7 +33,7 @@ def write_sheet_row(sheet, row, items,
         sheet.write(row,c,i,cell_format)
         c += 1
     if row_height != None:
-        sheet.set_row(row, row_height*20)
+        sheet.set_row(row, row_height*ROW_HEIGHT_SCALE)
 
 @user_login_required
 def download_applicants_sheet(request, project_id, round_id, major_number):
@@ -117,9 +117,8 @@ def download_applicants_sheet(request, project_id, round_id, major_number):
                                            major)
         combined_comments = '\n'.join([comment.report_display()
                                        for comment in comments])
-        if len(comments) > 1:
-            row_height = len(comments)
-        else:
+        row_height = len([c for c in combined_comments if c == '\n']) + 1
+        if row_height == 1:
             row_height = None
         write_sheet_row(app_worksheet, r,
                         [applicant.national_id,
