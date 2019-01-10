@@ -1,8 +1,32 @@
 {% load i18n %}
-{% if active_application.admission_project.id == 1 %}
+{% if active_application.admission_project.id == 1 %} <!-- ช้างเผือก -->
+  <h4>พิมพ์ใบสมัครเพื่อสัมภาษณ์</h4>
+  <a class="btn btn-success btn-sm" target="_blank" href="{% url 'appl:el-print' %}">พิมพ์ใบสมัคร</a><br />
+  เพื่อนำมาประกอบการสัมภาษณ์ในวันที่ 18 ม.ค. 2562
+  <hr />
+{% endif %}
+{% if active_application.admission_project.id == 2 %} <!-- เรียนล่วงหน้า -->
+  <h4>พิมพ์ใบสมัครเพื่อสัมภาษณ์</h4>
+  <a class="btn btn-success btn-sm" target="_blank" href="{% url 'appl:ap-print' %}">พิมพ์ใบสมัคร</a><br />
+  เพื่อนำมาประกอบการสัมภาษณ์ในวันที่ 18 ม.ค. 2562
+  <hr />
+{% endif %}
+{% if active_application.admission_project.id == 3 %} <!-- นานาชาติและภาษาอังกฤษ -->
   <h4>{% trans 'พิมพ์ใบสมัครเพื่อสัมภาษณ์' %}</h4>
   <a class="btn btn-success btn-sm" target="_blank" href="{% url 'appl:inter-print' %}">{% trans 'พิมพ์ใบสมัคร' %}</a><br />
-  {% trans 'เพื่อนำมาประกอบการสัมภาษณ์ในวันที่ 13 ก.พ. 2561' %}
+  {% trans 'เพื่อนำมาประกอบการสัมภาษณ์ในวันที่ 18 ม.ค. 2562' %}
+  <hr />
+{% endif %}
+{% if active_application.admission_project.id == 28 %} <!-- พสวท -->
+  <h4>พิมพ์ใบสมัครเพื่อสัมภาษณ์</h4>
+  <a class="btn btn-success btn-sm" target="_blank" href="{% url 'appl:common-print' %}">พิมพ์ใบสมัคร</a><br />
+  เพื่อนำมาประกอบการสัมภาษณ์
+  <hr />
+{% endif %}
+{% if active_application.admission_project.id == 36 %} <!-- โอลิมปิก -->
+  <h4>พิมพ์ใบสมัครเพื่อสัมภาษณ์</h4>
+  <a class="btn btn-success btn-sm" target="_blank" href="{% url 'appl:common-print' %}">พิมพ์ใบสมัคร</a><br />
+  เพื่อนำมาประกอบการสัมภาษณ์ในวันที่ 18 ม.ค. 2562
   <hr />
 {% endif %}
 {% if admission_round.id == 3 %}
@@ -13,23 +37,5 @@
     <hr />
   {% endif %}
 {% endif %}
-{% if active_application.admission_project.id == 32 %}
-  <h4>พิมพ์ใบสมัครเพื่อสัมภาษณ์</h4>
-  <a class="btn btn-success btn-sm" target="_blank" href="{% url 'appl:common-print' %}">พิมพ์ใบสมัคร</a><br />
-  เพื่อนำมาประกอบการสัมภาษณ์ในวันที่ 18 ก.ค. 2561
-  <hr />
-{% endif %}
 {% comment %}
-{% if active_application.admission_project.id == 4 %}
-<h4>พิมพ์ใบสมัครเพื่อสัมภาษณ์</h4>
-<a class="btn btn-success btn-sm" target="_blank" href="{% url 'appl:ap-print' %}">พิมพ์ใบสมัคร</a><br />
-เพื่อนำมาประกอบการสัมภาษณ์ในวันที่ 10 พ.ย. 2560
-<hr />
-{% endif %}
-{% if active_application.admission_project.id == 2 %}
-<h4>พิมพ์ใบสมัครเพื่อสัมภาษณ์</h4>
-<a class="btn btn-success btn-sm" target="_blank" href="{% url 'appl:el-print' %}">พิมพ์ใบสมัคร</a><br />
-เพื่อนำมาประกอบการสัมภาษณ์ในวันที่ 27 พ.ย. 2560
-<hr />
-{% endif %}
 {% endcomment %}

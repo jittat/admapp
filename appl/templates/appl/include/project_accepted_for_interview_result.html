@@ -5,7 +5,8 @@
       {% if is_accepted_for_interview %}
         <h3>{% trans 'ขอแสดงความยินดีด้วย' %}</h3>
         <i class="text-success fa fa-check"></i>
-        {% trans 'คุณผ่านการคัดเลือกมีสิทธิ์เข้าสอบสัมภาษณ์ ในสาขาต่อไปนี้' %}
+        <!--{% trans 'คุณผ่านการคัดเลือกมีสิทธิ์เข้าสอบสัมภาษณ์ ในสาขาต่อไปนี้' %}-->
+        คุณมีสิทธิ์เข้าสอบสัมภาษณ์ ในสาขาต่อไปนี้
         <ul>
           {% for result in admission_results %}
             {% if result.is_accepted_for_interview %}

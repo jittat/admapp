@@ -145,7 +145,7 @@ def ap_print(request):
     active_application = applicant.get_active_application(admission_round)
 
     admission_project = active_application.admission_project
-    if admission_project.id != 4:
+    if admission_project.id != 2:
         return HttpResponseForbidden()
 
     project_round = admission_project.get_project_round_for(admission_round)
@@ -193,7 +193,7 @@ def el_print(request):
     active_application = applicant.get_active_application(admission_round)
 
     admission_project = active_application.admission_project
-    if admission_project.id != 2:
+    if admission_project.id != 1:
         return HttpResponseForbidden()
 
     project_round = admission_project.get_project_round_for(admission_round)
@@ -322,7 +322,7 @@ def culture_print(request):
 @appl_login_required
 def inter_print(request):
     applicant = request.applicant
-    admission_round = AdmissionRound.objects.get(pk=2)
+    admission_round = AdmissionRound.objects.get(pk=1)
     
     personal_profile = applicant.get_personal_profile()
     educational_profile = applicant.get_educational_profile()
@@ -330,7 +330,7 @@ def inter_print(request):
     active_application = applicant.get_active_application(admission_round)
 
     admission_project = active_application.admission_project
-    if admission_project.id != 1:
+    if admission_project.id != 3:
         return HttpResponseForbidden()
 
     project_round = admission_project.get_project_round_for(admission_round)
@@ -366,7 +366,7 @@ def inter_print(request):
 @appl_login_required
 def common_print(request):
     applicant = request.applicant
-    admission_round = AdmissionRound.objects.get(pk=6)
+    admission_round = AdmissionRound.objects.get(pk=1)
     
     personal_profile = applicant.get_personal_profile()
     educational_profile = applicant.get_educational_profile()
@@ -376,7 +376,7 @@ def common_print(request):
         return HttpResponseForbidden()
 
     admission_project = active_application.admission_project
-    if admission_project.id != 32:
+    if admission_project.id not in [28,36]:
         return HttpResponseForbidden()
 
     project_round = admission_project.get_project_round_for(admission_round)
