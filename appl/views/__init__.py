@@ -149,6 +149,14 @@ def index_with_active_application(request, active_application, admission_round=N
         accepted_result = None
         interview_descriptions = None
 
+        # HACK
+        econ_hack = False
+        if admission_project.id == 1:
+            if major_selection:
+                for m in major_selection.get_majors():
+                    if m.faculty_id == 8:
+                        econ_hack = True
+        
         for res in admission_results:
             if res.is_accepted_for_interview:
                 is_accepted_for_interview = True
@@ -177,6 +185,9 @@ def index_with_active_application(request, active_application, admission_round=N
         interview_descriptions = None
         is_accepted = False
         accepted_result = None
+
+        # HACK
+        econ_hack = False
 
     other_application_rounds = load_applications_in_other_round(applicant,
                                                                 admission_round)
@@ -222,6 +233,8 @@ def index_with_active_application(request, active_application, admission_round=N
                     'is_accepted': is_accepted,
                     'accepted_result': accepted_result,
                     'has_confirmed': has_confirmed,
+
+                    'econ_hack': econ_hack,
                   })
 
 
