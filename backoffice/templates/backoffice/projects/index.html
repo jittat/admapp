@@ -144,8 +144,7 @@
                     <a class="btn btn-sm btn-outline-secondary dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">ดาวน์โหลด</a>
                     <div class="dropdown-menu">
                       <a class="dropdown-item" href="{% url 'backoffice:projects-download-app-sheet' project.id admission_round.id major.number %}">ดาวน์โหลดข้อมูลทั่วไป</a>
-                      <!-- NOTES: hidden for now -->
-                      <a class="dropdown-item d-none" href="{% url 'backoffice:projects-download-app-interview-sheet' project.id admission_round.id major.number %}">ดาวน์โหลดฟอร์มสัมภาษณ์</a>
+                      <a class="dropdown-item" href="{% url 'backoffice:projects-download-app-interview-sheet' project.id admission_round.id major.number %}">ดาวน์โหลดฟอร์มสัมภาษณ์</a>
                       <!-- NOTES: hidden for now -->
                       <a class="dropdown-item d-none" href="{% url 'backoffice:projects-download-app-interview-score-sheet' project.id admission_round.id major.number %}">ดาวน์โหลดรายงานคะแนน</a>
                     </div>
