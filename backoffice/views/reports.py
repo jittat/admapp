@@ -265,8 +265,8 @@ def sorted_by_name(applicants):
 
     results = [x[3] for x in sorted(apps)]
     
-    locale.resetlocale()
-    
+    locale.setlocale(locale.LC_ALL,'POSIX')
+
     return results
     
     
