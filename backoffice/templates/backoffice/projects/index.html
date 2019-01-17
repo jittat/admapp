@@ -114,18 +114,14 @@
             {% endfor %}
             {% if applicant_info_viewable %}
               <td>
-                <div class="d-none"><!-- NOTES: hidden for now -->
-                  {% if user_major_number == any_major or user_major_number == major.number %}
-                    <a class="btn btn-sm btn-outline-secondary" href="{% url 'backoffice:projects-list-applicants-for-acceptance-calls' project.id admission_round.id major.number %}">กรอกผลสัมภาษณ์</a>
-                  {% endif %}
-                </div>
-                <div class="">
-                  {% if user_major_number == any_major or user_major_number == major.number %}
-                    <a target="_blank" class="btn btn-sm btn-outline-secondary" href="{% url 'backoffice:projects-show-applicant' project.id admission_round.id major.number 1 %}">ตรวจสอบเกณฑ์ผู้สมัคร</a>
-                  {% endif %}
-                </div>
+                {% if user_major_number == any_major or user_major_number == major.number %}
+                  <a class="btn btn-sm btn-outline-secondary" href="{% url 'backoffice:projects-list-applicants-for-acceptance-calls' project.id admission_round.id major.number %}">กรอกผลสัมภาษณ์</a>
+                {% endif %}
               </td>
               <td>
+                {% if user_major_number == any_major or user_major_number == major.number %}
+                  <a target="_blank" class="btn btn-sm btn-outline-secondary" href="{% url 'backoffice:projects-show-applicant' project.id admission_round.id major.number 1 %}">ดูข้อมูล</a>
+                {% endif %}
                 {% if user_major_number == any_major or user_major_number == major.number %}
                   {% if major.has_any_applications %}
                     <div class="dropdown d-none"><!-- NOTES: hidden for now -->
@@ -146,7 +142,7 @@
                       <a class="dropdown-item" href="{% url 'backoffice:projects-download-app-sheet' project.id admission_round.id major.number %}">ดาวน์โหลดข้อมูลทั่วไป</a>
                       <a class="dropdown-item" href="{% url 'backoffice:projects-download-app-interview-sheet' project.id admission_round.id major.number %}">ดาวน์โหลดฟอร์มสัมภาษณ์</a>
                       <!-- NOTES: hidden for now -->
-                      <a class="dropdown-item d-none" href="{% url 'backoffice:projects-download-app-interview-score-sheet' project.id admission_round.id major.number %}">ดาวน์โหลดรายงานคะแนน</a>
+                      <a class="dropdown-item" href="{% url 'backoffice:projects-download-app-interview-score-sheet' project.id admission_round.id major.number %}">ดาวน์โหลดรายงานคะแนน</a>
                     </div>
                 {% endif %}
               </td>

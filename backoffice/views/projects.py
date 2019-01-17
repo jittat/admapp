@@ -1266,7 +1266,7 @@ def list_applicants_for_acceptance_calls(request, project_id, round_id, major_nu
     project_round = project.get_project_round_for(admission_round)
     major = Major.get_by_project_number(project, major_number)
 
-    is_tcas_project = (project.id == 31)
+    is_tcas_project = False 
     
     if not can_user_view_applicants_in_major(user, project, major):
         return redirect(reverse('backoffice:index'))
