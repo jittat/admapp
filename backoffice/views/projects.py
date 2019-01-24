@@ -166,8 +166,8 @@ def sorted_applicants(applicants, with_interview_call_results=False):
                                                        applicant.id) for applicant
                                                       in applicants])]
 
-    locale.resetlocale()
-        
+    locale.setlocale(locale.LC_ALL,'POSIX')
+
     return [amaps[i] for i in sorted_applicant_ids]
 
 
