@@ -1324,7 +1324,7 @@ def update_applicant_acceptance_call(request, project_id, round_id, major_number
     if not can_user_view_applicants_in_major(user, project, major):
         return redirect(reverse('backoffice:index'))
 
-    if not project_round.accepted_for_interview_result_frozen:
+    if project_round.accepted_for_interview_result_frozen:
         return HttpResponseForbidden()
 
     if project.id != 31:
