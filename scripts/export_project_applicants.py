@@ -5,7 +5,7 @@ import sys
 import json
 
 from regis.models import Applicant
-from appl.models import AdmissionProject, AdmissionRound, ProjectApplication
+from appl.models import AdmissionProject, AdmissionRound, ProjectApplication, AdmissionResult
 
 def load_tcas_data(filename):
     lines = open(filename).readlines()
@@ -36,8 +36,15 @@ def main():
     project_id = sys.argv[1]
     round_id = sys.argv[2]
 
-    tcas_data_filename = sys.argv[3]
-    tcas_data = load_tcas_data(tcas_data_filename)
+    if (len(sys.argv) >= 4) and (sys.argv[3] != '-'):
+        tcas_data_filename = sys.argv[3]
+        tcas_data = load_tcas_data(tcas_data_filename)
+    else:
+        tcas_data = {}
+
+    only_accepted = False
+    if sys.argv[-1] == '--accepted':
+        only_accepted = True
 
     project = AdmissionProject.objects.get(pk=project_id)
     admission_round = AdmissionRound.objects.get(pk=round_id)
@@ -80,6 +87,17 @@ def main():
             phone = phone.replace('-','')
             
             for m in majors:
+                if only_accepted:
+                    results = AdmissionResult.objects.filter(application=app,
+                                                             admission_project=project,
+                                                             admission_round=admission_round,
+                                                             major=m).all()
+                    if len(results) == 0:
+                        continue
+                    result = results[0]
+                    if not result.is_accepted:
+                        continue
+                
                 items = [
                     m.get_full_major_cupt_code(),
                     m.faculty.title,
