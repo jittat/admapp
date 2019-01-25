@@ -18,15 +18,16 @@ def load_tcas_data(filename):
         nat_id = lines[i*2].strip()
         data = json.loads(lines[i*2+1].strip())
 
-        if 'StatusMessage' in data:
-            tcas_data[nat_id] = { 'status': 'missing' }
-            continue
+        if len(data) == 0:
+             tcas_data[nat_id] = { 'status': 'missing' }
+             continue
 
+        names = data[0]['studenT_NAME'].split()
         tcas_data[nat_id] = {
             'status': 'found',
-            'prefix': data['Prefix'],
-            'first_name': data['Name'],
-            'last_name': data['Surname']
+            'prefix': names[0],
+            'first_name': names[1],
+            'last_name': ' '.join(names[2:]), 
         }
         
     return tcas_data
