@@ -1,8 +1,8 @@
 from django_bootstrap import bootstrap
 bootstrap()
 
-import json
 import sys
+import csv
 
 from regis.models import Applicant
 from appl.models import AdmissionProject, AdmissionResult, AdmissionRound, ProjectApplication, Payment
@@ -17,10 +17,12 @@ def main():
 
     filename = sys.argv[3]
 
-    lines = open(filename).readlines()
-
-    for line in lines[2:]:
-        items = line.strip().split(",")
+    csvfile = open(filename)
+    reader = csv.reader(csvfile)
+    next(reader)
+    next(reader)
+    
+    for items in reader:
         major_code = items[0]
         application_number = items[4]
         national_id = items[5]
