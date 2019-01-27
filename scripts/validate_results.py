@@ -50,7 +50,7 @@ def main():
                 if r.is_accepted:
                     print('ERROR should accepted:', applicant, major_code, result_major)
         if not found:
-            print('ERROR not found:', applicant, major_code, result_major)
+            print('ERROR not found:', applicant, major_code)
             
         #print(applicant, len(results))
     
