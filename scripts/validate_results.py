@@ -21,7 +21,8 @@ def main():
     reader = csv.reader(csvfile)
     next(reader)
     next(reader)
-    
+
+    accepted_count = 0
     for items in reader:
         major_code = items[0]
         application_number = items[4]
@@ -53,6 +54,15 @@ def main():
             print('ERROR not found:', applicant, major_code)
             
         #print(applicant, len(results))
+        accepted_count += 1
+
+    all_accepted_results = [r for r in AdmissionResult.objects.filter(admission_project=project,
+                                                                      admission_round=admission_round).all()
+                            if r.is_accepted]
+
+    if accepted_count != len(all_accepted_results):
+        print('ERROR not all accepted - in file =', accepted_count,'in system =', len(all_accepted_results))
+    
     
 if __name__ == '__main__':
     main()
