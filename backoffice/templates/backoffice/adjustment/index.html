@@ -1,0 +1,32 @@
+{% extends 'backoffice/base.html' %}
+{% block content %}
+  <div class="row">
+    <div class="col-md-12">
+      <h2>
+        ปรับจำนวนการรับ
+      </h2>
+
+      <table class="table">
+        {% for faculty in faculties %}
+          <tr>
+            <td></td>
+            <td>{{ faculty.title }}</td>
+            <td></td>
+          </tr>
+          <tr>
+            <th>รหัส</th>
+            <th>สาขาวิชา</th>
+            <th></th>
+          </tr>
+          {% for m in faculty.majors %}
+            <tr>
+              <td>{{ m.number }}</td>
+              <td>{{ m.title }}</td>
+              <td></td>
+            </tr>
+          {% endfor %}
+        {% endfor %}
+      </table>
+    </div>
+  </div>
+{% endblock %}

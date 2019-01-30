@@ -7,6 +7,13 @@ from backoffice.models import Profile
 def is_super_admin(user):
     return user.is_staff
 
+def is_number_adjustment_admin(user):
+    profile = Profile.get_profile_for(user)
+
+    if not profile:
+        return False
+    return profile.is_number_adjustment_admin
+
 def can_user_view_project(user, project):
     if is_super_admin(user):
         return True

@@ -28,6 +28,9 @@ class Profile(models.Model):
 
     admission_projects = models.ManyToManyField(AdmissionProject,
                                                 blank=True)
+
+    is_number_adjustment_admin = models.BooleanField(verbose_name='สำหรับปรับจำนวน',
+                                                     default=False)
     major_number = models.IntegerField(default=ANY_MAJOR,
                                        verbose_name='หมายเลขสาขา (กรณีที่ดูแลโครงการเดียว)')
 

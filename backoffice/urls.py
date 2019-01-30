@@ -5,6 +5,7 @@ from backoffice.views import payments
 from backoffice.views import projects
 from backoffice.views import users
 from backoffice.views import reports
+from backoffice.views import adjustment
 
 app_name = 'backoffice'
 
@@ -79,4 +80,8 @@ urlpatterns = [
         projects.update_applicant_acceptance_call, name='projects-update-applicant-acceptance-call'),
 
     url(r'^users/$', users.index, name='users-index'),
+
+    url(r'^adjustment/$',
+        adjustment.index,
+        name='adjustment'),
 ]
