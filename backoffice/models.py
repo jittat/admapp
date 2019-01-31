@@ -238,3 +238,40 @@ class ApplicantMajorScore(models.Model):
             models.Index(fields=['major','admission_project','applicant']),
         ]
     
+class AdjustmentMajor(models.Model):
+    full_code = models.CharField(max_length=10,
+                                 unique=True)
+
+    major_code = models.CharField(max_length=5)
+    study_type_code = models.CharField(max_length=3)
+    
+    title = models.CharField(max_length=200)
+
+    faculty = models.ForeignKey(Faculty,
+                                on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.title
+    
+    
+class AdjustmentMajorSlot(models.Model):
+    adjustment_major = models.ForeignKey(AdjustmentMajor,
+                                         on_delete=models.CASCADE)
+    faculty = models.ForeignKey(Faculty,
+                                on_delete=models.CASCADE)
+    admission_round = models.ForeignKey(AdmissionRound,
+                                        on_delete=models.CASCADE)
+
+    admission_round_number = models.IntegerField()
+
+    major_full_code = models.CharField(max_length=10)
+
+    admission_project_title = models.CharField(max_length=100)
+
+    original_slots = models.IntegerField()
+    current_slots = models.IntegerField()
+
+    def __str__(self):
+        return '%s (%s) (%d)' % (self.adjustment_major,
+                                 self.admission_project_title,
+                                 self.current_slots)
