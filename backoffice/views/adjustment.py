@@ -7,7 +7,7 @@ from django.urls import reverse
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseNotFound
 
 from appl.models import Faculty, AdmissionRound
-from backoffice.models import AdjustmentMajor
+from backoffice.models import AdjustmentMajor, AdjustmentMajorSlot
 
 from backoffice.decorators import number_adjustment_login_required
 
@@ -15,9 +15,15 @@ def load_faculty_major_statistics(faculty, admission_rounds):
     adjustment_majors = (AdjustmentMajor.objects.
                          filter(faculty=faculty).order_by('full_code').all())
 
+    mmap = {}
     for m in adjustment_majors:
         m.round_stats = [0] * len(admission_rounds)
-    
+        mmap[m.full_code] = m
+
+    for slot in AdjustmentMajorSlot.objects.filter(faculty=faculty).all():
+        m = mmap[slot.major_full_code]
+        m.round_stats[slot.admission_round_number - 1] += slot.current_slots
+        
     return adjustment_majors
 
 @number_adjustment_login_required
