@@ -23,8 +23,15 @@ def main():
             major_full_code = full_major_project_code[-4:]
             project_title = items[1].strip()
             round_number = int(items[4])
-            
-            adj_major = AdjustmentMajor.objects.get(full_code=major_full_code)
+
+            try:
+                adj_major = AdjustmentMajor.objects.get(full_code=major_full_code)
+            except:
+                adj_major = None
+
+            if not adj_major:
+                print('ERROR major not found', major_full_code, items)
+                continue
             
             old_slots = AdjustmentMajorSlot.objects.filter(adjustment_major=adj_major).all()
             slot = None
