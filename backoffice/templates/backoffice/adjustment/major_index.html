@@ -73,17 +73,21 @@
           {% endfor %}
         </table>
         {% csrf_token %}
-        <div class="well">
+
+        {% if any_editable %}
           <input name="save" type="submit" class="btn btn-success" value="จัดเก็บ">
           <input name="savereturn" type="submit" class="btn btn-info" value="จัดเก็บแล้วกลับไปหน้าแรก">
           <input name="cancel" type="submit" class="btn btn-danger" value="ยกเลิกการแก้ไข">
           {% if can_confirm %}
             <div class="mt5 pt5 border-top">
-              <input id="saveconfirmId" name="saveconfirm" type="submit" class="btn btn-outline-success" value="จัดเก็บและยืนยัน">
+              <input id="saveconfirmId" name="saveconfirm" type="submit" class="btn btn-outline-success" value="จัดเก็บและยืนยัน"> 
               สำหรับผู้ใช้ระดับคณะ
             </div>
           {% endif %}
-        </div>
+        {% else %}
+          <a href="{% url 'backoffice:adjustment' %}" class="btn btn-success">กลับไปหน้าแรก</a>
+          ได้มีการยืนยันทุกสาขาแล้ว
+        {% endif %}
       </form>
     </div>
   </div>

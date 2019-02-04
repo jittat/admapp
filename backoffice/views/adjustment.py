@@ -20,12 +20,21 @@ def load_faculty_major_statistics(faculty, admission_rounds):
 
     mmap = {}
     for m in adjustment_majors:
-        m.round_stats = [0] * len(admission_rounds)
+        m.round_stats = []
+        for i in admission_rounds:
+            m.round_stats.append([0,-1])
+        m.all_confirmed = True
         mmap[m.full_code] = m
 
     for slot in AdjustmentMajorSlot.objects.filter(faculty=faculty).all():
         m = mmap[slot.major_full_code]
-        m.round_stats[slot.admission_round_number - 1] += slot.current_slots
+        m.round_stats[slot.admission_round_number - 1][0] += slot.current_slots
+        if slot.is_editable():
+            m.all_confirmed = False
+        if slot.is_final:
+            if m.round_stats[slot.admission_round_number - 1][1] == -1:
+                m.round_stats[slot.admission_round_number - 1][1] = 0
+            m.round_stats[slot.admission_round_number - 1][1] += slot.confirmed_slots
         
     return adjustment_majors
 
@@ -135,7 +144,7 @@ def major_index(request, major_full_code):
 
                 return redirect(reverse('backoffice:adjustment'))
 
-                
+    any_editable = len([s for s in major_slots if s.is_editable()]) != 0
     
     return render(request,
                   'backoffice/adjustment/major_index.html',
@@ -144,6 +153,7 @@ def major_index(request, major_full_code):
                     'faculty': major.faculty,
                     'admission_rounds': admission_rounds,
 
+                    'any_editable': any_editable,
                     'can_confirm': can_confirm,
                     
                     'validation_error': validation_error,
