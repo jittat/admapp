@@ -509,8 +509,8 @@ def payment(request, application_id, payment_type=''):
 
 
 def payment_with_qr_code(request, application_id):
-    return HttpResponseForbidden()
-    # return payment(request, application_id, 'qr')
+    #return HttpResponseForbidden()
+    return payment(request, application_id, 'qr')
 
 def payment_code_img(request, application_id, stub, code_type):
     applicant = request.applicant
