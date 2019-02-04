@@ -8,11 +8,20 @@
       <b>คณะ:</b> {{ faculty }} <b>วิทยาเขต:</b> {{ faculty.campus }}
 
       <div class="alert alert-warning">
-        <span class="badge badge-danger">ขออภัย</span> จะสามารถปรับจำนวนได้ในวันที่ 5 ก.พ.  สำหรับจำนวนผู้ยืนยันจะแสดงช่วงบ่ายวันที่ 4 ก.พ.<br>
+        <span class="badge badge-danger">คำเตือน</span>
         สำหรับการรับบางสาขา จำนวนการรับอาจจะกระจายไปในกลุ่มรวมสาขาอื่น ๆ ด้วย กรุณาอย่าลืมพิจารณา
       </div>
 
-      <form>
+      {% if validation_error %}
+        <div class="alert alert-danger">
+          ไม่สามารถจัดเก็บได้ เนื่องจากจำนวนรับบางโครงการไม่ถูกต้อง
+        </div>
+      {% endif %}
+      {% if notice %}
+        <div class="alert alert-success">{{ notice }}</div>
+      {% endif %}
+      
+      <form method="post" action="{% url 'backoffice:adjustment-major' major.full_code %}">
         <table class="table table-striped table-sm">
           <tr>
             <th>รหัส</th>
@@ -20,7 +29,8 @@
             <th>โครงการ</th>
             <th>จน.แผน</th>
             <th>จน.ยืนยัน</th>
-            <th>จน.แผน (ปรับ)</th>
+            <th>จน.ปรับ</th>
+            <th></th>
           </tr>
           {% for slot in major_slots %}
             {% ifchanged slot.admission_round_number %}
@@ -40,17 +50,46 @@
               </td>
               <td>
                 {% if not slot.is_final %}
-                  {% if slot.is_frozen %}
+                  {% if slot.is_frozen or slot.is_confirmed_by_faculty %}
                     {{ slot.original_slots }}
                   {% else %}
-                    <input class="d-none" name="slot-{{ slot.id }}-{{ slot.cupt_code }}" type="text" value="{{ slot.current_slots }}" size="5">
+                    <input name="slot-{{ slot.id }}-{{ slot.cupt_code }}" type="text" value="{{ slot.current_slots }}" size="5">
+                    {% if slot.validation_error %}
+                      <span class="text-danger">
+                        <sup>*</sup>
+                        <br>
+                        {{ slot.validation_error_msg }}
+                      </span>
+                    {% endif %}
                   {% endif %}
+                {% endif %}
+              </td>
+              <td>
+                {% if slot.is_confirmed_by_faculty %}
+                  <span class="badge badge-success">ยืนยัน</span>
                 {% endif %}
               </td>
             </tr>
           {% endfor %}
         </table>
+        {% csrf_token %}
+        <div class="well">
+          <input name="save" type="submit" class="btn btn-success" value="จัดเก็บ">
+          <input name="savereturn" type="submit" class="btn btn-info" value="จัดเก็บแล้วกลับไปหน้าแรก">
+          <input name="cancel" type="submit" class="btn btn-danger" value="ยกเลิกการแก้ไข">
+          {% if can_confirm %}
+            <div class="mt5 pt5 border-top">
+              <input id="saveconfirmId" name="saveconfirm" type="submit" class="btn btn-outline-success" value="จัดเก็บและยืนยัน">
+              สำหรับผู้ใช้ระดับคณะ
+            </div>
+          {% endif %}
+        </div>
       </form>
     </div>
   </div>
+  <script>
+    $('#saveconfirmId').click(function(){
+      return confirm('คุณแน่ใจที่จะยืนยันจำนวนรับตามข้อมูลในฟอร์มหรือไม่\nถ้าแน่ใจกรุณากด OK')
+    });
+  </script>
 {% endblock %}

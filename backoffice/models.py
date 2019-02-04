@@ -288,3 +288,7 @@ class AdjustmentMajorSlot(models.Model):
                                     self.admission_project_title,
                                     self.current_slots,
                                     self.cupt_code)
+
+    def is_editable(self):
+        return (not self.is_frozen) and (not self.is_final) and (not self.is_confirmed_by_faculty)
+

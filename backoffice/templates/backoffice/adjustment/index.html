@@ -6,6 +6,10 @@
         ปรับจำนวนการรับ
       </h2>
 
+      {% if notice %}
+        <div class="alert alert-success">{{ notice }}</div>
+      {% endif %}
+      
       <table class="table table-striped table-sm">
         {% for faculty in faculties %}
           <tr class="table-primary">
@@ -29,7 +33,7 @@
               {% endfor %}
               <td>
                 <a class="btn btn-outline-primary btn-sm" href="{% url 'backoffice:adjustment-major' m.full_code %}">
-                  ปรับจำนวน
+                  {% if not can_confirm %}ปรับจำนวน{% else %}ปรับจำนวนและยืนยัน{% endif %}
                 </a>
               </td>
             </tr>
