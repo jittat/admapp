@@ -11,6 +11,8 @@ from backoffice.models import AdjustmentMajor, AdjustmentMajorSlot
 
 from backoffice.decorators import number_adjustment_login_required
 
+from backoffice.views.permissions import can_user_adjust_major
+
 def load_faculty_major_statistics(faculty, admission_rounds):
     adjustment_majors = (AdjustmentMajor.objects.
                          filter(faculty=faculty).order_by('full_code').all())
@@ -44,3 +46,21 @@ def index(request):
                   'backoffice/adjustment/index.html',
                   { 'faculties': faculties,
                     'admission_rounds': admission_rounds, })
+
+@number_adjustment_login_required
+def major_index(request, major_full_code):
+    major = get_object_or_404(AdjustmentMajor, full_code=major_full_code)
+
+    if not can_user_adjust_major(request.user, major):
+        return redirect(reverse('backoffice:adjustment'))
+
+    admission_rounds = AdmissionRound.objects.all()
+    
+    major_slots = major.slots.all()
+    return render(request,
+                  'backoffice/adjustment/major_index.html',
+                  { 'major': major,
+                    'major_slots': major_slots,
+                    'faculty': major.faculty,
+                    'admission_rounds': admission_rounds, })
+

@@ -51,3 +51,17 @@ def can_user_view_applicant_in_major(user, applicant, application, project, majo
     if not can_user_view_applicants_in_major(user, project, major):
         return False
     return True
+
+def can_user_adjust_major(user, major):
+    if is_super_admin(user):
+        return True
+    
+    profile = Profile.get_profile_for(user)
+
+    if not profile:
+        return False
+
+    return (profile.faculty == major.faculty and
+            (profile.major_number == 0 or
+             profile.major_number == int(major.full_code)))
+

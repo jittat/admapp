@@ -1,4 +1,5 @@
 from django.conf.urls import url, include
+from django.urls import path
 
 from . import views
 from backoffice.views import payments
@@ -84,4 +85,7 @@ urlpatterns = [
     url(r'^adjustment/$',
         adjustment.index,
         name='adjustment'),
+    path('adjustment/<major_full_code>/',
+        adjustment.major_index,
+        name='adjustment-major'),
 ]

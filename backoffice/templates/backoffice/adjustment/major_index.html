@@ -1,0 +1,42 @@
+{% extends 'backoffice/base.html' %}
+{% block content %}
+  <div class="row">
+    <div class="col-md-12">
+      <h2>
+        ปรับจำนวนการรับ: {{ major }}
+      </h2>
+      <b>คณะ:</b> {{ faculty }} <b>วิทยาเขต:</b> {{ faculty.campus }}
+
+      <div class="alert alert-warning">
+        <span class="badge badge-danger">ขออภัย</span> จะสามารถปรับจำนวนได้ในวันที่ 5 ก.พ.  สำหรับจำนวนผู้ยืนยันจะแสดงช่วงบ่ายวันที่ 4 ก.พ.<br>
+        สำหรับการรับบางสาขา จำนวนการรับอาจจะกระจายไปในกลุ่มรวมสาขาอื่น ๆ ด้วย กรุณาอย่าลืมพิจารณา
+      </div>
+      
+      <table class="table table-striped table-sm">
+        <tr>
+          <th>รหัส</th>
+          <th>รอบ</th>
+          <th>โครงการ</th>
+          <th>จน.แผน</th>
+          <th>จน.ยืนยัน</th>
+          <th class="d-none">จน.แผน (ปรับ)</th>
+        </tr>
+        {% for slot in major_slots %}
+          {% ifchanged slot.admission_round_number %}
+            <tr class="table-success">
+              <td class="text-center" colspan="100">รอบที่ {{ slot.admission_round_number }}</td>
+            </tr>
+          {% endifchanged %}
+          <tr>
+            <td>{{ slot.cupt_code }}</td>
+            <td>{{ slot.admission_round_number }}</td>
+            <td>{{ slot.admission_project_title }}</td>
+            <td>{{ slot.original_slots }}</td>
+            <td></td>
+            <td class="d-none">{{ slot.current_slots }}</td>
+          </tr>
+        {% endfor %}
+      </table>
+    </div>
+  </div>
+{% endblock %}

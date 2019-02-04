@@ -46,6 +46,7 @@ def main():
             slot.admission_round = AdmissionRound.objects.get(number=round_number)
             slot.admission_round_number = round_number
             slot.major_full_code = major_full_code
+            slot.cupt_code = full_major_project_code
             slot.admission_project_title = project_title
 
             if items[5] != '':

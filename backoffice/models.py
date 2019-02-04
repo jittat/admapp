@@ -256,7 +256,8 @@ class AdjustmentMajor(models.Model):
     
 class AdjustmentMajorSlot(models.Model):
     adjustment_major = models.ForeignKey(AdjustmentMajor,
-                                         on_delete=models.CASCADE)
+                                         on_delete=models.CASCADE,
+                                         related_name='slots')
     faculty = models.ForeignKey(Faculty,
                                 on_delete=models.CASCADE)
     admission_round = models.ForeignKey(AdmissionRound,
@@ -265,13 +266,25 @@ class AdjustmentMajorSlot(models.Model):
     admission_round_number = models.IntegerField()
 
     major_full_code = models.CharField(max_length=10)
-
+    cupt_code = models.CharField(max_length=30,
+                                 blank=True)
+    
     admission_project_title = models.CharField(max_length=100)
 
     original_slots = models.IntegerField()
     current_slots = models.IntegerField()
 
+    is_frozen = models.BooleanField(default=False)
+    is_confirmed_by_faculty = models.BooleanField(default=False)
+
+    confirmed_slots = models.IntegerField(default=0)
+    is_final = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ['admission_round_number', 'cupt_code']
+    
     def __str__(self):
-        return '%s (%s) (%d)' % (self.adjustment_major,
-                                 self.admission_project_title,
-                                 self.current_slots)
+        return '%s (%s) (%d) %s' % (self.adjustment_major,
+                                    self.admission_project_title,
+                                    self.current_slots,
+                                    self.cupt_code)
