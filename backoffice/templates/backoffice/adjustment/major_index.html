@@ -39,7 +39,13 @@
                 {% endif %}
               </td>
               <td>
-                <input class="d-none" name="slot-{{ slot.id }}-{{ slot.cupt_code }}" type="text" value="{{ slot.current_slots }}" size="5">
+                {% if not slot.is_final %}
+                  {% if slot.is_frozen %}
+                    {{ slot.original_slots }}
+                  {% else %}
+                    <input class="d-none" name="slot-{{ slot.id }}-{{ slot.cupt_code }}" type="text" value="{{ slot.current_slots }}" size="5">
+                  {% endif %}
+                {% endif %}
               </td>
             </tr>
           {% endfor %}
