@@ -228,7 +228,7 @@ def el_print(request):
 @appl_login_required
 def gen_sport_print(request):
     applicant = request.applicant
-    admission_round = AdmissionRound.objects.get(pk=3)
+    admission_round = AdmissionRound.objects.get(pk=2)
     
     personal_profile = applicant.get_personal_profile()
     educational_profile = applicant.get_educational_profile()
@@ -266,7 +266,7 @@ def gen_sport_print(request):
 @appl_login_required
 def kus_print(request):
     applicant = request.applicant
-    admission_round = AdmissionRound.objects.get(pk=3)
+    admission_round = AdmissionRound.objects.get(pk=2)
     
     personal_profile = applicant.get_personal_profile()
     educational_profile = applicant.get_educational_profile()
