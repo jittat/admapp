@@ -13,7 +13,12 @@ def make_available(modeladmin, request, queryset):
 make_available.short_description = 'Mark selected project as available'
         
 class AdmissionProjectAdmin(admin.ModelAdmin):
-    list_display = ['title', 'campus', 'get_admission_rounds_display', 'is_available']
+    list_display = ['title',
+                    'campus',
+                    'get_admission_rounds_display',
+                    'max_num_selections',
+                    'base_fee',
+                    'is_available']
     ordering = ['id']
     actions = [make_available]
     inlines = (ProjectUploadedDocumentInline,)
