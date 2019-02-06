@@ -51,7 +51,7 @@
               <td>
                 {% if not slot.is_final %}
                   {% if slot.is_frozen or slot.is_confirmed_by_faculty %}
-                    {{ slot.original_slots }}
+                    {{ slot.current_slots }}
                   {% else %}
                     <input name="slot-{{ slot.id }}-{{ slot.cupt_code }}" type="text" value="{{ slot.current_slots }}" size="5">
                     {% if slot.validation_error %}
