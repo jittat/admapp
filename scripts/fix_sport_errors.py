@@ -80,5 +80,8 @@ def main():
         if last_log.created_at < cutoff:
             print(a)
 
+if __name__ == '__main__':
+    main()
+
         
         
