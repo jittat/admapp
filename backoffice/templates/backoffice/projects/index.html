@@ -115,16 +115,16 @@
             {% if applicant_info_viewable %}
               <td>
                 {% if user_major_number == any_major or user_major_number == major.number %}
-                  <a class="btn btn-sm btn-outline-secondary" href="{% url 'backoffice:projects-list-applicants-for-acceptance-calls' project.id admission_round.id major.number %}">กรอกผลสัมภาษณ์</a>
+                  <a class="d-none btn btn-sm btn-outline-secondary" href="{% url 'backoffice:projects-list-applicants-for-acceptance-calls' project.id admission_round.id major.number %}">กรอกผลสัมภาษณ์</a>
                 {% endif %}
               </td>
               <td>
                 {% if user_major_number == any_major or user_major_number == major.number %}
-                  <a target="_blank" class="btn btn-sm btn-outline-secondary" href="{% url 'backoffice:projects-show-applicant' project.id admission_round.id major.number 1 %}">ดูข้อมูล</a>
+                  <a target="_blank" class="d-none btn btn-sm btn-outline-secondary" href="{% url 'backoffice:projects-show-applicant' project.id admission_round.id major.number 1 %}">ดูข้อมูล</a>
                 {% endif %}
                 {% if user_major_number == any_major or user_major_number == major.number %}
                   {% if major.has_any_applications %}
-                    <div class="dropdown d-none"><!-- NOTES: hidden for now -->
+                    <div class="dropdown"><!-- NOTES: hidden for now -->
                       <a class="btn btn-sm btn-outline-secondary dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">พิจารณา</a>
                       <div class="dropdown-menu">
                         <a target="_blank" class="dropdown-item" href="{% url 'backoffice:projects-show-applicant' project.id admission_round.id major.number 1 %}">พิจารณาข้อมูลผู้สมัคร (ตรวจเกณฑ์)</a>

@@ -6,7 +6,7 @@ import csv
 from datetime import datetime
 
 from regis.models import Applicant
-from appl.models import AdmissionProject, AdmissionResult, AdmissionRound, ProjectApplication
+from appl.models import AdmissionProject, AdmissionResult, AdmissionRound, ProjectApplication, MajorSelection
 
 def main():
     result_filename = sys.argv[1]
@@ -44,7 +44,11 @@ def main():
             if len(results) == 1:
                 result = results[0]
             else:
-                majors = application.major_selection.get_majors()
+                try:
+                    majors = application.major_selection.get_majors()
+                except:
+                    print('ERROR', application.applicant)
+                    continue
                 if len(majors)!=1:
                     print('ERROR too many majors', nat_id)
                     continue

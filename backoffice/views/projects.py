@@ -430,7 +430,8 @@ def update_applicant_status(applicant, admission_results, admission_project_roun
 
     if not admission_project_round.criteria_check_required:
         if hasattr(applicant, 'admission_result'):
-            applicant.is_criteria_passed = True
+            if applicant.admission_result:
+                applicant.is_criteria_passed = True
 
 
 def load_check_marks_and_results(applicants,

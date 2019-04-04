@@ -37,7 +37,7 @@
       <tr data-appid="{{ a.national_id }}" class="{% if a.is_called_for_interview %}app-interview-called{%else %}app-interview-not-called{% endif %}">
         <td class="ranks">{{ forloop.counter }}</td>
         <td class="national-ids">
-          {{ a.national_id }}
+          {% comment %}{{ a.national_id }}{% endcomment %}
         </td>
         {% if project.cross_majors_acceptance_visible %}
           <td>
@@ -53,7 +53,7 @@
           </td>
         {% endif %}
         {% if not project.applicant_details_hidden %}
-          <td>{{ a.get_full_name }}</td>
+          <td>{% comment %}{{ a.get_full_name }}{% endcomment %}</td>
           <td>{{ a.educationalprofile.get_education_plan_display }}</td>
         {% else %}
           <td>{{ a.get_full_name }}</td>
