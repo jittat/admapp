@@ -328,9 +328,6 @@ def load_accepted_applicant_counts(admission_round, admission_project, majors):
             majors[midx].rejected_count += 1    
 
 
-    # HACK for TCAS
-    return
-
     decisions = dict([(d.major_id,d) for d in
                       MajorInterviewCallDecision.objects.filter(admission_round=admission_round,
                                                                 admission_project=admission_project).all()])
