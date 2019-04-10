@@ -4,11 +4,13 @@
     <h4>พิมพ์ใบสมัครเพื่อสัมภาษณ์</h4>
     <a class="btn btn-success btn-sm" target="_blank" href="{% url 'appl:common-print' %}">พิมพ์ใบสมัคร</a><br />
     เพื่อนำมาประกอบการสัมภาษณ์ในวันที่ 19 เม.ย. 2562<br>
-    {% if active_application.admission_project.id != 12 %}
-      อ่าน<a href="https://admission.ku.ac.th/admmedia/62-tcas-r2-interview-schedule.pdf" target="_blank">รายละเอียดและกำหนดการสัมภาษณ์</a> <a href="https://admission.ku.ac.th/admmedia/62-tcas-r2-interview-schedule.pdf" target="_blank" class="badge badge-info">ดาวน์โหลด</a><br>
-    {% else %}
-      อ่าน<a href="https://admission.ku.ac.th/admmedia/62-tcas-r2-culture-interview-schedule.pdf" target="_blank">รายละเอียดและกำหนดการสัมภาษณ์</a> <a href="https://admission.ku.ac.th/admmedia/62-tcas-r2-culture-interview-schedule.pdf" target="_blank" class="badge badge-info">ดาวน์โหลด</a><br>
-    {% endif %}
+    <div class="mt10">
+      {% if active_application.admission_project.id != 12 %}
+        อ่าน<a href="https://admission.ku.ac.th/admmedia/62-tcas-r2-interview-schedule.pdf" target="_blank">รายละเอียดและกำหนดการสัมภาษณ์</a> <a href="https://admission.ku.ac.th/admmedia/62-tcas-r2-interview-schedule.pdf" target="_blank" class="badge badge-secondary">ดาวน์โหลด</a>
+      {% else %}
+        อ่าน<a href="https://admission.ku.ac.th/admmedia/62-tcas-r2-culture-interview-schedule.pdf" target="_blank">รายละเอียดและกำหนดการสัมภาษณ์</a> <a href="https://admission.ku.ac.th/admmedia/62-tcas-r2-culture-interview-schedule.pdf" target="_blank" class="badge badge-secondary">ดาวน์โหลด</a>
+      {% endif %}
+    </div>
     <hr />
   {% endif %}
 {% endif %}
