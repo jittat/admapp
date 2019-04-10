@@ -57,6 +57,8 @@ def make_decision(project, admission_round, project_round, major, decision, fake
         else:
             if hasattr(a, 'admission_result'):
                 res = a.admission_result
+                if res == None:
+                    continue
                 res.is_accepted_for_interview = False
                 res.updated_accepted_for_interview_at = datetime.now()
                 res.save()

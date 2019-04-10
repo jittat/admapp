@@ -23,6 +23,7 @@
               {% endif %}
             {% endfor %}
           </ul>
+          {% include "appl/include/project_accepted_for_interview_result_info_hooks.html" %}
           {% if interview_descriptions %}
             <div>
               <b>{% trans 'สถานที่และเวลา:' %}</b> {{ interview_descriptions.descriptions|linebreaksbr }}

@@ -364,7 +364,7 @@ def inter_print(request):
 @appl_login_required
 def common_print(request):
     applicant = request.applicant
-    admission_round = AdmissionRound.objects.get(pk=1)
+    admission_round = AdmissionRound.objects.get(pk=2)
     
     personal_profile = applicant.get_personal_profile()
     educational_profile = applicant.get_educational_profile()
@@ -374,8 +374,8 @@ def common_print(request):
         return HttpResponseForbidden()
 
     admission_project = active_application.admission_project
-    if admission_project.id not in [28,36]:
-        return HttpResponseForbidden()
+    #if admission_project.id not in [28,36]:
+    #    return HttpResponseForbidden()
 
     project_round = admission_project.get_project_round_for(admission_round)
     if not project_round.accepted_for_interview_result_shown:
