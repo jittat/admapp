@@ -1,0 +1,47 @@
+{% if active_application.admission_project.id != 11 %}
+  {% if active_application.admission_project.id != 12 %}
+    <!-- โควตาอื่น ๆ -->
+    <span class="badge badge-success">ประกาศ</span> การสอบสัมภาษณ์จะมีในวันที่ 19 เม.ย. 2562 ให้ผู้สมัครพิมพ์ใบสมัครเพื่อมาประกอบการสัมภาษณ์ในลิงก์ด้านล่าง และอ่านรายละเอียดเกี่ยวกับเอกสาร รวมทั้งเวลาและสถานที่ได้จาก<a href="https://admission.ku.ac.th/admmedia/62-tcas-r2-interview-schedule.pdf" target="_blank">เอกสารรายละเอียดนี้</a> <a href="https://admission.ku.ac.th/admmedia/62-tcas-r2-interview-schedule.pdf" target="_blank" class="badge badge-info">ดาวน์โหลด</a><br>
+    ในวันสอบสัมภาษณ์ให้ผู้มีสิทธิ์สอบสัมภาษณ์มาลงทะเบียนเพื่อรายงานตัวก่อนสอบสัมภาษณ์อย่างน้อย 30 นาที
+  {% else %}
+    <!-- ศิลปวัฒนธรรม -->
+    <span class="badge badge-success">ประกาศ</span> การสอบสัมภาษณ์จะมีในวันที่ 19 เม.ย. 2562 ให้ผู้สมัครพิมพ์ใบสมัครเพื่อมาประกอบการสัมภาษณ์ในลิงก์ด้านล่าง และอ่านรายละเอียดเกี่ยวกับเอกสาร รวมทั้งเวลาและสถานที่ได้จาก<a href="https://admission.ku.ac.th/admmedia/62-tcas-r2-culture-interview-schedule.pdf" target="_blank">เอกสารรายละเอียดนี้</a> <a href="https://admission.ku.ac.th/admmedia/62-tcas-r2-culture-interview-schedule.pdf" target="_blank" class="badge badge-info">ดาวน์โหลด</a><br>
+    ในวันสอบสัมภาษณ์ให้ผู้มีสิทธิ์สอบสัมภาษณ์มาลงทะเบียนเพื่อรายงานตัวก่อนสอบสัมภาษณ์อย่างน้อย 30 นาที
+  {% endif %}
+{% else %}<!-- กีฬา -->
+  สำหรับโควตานักกีฬาดีเด่นอาจมีการสละสิทธิ์ก่อนการสัมภาษณ์ในวันที่ 19 เม.ย. 2562 และจะมีการจัดอันดับใหม่อีกครั้ง โดยรับประกันว่าผู้ผ่านการคัดเลือกทั้งหมดจะได้อันดับไม่แย่กว่าเดิม<br>
+  เพื่อเป็นข้อมูลในการประมวลผลให้ผู้สมัครเลือกทางเลือกในการจัดอันดับดังด้านล่างต่อไปนี้
+  <span id="rerank_choice_saving_id"></span>
+
+  <div class="form-check">
+    <input class="form-check-input sport-rerank-radios" type="radio" name="rerank-choice" id="rerankRadios1" value="option1">
+    <label class="form-check-label" for="rerankRadios1">
+      แบบที่ 1: ยืนยันอันดับเดิมและมาสอบสัมภาษณ์ ไม่ต้องการเลื่อนอันดับ
+    </label>
+  </div>
+  <div class="form-check">
+    <input class="form-check-input sport-rerank-radios" type="radio" name="rerank-choice" id="rerankRadios2" value="option2">
+    <label class="form-check-label" for="rerankRadios2">
+      แบบที่ 2: ขอจัดอันดับใหม่ ถ้าไม่ได้อันดับที่ดีขึ้นขอยืนยันอันดับเดิมและมาสอบสัมภาษณ์
+    </label>
+  </div>
+  <div class="form-check">
+    <input class="form-check-input sport-rerank-radios" type="radio" name="rerank-choice" id="rerankRadios3" value="option3">
+    <label class="form-check-label" for="rerankRadios3">
+      แบบที่ 3: ขอจัดอันดับใหม่ ถ้าไม่ได้อันดับที่ดีขึ้นขอสละสิทธิ์ ถ้าได้อันดับที่ดีขึ้นจะมาสอบสัมภาษณ์
+    </label>
+  </div>
+  <div class="form-check">
+    <input class="form-check-input sport-rerank-radios" type="radio" name="rerank-choice" id="rerankRadios4" value="option4">
+    <label class="form-check-label" for="rerankRadios4">
+      แบบที่ 4: ขอสละสิทธิ์
+    </label>
+  </div>
+
+  <script>
+    $(".sport-rerank-radios").click(function(){
+      var val = $(this).val();
+      alert(val);
+    });
+  </script>
+{% endif %}
