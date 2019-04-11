@@ -193,6 +193,15 @@ def index_with_active_application(request, active_application, admission_round=N
                                                                 admission_round)
     notice = request.session.pop('notice', None)
 
+    # HACK for sport options
+    log_key = LogItem.generate_log_key(applicant)
+    last_log = LogItem.get_applicant_latest_log(applicant,
+                                                'appllog:sport-confirm-option')
+    if not last_log:
+        sport_option = '0'
+    else:
+        sport_option = last_log.message[-1]
+
     return render(request,
                   'appl/index.html',
                   { 'notice': notice,
@@ -235,6 +244,9 @@ def index_with_active_application(request, active_application, admission_round=N
                     'has_confirmed': has_confirmed,
 
                     'econ_hack': econ_hack,
+                    
+                    'log_key': log_key,
+                    'sport_option': sport_option,
                   })
 
 
@@ -309,7 +321,7 @@ def index(request, admission_round_id='0'):
     # TODO: fix this hack
     #if len(other_application_rounds) != 0:
     #    return redirect(reverse('appl:index-with-round', args=[other_application_rounds[0][0].id]))
-    
+
     notice = request.session.pop('notice', None)
 
     return render(request,

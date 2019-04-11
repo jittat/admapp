@@ -350,3 +350,17 @@ def reset_cupt_confirmation(request):
 
     return redirect('appl:index')
 
+@appl_login_required    
+def save_applicant_log(request):
+    applicant = request.applicant
+
+    if applicant.national_id != request.GET.get('nat',''):
+        return HttpResponseForbidden()
+
+    if LogItem.generate_log_key(applicant) != request.GET.get('key',''):
+        return HttpResponseForbidden()
+
+    msg = 'appllog:' + request.GET.get('msg','')
+    LogItem.create(msg, applicant, request)
+    return HttpResponse('OK')
+    

@@ -14,4 +14,6 @@ urlpatterns = [
     url(r'^checkcupt/(\d+)/$', views.check_cupt_confirmation_available, name='cupt-check'),
 
     url(r'^resetcupt/$', views.reset_cupt_confirmation, name='reset-cupt-check'),
+
+    url(r'^log/$', views.save_applicant_log, name='save-applicant-log'),
 ]

@@ -4,6 +4,8 @@ from django.db import models
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.hashers import check_password as check_hashed_password
 
+from django.conf import settings
+
 from datetime import datetime
 
 class Applicant(models.Model):
@@ -276,6 +278,23 @@ class LogItem(models.Model):
 
         log.save()
         return log
+
+    @staticmethod
+    def get_applicant_latest_log(applicant, prefix):
+        items = LogItem.objects.filter(applicant=applicant).all()
+        for item in items:
+            if item.message.startswith(prefix):
+                return item
+
+    @staticmethod
+    def generate_log_key(applicant):
+        import hashlib
+
+        m = hashlib.md5()
+        m.update(settings.APPL_LOG_APPLICANT_KEY.encode('utf-8'))
+        m.update(str(applicant.id).encode('utf-8'))
+
+        return m.hexdigest()
     
     def __str__(self):
         return '(%s) %s' % (self.created_at, self.message)
