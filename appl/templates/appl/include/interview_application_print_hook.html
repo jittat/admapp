@@ -1,17 +1,19 @@
 {% load i18n %}
 {% if admission_round.id == 2 %}
   {% if active_application.admission_project.id != 11 %} <!-- ไม่ใช่กีฬา -->
-    <h4>พิมพ์ใบสมัครเพื่อสัมภาษณ์</h4>
-    <a class="btn btn-success btn-sm" target="_blank" href="{% url 'appl:common-print' %}">พิมพ์ใบสมัคร</a><br />
-    เพื่อนำมาประกอบการสัมภาษณ์ในวันที่ 19 เม.ย. 2562<br>
-    <div class="mt10">
-      {% if active_application.admission_project.id != 12 %}
-        อ่าน<a href="https://admission.ku.ac.th/admmedia/62-tcas-r2-interview-schedule.pdf" target="_blank">รายละเอียดและกำหนดการสัมภาษณ์</a> <a href="https://admission.ku.ac.th/admmedia/62-tcas-r2-interview-schedule.pdf" target="_blank" class="badge badge-secondary">ดาวน์โหลด</a>
-      {% else %}
-        อ่าน<a href="https://admission.ku.ac.th/admmedia/62-tcas-r2-culture-interview-schedule.pdf" target="_blank">รายละเอียดและกำหนดการสัมภาษณ์</a> <a href="https://admission.ku.ac.th/admmedia/62-tcas-r2-culture-interview-schedule.pdf" target="_blank" class="badge badge-secondary">ดาวน์โหลด</a>
-      {% endif %}
-    </div>
-    <hr />
+    {% if active_application.admission_project.id != 5 %} <!-- ไม่ใช่สาธิต -->
+      <h4>พิมพ์ใบสมัครเพื่อสัมภาษณ์</h4>
+      <a class="btn btn-success btn-sm" target="_blank" href="{% url 'appl:common-print' %}">พิมพ์ใบสมัคร</a><br />
+      เพื่อนำมาประกอบการสัมภาษณ์ในวันที่ 19 เม.ย. 2562<br>
+      <div class="mt10">
+        {% if active_application.admission_project.id != 12 %}
+          อ่าน<a href="https://admission.ku.ac.th/admmedia/62-tcas-r2-interview-schedule.pdf" target="_blank">รายละเอียดและกำหนดการสัมภาษณ์</a> <a href="https://admission.ku.ac.th/admmedia/62-tcas-r2-interview-schedule.pdf" target="_blank" class="badge badge-secondary">ดาวน์โหลด</a>
+        {% else %}
+          อ่าน<a href="https://admission.ku.ac.th/admmedia/62-tcas-r2-culture-interview-schedule.pdf" target="_blank">รายละเอียดและกำหนดการสัมภาษณ์</a> <a href="https://admission.ku.ac.th/admmedia/62-tcas-r2-culture-interview-schedule.pdf" target="_blank" class="badge badge-secondary">ดาวน์โหลด</a>
+        {% endif %}
+      </div>
+      <hr />
+    {% endif %}
   {% endif %}
 {% endif %}
 {% if active_application.admission_project.id == 1 %} <!-- ช้างเผือก -->
