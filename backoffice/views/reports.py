@@ -132,7 +132,7 @@ def download_applicants_sheet(request, project_id, round_id, major_number):
                          str(applicant.educationalprofile.get_education_plan_display()),
                          applicant.educationalprofile.school_title,
                          applicant.educationalprofile.province.title,
-                         '%0.2f' % (applicant.educationalprofile.gpa,),
+                         '%0.2f' % (float(applicant.educationalprofile.gpa),),
                          payment_message,
                          '','','','','','',
                          combined_comments,
@@ -169,7 +169,7 @@ def write_applicant_rows(sheet, start_row, applicants, major, cell_format, show_
                   applicant.prefix,
                   applicant.first_name,
                   applicant.last_name,
-                  ('%0.2f' % (applicant.educationalprofile.gpa,)),
+                  '%0.2f' % (float(applicant.educationalprofile.gpa),),
                   str(applicant.educationalprofile.get_education_plan_display()),
                   faculty.title,
                   major.title,
@@ -178,6 +178,8 @@ def write_applicant_rows(sheet, start_row, applicants, major, cell_format, show_
         if not show_national_id:
             del items[1]
             items.append(' ')
+
+        items = [str(i) for i in items]
         write_sheet_row(sheet, start_row + r - 1, items, cell_format)
         r += 1
 
@@ -437,7 +439,7 @@ def write_score_report_sheet(sheet, project, applicants, major, cell_format):
                  applicant.prefix,
                  applicant.first_name,
                  applicant.last_name,
-                 '%0.2f' % (applicant.educationalprofile.gpa,),
+                 '%0.2f' % (float(applicant.educationalprofile.gpa),),
                  str(applicant.educationalprofile.get_education_plan_display()),]
 
         gp_round_count = len(scores.gatpat_rounds)
