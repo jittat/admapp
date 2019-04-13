@@ -24,34 +24,48 @@
   ผู้สมัครไม่ต้องนำใบสมัครหรือเอกสารอื่น ๆ มาเพิ่ม เนื่องจากได้นำส่งมาแล้ว
   <div class="alert alert-info">
     สำหรับโควตานักกีฬาดีเด่นอาจมีการสละสิทธิ์ก่อนการสัมภาษณ์ในวันที่ 19 เม.ย. 2562 และจะมีการจัดอันดับใหม่อีกครั้ง โดยรับประกันว่าผู้ผ่านการคัดเลือกทั้งหมดจะได้อันดับไม่แย่กว่าเดิม ยกเว้นผู้สมัครเลือกจะสละสิทธิ์<br>
-    เพื่อเป็นข้อมูลในการประมวลผลให้ผู้สมัครยืนยันการเข้าสัมภาษณ์หรือสละสิทธิ์ โดยเลือกทางเลือกในการจัดอันดับดังด้านล่างต่อไปนี้  (สามารถเลือกได้ถึงวันที่ <b>13 เม.ย. 62</b> จะประกาศผลการจัดอันดับใหม่ในวันที่ <b>15 เม.ย. 62</b>)
+    <!--
+         เพื่อเป็นข้อมูลในการประมวลผลให้ผู้สมัครยืนยันการเข้าสัมภาษณ์หรือสละสิทธิ์ โดยเลือกทางเลือกในการจัดอันดับดังด้านล่างต่อไปนี้  (สามารถเลือกได้ถึงวันที่ <b>13 เม.ย. 62</b> จะประกาศผลการจัดอันดับใหม่ในวันที่ <b>15 เม.ย. 62</b>)
+       -->
+    เพื่อเป็นข้อมูลในการประมวลผลให้ผู้สมัครยืนยันทางเลือกในการจัดอันดับดังนี้  (สามารถเลือกได้ถึงวันที่ <b>13 เม.ย. 62</b> จะประกาศผลการจัดอันดับใหม่ในวันที่ <b>15 เม.ย. 62</b>)
+    
     <span id="rerank_choice_saving_id" style="display:none;"><i class="fa fa-spin fa-spinner"></i> กำลังจัดเก็บ</span>
     <span id="rerank_choice_saving_done_id" class="badge badge-success" style="display:none;">จัดเก็บคำตอบเรียบร้อย</span>
 
-    <div class="form-check">
-      <input class="form-check-input sport-rerank-radios" type="radio" name="rerank-choice" id="rerankRadios1" value="option1" {% if sport_option == '1' %}checked{% endif %}>
-      <label class="form-check-label" for="rerankRadios1">
-        แบบที่ 1: ยืนยันอันดับเดิมและมาสอบสัมภาษณ์ ไม่ต้องการเลื่อนอันดับ
-      </label>
-    </div>
-    <div class="form-check">
-      <input class="form-check-input sport-rerank-radios" type="radio" name="rerank-choice" id="rerankRadios2" value="option2" {% if sport_option == '2' %}checked{% endif %}>
-      <label class="form-check-label" for="rerankRadios2">
-        แบบที่ 2: ขอจัดอันดับใหม่ ถ้าไม่ได้อันดับที่ดีขึ้นขอยืนยันอันดับเดิมและมาสอบสัมภาษณ์
-      </label>
-    </div>
-    <div class="form-check">
-      <input class="form-check-input sport-rerank-radios" type="radio" name="rerank-choice" id="rerankRadios3" value="option3" {% if sport_option == '3' %}checked{% endif %}>
-      <label class="form-check-label" for="rerankRadios3">
-        แบบที่ 3: ขอจัดอันดับใหม่ ถ้าไม่ได้อันดับที่ดีขึ้นขอสละสิทธิ์ ถ้าได้อันดับที่ดีขึ้นจะมาสอบสัมภาษณ์
-      </label>
-    </div>
-    <div class="form-check">
-      <input class="form-check-input sport-rerank-radios" type="radio" name="rerank-choice" id="rerankRadios4" value="option4" {% if sport_option == '4' %}checked{% endif %}>
-      <label class="form-check-label" for="rerankRadios4">
-        แบบที่ 4: ขอสละสิทธิ์
-      </label>
-    </div>
+    {% if sport_option == '0' %}
+      <div>
+        <i class="fa fa-check"></i> ผู้สมัครไม่ได้ยืนยันในช่วงเวลาที่กำหนด ทีมงานจะพิจารณาจัดอันดับให้ใหม่ ผู้สมัครจะได้อันดับที่เท่าเดิมหรือดีกว่าเดิมเท่านั้น
+      </div>
+    {% else %}
+      <div class="form-check">
+        <input class="d-none form-check-input sport-rerank-radios" type="radio" name="rerank-choice" id="rerankRadios1" value="option1" {% if sport_option == '1' %}checked{% endif %}>
+        {% if sport_option == '1' %}<i class="fa fa-check"></i>{% endif %}
+        <label class="form-check-label" for="rerankRadios1">
+          แบบที่ 1: ยืนยันอันดับเดิมและมาสอบสัมภาษณ์ ไม่ต้องการเลื่อนอันดับ
+        </label>
+      </div>
+      <div class="form-check">
+        <input class="d-none form-check-input sport-rerank-radios" type="radio" name="rerank-choice" id="rerankRadios2" value="option2" {% if sport_option == '2' %}checked{% endif %}>
+        {% if sport_option == '2' %}<i class="fa fa-check"></i>{% endif %}
+        <label class="form-check-label" for="rerankRadios2">
+          แบบที่ 2: ขอจัดอันดับใหม่ ถ้าไม่ได้อันดับที่ดีขึ้นขอยืนยันอันดับเดิมและมาสอบสัมภาษณ์
+        </label>
+      </div>
+      <div class="form-check">
+        <input class="d-none form-check-input sport-rerank-radios" type="radio" name="rerank-choice" id="rerankRadios3" value="option3" {% if sport_option == '3' %}checked{% endif %}>
+        {% if sport_option == '3' %}<i class="fa fa-check"></i>{% endif %}
+        <label class="form-check-label" for="rerankRadios3">
+          แบบที่ 3: ขอจัดอันดับใหม่ ถ้าไม่ได้อันดับที่ดีขึ้นขอสละสิทธิ์ ถ้าได้อันดับที่ดีขึ้นจะมาสอบสัมภาษณ์
+        </label>
+      </div>
+      <div class="form-check">
+        <input class="d-none form-check-input sport-rerank-radios" type="radio" name="rerank-choice" id="rerankRadios4" value="option4" {% if sport_option == '4' %}checked{% endif %}>
+        {% if sport_option == '4' %}<i class="fa fa-check"></i>{% endif %}
+        <label class="form-check-label" for="rerankRadios4">
+          แบบที่ 4: ขอสละสิทธิ์
+        </label>
+      </div>
+    {% endif %}
   </div>
 
   <script>
@@ -66,7 +80,7 @@
 
       $('#rerank_choice_saving_id').show();
       jQuery.get(url, { nat: '{{ applicant.national_id }}',
-                        key: '{{ log_key }}',
+                        key: '', 
                         msg: 'sport-confirm-' + val },
                  function(data) {
                    $('#rerank_choice_saving_id').hide();
