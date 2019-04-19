@@ -115,7 +115,7 @@
             {% if applicant_info_viewable %}
               <td>
                 {% if user_major_number == any_major or user_major_number == major.number %}
-                  <a class="d-none btn btn-sm btn-outline-secondary" href="{% url 'backoffice:projects-list-applicants-for-acceptance-calls' project.id admission_round.id major.number %}">กรอกผลสัมภาษณ์</a>
+                  <a class="btn btn-sm btn-outline-secondary" href="{% url 'backoffice:projects-list-applicants-for-acceptance-calls' project.id admission_round.id major.number %}">กรอกผลสัมภาษณ์</a>
                 {% endif %}
               </td>
               <td>

@@ -46,10 +46,10 @@ def main():
                 print('ERROR', nat_id, name)
                 continue
 
-            if items[1].strip() == 'ขาดสอบ':
+            if items[3].strip() == 'ขาดสอบ':
                 continue
             
-            major_num = int(items[1])
+            major_num = int(items[2])
             
             application = all_applications[nat_id]
             major_selection = application.major_selection
