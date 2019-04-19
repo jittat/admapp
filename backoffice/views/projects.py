@@ -375,6 +375,8 @@ def index(request, project_id, round_id):
     ranks = range(1, project_max_num_selections+1)
 
     applicant_info_viewable = project_round.applicant_info_viewable
+    applicant_score_viewable = project_round.applicant_score_viewable
+
 
     if applicant_info_viewable:
         load_accepted_applicant_counts(admission_round,
@@ -393,6 +395,8 @@ def index(request, project_id, round_id):
                     'ranks': ranks,
 
                     'applicant_info_viewable': applicant_info_viewable,
+                    'applicant_score_viewable': applicant_score_viewable,
+ 
                     'has_criteria_check': project_round.criteria_check_required,
 
                     'user_major_number': user_major_number,

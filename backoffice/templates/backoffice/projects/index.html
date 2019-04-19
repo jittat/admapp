@@ -127,8 +127,10 @@
                     <div class="dropdown"><!-- NOTES: hidden for now -->
                       <a class="btn btn-sm btn-outline-secondary dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">พิจารณา</a>
                       <div class="dropdown-menu">
+                        {% if applicant_score_viewable %}
+                          <a target="_blank" class="dropdown-item" href="{% url 'backoffice:projects-show-scores' project.id admission_round.id major.number %}">พิจารณาคะแนน</a>
+                        {% endif %}
                         <a target="_blank" class="dropdown-item" href="{% url 'backoffice:projects-show-applicant' project.id admission_round.id major.number 1 %}">พิจารณาข้อมูลผู้สมัคร (ตรวจเกณฑ์)</a>
-                        <a target="_blank" class="dropdown-item" href="{% url 'backoffice:projects-show-scores' project.id admission_round.id major.number %}">พิจารณาคะแนน</a>
                       </div>
                     </div>
                   {% endif %}
