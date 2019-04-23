@@ -1329,6 +1329,9 @@ def update_applicant_acceptance_call(request, project_id, round_id, major_number
     if not project_round.accepted_for_interview_result_frozen:
         return HttpResponseForbidden()
 
+    if project_round.accepted_result_frozen:
+        return HttpResponseForbidden()
+
     if project.id != 31:
         major_applicants = load_major_applicants_no_cache(project,
                                                           admission_round,
