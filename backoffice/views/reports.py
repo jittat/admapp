@@ -164,8 +164,11 @@ def write_applicant_rows(sheet, start_row, applicants, major, cell_format, show_
     faculty = major.faculty
     r = 1
     for applicant in applicants:
+        nat_id = applicant.national_id
+        if nat_id.startswith('x'):
+            nat_id = nat_id[1:]
         items = [ str(r),
-                  applicant.national_id,
+                  nat_id,
                   applicant.prefix,
                   applicant.first_name,
                   applicant.last_name,
@@ -358,7 +361,7 @@ def major_with_udat(major):
         return major.number in [6, 30, 33]
     elif major.admission_project_id == 15:
         return major.number == 4
-    elif major.admission_project_id == 31:
+    elif major.admission_project_id == 37:
         return True
     elif major.admission_project_id == 32:
         return major.number in [15,19,70]
@@ -436,8 +439,11 @@ def write_score_report_sheet(sheet, project, applicants, major, cell_format):
     for applicant in applicants:
         scores = applicant.get_all_exam_scores()
 
+        nat_id = applicant.national_id
+        if nat_id.startswith('x'):
+            nat_id = nat_id[1:]
         items = [str(r),
-                 applicant.national_id,
+                 nat_id,
                  applicant.prefix,
                  applicant.first_name,
                  applicant.last_name,
