@@ -565,7 +565,7 @@ def show_applicant(request, project_id, round_id, major_number, rank):
     project_round = project.get_project_round_for(admission_round)
     major = Major.get_by_project_number(project, major_number)
 
-    if project.id == 31:
+    if project.id == 37:
         return HttpResponseForbidden()
     
     real_rank = int(rank) - 1
@@ -1075,13 +1075,13 @@ def show_scores(request, project_id, round_id, major_number):
     project_round = project.get_project_round_for(admission_round)
     major = Major.get_by_project_number(project, major_number)
 
-    is_tcas_project = (project.id == 31)
+    is_tcas_project = (project.id == 37)
     
     if not can_user_view_applicants_in_major(user, project, major):
         return redirect(reverse('backoffice:index'))
 
     ### HACK
-    if project.id != 31:
+    if project.id != 37:
         applicants = load_major_applicants_no_cache(project,
                                                     admission_round,
                                                     major)
@@ -1171,7 +1171,7 @@ def update_interview_call_score(request, project_id, round_id, major_number):
         return HttpResponseForbidden()
 
     ### HACK
-    if project.id != 31:
+    if project.id != 37:
         applicants = load_major_applicants_no_cache(project,
                                                     admission_round,
                                                     major)
@@ -1276,7 +1276,7 @@ def list_applicants_for_acceptance_calls(request, project_id, round_id, major_nu
     if not project_round.accepted_for_interview_result_frozen:
         return HttpResponseForbidden()
 
-    if project.id != 31:
+    if project.id != 37:
         major_applicants = load_major_applicants_no_cache(project,
                                                           admission_round,
                                                           major)
@@ -1321,7 +1321,7 @@ def update_applicant_acceptance_call(request, project_id, round_id, major_number
     project_round = project.get_project_round_for(admission_round)
     major = Major.get_by_project_number(project, major_number)
 
-    is_tcas_project = (project.id == 31)
+    is_tcas_project = (project.id == 37)
     
     if not can_user_view_applicants_in_major(user, project, major):
         return redirect(reverse('backoffice:index'))
@@ -1332,7 +1332,7 @@ def update_applicant_acceptance_call(request, project_id, round_id, major_number
     if project_round.accepted_result_frozen:
         return HttpResponseForbidden()
 
-    if project.id != 31:
+    if project.id != 37:
         major_applicants = load_major_applicants_no_cache(project,
                                                           admission_round,
                                                           major)

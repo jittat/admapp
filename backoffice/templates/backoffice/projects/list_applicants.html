@@ -63,7 +63,7 @@
             <tr class="applicant-items major-{{ applicant.major_number }} {% if project.max_num_selections == 1 %}{% if applicant.admission_results.0.is_accepted_for_interview %}called-for-interview{% else %}not-called-for-interview{% endif %} {% if applicant.admission_results.0.is_accepted %}accepted{% else %}not-accepted{% endif %}  {% if applicant.admission_results.0.has_confirmed %}confirmed{% else %}not-confirmed{% endif %} {% endif %} {% if applicant.has_paid %}paid{% endif %}" data-major-number="{{ applicant.major_number }}">
               
               <td class="app-number">{{ applicant.r }}</td>
-              <td><a href="{% url 'backoffice:show-applicant-in-project' applicant.national_id project.id %}">{{ applicant.national_id }}</a></td>
+              <td><a href="{# url 'backoffice:show-applicant-in-project' applicant.national_id project.id #}">{{ applicant.national_id }}</a></td>
               <td>{{ applicant.get_full_name }}</td>
               <td class="text-center">
                 {% if applicant.has_paid %}

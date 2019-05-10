@@ -62,7 +62,7 @@ def main():
         else:
             app = Applicant()
 
-        app.national_id = a['natid']
+        app.national_id = 'x' + a['natid']
         app.prefix = a['prefix']
         app.first_name = a['first_name']
         app.last_name = a['last_name']

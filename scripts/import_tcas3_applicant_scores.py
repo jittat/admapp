@@ -32,10 +32,10 @@ def main():
         reader = csv.reader(csvfile, delimiter=',')
         for items in reader:
             major_number = int(items[0])
-            nat_id = items[1]
+            nat_id = 'x' + items[1]
             score = float(items[2])
             if nat_id not in all_applications:
-                print('ERROR', nat_id)
+                #print('ERROR', nat_id)
                 continue
             
             application = all_applications[nat_id]
@@ -44,7 +44,10 @@ def main():
                       if m.number == major_number]
 
             if len(majors) == 0:
-                print('ERROR major not found', nat_id)
+                #print('ERROR major not found', nat_id)
+                continue
+
+            print(nat_id, major_number)
 
             major = majors[0]
 
@@ -63,6 +66,7 @@ def main():
             result.major_rank=1
             result.major=major
             result.calculated_score = score
+            result.is_accepted_for_interview = True
             result.save()
 
             major_results = ApplicantMajorResult.objects.filter(major=major,

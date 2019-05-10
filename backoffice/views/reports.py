@@ -174,6 +174,7 @@ def write_applicant_rows(sheet, start_row, applicants, major, cell_format, show_
                   faculty.title,
                   major.title,
                   ' ',
+                  ' '
         ]
         if not show_national_id:
             del items[1]
@@ -195,15 +196,16 @@ def write_registration_table_header(sheet, cell_format):
                      'แผนการเรียน',
                      'คณะ',
                      'สาขาวิชา',
-                     'ลายมือชื่อ (ตัวบรรจง)',],
+                     'ลายมือชื่อ (ตัวบรรจง)',
+                     'ยืนยันสิทธิ์',],
                     cell_format)
         
 def write_registration_sheet(sheet, project, applicants, major, cell_format):
     sheet.set_landscape()
     sheet.write(0,0,'ใบลงชื่อผู้มีสิทธิ์สอบสัมภาษณ์ โครงการ' +
                 project.title +
-                ' มหาวิทยาลัยเกษตรศาสตร์ ปีการศึกษา 2562 (TCAS รอบที่ 2)')
-    set_column_widths(sheet,[4,15,8,12,22,5,10,12,12,12])
+                ' มหาวิทยาลัยเกษตรศาสตร์ ปีการศึกษา 2562 (TCAS รอบที่ 3)')
+    set_column_widths(sheet,[4,15,8,12,22,5,5,10,10,12,12])
     write_registration_table_header(sheet, cell_format)
     write_applicant_rows(sheet, 2, applicants, major, cell_format)
 
