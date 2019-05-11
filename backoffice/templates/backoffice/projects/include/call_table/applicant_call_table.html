@@ -23,6 +23,9 @@
             <div class="btn-group" role="group">
               <a class="interview-selection-buttons interview-selection-buttons-accepted btn btn-sm {% if result.is_accepted %}btn-success{% else %}btn-outline-secondary{% endif %}" href="#" data-appid="{{ a.national_id }}" data-decision="accepted"><i class="fa fa-check"></i> รับ</a>
               <a class="interview-selection-buttons interview-selection-buttons-rejected btn btn-sm {% if result.is_accepted == False %}btn-danger{% else %}btn-outline-secondary{% endif %}" href="#" data-appid="{{ a.national_id }}" data-decision="rejected"><i class="fa fa-close"></i> ไม่รับ</a>
+              {% if is_tcas_auto_confirmation %}
+                <a class="interview-selection-buttons interview-selection-buttons-not-confirm btn btn-sm {% if result.has_confirmed == False and result.is_accepted == None and result.is_interview_absent == False %}btn-secondary{% else %}btn-outline-secondary{% endif %}" href="#" data-appid="{{ a.national_id }}" data-decision="not-confirm"><i class="fa fa-minus-circle"></i> สละสิทธิ์</a>
+              {% endif %}
               <a class="interview-selection-buttons interview-selection-buttons-absent btn btn-sm {% if result.is_interview_absent %}btn-warning{% else %}btn-outline-secondary{% endif %}" href="#" data-appid="{{ a.national_id }}" data-decision="absent"><i class="fa fa-ban"></i> ขาดสอบ</a>
             </div>
           {% endwith %}
@@ -60,6 +63,10 @@
     if(decision == "absent") {
       var cls = "interview-selection-buttons-absent";
       var color = "btn-warning";
+    }
+    if(decision == "not-confirm") {
+      var cls = "interview-selection-buttons-not-confirm";
+      var color = "btn-secondary";
     }
 
     $("tr.app-row-" + appId).find("." + cls).removeClass("btn-outline-secondary").addClass(color).blur();

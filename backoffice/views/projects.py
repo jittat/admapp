@@ -1268,7 +1268,8 @@ def list_applicants_for_acceptance_calls(request, project_id, round_id, major_nu
     project_round = project.get_project_round_for(admission_round)
     major = Major.get_by_project_number(project, major_number)
 
-    is_tcas_project = False 
+    is_tcas_project = False
+    is_tcas_auto_confirmation = True
     
     if not can_user_view_applicants_in_major(user, project, major):
         return redirect(reverse('backoffice:index'))
@@ -1276,7 +1277,7 @@ def list_applicants_for_acceptance_calls(request, project_id, round_id, major_nu
     if not project_round.accepted_for_interview_result_frozen:
         return HttpResponseForbidden()
 
-    if project.id != 37:
+    if not is_tcas_project:
         major_applicants = load_major_applicants_no_cache(project,
                                                           admission_round,
                                                           major)
@@ -1311,6 +1312,7 @@ def list_applicants_for_acceptance_calls(request, project_id, round_id, major_nu
                     'applicants': applicants,
                     'acceptance_counters': acceptance_counters,
                     'is_tcas_project': is_tcas_project,
+                    'is_tcas_auto_confirmation': is_tcas_auto_confirmation,
                   })
 
 @user_login_required
@@ -1321,7 +1323,8 @@ def update_applicant_acceptance_call(request, project_id, round_id, major_number
     project_round = project.get_project_round_for(admission_round)
     major = Major.get_by_project_number(project, major_number)
 
-    is_tcas_project = (project.id == 37)
+    is_tcas_project = False 
+    is_tcas_auto_confirmation = True
     
     if not can_user_view_applicants_in_major(user, project, major):
         return redirect(reverse('backoffice:index'))
@@ -1332,7 +1335,7 @@ def update_applicant_acceptance_call(request, project_id, round_id, major_number
     if project_round.accepted_result_frozen:
         return HttpResponseForbidden()
 
-    if project.id != 37:
+    if not is_tcas_project:
         major_applicants = load_major_applicants_no_cache(project,
                                                           admission_round,
                                                           major)
@@ -1365,12 +1368,23 @@ def update_applicant_acceptance_call(request, project_id, round_id, major_number
     if decision == "accepted":
         admission_result.is_accepted = True
         admission_result.is_interview_absent = False
+        if is_tcas_auto_confirmation:
+            admission_result.has_confirmed = True
     elif decision == "rejected":
         admission_result.is_accepted = False
         admission_result.is_interview_absent = False
+        if is_tcas_auto_confirmation:
+            admission_result.has_confirmed = False
+    elif decision == "not-confirm":
+        admission_result.is_accepted = None
+        admission_result.is_interview_absent = False
+        if is_tcas_auto_confirmation:
+            admission_result.has_confirmed = False
     elif decision == "absent":
         admission_result.is_accepted = None
         admission_result.is_interview_absent = True
+        if is_tcas_auto_confirmation:
+            admission_result.has_confirmed = False
     admission_result.save()
 
     acceptance_counters = count_acceptance_status(applicants)
