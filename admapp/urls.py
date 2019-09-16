@@ -31,7 +31,8 @@ urlpatterns = i18n_patterns(
     url(r'^backoffice/', include('backoffice.urls')),
 
     url(r'^qr/', include('qrconfirmations.urls')),
-    
+
+    url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
     url(r'^admin/', admin.site.urls),
 
     url(r'^accounts/login/$',
