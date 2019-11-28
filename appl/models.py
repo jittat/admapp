@@ -623,7 +623,7 @@ class ProjectApplication(models.Model):
             return app
         except:
             return None
-    
+
     def get_verification_number(self, deadline_str=None):
         project_round = self.admission_project.get_project_round_for(self.admission_round)
         if not deadline_str:

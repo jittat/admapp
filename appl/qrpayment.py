@@ -6,6 +6,8 @@ from PIL import Image
 from django.conf import settings
 from django.contrib.staticfiles import finders
 
+from suds import Client
+
 def len2(st):
     return ('%02d' % len(st))
 
@@ -61,4 +63,51 @@ def generate_qr(ref1, ref2, additional_payment, filename):
     qr_in.paste(logo, box=(qr_in.width // 2 - 40, qr_in.height // 2 - 30), mask=logo)
 
     qr_in.save(filename + '.png')
+    
+
+def generate_ku_qr(applicant, application, additional_payment, filename):
+    KU_QR_SERVICE_URL = settings.KU_QR_SERVICE_URL
+    KU_QR_CALLBACK_URL = settings.KU_QR_CALLBACK_URL
+
+    additional_payment = 1
+
+    amount = "{:08.2f}".format(additional_payment)
+
+    admission_project = application.admission_project
+    project_round = admission_project.get_project_round_for(application.admission_round)
+    deadline = project_round.payment_deadline
+    deadline_str = "%02d%02d%02d" % (deadline.day,
+                                     deadline.month,
+                                     deadline.year % 100)
+    print(deadline_str)
+    
+    ref1 = str(application.admission_round.number) + '000' + applicant.national_id
+    ref2 = "{:06d}".format(application.get_number())
+    
+    client = Client(KU_QR_SERVICE_URL)
+
+    callback_url = KU_QR_CALLBACK_URL % (ref2,)
+    print(callback_url)
+    
+    result = client.service.getOeaQr(expireDate=deadline_str,
+                                     appCode='01',
+                                     transactionId=ref2,
+                                     amount=amount,
+                                     ref1Prefix=ref1,
+                                     ref2Prefix=ref2,
+                                     billerSuffix='87',
+                                     callbackUrl=KU_QR_CALLBACK_URL)
+
+    if result.success:
+        img_base64 = result.qrResult.content[23:]
+
+        import base64
+        from PIL import Image
+        from io import BytesIO
+
+        im = Image.open(BytesIO(base64.b64decode(img_base64)))
+        im.save(filename + '.png', 'PNG')
+    else:
+        print(result)
+
     

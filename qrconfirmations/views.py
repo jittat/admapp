@@ -1,6 +1,6 @@
 from django.shortcuts import render
 
-from django.http import JsonResponse, HttpResponseForbidden
+from django.http import JsonResponse, HttpResponseForbidden, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
 import json
@@ -91,4 +91,13 @@ def sent(request):
                               'transactionId': '',
                               'confirm_id': confirm_id })
 
-        
+
+@csrf_exempt
+def confirm(request, transaction_id):
+    print(transaction_id)
+    print(request.method)
+    if request.method == 'GET':
+        print(request.GET)
+    else:
+        print(request.POST)
+    return HttpResponse('OK')

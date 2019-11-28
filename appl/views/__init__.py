@@ -22,7 +22,7 @@ from appl.models import AdmissionResult, MajorInterviewDescription
 from appl.views.upload import upload_form_for
 
 from appl.barcodes import generate
-from appl.qrpayment import generate_qr
+from appl.qrpayment import generate_ku_qr
 
 from supplements.models import load_supplement_configs_with_instance
 
@@ -557,10 +557,10 @@ def payment_code_img(request, application_id, stub, code_type):
                  additional_payment,
                  img_filename)
     else:
-        generate_qr('21' + applicant.national_id,
-                    '',
-                    additional_payment,
-                    img_filename)
+        generate_ku_qr(applicant,
+                       application,
+                       additional_payment,
+                       img_filename)
 
 
     fp = open(img_filename + '.png', 'rb')

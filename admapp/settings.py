@@ -225,6 +225,10 @@ QR_CONFIG = {
     'CONFIRM_ID': '',
 }
 
+# Settings for KU QR
+KU_QR_SERVICE_URL = ''
+KU_QR_CALLBACK_URL = ''
+
 # Manipulate Settings with Local Settings
 
 try:
