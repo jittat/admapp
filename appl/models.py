@@ -685,6 +685,10 @@ class ProjectApplication(models.Model):
         paid_amount = sum([p.amount for p in Payment.find_for_applicant_in_round(self.applicant, self.admission_round)])
         return paid_amount >= self.admission_fee()
 
+    def has_paid_min(self, amount):
+        paid_amount = sum([p.amount for p in Payment.find_for_applicant_in_round(self.applicant, self.admission_round)])
+        return paid_amount >= amount
+
     def has_applied_to_faculty(self, faculty):
         if hasattr(self,'major_selection'):
             major_selection = self.major_selection

@@ -156,6 +156,7 @@ def index_with_active_application(request, active_application, admission_round=N
                 for m in major_selection.get_majors():
                     if m.faculty_id == 8:
                         econ_hack = True
+        econ_hack = False
         
         for res in admission_results:
             if res.is_accepted_for_interview:
