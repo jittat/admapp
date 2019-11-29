@@ -96,7 +96,7 @@ def generate_ku_qr(applicant, application, additional_payment, filename):
                                      ref1Prefix=ref1,
                                      ref2Prefix=ref2,
                                      billerSuffix='87',
-                                     callbackUrl=KU_QR_CALLBACK_URL)
+                                     callbackUrl=callback_url)
 
     if result.success:
         img_base64 = result.qrResult.content[23:]

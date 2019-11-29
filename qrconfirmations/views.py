@@ -14,10 +14,7 @@ def health(request):
                           'status': 'UP' })
 
 def extract_national_id(ref1):
-    if ref1.startswith('21'):
-        return ref1[2:]
-    else:
-        return ''
+    return ref1[4:17]
 
 def process_payment(ref1, ref2, amount, transaction_date_and_time):
     national_id = extract_national_id(ref1)
@@ -94,10 +91,37 @@ def sent(request):
 
 @csrf_exempt
 def confirm(request, transaction_id):
-    print(transaction_id)
-    print(request.method)
-    if request.method == 'GET':
-        print(request.GET)
+    if request.body:
+        json_data = json.loads(request.body.decode('utf-8'))
+
+        bank_notification = json_data.get('bankNotification', None)
+
+        if bank_notification:
+            ref1 = bank_notification.get('billPaymentRef1', '')
+            ref2 = bank_notification.get('billPaymentRef2', '')
+            transaction_date_and_time = bank_notification.get('transactionDateandTime', '')
+            
+            amount = json_data.get('amount', '0.00')
+
+            payment = process_payment(ref1, ref2, amount, transaction_date_and_time)
+        else:
+            ref1 = ''
+            ref2 = ''
+            payment = None
+        
+        confirmation = QRConfirmation(bill_payment_ref1=ref1,
+                                      bill_payment_ref2=ref2,
+                                      remote_addr=request.META.get('REMOTE_ADDR',''),
+                                      body=request.body,
+                                      payment=payment)
+
+        if payment:
+            confirmation.status = 0
+        else:
+            confirmation.status = 500
+
+        confirmation.save()
+        
+        return HttpResponse('OK')
     else:
-        print(request.POST)
-    return HttpResponse('OK')
+        return HttpResponse('Error')
