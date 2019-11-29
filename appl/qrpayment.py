@@ -79,7 +79,6 @@ def generate_ku_qr(applicant, application, additional_payment, filename):
     deadline_str = "%02d%02d%02d" % (deadline.day,
                                      deadline.month,
                                      deadline.year % 100)
-    print(deadline_str)
     
     ref1 = str(application.admission_round.number) + '000' + applicant.national_id
     ref2 = "{:06d}".format(application.get_number())
@@ -87,7 +86,6 @@ def generate_ku_qr(applicant, application, additional_payment, filename):
     client = Client(KU_QR_SERVICE_URL)
 
     callback_url = KU_QR_CALLBACK_URL % (ref2,)
-    print(callback_url)
     
     result = client.service.getOeaQr(expireDate=deadline_str,
                                      appCode='01',
