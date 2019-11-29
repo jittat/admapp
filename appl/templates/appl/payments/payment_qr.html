@@ -17,8 +17,9 @@
       <span class="d-none">Biller ID: 099400015938287</span>
     </div>
     <div class="mt10 mb5">
-      <small><button type="button" class="btn btn-sm btn-outline-info" data-toggle="modal" data-target="#paymentInstrModal">วิธีการชำระเงิน</button>
-      <small>เมื่อชำระเงินแล้ว ข้อมูลจะแสดงในระบบในเวลาไม่เกิน 13:00 ของวันทำการถัดไป</small>
+      <button type="button" class="btn btn-sm btn-outline-info" data-toggle="modal" data-target="#paymentInstrModal">วิธีการชำระเงิน</button>
+      <small>เมื่อชำระเงินแล้ว ระบบจะกลับไปหน้าหลักโดยอัตโนมัติ</small>
+      <div id="fee-spin-id" style="display:none;"><i class="fas fa-circle-notch fa-spin"></i></div>
     </div>
     <a class="btn btn-success btn-block" href="{% url 'appl:index' %}">กลับหน้าหลัก</a>
   </div>
@@ -40,7 +41,7 @@
           ในกรณีที่ผู้สมัครใช้โทรศัพท์เคลื่อนที่เครื่องเดียวกันในการสมัคร ให้จัดเก็บ (capture) รูปภาพหน้าจอที่มีรหัส QR ก่อน จากนั้นค่อยเลือกให้แอพธนาคารใช้รูปรหัส QR จากที่ได้จัดเก็บไว้ (ในหน้าจอสแกนรหัสมักจะมีปุ่มให้เลือกรูปภาพได้)
         </p>
         <p>
-          เมื่อชำระเงินเรียบร้อย ข้อมูลจะเข้าในระบบรับสมัครภายในเวลาไม่เกิน 13:00 ของวันทำการถัดไป
+          เมื่อชำระเงินเรียบร้อย ระบบจะปิดหน้านี้กลับไปที่หน้าข้อมูลหลักของผู้สมัครโดยอัตโนมัติ
         </p>
       </div>
       <div class="modal-footer">
@@ -50,15 +51,19 @@
   </div>
 </div>
 <script>
-  var refreshInterval = 3000;
+  var refreshInterval = 5000;
   var currentPayment = {{ payment_amount }};
   var amountRefreshUrl = "{% url 'appl:payment-fee-amount' %}";
+  var indexUrl = "{% url 'appl:index' %}";
+  
   var refreshAmount = function() {
+    $("#fee-spin-id").show();
     jQuery.get(amountRefreshUrl,
                function(json) {
+                 $("#fee-spin-id").hide();
                  var addPayment = json.additionalPayment;
                  if(addPayment == 0) {
-                   alert('Done!');
+                   window.location = indexUrl;
                  } else if(addPayment != currentPayment) {
                    document.location.reload();
                  }
