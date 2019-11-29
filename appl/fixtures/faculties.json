@@ -3,120 +3,150 @@
  "model": "appl.faculty",
  "pk": 1,
  "fields": {
-  "title": "\u0e04\u0e13\u0e30\u0e40\u0e01\u0e29\u0e15\u0e23",
-  "campus": 1
+  "title": "\u0e2b\u0e25\u0e31\u0e01\u0e2a\u0e39\u0e15\u0e23\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c\u0e41\u0e2b\u0e48\u0e07\u0e41\u0e1c\u0e48\u0e19\u0e14\u0e34\u0e19\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e01\u0e32\u0e23\u0e1e\u0e31\u0e12\u0e19\u0e32\u0e17\u0e35\u0e48\u0e22\u0e31\u0e48\u0e07\u0e22\u0e37\u0e19",
+  "campus": 1,
+  "ku_code": "",
+  "cupt_code": ""
  }
 },
 {
  "model": "appl.faculty",
  "pk": 2,
  "fields": {
-  "title": "\u0e04\u0e13\u0e30\u0e1b\u0e23\u0e30\u0e21\u0e07",
-  "campus": 1
+  "title": "\u0e04\u0e13\u0e30\u0e40\u0e01\u0e29\u0e15\u0e23",
+  "campus": 1,
+  "ku_code": "",
+  "cupt_code": ""
  }
 },
 {
  "model": "appl.faculty",
  "pk": 3,
  "fields": {
-  "title": "\u0e04\u0e13\u0e30\u0e27\u0e19\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c",
-  "campus": 1
+  "title": "\u0e04\u0e13\u0e30\u0e1b\u0e23\u0e30\u0e21\u0e07",
+  "campus": 1,
+  "ku_code": "",
+  "cupt_code": ""
  }
 },
 {
  "model": "appl.faculty",
  "pk": 4,
  "fields": {
-  "title": "\u0e04\u0e13\u0e30\u0e27\u0e34\u0e17\u0e22\u0e32\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c",
-  "campus": 1
+  "title": "\u0e04\u0e13\u0e30\u0e27\u0e19\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c",
+  "campus": 1,
+  "ku_code": "",
+  "cupt_code": ""
  }
 },
 {
  "model": "appl.faculty",
  "pk": 5,
  "fields": {
-  "title": "\u0e04\u0e13\u0e30\u0e27\u0e34\u0e28\u0e27\u0e01\u0e23\u0e23\u0e21\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c",
-  "campus": 1
+  "title": "\u0e04\u0e13\u0e30\u0e27\u0e34\u0e17\u0e22\u0e32\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c",
+  "campus": 1,
+  "ku_code": "",
+  "cupt_code": ""
  }
 },
 {
  "model": "appl.faculty",
  "pk": 6,
  "fields": {
-  "title": "\u0e04\u0e13\u0e30\u0e28\u0e36\u0e01\u0e29\u0e32\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c",
-  "campus": 1
+  "title": "\u0e04\u0e13\u0e30\u0e27\u0e34\u0e28\u0e27\u0e01\u0e23\u0e23\u0e21\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c",
+  "campus": 1,
+  "ku_code": "",
+  "cupt_code": ""
  }
 },
 {
  "model": "appl.faculty",
  "pk": 7,
  "fields": {
-  "title": "\u0e04\u0e13\u0e30\u0e40\u0e28\u0e23\u0e29\u0e10\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c",
-  "campus": 1
+  "title": "\u0e04\u0e13\u0e30\u0e28\u0e36\u0e01\u0e29\u0e32\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c",
+  "campus": 1,
+  "ku_code": "",
+  "cupt_code": ""
  }
 },
 {
  "model": "appl.faculty",
  "pk": 8,
  "fields": {
-  "title": "\u0e04\u0e13\u0e30\u0e2a\u0e31\u0e07\u0e04\u0e21\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c",
-  "campus": 1
+  "title": "\u0e04\u0e13\u0e30\u0e40\u0e28\u0e23\u0e29\u0e10\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c",
+  "campus": 1,
+  "ku_code": "",
+  "cupt_code": ""
  }
 },
 {
  "model": "appl.faculty",
  "pk": 9,
  "fields": {
-  "title": "\u0e04\u0e13\u0e30\u0e2a\u0e31\u0e15\u0e27\u0e41\u0e1e\u0e17\u0e22\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c",
-  "campus": 1
+  "title": "\u0e04\u0e13\u0e30\u0e2a\u0e31\u0e07\u0e04\u0e21\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c",
+  "campus": 1,
+  "ku_code": "",
+  "cupt_code": ""
  }
 },
 {
  "model": "appl.faculty",
  "pk": 10,
  "fields": {
-  "title": "\u0e04\u0e13\u0e30\u0e2d\u0e38\u0e15\u0e2a\u0e32\u0e2b\u0e01\u0e23\u0e23\u0e21\u0e40\u0e01\u0e29\u0e15\u0e23",
-  "campus": 1
+  "title": "\u0e04\u0e13\u0e30\u0e2a\u0e31\u0e15\u0e27\u0e41\u0e1e\u0e17\u0e22\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c",
+  "campus": 1,
+  "ku_code": "",
+  "cupt_code": ""
  }
 },
 {
  "model": "appl.faculty",
  "pk": 11,
  "fields": {
-  "title": "\u0e04\u0e13\u0e30\u0e21\u0e19\u0e38\u0e29\u0e22\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c",
-  "campus": 1
+  "title": "\u0e04\u0e13\u0e30\u0e2d\u0e38\u0e15\u0e2a\u0e32\u0e2b\u0e01\u0e23\u0e23\u0e21\u0e40\u0e01\u0e29\u0e15\u0e23",
+  "campus": 1,
+  "ku_code": "",
+  "cupt_code": ""
  }
 },
 {
  "model": "appl.faculty",
  "pk": 12,
  "fields": {
-  "title": "\u0e04\u0e13\u0e30\u0e1a\u0e23\u0e34\u0e2b\u0e32\u0e23\u0e18\u0e38\u0e23\u0e01\u0e34\u0e08",
-  "campus": 1
+  "title": "\u0e04\u0e13\u0e30\u0e21\u0e19\u0e38\u0e29\u0e22\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c",
+  "campus": 1,
+  "ku_code": "",
+  "cupt_code": ""
  }
 },
 {
  "model": "appl.faculty",
  "pk": 13,
  "fields": {
-  "title": "\u0e04\u0e13\u0e30\u0e40\u0e17\u0e04\u0e19\u0e34\u0e04\u0e01\u0e32\u0e23\u0e2a\u0e31\u0e15\u0e27\u0e41\u0e1e\u0e17\u0e22\u0e4c",
-  "campus": 1
+  "title": "\u0e04\u0e13\u0e30\u0e1a\u0e23\u0e34\u0e2b\u0e32\u0e23\u0e18\u0e38\u0e23\u0e01\u0e34\u0e08",
+  "campus": 1,
+  "ku_code": "",
+  "cupt_code": ""
  }
 },
 {
  "model": "appl.faculty",
  "pk": 14,
  "fields": {
-  "title": "\u0e04\u0e13\u0e30\u0e2a\u0e34\u0e48\u0e07\u0e41\u0e27\u0e14\u0e25\u0e49\u0e2d\u0e21",
-  "campus": 1
+  "title": "\u0e04\u0e13\u0e30\u0e40\u0e17\u0e04\u0e19\u0e34\u0e04\u0e01\u0e32\u0e23\u0e2a\u0e31\u0e15\u0e27\u0e41\u0e1e\u0e17\u0e22\u0e4c",
+  "campus": 1,
+  "ku_code": "",
+  "cupt_code": ""
  }
 },
 {
  "model": "appl.faculty",
  "pk": 15,
  "fields": {
-  "title": "\u0e04\u0e13\u0e30\u0e2a\u0e16\u0e32\u0e1b\u0e31\u0e15\u0e22\u0e01\u0e23\u0e23\u0e21\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c",
-  "campus": 1
+  "title": "\u0e04\u0e13\u0e30\u0e2a\u0e34\u0e48\u0e07\u0e41\u0e27\u0e14\u0e25\u0e49\u0e2d\u0e21",
+  "campus": 1,
+  "ku_code": "",
+  "cupt_code": ""
  }
 },
 {
@@ -124,7 +154,9 @@
  "pk": 16,
  "fields": {
   "title": "\u0e04\u0e13\u0e30\u0e40\u0e01\u0e29\u0e15\u0e23 \u0e01\u0e33\u0e41\u0e1e\u0e07\u0e41\u0e2a\u0e19",
-  "campus": 2
+  "campus": 2,
+  "ku_code": "",
+  "cupt_code": ""
  }
 },
 {
@@ -132,7 +164,9 @@
  "pk": 17,
  "fields": {
   "title": "\u0e04\u0e13\u0e30\u0e27\u0e34\u0e28\u0e27\u0e01\u0e23\u0e23\u0e21\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c \u0e01\u0e33\u0e41\u0e1e\u0e07\u0e41\u0e2a\u0e19",
-  "campus": 2
+  "campus": 2,
+  "ku_code": "",
+  "cupt_code": ""
  }
 },
 {
@@ -140,7 +174,9 @@
  "pk": 18,
  "fields": {
   "title": "\u0e04\u0e13\u0e30\u0e28\u0e34\u0e25\u0e1b\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c\u0e41\u0e25\u0e30\u0e27\u0e34\u0e17\u0e22\u0e32\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c",
-  "campus": 2
+  "campus": 2,
+  "ku_code": "",
+  "cupt_code": ""
  }
 },
 {
@@ -148,7 +184,9 @@
  "pk": 19,
  "fields": {
   "title": "\u0e04\u0e13\u0e30\u0e28\u0e36\u0e01\u0e29\u0e32\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c\u0e41\u0e25\u0e30\u0e1e\u0e31\u0e12\u0e19\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c",
-  "campus": 2
+  "campus": 2,
+  "ku_code": "",
+  "cupt_code": ""
  }
 },
 {
@@ -156,7 +194,9 @@
  "pk": 20,
  "fields": {
   "title": "\u0e04\u0e13\u0e30\u0e27\u0e34\u0e17\u0e22\u0e32\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c\u0e01\u0e32\u0e23\u0e01\u0e35\u0e2c\u0e32",
-  "campus": 2
+  "campus": 2,
+  "ku_code": "",
+  "cupt_code": ""
  }
 },
 {
@@ -164,7 +204,9 @@
  "pk": 21,
  "fields": {
   "title": "\u0e04\u0e13\u0e30\u0e27\u0e34\u0e17\u0e22\u0e32\u0e01\u0e32\u0e23\u0e08\u0e31\u0e14\u0e01\u0e32\u0e23",
-  "campus": 3
+  "campus": 3,
+  "ku_code": "",
+  "cupt_code": ""
  }
 },
 {
@@ -172,7 +214,9 @@
  "pk": 22,
  "fields": {
   "title": "\u0e04\u0e13\u0e30\u0e27\u0e34\u0e28\u0e27\u0e01\u0e23\u0e23\u0e21\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c\u0e28\u0e23\u0e35\u0e23\u0e32\u0e0a\u0e32",
-  "campus": 3
+  "campus": 3,
+  "ku_code": "",
+  "cupt_code": ""
  }
 },
 {
@@ -180,7 +224,9 @@
  "pk": 23,
  "fields": {
   "title": "\u0e04\u0e13\u0e30\u0e27\u0e34\u0e17\u0e22\u0e32\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c \u0e28\u0e23\u0e35\u0e23\u0e32\u0e0a\u0e32",
-  "campus": 3
+  "campus": 3,
+  "ku_code": "",
+  "cupt_code": ""
  }
 },
 {
@@ -188,7 +234,9 @@
  "pk": 24,
  "fields": {
   "title": "\u0e04\u0e13\u0e30\u0e40\u0e28\u0e23\u0e29\u0e10\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c \u0e28\u0e23\u0e35\u0e23\u0e32\u0e0a\u0e32",
-  "campus": 3
+  "campus": 3,
+  "ku_code": "",
+  "cupt_code": ""
  }
 },
 {
@@ -196,7 +244,9 @@
  "pk": 25,
  "fields": {
   "title": "\u0e04\u0e13\u0e30\u0e1e\u0e32\u0e13\u0e34\u0e0a\u0e22\u0e19\u0e32\u0e27\u0e35\u0e19\u0e32\u0e19\u0e32\u0e0a\u0e32\u0e15\u0e34",
-  "campus": 3
+  "campus": 3,
+  "ku_code": "",
+  "cupt_code": ""
  }
 },
 {
@@ -204,7 +254,9 @@
  "pk": 26,
  "fields": {
   "title": "\u0e04\u0e13\u0e30\u0e17\u0e23\u0e31\u0e1e\u0e22\u0e32\u0e01\u0e23\u0e18\u0e23\u0e23\u0e21\u0e0a\u0e32\u0e15\u0e34\u0e41\u0e25\u0e30\u0e2d\u0e38\u0e15\u0e2a\u0e32\u0e2b\u0e01\u0e23\u0e23\u0e21\u0e40\u0e01\u0e29\u0e15\u0e23",
-  "campus": 4
+  "campus": 4,
+  "ku_code": "",
+  "cupt_code": ""
  }
 },
 {
@@ -212,7 +264,9 @@
  "pk": 27,
  "fields": {
   "title": "\u0e04\u0e13\u0e30\u0e27\u0e34\u0e17\u0e22\u0e32\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c\u0e41\u0e25\u0e30\u0e27\u0e34\u0e28\u0e27\u0e01\u0e23\u0e23\u0e21\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c",
-  "campus": 4
+  "campus": 4,
+  "ku_code": "",
+  "cupt_code": ""
  }
 },
 {
@@ -220,7 +274,9 @@
  "pk": 28,
  "fields": {
   "title": "\u0e04\u0e13\u0e30\u0e28\u0e34\u0e25\u0e1b\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c\u0e41\u0e25\u0e30\u0e27\u0e34\u0e17\u0e22\u0e32\u0e01\u0e32\u0e23\u0e08\u0e31\u0e14\u0e01\u0e32\u0e23",
-  "campus": 4
+  "campus": 4,
+  "ku_code": "",
+  "cupt_code": ""
  }
 },
 {
@@ -228,7 +284,9 @@
  "pk": 29,
  "fields": {
   "title": "\u0e04\u0e13\u0e30\u0e2a\u0e32\u0e18\u0e32\u0e23\u0e13\u0e2a\u0e38\u0e02\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c",
-  "campus": 4
+  "campus": 4,
+  "ku_code": "",
+  "cupt_code": ""
  }
 },
 {
@@ -236,7 +294,29 @@
  "pk": 30,
  "fields": {
   "title": "\u0e42\u0e04\u0e23\u0e07\u0e01\u0e32\u0e23\u0e08\u0e31\u0e14\u0e15\u0e31\u0e49\u0e07\u0e27\u0e34\u0e17\u0e22\u0e32\u0e40\u0e02\u0e15\u0e2a\u0e38\u0e1e\u0e23\u0e23\u0e13\u0e1a\u0e38\u0e23\u0e35",
-  "campus": 5
+  "campus": 5,
+  "ku_code": "",
+  "cupt_code": ""
+ }
+},
+{
+ "model": "appl.faculty",
+ "pk": 31,
+ "fields": {
+  "title": "\u0e04\u0e13\u0e30\u0e2a\u0e16\u0e32\u0e1b\u0e31\u0e15\u0e22\u0e01\u0e23\u0e23\u0e21\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c",
+  "campus": 1,
+  "ku_code": "",
+  "cupt_code": ""
+ }
+},
+{
+ "model": "appl.faculty",
+ "pk": 32,
+ "fields": {
+  "title": "\u0e27\u0e34\u0e17\u0e22\u0e32\u0e25\u0e31\u0e22\u0e01\u0e32\u0e23\u0e0a\u0e25\u0e1b\u0e23\u0e30\u0e17\u0e32\u0e19",
+  "campus": 1,
+  "ku_code": "",
+  "cupt_code": ""
  }
 }
 ]
