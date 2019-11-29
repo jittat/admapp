@@ -49,4 +49,22 @@
     </div>
   </div>
 </div>
+<script>
+  var refreshInterval = 3000;
+  var currentPayment = {{ payment_amount }};
+  var amountRefreshUrl = "{% url 'appl:payment-fee-amount' %}";
+  var refreshAmount = function() {
+    jQuery.get(amountRefreshUrl,
+               function(json) {
+                 var addPayment = json.additionalPayment;
+                 if(addPayment == 0) {
+                   alert('Done!');
+                 } else if(addPayment != currentPayment) {
+                   document.location.reload();
+                 }
+               });
+  };
+  
+  setInterval(refreshAmount, refreshInterval);
+</script>
 {% endblock %}

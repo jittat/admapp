@@ -28,6 +28,8 @@ urlpatterns = [
     url(r'^payment/(\d+)/qr/$', views.payment_with_qr_code, name='payment-qr'),
     url(r'^payment/(\d+)/barcode/(\d+)\.png$', views.payment_barcode, name='payment-barcode'),
     url(r'^payment/(\d+)/qrcode/(\d+)\.png$', views.payment_qrcode, name='payment-qrcode'),
+
+    url(r'^payment/fee-amount/$', views.get_additional_payment, name='payment-fee-amount'),
     
     url(r'^upload/(\d+)/$', upload_views.upload, name='upload'),
     url(r'^doc/(?P<applicant_id>\d+)/(?P<project_uploaded_document_id>\d+)/(?P<document_id>\d+)/$', upload_views.document_download, name='document-download'),

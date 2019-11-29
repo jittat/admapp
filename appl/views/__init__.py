@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.conf import settings
-from django.http import HttpResponseForbidden, HttpResponse
+from django.http import HttpResponseForbidden, HttpResponse, JsonResponse
 
 from regis.models import Applicant, LogItem
 from regis.models import CuptConfirmation, CuptRequestQueueItem
@@ -632,3 +632,26 @@ def check_application_documents(request):
                     'additional_payment': additional_payment,
                     'payment_deadline': payment_deadline,
                     })
+
+
+@appl_login_required
+def get_additional_payment(request):
+    applicant = request.applicant
+    admission_round = AdmissionRound.get_available()
+    active_application = applicant.get_active_application(admission_round)
+
+    if not active_application:
+        return HttpResponseForbidden()
+
+    major_selection = active_application.get_major_selection()
+    admission_fee = active_application.admission_fee(major_selection)
+
+    payments = Payment.find_for_applicant_in_round(applicant, admission_round)
+    paid_amount = sum([p.amount for p in payments])
+
+    if admission_fee > paid_amount:
+        additional_payment = admission_fee - paid_amount
+    else:
+        additional_payment = 0
+
+    return JsonResponse({ 'additionalPayment': additional_payment })
