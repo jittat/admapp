@@ -986,7 +986,7 @@ class Eligibility(object):
         from supplements.models import AdvancedPlacementApplicant
         self.is_eligible = False
         self.is_hidden = False
-        self.notice_text = 'โครงการนี้ผู้สมัครต้องผ่านการเข้าร่วมโครงการเรียนล่วงหน้าของม.เกษตรศาสตร์ รุ่นที่ 13 ปีการศึกษา 2561'
+        self.notice_text = 'โครงการนี้ผู้สมัครต้องผ่านการเข้าร่วมโครงการเรียนล่วงหน้าของม.เกษตรศาสตร์ รุ่นที่ 14 ปีการศึกษา 2562'
 
         try:
             app = AdvancedPlacementApplicant.objects.get(national_id=self._applicant.national_id)

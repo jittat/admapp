@@ -13,7 +13,7 @@ class TopSchool(models.Model):
 class AdvancedPlacementApplicant(models.Model):
     national_id = models.CharField(max_length=16,
                                    unique=True)
-    student_id = models.CharField(max_length=12,
+    student_id = models.CharField(max_length=16,
                                   unique=True)
 
 
