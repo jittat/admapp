@@ -69,8 +69,6 @@ def generate_ku_qr(applicant, application, additional_payment, filename):
     KU_QR_SERVICE_URL = settings.KU_QR_SERVICE_URL
     KU_QR_CALLBACK_URL = settings.KU_QR_CALLBACK_URL
 
-    additional_payment = 1
-
     amount = "{:08.2f}".format(additional_payment)
 
     admission_project = application.admission_project
