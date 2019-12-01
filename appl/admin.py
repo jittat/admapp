@@ -12,6 +12,18 @@ def make_available(modeladmin, request, queryset):
         project.save()
 make_available.short_description = 'Mark selected project as available'
         
+def make_project_round_started(modeladmin, request, queryset):
+    for project in queryset:
+        project.is_started = True
+        project.save()
+make_project_round_started.short_description = 'Mark selected project rounds as started'
+        
+def make_project_round_stopped(modeladmin, request, queryset):
+    for project in queryset:
+        project.is_started = False
+        project.save()
+make_project_round_stopped.short_description = 'Mark selected project rounds as not started'
+        
 class AdmissionProjectAdmin(admin.ModelAdmin):
     list_display = ['title',
                     'campus',
@@ -33,6 +45,8 @@ class AdmissionProjectRoundAdmin(admin.ModelAdmin):
                     'payment_deadline',
                     'accepted_for_interview_result_shown',
                     'accepted_result_shown']
+    actions = [make_project_round_started,
+               make_project_round_stopped]
 
 admin.site.register(AdmissionProject, AdmissionProjectAdmin)
 admin.site.register(AdmissionRound)
