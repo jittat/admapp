@@ -26,8 +26,16 @@ class AdmissionProjectAdmin(admin.ModelAdmin):
 class ProjectUploadedDocumentAdmin(admin.ModelAdmin):
     list_display = ['title', 'notes', 'file_prefix']
 
+class AdmissionProjectRoundAdmin(admin.ModelAdmin):
+    list_display = ['__str__',
+                    'applying_deadline',
+                    'is_started',
+                    'payment_deadline',
+                    'accepted_for_interview_result_shown',
+                    'accepted_result_shown']
+
 admin.site.register(AdmissionProject, AdmissionProjectAdmin)
 admin.site.register(AdmissionRound)
-admin.site.register(AdmissionProjectRound)
+admin.site.register(AdmissionProjectRound, AdmissionProjectRoundAdmin)
 admin.site.register(ProjectUploadedDocument, ProjectUploadedDocumentAdmin)
 admin.site.register(Faculty)
