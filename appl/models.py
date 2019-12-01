@@ -413,7 +413,7 @@ class UploadedDocument(models.Model):
 
     def is_pdf(self):
         if self.uploaded_file:
-            return self.uploaded_file.name.endswith('pdf')
+            return self.uploaded_file.name.lower().endswith('pdf')
         else:
             return False
 
