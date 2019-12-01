@@ -103,6 +103,7 @@ def generate_ku_qr(applicant, application, additional_payment, filename):
 
         im = Image.open(BytesIO(base64.b64decode(img_base64)))
         im = im.resize((390,390))
+        im = im.crop((30,30,360,360))
         im.save(filename + '.png', 'PNG')
     else:
         print(result)
