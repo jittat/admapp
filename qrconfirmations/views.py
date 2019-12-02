@@ -105,9 +105,16 @@ def confirm(request, transaction_id):
 
             payment = process_payment(ref1, ref2, amount, transaction_date_and_time)
         else:
-            ref1 = ''
-            ref2 = ''
-            payment = None
+            ref1 = json_data.get('ref1Prefix','')
+            ref2 = json_data.get('ref2Prefix','')
+            amount = json_data.get('amount', '0.00')
+
+            transaction_date_and_time = ''
+
+            if ref1 != '':
+                payment = process_payment(ref1, ref2, amount, transaction_date_and_time)
+            else:
+                payment = None
         
         confirmation = QRConfirmation(bill_payment_ref1=ref1,
                                       bill_payment_ref2=ref2,
