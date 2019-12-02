@@ -28,6 +28,7 @@ def process_payment(ref1, ref2, amount, transaction_date_and_time):
     try:
         paid_at = dateutil.parser.parse(transaction_date_and_time, ignoretz=True)
     except:
+        from datetime import datetime
         paid_at = datetime.now()
 
     applicants = Applicant.objects.filter(national_id=national_id)
