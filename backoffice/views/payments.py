@@ -109,9 +109,8 @@ def process_payment_file(f):
                           amount=p['amount'],
                           paid_at=p['paid_at'])
 
-        if p['ver_num'] != qr_ref2:
-            applicant = find_applicant(p['nat_id'], p['ver_num'], admission_round)
-        else:
+        applicant = find_applicant(p['nat_id'], p['ver_num'], admission_round)
+        if not applicant and p['nat_id'][1:].startswith('000'):
             applicant = find_qr_applicant(p['alt_nat_id'])
 
         is_duplicated = False
