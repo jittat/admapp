@@ -37,7 +37,8 @@ def read_payment_file(f):
                   'ver_num': (104,20),
                   'amount_str': (159,20),
                   'name': (34,50),
-                  'paid_at_str': (20,14)}
+                  'paid_at_str': (20,14),
+                  'alt_nat_id': (88,13)}
 
         raw = {}
         for f in FIELDS.keys():
@@ -73,10 +74,11 @@ def find_applicant(national_id, verification_number, admission_round):
 
 
 def find_qr_applicant(qr_national_id):
-    if not qr_national_id.startswith('21'):
-        return None
+    #if not qr_national_id.startswith('21'):
+    #    return None
     
-    national_id = qr_national_id[2:]
+    #national_id = qr_national_id[2:]
+    national_id = qr_national_id
     try:
         applicant = Applicant.objects.get(national_id=national_id)
         return applicant
@@ -110,7 +112,7 @@ def process_payment_file(f):
         if p['ver_num'] != qr_ref2:
             applicant = find_applicant(p['nat_id'], p['ver_num'], admission_round)
         else:
-            applicant = find_qr_applicant(p['nat_id'])
+            applicant = find_qr_applicant(p['alt_nat_id'])
 
         is_duplicated = False
         if applicant:
