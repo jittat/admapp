@@ -1,5 +1,5 @@
 boto==2.49.0
-Django==2.2.5
+Django==2.2.8
 django-crispy-forms==1.7.2
 django-debug-toolbar==1.10.1
 django-debug-toolbar-template-timings==0.9
