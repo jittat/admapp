@@ -78,8 +78,10 @@ def print_csv_line(applicant, application, personal_profile, app_date, cupt_majo
 
     if not applicant.has_registered_with_passport():
         data['citizen_id'] = applicant.national_id
+        data['first_name_en'] = data['last_name_en'] = ''
     else:
         data['passport'] = applicant.passport_number
+        data['first_name_th'] = data['last_name_th'] = ''
     
     print(','.join(['"'+str(data[h])+'"' for h in header]))
 
