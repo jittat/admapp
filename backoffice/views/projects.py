@@ -1324,7 +1324,7 @@ def update_applicant_acceptance_call(request, project_id, round_id, major_number
     major = Major.get_by_project_number(project, major_number)
 
     is_tcas_project = False 
-    is_tcas_auto_confirmation = True
+    is_tcas_auto_confirmation = False
     
     if not can_user_view_applicants_in_major(user, project, major):
         return redirect(reverse('backoffice:index'))

@@ -282,7 +282,7 @@ def inter_print(request):
 @appl_login_required
 def common_print(request):
     applicant = request.applicant
-    admission_round = AdmissionRound.objects.get(pk=2)
+    admission_round = AdmissionRound.objects.get(pk=1)
     
     personal_profile = applicant.get_personal_profile()
     educational_profile = applicant.get_educational_profile()
