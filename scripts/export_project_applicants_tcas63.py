@@ -85,6 +85,20 @@ def print_csv_line(applicant, application, personal_profile, app_date, cupt_majo
     
     print(','.join(['"'+str(data[h])+'"' for h in header]))
 
+
+def get_admission_result(application,
+                         admission_project,
+                         admission_round,
+                         major):
+    results = AdmissionResult.objects.filter(application=application,
+                                             admission_project=admission_project,
+                                             admission_round=admission_round,
+                                             major=major).all()
+    if len(results) == 0:
+        return None
+    else:
+        return results[0]
+
 def main():
     project_id = sys.argv[1]
     round_id = sys.argv[2]
@@ -95,12 +109,16 @@ def main():
     else:
         tcas_data = {}
 
-    major_map_files = [f for f in sys.argv[4:] if f != '--accepted']
+    major_map_files = [f for f in sys.argv[4:] if not f.startswith('--')]
     major_map = load_major_map(major_map_files)
 
     only_accepted = False
-    if sys.argv[-1] == '--accepted':
+    if '--accepted' in sys.argv:
         only_accepted = True
+
+    with_interview_status = False
+    if '--interview_status' in sys.argv:
+        with_interview_status = True
 
     project = AdmissionProject.objects.get(pk=project_id)
     admission_round = AdmissionRound.objects.get(pk=round_id)
@@ -162,24 +180,30 @@ def main():
                                            app.applied_at.year + 543)
             
             for m in majors:
+                result = None
+                
                 if only_accepted:
-                    results = AdmissionResult.objects.filter(application=app,
-                                                             admission_project=project,
-                                                             admission_round=admission_round,
-                                                             major=m).all()
-                    if len(results) == 0:
-                        continue
-                    result = results[0]
-                    if not result.is_accepted:
+                    result = get_admission_result(app, project, admission_round, m)
+                    if (not result) or (not result.is_accepted):
                         continue
 
                 cupt_majors = major_map[project.id][m.number]
 
+                interview_status = '0'
+                if with_interview_status:
+                    if not result:
+                        result = get_admission_result(app, project, admission_round, m)
+
+                    if result and result.is_accepted:
+                        interview_status = '1'
+                
                 for cupt_major in cupt_majors:
                     print_csv_line(applicant, app, profile,
                                    app_date, cupt_major,
                                    app_type,
-                                   '0','0','0','0',
+                                   '0','0',
+                                   interview_status,
+                                   '0',
                                    header)
 
 if __name__ == '__main__':
