@@ -46,9 +46,6 @@ def main():
                 print('ERROR', nat_id, name)
                 continue
 
-            if items[3].strip() == 'ขาดสอบ':
-                continue
-            
             major_num = int(items[2])
             
             application = all_applications[nat_id]
@@ -90,7 +87,16 @@ def main():
                 print('ERROR', nat_id, 'did not pass for the interview')
                 continue
 
-            result.is_accepted = True
+            interview_result = items[3].strip()
+            if interview_result == 'ผ่าน':
+                result.is_accepted = True
+                result.is_interview_absent = False
+            elif interview_result == 'ไม่ผ่าน':
+                result.is_accepted = False
+                result.is_interview_absent = False
+            elif interview_result == 'ขาดสอบ':
+                result.is_accepted = None
+                result.is_interview_absent = True
             result.updated_accepted_at = datetime.now()
             #result.clearing_house_code = items[3]
             #result.clearing_house_code_number = int(items[4])
