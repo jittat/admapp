@@ -68,7 +68,7 @@ def main():
                     admission_result.save()
 
             counter += 1
-            print(counter, admission_result.is_tcas_confirmed, applicant)
+            print(counter, admission_result.has_confirmed, applicant)
             
             if counter % 1000 == 0:
                 print(counter)
