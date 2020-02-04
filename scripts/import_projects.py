@@ -16,6 +16,8 @@ def main():
         for items in reader:
             if len(items) < 7:
                 continue
+            if items[0] == 'id':
+                continue
 
             pid = int(items[0])
 
@@ -29,12 +31,19 @@ def main():
             short_title = items[2]
             short_descriptions = items[3]
             slots = int(items[5])
+            num_rounds = int(items[6])
+
+            next_col_base = 7 + num_rounds*2
+            max_num_selections = int(items[next_col_base])
+            base_fee = int(items[next_col_base + 1])
 
             project = AdmissionProject(id=pid,
                                        title=title,
                                        short_title=short_title,
                                        short_descriptions=short_descriptions,
-                                       slots=slots)
+                                       slots=slots,
+                                       max_num_selections=max_num_selections,
+                                       base_fee=base_fee)
             
             if items[4] != '':
                 campus = Campus.objects.get(pk=items[4])
@@ -45,18 +54,18 @@ def main():
             rcount = 0
             project_round_ids = []
             round_dates = []
-            while (len(items) >= 7 + rcount*2) and (items[6 + rcount*2].strip() != ''):
-                project_round_ids.append(int(items[6 + rcount*2]))
-                round_dates.append(items[6 + rcount*2 + 1].strip())
-                rcount += 1
+            for rcount in range(num_rounds):
+                project_round_ids.append(int(items[7 + rcount*2]))
+                round_dates.append(items[7 + rcount*2 + 1].strip())
                 
-            for r in range(rcount):
+            for r in range(num_rounds):
                 project_round = AdmissionProjectRound()
                 project_round.admission_project = project
                 project_round.admission_round = AdmissionRound.objects.get(pk=project_round_ids[r])
                 project_round.admission_dates = round_dates[r]
                 project_round.save()
-            
+
+            print('Imported:', project)
             counter += 1
 
     print('Imported',counter,'projects')
