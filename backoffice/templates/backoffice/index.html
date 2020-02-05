@@ -34,7 +34,8 @@
             <th>รอบสมัคร</th>
             <th>จำนวนผู้สมัคร</th>
             <th></th>
-          </tr>
+            <th></th>
+         </tr>
         </thead>
         <tbody>
           {% for project in admission_projects %}
@@ -45,6 +46,11 @@
                 <td>{{ stats.num_applicants }}</td>
                 <td>
                   <a class="btn btn-sm btn-success" href="{% url 'backoffice:projects-index' project.id round.id %}">พิจารณา</a>
+                </td>
+                <td>
+                  {% if is_admission_admin %}
+                    <a class="btn btn-sm btn-secondary" href="{% url 'backoffice:projects-list-majors' project.id round.id %}">ข้อมูลสาขาที่รับ</a>
+                  {% endif %}
                 </td>
               </tr>
             {% endfor %}
