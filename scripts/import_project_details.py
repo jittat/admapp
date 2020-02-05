@@ -25,6 +25,7 @@ def main():
             round_number = int(items[1])
             title = items[2].strip()
             warning = items[8]
+            descriptions = items[9]
             start_date = items[3].strip()
             start_time = items[4].strip()
             end_date = items[5].strip()
@@ -46,6 +47,10 @@ def main():
             
             if warning != '':
                 project.applying_confirmation_warning = warning
+                project.save()
+
+            if descriptions != '':
+                project.descriptions = descriptions
                 project.save()
 
             print('Imported:', project)
