@@ -1399,4 +1399,34 @@ def update_applicant_acceptance_call(request, project_id, round_id, major_number
 
     return HttpResponse(json.dumps(acceptance_counters),
                         content_type='application/json')
-        
+
+
+@user_login_required
+def list_major_details(request, project_id, round_id):
+    user = request.user
+    project = get_object_or_404(AdmissionProject, pk=project_id)
+    admission_round = get_object_or_404(AdmissionRound, pk=round_id)
+    project_round = project.get_project_round_for(admission_round)
+
+    if not can_user_view_project(user, project):
+        return redirect(reverse('backoffice:index'))
+
+    if not user.profile.is_admission_admin:
+        faculty = user.profile.faculty
+    else:
+        faculty = None
+
+    majors = [m for m in project.major_set.all()
+              if (not faculty) or (m.faculty_id == faculty.id)]
+
+    return render(request,
+                  'backoffice/projects/list_major_details.html',
+                  { 'project': project,
+                    'faculty': faculty,
+                    'admission_round': admission_round,
+
+                    'majors': majors,
+                  })
+
+
+
