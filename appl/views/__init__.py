@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.conf import settings
-from django.http import HttpResponseForbidden, HttpResponse, JsonResponse
+from django.http import HttpResponseForbidden, HttpResponse, JsonResponse, HttpResponseServerError
 
 from regis.models import Applicant, LogItem
 from regis.models import CuptConfirmation, CuptRequestQueueItem
@@ -551,23 +551,28 @@ def payment_code_img(request, application_id, stub, code_type):
                                 str(application.id) + '-' +
                                 stub)
 
+    generated = False
     if code_type == 'barcode':
         generate('099400015938201',
                  applicant.national_id,
                  application.get_verification_number(),
                  additional_payment,
                  img_filename)
+        generated = True
     else:
-        generate_ku_qr(applicant,
-                       application,
-                       additional_payment,
-                       img_filename)
+        generated = generate_ku_qr(applicant,
+                                   application,
+                                   additional_payment,
+                                   img_filename)
 
 
-    fp = open(img_filename + '.png', 'rb')
-    response = HttpResponse(fp)
-    response['Content-Type'] = 'image/png'
-    return response
+    if generated:
+        fp = open(img_filename + '.png', 'rb')
+        response = HttpResponse(fp)
+        response['Content-Type'] = 'image/png'
+        return response
+    else:
+        return HttpResponseServerError()
 
 
 @appl_login_required

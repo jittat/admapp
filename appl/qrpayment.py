@@ -6,6 +6,8 @@ from PIL import Image
 from django.conf import settings
 from django.contrib.staticfiles import finders
 
+from regis.models import LogItem
+
 from suds import Client
 
 def len2(st):
@@ -105,7 +107,8 @@ def generate_ku_qr(applicant, application, additional_payment, filename):
         im = im.resize((390,390))
         im = im.crop((30,30,360,360))
         im.save(filename + '.png', 'PNG')
+        return True
     else:
-        print(result)
-
+        LogItem.create('QR error: ' + str(result)[:100], applicant)
+        return False
     
