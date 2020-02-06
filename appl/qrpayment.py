@@ -109,6 +109,6 @@ def generate_ku_qr(applicant, application, additional_payment, filename):
         im.save(filename + '.png', 'PNG')
         return True
     else:
-        LogItem.create('QR error: ' + str(result)[:100], applicant)
+        LogItem.create('QR error: ' + str(result)[:180], applicant)
         return False
     
