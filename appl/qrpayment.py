@@ -86,15 +86,22 @@ def generate_ku_qr(applicant, application, additional_payment, filename):
     client = Client(KU_QR_SERVICE_URL)
 
     callback_url = KU_QR_CALLBACK_URL % (ref2,)
-    
-    result = client.service.getOeaQr(expireDate=deadline_str,
-                                     appCode='01',
-                                     transactionId=ref2,
-                                     amount=amount,
-                                     ref1Prefix=ref1,
-                                     ref2Prefix=ref2,
-                                     billerSuffix='87',
-                                     callbackUrl=callback_url)
+
+    retry = 0
+    while True:
+        result = client.service.getOeaQr(expireDate=deadline_str,
+                                         appCode='01',
+                                         transactionId=ref2,
+                                         amount=amount,
+                                         ref1Prefix=ref1,
+                                         ref2Prefix=ref2,
+                                         billerSuffix='87',
+                                         callbackUrl=callback_url)
+        if result.success:
+            break
+        retry += 1
+        if retry > 1:
+            break
 
     if result.success:
         img_base64 = result.qrResult.content[23:]
