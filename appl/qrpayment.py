@@ -100,7 +100,7 @@ def generate_ku_qr(applicant, application, additional_payment, filename):
         if result.success:
             break
         retry += 1
-        if retry > 1:
+        if retry > 2:
             break
 
     if result.success:
