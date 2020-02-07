@@ -1,5 +1,6 @@
 {% load static %}
 {% load i18n %}
+{% load appl_tags %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -9,7 +10,7 @@
     <meta name="author" content="">
     <link rel="icon" href="{% static 'icon/favicon.ico' %}">
 
-    <title>KU-TCAS'63</title>
+    <title>{% web_title %}</title>
     <!-- SWEET ALERT -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/6.10.1/sweetalert2.min.css">
 
@@ -42,7 +43,7 @@
     {% block navbar %}
       <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
         {% block navbar-brand %}
-          <a class="navbar-brand" href="{% url 'main-index' %}">KU-TCAS'63</a>
+          <a class="navbar-brand" href="{% url 'main-index' %}">{% web_branding %}</a>
         {% endblock %}
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarMenu" aria-controls="navbarMenu" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>

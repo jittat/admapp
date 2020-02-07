@@ -188,8 +188,12 @@ LOGOUT_REDIRECT_URL = 'backoffice:index'
 
 # Admission App Configs
 
-ADMISSION_TITLE = "โครงการรับสมัครนักเรียนเข้าศึกษาในมหาวิทยาลัยเกษตรศาสตร์ ปีการศึกษา 2561"
-ADMISSION_SHORT_TITLE = "KU-TCAS'61"
+ADMISSION_YEAR = 2563
+ADMISSION_TITLE = "โครงการรับสมัครนักเรียนเข้าศึกษาในมหาวิทยาลัยเกษตรศาสตร์ ปีการศึกษา 2563"
+ADMISSION_SHORT_TITLE = "KU-TCAS'63"
+
+WEB_BRANDING = "KU-TCAS'63"
+WEB_TITLE = "KU-TCAS'63"
 
 VERIFY_NATIONAL_ID = True
 FAKE_LOGIN = False

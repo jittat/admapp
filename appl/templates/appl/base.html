@@ -1,7 +1,8 @@
 {% extends 'base.html' %}
 {% load i18n %}
+{% load appl_tags %}
 {% block navbar-brand %}
-  <a class="navbar-brand" href="{% url 'appl:index' %}">KU-TCAS'62</a>
+  <a class="navbar-brand" href="{% url 'appl:index' %}">{% web_branding %}</a>
 {% endblock %}
 {% block navbar-additional %}
   {% get_current_language as LANGUAGE_CODE %}
