@@ -37,7 +37,7 @@
       <tr data-appid="{{ a.national_id }}" class="{% if a.is_called_for_interview %}app-interview-called{%else %}app-interview-not-called{% endif %}">
         <td class="ranks">{{ forloop.counter }}</td>
         <td class="national-ids">
-          {% comment %}{{ a.national_id }}{% endcomment %}
+          {{ a.national_id }}
         </td>
         {% if project.cross_majors_acceptance_visible %}
           <td>
@@ -53,7 +53,7 @@
           </td>
         {% endif %}
         {% if not project.applicant_details_hidden %}
-          <td>{% comment %}{{ a.get_full_name }}{% endcomment %}</td>
+          <td>{{ a.first_name }}{% comment %}{{ a.get_full_name }}{% endcomment %}</td>
           <td>{{ a.educationalprofile.get_education_plan_display }}</td>
         {% else %}
           <td>{{ a.get_full_name }}</td>
@@ -76,13 +76,13 @@
           <td class="gatpat-odd">{{ applicant.get_all_exam_scores.gatpat_array.pat5|score_array }}</td>
           <td class="gatpat-odd">{{ applicant.get_all_exam_scores.gatpat_array.pat7|round_array }}</td>
 
-          <td class="udat-even">{{ applicant.get_all_exam_scores.udat.u09|score }}</td>
-          <td class="udat-odd">{{ applicant.get_all_exam_scores.udat.u19|score }}</td>
-          <td class="udat-even">{{ applicant.get_all_exam_scores.udat.u29|score }}</td>
-          <td class="udat-odd">{{ applicant.get_all_exam_scores.udat.u39|score }}</td>
-          <td class="udat-even">{{ applicant.get_all_exam_scores.udat.u49|score }}</td>
-          <td class="udat-odd">{{ applicant.get_all_exam_scores.udat.u59|score }}</td>
-          <td class="udat-even">{{ applicant.get_all_exam_scores.udat.u69|score }}</td>
+          <td class="udat-even udat-scores" style="display: none;">{{ applicant.get_all_exam_scores.udat.u09|score }}</td>
+          <td class="udat-odd udat-scores" style="display: none;">{{ applicant.get_all_exam_scores.udat.u19|score }}</td>
+          <td class="udat-even udat-scores" style="display: none;">{{ applicant.get_all_exam_scores.udat.u29|score }}</td>
+          <td class="udat-odd udat-scores" style="display: none;">{{ applicant.get_all_exam_scores.udat.u39|score }}</td>
+          <td class="udat-even udat-scores" style="display: none;">{{ applicant.get_all_exam_scores.udat.u49|score }}</td>
+          <td class="udat-odd udat-scores" style="display: none;">{{ applicant.get_all_exam_scores.udat.u59|score }}</td>
+          <td class="udat-even udat-scores" style="display: none;">{{ applicant.get_all_exam_scores.udat.u69|score }}</td>
 
           {% comment %}
           {% include "backoffice/projects/include/score_table/onet_cells.html" %}
@@ -272,5 +272,8 @@
     updateMajorMarkers();
     updateConflictCounts();
     updateInterviewConfirmation();
+    {% if show_udat_scores %}
+      $(".udat-scores").show();
+    {% endif %}
   });
 </script>

@@ -1095,6 +1095,14 @@ def show_scores(request, project_id, round_id, major_number):
                                            major,
                                            load_results=True)
 
+    
+    show_udat_scores = False
+
+    if project.id in [26,37]:
+        show_udat_scores = True
+    elif project.id == 6:
+        show_udat_scores = (major.number in [10, 19, 21, 22, 23, 24, 39, 44])
+
     applicant_score_viewable = project_round.applicant_score_viewable
     
     interview_call_count = 0
@@ -1148,6 +1156,8 @@ def show_scores(request, project_id, round_id, major_number):
 
                     'cross_major_scores': cross_major_scores,
                     'cross_major_titles': cross_major_titles,
+
+                    'show_udat_scores': show_udat_scores,
 
                     'is_tcas_project': is_tcas_project,
                   })
