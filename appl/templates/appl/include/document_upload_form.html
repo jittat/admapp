@@ -2,7 +2,9 @@
 <div class="project-document-upload-forms mb5" id="accordion" role="tablist" aria-multiselectable="true">
   {% load appl_tags %}
   {% with project_uploaded_document as doc %}
-    <div class="card" id="upload-card-{{ doc.id }}">
+    <div class="card {% if doc.is_interview_document %}interview-document-card{% endif %}"
+         id="upload-card-{{ doc.id }}"
+         {% if doc.is_interview_document %}style="display: none;"{% endif %}>
 
       <div class="card-header p10" role="tab" id="accordian-upload-header-{{ doc.id }}">
         {% if doc.is_required and doc.applicant_uploaded_documents|length > 0 %}<i class="fa fa-check text-success"></i>{% endif %}
@@ -28,7 +30,7 @@
   	  <form class="upload-forms" action="{% url 'appl:upload' doc.id %}" method="post" data-detail-required="{% if doc.is_detail_required %}true{% endif %}" enctype="multipart/form-data">
   	    {% csrf_token %}
 
-            {% if not  is_deadline_passed %}
+            {% if not is_deadline_passed or doc.is_interview_document %}
               <div class="form-group">
                 {% if doc.is_detail_required %}
                   <small><b>{% trans 'ชื่อหรือคำอธิบายเอกสาร' %}*</b></small>
@@ -67,7 +69,7 @@
                       <a href="{{ d.document_url }}" class="btn btn-sm btn-info" target="_blank">{% trans 'ดูลิงก์' %}</a>
                     {% endif %}
                     &nbsp;
-                    {% if not is_deadline_passed %}
+                    {% if not is_deadline_passed or doc.is_interview_document %}
   		      <a data-delete-url="{% url 'appl:document-delete' applicant.id doc.id d.id %}" href="#" class="upload-form-delete-buttons btn btn-sm btn-secondary"><i class="fa fa-trash"></i> {% trans 'ลบ' %}</a>
                     {% endif %}
   		  </li>

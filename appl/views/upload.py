@@ -76,11 +76,12 @@ def upload(request, document_id):
     project_round = admission_project.get_project_round_for(admission_round)
     is_deadline_passed = project_round.is_deadline_passed()
     
-    if is_deadline_passed:
-        return HttpResponseForbidden()
-            
     project_uploaded_document = get_object_or_404(ProjectUploadedDocument,
                                                   pk=document_id)
+
+    if is_deadline_passed and (not project_uploaded_document.is_interview_document):
+        return HttpResponseForbidden()
+            
     if request.method != 'POST':
         return HttpResponseForbidden()
 
@@ -212,14 +213,15 @@ def document_delete(request, applicant_id=0, project_uploaded_document_id=0, doc
             project_round = admission_project.get_project_round_for(admission_round)
             is_deadline_passed = project_round.is_deadline_passed()
 
-            if is_deadline_passed:
+            project_uploaded_document = get_object_or_404(ProjectUploadedDocument,pk=project_uploaded_document_id)
+
+            if is_deadline_passed and (not project_uploaded_document.is_interview_document):
                 return HttpResponseForbidden()
             
             uploaded_document.delete()
 
             from django.template import loader
             template = loader.get_template('appl/include/document_upload_form.html')
-            project_uploaded_document = get_object_or_404(ProjectUploadedDocument,pk=project_uploaded_document_id)
             project_uploaded_document.form = upload_form_for(project_uploaded_document)
             project_uploaded_document.applicant_uploaded_documents = project_uploaded_document.get_uploaded_documents_for_applicant(applicant_id)
 
