@@ -632,6 +632,9 @@ def show_applicant(request, project_id, round_id, major_number, rank):
 
     if not project_round.criteria_check_required:
         is_criteria_passed = True
+
+    if admission_result and (admission_result.calculated_score < 0):
+        is_criteria_passed = False
         
     major_accepted_for_interview_count = AdmissionResult.accepted_for_interview_count(admission_round,
                                                                                       major)
