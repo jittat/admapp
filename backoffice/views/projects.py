@@ -1106,6 +1106,8 @@ def show_scores(request, project_id, round_id, major_number):
         show_udat_scores = True
     elif project.id == 6:
         show_udat_scores = (major.number in [10, 19, 21, 22, 23, 24, 39, 44])
+    elif project.id == 7:
+        show_udat_scores = (major.number in [13, 14, 15, 30])
 
     applicant_score_viewable = project_round.applicant_score_viewable
     
