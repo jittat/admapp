@@ -646,7 +646,7 @@ def show_applicant(request, project_id, round_id, major_number, rank):
         'acceptance': project_round.accepted_result_frozen or project_round.accepted_result_shown
     }
 
-    only_bulk_interview_acceptance = project_round.only_bulk_interview_acceptance
+    only_bulk_interview_acceptance = (project_round.only_bulk_interview_acceptance) and (not major.is_forced_individual_interview_call)
 
     return render(request,
                   'backoffice/projects/show_applicant.html',
@@ -793,7 +793,7 @@ def set_call_for_interview(request, project_id, round_id, national_id, major_num
     if request.project_round.accepted_for_interview_result_frozen:
         return HttpResponseForbidden()
 
-    if request.project_round.only_bulk_interview_acceptance:
+    if (request.project_round.only_bulk_interview_acceptance) and (not major.is_forced_individual_interview_call):
         return HttpResponseForbidden()
 
     admission_result = AdmissionResult.get_for_application_and_major(application, major)
@@ -1138,6 +1138,10 @@ def show_scores(request, project_id, round_id, major_number):
     cross_major_scores = dict([(m,100000) for m in cross_majors])
     for decision in interview_call_decisions:
         cross_major_scores[decision.major.number] = decision.interview_call_min_score - MajorInterviewCallDecision.FLOAT_DELTA
+
+    individual_call_only = (not project_round.only_bulk_interview_acceptance) or (major.is_forced_individual_interview_call)
+    if individual_call_only:
+        project_round.accepted_for_interview_result_frozen = True
         
     return render(request,
                   'backoffice/projects/show_applicant_scores.html',
@@ -1152,6 +1156,8 @@ def show_scores(request, project_id, round_id, major_number):
                     'applicant_score_viewable': applicant_score_viewable,
                     'accepted_for_interview_result_frozen':
                     project_round.accepted_for_interview_result_frozen,
+                    'individual_call_only': individual_call_only,
+                    
                     'is_truncated': is_truncated,
                     'org_count': org_count,
 
