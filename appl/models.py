@@ -284,6 +284,9 @@ class Major(models.Model):
     cupt_code = models.CharField(max_length=10, blank=True)
     cupt_study_type_code = models.CharField(max_length=10, blank=True)
     cupt_full_code = models.CharField(max_length=20, blank=True)
+
+    is_forced_individual_interview_call = models.BooleanField(default=False,
+                                                              verbose_name='ให้เรียกสัมภาษณ์ไม่ตามคะแนน')
     
     class Meta:
         ordering = ['number']
