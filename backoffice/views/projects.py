@@ -421,7 +421,8 @@ def update_applicant_status(applicant, admission_results, admission_project_roun
             ###########################
             ## HACK for TCAS5 (default to passed)
             ###########################
-            if (res.is_criteria_passed or (res.is_criteria_passed == None)) or (not admission_project_round.criteria_check_required):
+            #if (res.is_criteria_passed or (res.is_criteria_passed == None)) or (not admission_project_round.criteria_check_required):
+            if (res.is_criteria_passed) or (not admission_project_round.criteria_check_required):
                 applicant.is_criteria_passed = True
                 if res.is_interview_callable():
                     applicant.is_interview_callable = True
