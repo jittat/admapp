@@ -364,6 +364,11 @@ class ProjectUploadedDocument(models.Model):
     is_detail_required = models.BooleanField(default=False)
     can_have_multiple_files = models.BooleanField(default=False)
 
+    is_common_document = models.BooleanField(default=False,
+                                             verbose_name='ใช้ทุกโครงการ')
+    is_interview_document = models.BooleanField(default=False,
+                                                verbose_name='ใช้สำหรับสัมภาษณ์')
+    
     document_key = models.CharField(max_length=30,
                                     blank=True)
     class Meta:
@@ -377,11 +382,7 @@ class ProjectUploadedDocument(models.Model):
 
     @staticmethod
     def get_common_documents():
-        commons = []
-        for d in ProjectUploadedDocument.objects.all():
-            if d.admission_projects.count() == 0:
-                commons.append(d)
-        return commons
+        return ProjectUploadedDocument.objects.filter(is_common_document=True).all()
 
     def get_uploaded_documents_for_applicant(self, applicant):
         return self.uploaded_document_set.filter(applicant=applicant).all()
