@@ -930,6 +930,19 @@ class MajorInterviewDescription(models.Model):
                                         on_delete=models.CASCADE)
     descriptions = models.TextField()
 
+    has_free_acceptance = models.BooleanField(default=False,
+                                              verbose_name='รับโดยไม่ต้องมีกระบวนการอื่น')
+
+    has_onsite_interview = models.BooleanField(default=False,
+                                               verbose_name='มีสอบสัมภาษณ์ที่สถานที่')
+    has_online_interview = models.BooleanField(default=True,
+                                               verbose_name='มีสอบสัมภาษณ์ออนไลน์')
+
+    has_document_requirements = models.BooleanField(default=False,
+                                                    verbose_name='มีเอกสารต้องส่งหรืออัพโหลด')
+    has_upload_requirements = models.BooleanField(default=False,
+                                                  verbose_name='มีเอกสารให้อัพโหลดในระบบ')
+
     class Meta:
         indexes = [
             models.Index(fields=['admission_round','major']),
