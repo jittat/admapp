@@ -81,6 +81,10 @@ def main():
                                 for m in majors])
 
     for number, major in sorted([(m.number,m) for m in majors]):
+        if major.is_forced_individual_interview_call:
+            print(f'----- ignoring ----- {major.number}: {major}')
+            continue
+        
         decision = interview_decisions[number]
         if decision:
             make_decision(admission_project,
