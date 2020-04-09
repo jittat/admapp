@@ -1,3 +1,4 @@
+{% load appl_tags %}
 {% if interview_descriptions.has_free_acceptance %}
   <div class="mt-3">
     <i class="fa fa-caret-right" aria-hidden="true"></i> <b>ไม่มีการสอบสัมภาษณ์</b> เนื่องจากมีสถานการณ์โรคระบาด ผู้สมัครจะได้รับการพิจารณาให้ผ่านการสอบสัมภาษณ์โดยอัตโนมัติ ในขั้นตอนไปให้ผู้สมัครเตรียมยืนยันสิทธิ์ผ่านทางระบบของทปอ. ระหว่างวันที่ 22 - 23 เม.ย. 2563 ได้เลย
@@ -36,6 +37,6 @@
         <b><i class="fa fa-caret-right" aria-hidden="true"></i> รายละเอียดการเตรียมสอบสัมภาษณ์ออนไลน์:</b><br>
       {% endif %}
     {% endif  %}
-    {{ interview_descriptions.descriptions|linebreaksbr }}
+    {{ interview_descriptions.descriptions|urlize|imagify|linebreaksbr }}
   </div>
 {% endif %}

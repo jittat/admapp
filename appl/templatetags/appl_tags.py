@@ -36,3 +36,14 @@ def uploadeddocument_name(doc):
         return doc.detail
     return doc.uploaded_file.name.split('/')[-1]
 
+import re
+
+image_regex = re.compile(r'(img::[^ \t\n\r]+)', re.MULTILINE)
+
+@register.filter(is_safe=True)
+def imagify(value):
+    def _replace(match):
+        img_str = match.group(0)[5:]
+        return f'<img src="https://{img_str}">'
+
+    return image_regex.sub(_replace, value)

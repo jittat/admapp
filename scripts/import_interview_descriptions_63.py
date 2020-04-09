@@ -54,12 +54,14 @@ def main():
                 setattr(desc, f, v)
 
             if desc.has_document_requirements:
-                desc.descriptions = items[6]
+                desc.descriptions = items[6].strip()
             else:
                 desc.descriptions = ''
 
             if desc.has_online_interview and desc.descriptions == '':
-                desc.descriptions = items[8]
+                desc.descriptions = items[8].strip()
+                if desc.descriptions == '':
+                    desc.descriptions = items[6].strip()
                 
             desc.save()
             print(f'{major.admission_project} - {major}')
