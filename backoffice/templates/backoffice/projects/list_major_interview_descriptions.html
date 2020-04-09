@@ -1,0 +1,41 @@
+{% extends 'backoffice/base.html' %}
+{% block content %}
+  <div class="row">
+    <div class="col-md-12">
+      <h2>
+        ข้อมูลสัมภาษณ์สาขาที่เปิดรับในโครงการ{{ project.title }} ({{ admission_round }})
+        {% if faculty %}
+          - {{ faculty }}
+        {% endif %}
+      </h2>
+      <table class="table table-striped table-sm table-bordered">
+        <thead>
+          <tr>
+            <th>รหัส</th>
+            <th>คณะ</th>
+            <th>สาขา</th>
+            <th>ข้อมูลสัมภาษณ์ที่แสดงให้ผู้สมัคร</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for major in majors %}
+            <tr>
+              <td>{{ major.number }}</td>
+              <td>{{ major.faculty }}</td>
+              <td>{{ major.title }}</td>
+              <td>
+                {% if major.interview_descriptions %}
+                  {% with major.interview_descriptions as interview_descriptions %}
+                    {% include "appl/include/interview_descriptions.html" %}
+                  {% endwith %}
+                {% else %}
+                  ไม่ระบุ
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endblock %}
