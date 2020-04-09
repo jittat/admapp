@@ -6,6 +6,18 @@
                  $('#project_status_div_id').html(html);
                });
   };
+
+  var checkAndShowInterviewDocument = function() {
+    {% if is_accepted_for_interview %}
+    {% if interview_descriptions %}
+    {% if interview_descriptions.has_upload_requirements %}
+    $(".interview-document-card").show();
+    {% endif %}
+    {% else %}
+    $(".interview-document-card").show();
+    {% endif %}
+    {% endif %}
+  };
   
   $(function() {
     $(".all-document-upload-forms").on("click", ".upload-form-submit-buttons", function() {
@@ -37,6 +49,7 @@
         success: function(data) {
           if (data.result == 'OK') {
             $(div).replaceWith(data.html);
+            checkAndShowInterviewDocument();
           } else if (data.result == 'APPLICATION_ERROR') {
             $(uploadErrorDiv).show().html('<b>ฟอร์มอัพโหลดมีปัญหา กรุณาเข้าระบบใหม่</b>');
           } else if (data.result == 'FORM_ERROR') {
@@ -84,6 +97,7 @@
           success: function(data) {
             if (data.result == 'OK') {
               $(div).replaceWith(data.html);
+              checkAndShowInterviewDocument();
             } else if (data.result == 'ERROR') {
               alert("ERROR");
             }

@@ -164,14 +164,19 @@ def get_uploaded_document_or_403(request, applicant_id, project_uploaded_documen
 
 
 def get_file_mime_type(document):
-    try:
-        from magic import Magic
+    from magic import Magic
 
-        doc_abs_path = os.path.join(settings.MEDIA_ROOT, document.name)
-        mime_type = Magic(mime=True).from_file(doc_abs_path)
-        return mime_type
+    doc_abs_path = os.path.join(settings.MEDIA_ROOT, document.name)
+    try:
+       buffer = open(doc_abs_path,"rb").read(1024)
     except:
-        return 'image/png'
+       try:
+          buffer = open(doc_abs_path.encode('utf8'),"rb").read(1024)
+       except:
+          buffer = open(doc_abs_path.encode('tis-620'),"rb").read(1024)
+
+    mime_type = Magic(mime=True).from_buffer(buffer)
+    return mime_type
 
 
 def download_uploaded_document_response(uploaded_document):
