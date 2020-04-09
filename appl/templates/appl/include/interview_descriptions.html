@@ -1,0 +1,40 @@
+<h4>รายละเอียดการสอบสัมภาษณ์</h4>
+{% if interview_descriptions.has_free_acceptance %}
+  <b>ไม่มีการสอบสัมภาษณ์</b> เนื่องจากมีสถานการณ์โรคระบาด ผู้สมัครจะได้รับการพิจารณาให้ผ่านการสอบสัมภาษณ์โดยอัตโนมัติ ในขั้นตอนไปให้ผู้สมัครเตรียมยืนยันสิทธิ์ผ่านทางระบบของทปอ. ในวันและเวลาที่ทปอ.กำหนดได้เลย
+{% else %}
+  <div class="mt-3">
+    <i class="fa fa-caret-right" aria-hidden="true"></i> <b>การสอบสัมภาษณ์แบบออนไลน์:</b>
+    {% if interview_descriptions.has_online_interview %}
+      <i class="fa fa-check"></i> มีการสอบสัมภาษณ์<br>
+    {% else %}
+      <i class="fa fa-times"></i> ไม่มีการสอบสัมภาษณ์ แต่ผู้สมัครต้องอัพโหลดหรือส่งเอกสารตามระบุด้านล่าง<br>
+    {% endif %}
+  </div>
+  <div class="mt-3">
+    <i class="fa fa-caret-right" aria-hidden="true"></i> <b>การส่งเอกสารเพิ่มเติม:</b>
+    {% if interview_descriptions.has_document_requirements %}
+      {% if interview_descriptions.has_upload_requirements %}
+        <i class="fa fa-check"></i> ให้อัพโหลดภายในระบบ โดยใช้ส่วนอัพโหลดเอกสารประกอบการสัมภาษณ์ด้านล่าง
+        <small>ถ้าแฟ้มข้อมูลมีขนาดใหญ่ ให้อัพโหลดทางบริการทางอินเทอร์เน็ตและแนบลิงก์ไปยังแฟ้มข้อมูล</small><br>
+      {% else %}
+        <i class="fa fa-check"></i> ให้ส่งเอกสารเพิ่มเติมตามที่ระบุในรายละเอียดด้านล่าง โดยอาจเป็นการส่งทางอีเมล หรือทางเว็บเฉพาะที่ระบุ<br>
+      {% endif %}
+    {% else %}
+      <i class="fa fa-times"></i> ไม่มี
+    {% endif %}
+  </div>
+  <div class="mt-3">
+    {% if interview_descriptions.has_document_requirements %}
+      {% if interview_descriptions.has_upload_requirements %}
+        <b><i class="fa fa-caret-right" aria-hidden="true"></i> รายละเอียดการเตรียมและอัพโหลดเอกสาร (อัพโหลดที่ส่วนอัพโหลดด้านล่าง):</b><br>
+      {% else %}
+        <b><i class="fa fa-caret-right" aria-hidden="true"></i> รายละเอียดการเตรียมและจัดส่งเอกสาร:</b><br>
+      {% endif %}
+    {% else %}
+      {% if interview_descriptions.has_online_interview %}
+        <b><i class="fa fa-caret-right" aria-hidden="true"></i> รายละเอียดการเตรียมสอบสัมภาษณ์ออนไลน์:</b><br>
+      {% endif %}
+    {% endif  %}
+    {{ interview_descriptions.descriptions|linebreaksbr }}
+  </div>
+{% endif %}

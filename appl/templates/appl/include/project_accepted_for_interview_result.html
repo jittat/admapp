@@ -24,7 +24,7 @@
         {% endcomment %}
         {% if interview_descriptions %}
           <div>
-            <b>{% trans 'สถานที่และเวลา:' %}</b> {{ interview_descriptions.descriptions|linebreaksbr }}
+            {% include "appl/include/interview_descriptions.html" %}
           </div>
         {% endif %}
         {{ project_round.accepted_for_interview_instructions|safe }}

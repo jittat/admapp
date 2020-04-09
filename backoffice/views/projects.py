@@ -1110,12 +1110,15 @@ def show_scores(request, project_id, round_id, major_number):
         show_udat_scores = (major.number in [13, 14, 15, 30])
 
     applicant_score_viewable = project_round.applicant_score_viewable
+    individual_call_only = (not project_round.only_bulk_interview_acceptance) or (major.is_forced_individual_interview_call)
     
     interview_call_count = 0
     if applicant_score_viewable:
         applicants = sort_applicants_by_calculated_scores(applicants,
                                                           project_round.criteria_check_required)
         call_decision = MajorInterviewCallDecision.get_for(major, admission_round)
+        if individual_call_only and not call_decision:
+            call_decision = MajorInterviewCallDecision(interview_call_min_score=100000)
         update_interview_call_status(applicants, call_decision)
 
         interview_call_count = len([a for a in applicants if a.is_called_for_interview])
@@ -1144,7 +1147,6 @@ def show_scores(request, project_id, round_id, major_number):
     for decision in interview_call_decisions:
         cross_major_scores[decision.major.number] = decision.interview_call_min_score - MajorInterviewCallDecision.FLOAT_DELTA
 
-    individual_call_only = (not project_round.only_bulk_interview_acceptance) or (major.is_forced_individual_interview_call)
     if individual_call_only:
         project_round.accepted_for_interview_result_frozen = True
         
