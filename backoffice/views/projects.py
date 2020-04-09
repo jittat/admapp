@@ -1108,6 +1108,9 @@ def show_scores(request, project_id, round_id, major_number):
         show_udat_scores = (major.number in [10, 19, 21, 22, 23, 24, 39, 44])
     elif project.id == 7:
         show_udat_scores = (major.number in [13, 14, 15, 30])
+    elif project.id == 8:
+        show_udat_scores = (major.number in [2])
+        
 
     applicant_score_viewable = project_round.applicant_score_viewable
     individual_call_only = (not project_round.only_bulk_interview_acceptance) or (major.is_forced_individual_interview_call)
