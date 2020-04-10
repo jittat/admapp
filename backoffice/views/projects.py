@@ -1306,6 +1306,10 @@ def list_applicants_for_acceptance_calls(request, project_id, round_id, major_nu
     if not project_round.accepted_for_interview_result_frozen:
         return HttpResponseForbidden()
 
+    # TODO: fix this
+    if project.max_num_selections != 1:
+        return HttpResponseForbidden()
+
     if not is_tcas_project:
         major_applicants = load_major_applicants_no_cache(project,
                                                           admission_round,
