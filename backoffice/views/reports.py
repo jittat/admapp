@@ -36,7 +36,7 @@ def write_sheet_row(sheet, row, items,
         sheet.set_row(row, row_height*ROW_HEIGHT_SCALE)
 
 @user_login_required
-def download_applicants_sheet(request, project_id, round_id, major_number):
+def download_applicants_sheet(request, project_id, round_id, major_number, only_interview=False):
     import xlsxwriter
     import io
     
@@ -51,7 +51,10 @@ def download_applicants_sheet(request, project_id, round_id, major_number):
 
     output = io.BytesIO()
     workbook = xlsxwriter.Workbook(output, {'in_memory': True})
-    app_worksheet = workbook.add_worksheet('ข้อมูลผู้สมัคร')
+    if only_interview:
+        app_worksheet = workbook.add_worksheet('ข้อมูลผู้สมัครที่เรียกสัมภาษณ์')
+    else:
+        app_worksheet = workbook.add_worksheet('ข้อมูลผู้สมัคร')
     
     bordered_cell_format = workbook.add_format()
     bordered_cell_format.set_border(1)
@@ -62,8 +65,6 @@ def download_applicants_sheet(request, project_id, round_id, major_number):
                                  admission_round,
                                  project_round)
 
-    
-    
     check_mark_cell_formats = [
         workbook.add_format(),
         workbook.add_format(),
@@ -80,6 +81,12 @@ def download_applicants_sheet(request, project_id, round_id, major_number):
     
     set_column_widths(app_worksheet, [15,8,8,12,22,15,13,13,10,25,10,6,12,
                                       2,2,2,2,2,2])
+
+    if only_interview:
+        result_header = 'สถานะ'
+    else:
+        result_header = 'การชำระเงินค่าสมัคร'
+    
     write_sheet_row(app_worksheet,1,
                     ['รหัสประจำตัวประชาชน',
                      'หมายเลขหนังสือเดินทาง',
@@ -93,7 +100,7 @@ def download_applicants_sheet(request, project_id, round_id, major_number):
                      'โรงเรียน',
                      'จังหวัด',
                      'GPA',
-                     'การชำระเงินค่าสมัคร',
+                     result_header,
                      'o',
                      'o',
                      'o',
@@ -106,18 +113,34 @@ def download_applicants_sheet(request, project_id, round_id, major_number):
 
     r = 2
     for applicant in applicants:
-        if applicant.has_paid:
-            payment_message = 'ชำระแล้ว'
-        else:
-            payment_message = 'ยังไม่ได้ชำระ'
+        if only_interview:
+            results = AdmissionResult.objects.filter(applicant=applicant,
+                                                    major=major).all()
+            if len(results) != 1:
+                continue
 
-        comments = load_all_judge_comments(applicant.major_project_application,
-                                           project,
-                                           admission_round,
-                                           major)
-        combined_comments = '\n'.join([comment.report_display()
-                                       for comment in comments])
-        row_height = len([c for c in combined_comments if c == '\n']) + 1
+            result = results[0]
+            if not result.is_accepted_for_interview:
+                continue
+            
+            result_message = 'เรียกสัมภาษณ์'
+            combined_comments = ''
+            row_height = 1
+        else:
+            if applicant.has_paid:
+                result_message = 'ชำระแล้ว'
+            else:
+                result_message = 'ยังไม่ได้ชำระ'
+
+            comments = load_all_judge_comments(applicant.major_project_application,
+                                               project,
+                                               admission_round,
+                                               major)
+            combined_comments = '\n'.join([comment.report_display()
+                                           for comment in comments])
+
+            row_height = len([c for c in combined_comments if c == '\n']) + 1
+            
         if row_height == 1:
             row_height = None
         write_sheet_row(app_worksheet, r,
@@ -133,13 +156,13 @@ def download_applicants_sheet(request, project_id, round_id, major_number):
                          applicant.educationalprofile.school_title,
                          applicant.educationalprofile.province.title,
                          '%0.2f' % (float(applicant.educationalprofile.gpa),),
-                         payment_message,
+                         result_message,
                          '','','','','','',
                          combined_comments,
                         ],
                         bordered_cell_format,
                         row_height=row_height)
-        if applicant.check_marks:
+        if (not only_interview) and (applicant.check_marks):
             mcount = 0
             for mark in applicant.check_marks.get_check_mark_list():
                 mcount += 1
@@ -207,7 +230,7 @@ def write_registration_sheet(sheet, project, applicants, major, cell_format):
     sheet.set_landscape()
     sheet.write(0,0,'ใบลงชื่อผู้มีสิทธิ์สอบสัมภาษณ์ โครงการ' +
                 project.title +
-                ' มหาวิทยาลัยเกษตรศาสตร์ ปีการศึกษา 2563 (TCAS รอบที่ 1)')
+                ' มหาวิทยาลัยเกษตรศาสตร์ ปีการศึกษา 2563 (TCAS รอบที่ 2)')
     set_column_widths(sheet,[4,15,8,12,22,5,5,10,10,12,12])
     write_registration_table_header(sheet, cell_format)
     write_applicant_rows(sheet, 2, applicants, major, cell_format)
@@ -246,7 +269,7 @@ def write_interview_result_sheet(sheet, project, applicants, major, cell_format)
     sheet.set_landscape()
     sheet.write(0,0,'ใบลงชื่อผู้มีสิทธิ์สอบสัมภาษณ์ โครงการ' +
                 project.title +
-                ' มหาวิทยาลัยเกษตรศาสตร์ ปีการศึกษา 2563 (TCAS รอบที่ 1)')
+                ' มหาวิทยาลัยเกษตรศาสตร์ ปีการศึกษา 2563 (TCAS รอบที่ 2)')
     set_column_widths(sheet,[4,8,12,22,5,10,12,15,10,25])
     write_result_table_header(sheet, cell_format)
     write_applicant_rows(sheet, 3, applicants, major, cell_format, False)

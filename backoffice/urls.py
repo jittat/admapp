@@ -65,6 +65,11 @@ urlpatterns = [
         reports.download_applicants_sheet,
         name='projects-download-app-sheet'),
 
+    url(r'^projects/applicants/(\d+)/(\d+)/(\d+)/sheet/interview$',
+        reports.download_applicants_sheet,
+        { 'only_interview': True },
+        name='projects-download-app-sheet-only-interview'),
+
     url(r'^projects/applicants/(\d+)/(\d+)/(\d+)/interview-sheet$',
         reports.download_applicants_interview_sheet,
         name='projects-download-app-interview-sheet'),

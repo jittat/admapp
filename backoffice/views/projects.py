@@ -427,6 +427,7 @@ def update_applicant_status(applicant, admission_results, admission_project_roun
                 if res.is_interview_callable():
                     applicant.is_interview_callable = True
             if res.is_accepted_for_interview:
+                #print(applicant, res, res.is_accepted_for_interview)
                 applicant.is_accepted_for_interview = True
             applicant.admission_result = res
 
@@ -435,6 +436,7 @@ def update_applicant_status(applicant, admission_results, admission_project_roun
             if applicant.admission_result:
                 applicant.is_criteria_passed = True
 
+    #print(applicant, applicant.is_accepted_for_interview)
 
 def load_check_marks_and_results(applicants,
                                  admission_project,
