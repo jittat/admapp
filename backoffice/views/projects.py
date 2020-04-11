@@ -404,7 +404,7 @@ def index(request, project_id, round_id):
                   })
 
 
-def update_applicant_status(applicant, admission_results, admission_project_round):
+def update_applicant_status(applicant, admission_results, admission_project_round, major=None):
     applicant.admission_results = admission_results
     applicant.admission_result = None
     
@@ -414,6 +414,8 @@ def update_applicant_status(applicant, admission_results, admission_project_roun
     applicant.is_interview_callable = False
     if applicant.admission_results:
         for res in applicant.admission_results:
+            if major and (res.major_id != major.id):
+                continue
             if res.is_accepted:
                 applicant.is_accepted = True
                 applicant.accepted_result = res
@@ -436,12 +438,12 @@ def update_applicant_status(applicant, admission_results, admission_project_roun
             if applicant.admission_result:
                 applicant.is_criteria_passed = True
 
-    #print(applicant, applicant.is_accepted_for_interview)
 
 def load_check_marks_and_results(applicants,
                                  admission_project,
                                  admission_round,
-                                 project_round):
+                                 project_round,
+                                 major=None):
     result_map = {}
 
     for r in AdmissionResult.objects.filter(admission_project=admission_project,
@@ -462,7 +464,7 @@ def load_check_marks_and_results(applicants,
         check_marks[c.applicant_id] = c
 
     for a in applicants:
-        update_applicant_status(a, result_map.get(a.id, None), project_round)
+        update_applicant_status(a, result_map.get(a.id, None), project_round, major=major)
         a.check_marks = check_marks.get(a.id, None)
 
 
@@ -1298,16 +1300,12 @@ def list_applicants_for_acceptance_calls(request, project_id, round_id, major_nu
     major = Major.get_by_project_number(project, major_number)
 
     is_tcas_project = False
-    is_tcas_auto_confirmation = True
+    is_tcas_auto_confirmation = False
     
     if not can_user_view_applicants_in_major(user, project, major):
         return redirect(reverse('backoffice:index'))
 
     if not project_round.accepted_for_interview_result_frozen:
-        return HttpResponseForbidden()
-
-    # TODO: fix this
-    if project.max_num_selections != 1:
         return HttpResponseForbidden()
 
     if not is_tcas_project:
@@ -1317,7 +1315,8 @@ def list_applicants_for_acceptance_calls(request, project_id, round_id, major_nu
         load_check_marks_and_results(major_applicants,
                                      project,
                                      admission_round,
-                                     project_round)
+                                     project_round,
+                                     major=major)
     else:
         major_applicants = load_major_applicants(project,
                                                  admission_round,
@@ -1375,7 +1374,8 @@ def update_applicant_acceptance_call(request, project_id, round_id, major_number
         load_check_marks_and_results(major_applicants,
                                      project,
                                      admission_round,
-                                     project_round)
+                                     project_round,
+                                     major=major)
     else:
         major_applicants = load_major_applicants(project,
                                                  admission_round,
