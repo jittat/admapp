@@ -220,7 +220,7 @@ PROJECT_SUPPLEMENTS = {
                                 'supplements.views.forms.cultural.process_cultural_exam_form',
                                 'supplements/backoffice/cultural/cultural_exam.html'),
     ],
-    'รับตรงอิสระ': [
+    'xxรับตรงอิสระ': [
         ProjectSupplementConfig('tcas5_fisheries',
                                 'ผลการเรียนเฉลี่ยแยกกลุ่มสาระ (สำหรับกรณีที่สมัครคณะประมง)',
                                 is_tcas5_gpa_form_required,
