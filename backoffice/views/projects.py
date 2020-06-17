@@ -1106,7 +1106,7 @@ def show_scores(request, project_id, round_id, major_number):
     
     show_udat_scores = False
 
-    if project.id in [26,37]:
+    if project.id in [26,37,40]:
         show_udat_scores = True
     elif project.id == 6:
         show_udat_scores = (major.number in [10, 19, 21, 22, 23, 24, 39, 44])
