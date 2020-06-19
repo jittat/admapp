@@ -27,7 +27,7 @@ DESCRIPTION_CHOICES = {
 def main():
     filename = sys.argv[1]
     counter = 0
-    admission_round = AdmissionRound.objects.get(pk=2)
+    admission_round = AdmissionRound.objects.get(pk=5)
     
     with open(filename) as csvfile:
         reader = csv.reader(csvfile, delimiter=',')
@@ -48,6 +48,7 @@ def main():
                 desc = MajorInterviewDescription(major=major,
                                                  admission_round=admission_round)
 
+            desc.admission_round=admission_round
             choice = int(items[4])
 
             for f,v in zip(DESCIPTION_FIELDS, DESCRIPTION_CHOICES[choice]):
