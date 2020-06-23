@@ -150,7 +150,7 @@ def main():
 
     print(','.join(header))
     
-    app_type = '1_2563'
+    app_type = '5_2563'
     
     for app in project_applications:
         if app.has_paid():
