@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'mailer',
     'supplements',
     'qrconfirmations',
+    'rest_framework',
 ]
 
 DEBUG_TOOLBAR_PANELS = [

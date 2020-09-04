@@ -1,7 +1,7 @@
-import qrcode
-from qrcode.image.pure import PymagingImage
-from PyCRC.CRCCCITT import CRCCCITT
-from PIL import Image
+#import qrcode
+#from qrcode.image.pure import PymagingImage
+#from PyCRC.CRCCCITT import CRCCCITT
+#from PIL import Image
 
 from django.conf import settings
 from django.contrib.staticfiles import finders
@@ -10,6 +10,7 @@ from regis.models import LogItem
 
 from suds import Client
 
+"""
 def len2(st):
     return ('%02d' % len(st))
 
@@ -65,7 +66,7 @@ def generate_qr(ref1, ref2, additional_payment, filename):
     qr_in.paste(logo, box=(qr_in.width // 2 - 40, qr_in.height // 2 - 30), mask=logo)
 
     qr_in.save(filename + '.png')
-    
+"""    
 
 def generate_ku_qr(applicant, application, additional_payment, filename):
     KU_QR_SERVICE_URL = settings.KU_QR_SERVICE_URL
