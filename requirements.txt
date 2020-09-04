@@ -10,8 +10,8 @@ future==0.17.1
 lockfile==0.12.2
 mysqlclient==1.3.13
 Pillow==7.1.0
-pymaging @ git+git://github.com/ojii/pymaging.git@596a08fce5664e58d6e8c96847393fbe987783f2
-pymaging-png @ git+git://github.com/ojii/pymaging-png.git@83d85c44e4b2342818e6c068065e031a9f81bb9f
+pymaging @ git+git://github.com/ojii/pymaging.git#egg=pymaging
+pymaging-png @ git+git://github.com/ojii/pymaging-png.git#egg=pymaging-png
 python-barcode==0.13.1
 python-dateutil==2.7.5
 python-magic==0.4.15
