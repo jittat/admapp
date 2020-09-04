@@ -71,7 +71,9 @@
     jQuery.get(baseUrl,
                { province: province },
                function(data) {
-                 var actualData = eval(data);
+                //  var actualData = eval(data);
+                 var actualData = [{title: 'กรุงเทพ'}];
+
                  $("#id_topschool_select option").detach();
                  jQuery.each(actualData, function(i, title) {
                    title = title.replace(/\"/g,'&quot;')
