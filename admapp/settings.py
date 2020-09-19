@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'mailer',
     'supplements',
     'qrconfirmations',
+    'rest_framework',
 ]
 
 DEBUG_TOOLBAR_PANELS = [
@@ -186,6 +187,13 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 LOGOUT_REDIRECT_URL = 'backoffice:index'
 
+# Django Rest Framework
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ]
+}
 
 # Admission App Configs
 
