@@ -14,7 +14,13 @@
     <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
     <!-- Load our React component. -->
-    <script src="{% static "react/component.js" %}"></script>
+
+    <script>
+      console.log('mameaw')
+      console.log(JSON.parse(`{{ majors|safe}}`))
+      const MAJORS = JSON.parse(`{{ majors|safe}}`)
+    </script>
+    <script src="{% static "react/component.js" %}" data-majors='{{ majors|safe }}'></script>
 
   </div>
 </div>
