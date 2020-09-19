@@ -31,14 +31,15 @@ urlpatterns = i18n_patterns(
     url(r'^backoffice/', include('backoffice.urls')),
     url(r'^criteria/', include('criteria.urls')),
     url(r'^qr/', include('qrconfirmations.urls')),
-    
+
     url(r'^api/', include('api.urls')),
-    
+
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
     url(r'^admin/', admin.site.urls),
 
     url(r'^accounts/login/$',
-        auth_views.LoginView.as_view(template_name='backoffice/accounts/login.html'),
+        auth_views.LoginView.as_view(
+            template_name='backoffice/accounts/login.html'),
         name='backoffice-login'),
     url(r'^accounts/logout/$',
         auth_views.LogoutView.as_view(),
