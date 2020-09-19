@@ -1455,6 +1455,7 @@ def list_major_details(request, project_id, round_id):
     return render(request,
                   'backoffice/projects/list_major_details.html',
                   { 'project': project,
+                    'round_id': round_id,
                     'faculty': faculty,
                     'admission_round': admission_round,
 

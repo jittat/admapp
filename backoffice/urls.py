@@ -7,6 +7,7 @@ from backoffice.views import projects
 from backoffice.views import users
 from backoffice.views import reports
 from backoffice.views import adjustment
+from backoffice.views import criterion
 
 app_name = 'backoffice'
 
@@ -96,4 +97,7 @@ urlpatterns = [
     path('adjustment/<major_full_code>/',
         adjustment.major_index,
         name='adjustment-major'),
+
+    url(r'^criterion/(\d+)/$', criterion.index, name='criterion-index'),
+    url(r'^projects/(\d+)/(\d+)/add-major$', criterion.create, name='criterion-create'),
 ]
