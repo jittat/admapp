@@ -42,8 +42,6 @@ def index(request):
     if faculty:
         majors = [m for m in majors if m.faculty_id == faculty.id]
 
-
-    
     return render(request,
                   'criterion/index.html',
                   {'project': project,
@@ -64,6 +62,9 @@ def create(request, project_id, round_id):
     if not can_user_view_project(user, project):
         return redirect(reverse('criteria:index'))
 
+    if request.method == 'POST':
+        return render(request, 'criterion/complete.html', {'project': project, 'admission_round': admission_round})
+
     if not user.profile.is_admission_admin:
         faculty = user.profile.faculty
         user_major_number = user.profile.major_number
@@ -82,7 +83,7 @@ def create(request, project_id, round_id):
                   {'project': project,
                    'admission_round': admission_round,
                    'faculty': faculty,
-                   'majors': json.dumps([dict({"id":m.id, "title":m.title}) for m in majors]),
+                   'majors': json.dumps([dict({"id": m.id, "title": m.title}) for m in majors]),
 
                    'user_major_number': user_major_number,
                    'any_major': user.profile.ANY_MAJOR,
