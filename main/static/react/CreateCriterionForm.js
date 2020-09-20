@@ -11,6 +11,8 @@ var _React = React,
     useEffect = _React.useEffect;
 
 var majors = JSON.parse(document.currentScript.getAttribute('data-majors'));
+var dataRequired = JSON.parse(document.currentScript.getAttribute('data-required'));
+var dataScoring = JSON.parse(document.currentScript.getAttribute('data-scoring'));
 var Form = function Form() {
   var _useState = useState(''),
       _useState2 = _slicedToArray(_useState, 2),
@@ -130,8 +132,8 @@ var Form = function Form() {
         })
       )
     ),
-    React.createElement(RequiredCriteria, null),
-    React.createElement(ScoringCriteria, null),
+    React.createElement(RequiredCriteria, { initialTopics: dataRequired }),
+    React.createElement(ScoringCriteria, { initialTopics: dataScoring }),
     React.createElement(
       'button',
       { className: 'btn btn-primary', htmlType: 'submit' },
@@ -139,8 +141,11 @@ var Form = function Form() {
     )
   );
 };
-var RequiredCriteria = function RequiredCriteria() {
-  var _useState5 = useState([{ id: 1, title: 'PAT 1', value: 22, unit: 'หน่วยกิต', children: [] }, { id: 2, title: 'PAT 2', value: 22, unit: 'หน่วยกิต', children: [{ id: 2.1, title: 'PAT 2.2', value: 22, unit: 'หน่วยกิต' }] }]),
+var RequiredCriteria = function RequiredCriteria(_ref) {
+  var _ref$initialTopics = _ref.initialTopics,
+      initialTopics = _ref$initialTopics === undefined ? [] : _ref$initialTopics;
+
+  var _useState5 = useState(initialTopics),
       _useState6 = _slicedToArray(_useState5, 2),
       topics = _useState6[0],
       setTopics = _useState6[1];
@@ -158,15 +163,6 @@ var RequiredCriteria = function RequiredCriteria() {
       return t.id === topic.id;
     });
     newTopics.splice(index, 1);
-    setTopics(newTopics);
-  };
-  var updateTopic = function updateTopic(topicId, value) {
-    console.log('Updating topic', topicId, value);
-    var newTopics = topics.slice();
-    var index = newTopics.findIndex(function (t) {
-      return t.id === topicId;
-    });
-    newTopics[index] = Object.assign({}, newTopics[index], value);
     setTopics(newTopics);
   };
   var _setSecondaryTopics = function _setSecondaryTopics(topicId, newSecondaryTopics) {
@@ -251,8 +247,11 @@ var RequiredCriteria = function RequiredCriteria() {
   );
 };
 
-var ScoringCriteria = function ScoringCriteria() {
-  var _useState7 = useState([{ id: 1, title: 'ผลการเรียนเฉลี่ยสะสม (GPAX)', value: 1, children: [{ id: 1.1, title: 'ผลการเรียนเฉลี่ยสะสม (GPAX)', value: 1 }] }, { id: 2, title: 'การสอบปฏิบัติเครื่องดนตรีตะวันตก', value: 1, children: [{ id: 2.1, title: 'ความรู้พื้นฐานทางทฤษฎีและประวัติศาสตร์ดนตรีตะวันตก', value: 1 }] }]),
+var ScoringCriteria = function ScoringCriteria(_ref2) {
+  var _ref2$initialTopics = _ref2.initialTopics,
+      initialTopics = _ref2$initialTopics === undefined ? [] : _ref2$initialTopics;
+
+  var _useState7 = useState(initialTopics),
       _useState8 = _slicedToArray(_useState7, 2),
       topics = _useState8[0],
       setTopics = _useState8[1];
@@ -367,13 +366,13 @@ var ScoringCriteria = function ScoringCriteria() {
     )
   );
 };
-var PrimaryTopic = function PrimaryTopic(_ref) {
-  var topic = _ref.topic,
-      removeTopic = _ref.removeTopic,
-      number = _ref.number,
-      updateTopic = _ref.updateTopic,
-      secondaryTopics = _ref.secondaryTopics,
-      setSecondaryTopics = _ref.setSecondaryTopics;
+var PrimaryTopic = function PrimaryTopic(_ref3) {
+  var topic = _ref3.topic,
+      removeTopic = _ref3.removeTopic,
+      number = _ref3.number,
+      updateTopic = _ref3.updateTopic,
+      secondaryTopics = _ref3.secondaryTopics,
+      setSecondaryTopics = _ref3.setSecondaryTopics;
 
   var addNewTopic = function addNewTopic(e) {
     e.preventDefault();
@@ -474,14 +473,14 @@ var PrimaryTopic = function PrimaryTopic(_ref) {
     })
   );
 };
-var PrimaryScoringTopic = function PrimaryScoringTopic(_ref2) {
-  var topic = _ref2.topic,
-      removeTopic = _ref2.removeTopic,
-      number = _ref2.number,
-      updateTopic = _ref2.updateTopic,
-      maxScore = _ref2.maxScore,
-      secondaryTopics = _ref2.secondaryTopics,
-      setSecondaryTopics = _ref2.setSecondaryTopics;
+var PrimaryScoringTopic = function PrimaryScoringTopic(_ref4) {
+  var topic = _ref4.topic,
+      removeTopic = _ref4.removeTopic,
+      number = _ref4.number,
+      updateTopic = _ref4.updateTopic,
+      maxScore = _ref4.maxScore,
+      secondaryTopics = _ref4.secondaryTopics,
+      setSecondaryTopics = _ref4.setSecondaryTopics;
 
   var addNewTopic = function addNewTopic(e) {
     e.preventDefault();
@@ -610,19 +609,19 @@ var PrimaryScoringTopic = function PrimaryScoringTopic(_ref2) {
     })
   );
 };
-var EditableCell = function EditableCell(_ref3) {
-  var initialValue = _ref3.initialValue,
-      _ref3$editable = _ref3.editable,
-      editable = _ref3$editable === undefined ? true : _ref3$editable,
-      _ref3$focusOnMount = _ref3.focusOnMount,
-      focusOnMount = _ref3$focusOnMount === undefined ? false : _ref3$focusOnMount,
-      children = _ref3.children,
-      onSave = _ref3.onSave,
-      prefix = _ref3.prefix,
-      suffix = _ref3.suffix,
-      inputType = _ref3.inputType,
-      name = _ref3.name,
-      restProps = _objectWithoutProperties(_ref3, ['initialValue', 'editable', 'focusOnMount', 'children', 'onSave', 'prefix', 'suffix', 'inputType', 'name']);
+var EditableCell = function EditableCell(_ref5) {
+  var initialValue = _ref5.initialValue,
+      _ref5$editable = _ref5.editable,
+      editable = _ref5$editable === undefined ? true : _ref5$editable,
+      _ref5$focusOnMount = _ref5.focusOnMount,
+      focusOnMount = _ref5$focusOnMount === undefined ? false : _ref5$focusOnMount,
+      children = _ref5.children,
+      onSave = _ref5.onSave,
+      prefix = _ref5.prefix,
+      suffix = _ref5.suffix,
+      inputType = _ref5.inputType,
+      name = _ref5.name,
+      restProps = _objectWithoutProperties(_ref5, ['initialValue', 'editable', 'focusOnMount', 'children', 'onSave', 'prefix', 'suffix', 'inputType', 'name']);
 
   var inputRef = useRef();
   useEffect(function () {

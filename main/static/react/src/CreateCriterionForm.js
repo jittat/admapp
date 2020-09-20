@@ -3,6 +3,8 @@
 const e = React.createElement
 const { useState, useRef, useEffect } = React
 let majors = JSON.parse(document.currentScript.getAttribute('data-majors'))
+let dataRequired = JSON.parse(document.currentScript.getAttribute('data-required'))
+let dataScoring = JSON.parse(document.currentScript.getAttribute('data-scoring'))
 const Form = () => {
   const [search, setSearch] = useState('')
   const [selectedMajors, setSelectedMajors] = useState([])
@@ -64,16 +66,14 @@ const Form = () => {
           })}
         </tbody>
       </table>}
-      <RequiredCriteria />
-      <ScoringCriteria />
+      <RequiredCriteria initialTopics={dataRequired} />
+      <ScoringCriteria initialTopics={dataScoring} />
       <button className="btn btn-primary" htmlType="submit">สร้างเกณฑ์</button>
     </div>
   )
 }
-const RequiredCriteria = () => {
-  const [topics, setTopics] = useState([
-    { id: 1, title: 'PAT 1', value: 22, unit: 'หน่วยกิต', children: [] },
-    { id: 2, title: 'PAT 2', value: 22, unit: 'หน่วยกิต', children: [{ id: 2.1, title: 'PAT 2.2', value: 22, unit: 'หน่วยกิต' }] }])
+const RequiredCriteria = ({ initialTopics = [] }) => {
+  const [topics, setTopics] = useState(initialTopics)
 
   const addNewTopic = (e) => {
     e.preventDefault()
@@ -86,13 +86,6 @@ const RequiredCriteria = () => {
     const newTopics = topics.slice()
     const index = newTopics.findIndex((t) => t.id === topic.id)
     newTopics.splice(index, 1)
-    setTopics(newTopics)
-  }
-  const updateTopic = (topicId, value) => {
-    console.log(`Updating topic`, topicId, value)
-    const newTopics = topics.slice()
-    const index = newTopics.findIndex((t) => t.id === topicId)
-    newTopics[index] = { ...newTopics[index], ...value }
     setTopics(newTopics)
   }
   const setSecondaryTopics = (topicId, newSecondaryTopics) => {
@@ -141,10 +134,8 @@ const RequiredCriteria = () => {
     </div>)
 }
 
-const ScoringCriteria = () => {
-  const [topics, setTopics] = useState([
-    { id: 1, title: 'ผลการเรียนเฉลี่ยสะสม (GPAX)', value: 1, children: [{ id: 1.1, title: 'ผลการเรียนเฉลี่ยสะสม (GPAX)', value: 1 }] },
-    { id: 2, title: 'การสอบปฏิบัติเครื่องดนตรีตะวันตก', value: 1, children: [{ id: 2.1, title: 'ความรู้พื้นฐานทางทฤษฎีและประวัติศาสตร์ดนตรีตะวันตก', value: 1 }] }])
+const ScoringCriteria = ({ initialTopics = [] }) => {
+  const [topics, setTopics] = useState(initialTopics)
 
   const addNewTopic = (e) => {
     e.preventDefault()
