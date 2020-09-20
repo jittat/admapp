@@ -26,10 +26,11 @@ class ScoreCriteria(models.Model):
 
 
 class MajorCuptCode(models.Model):
-    program_code = models.CharField(max_length=30, unique=True)
-    program_type = models.CharField(max_length=5)
+    program_code = models.CharField(max_length=30)
+    program_type = models.CharField(max_length=30)
     faculty = models.ForeignKey(Faculty, on_delete=models.CASCADE)
-    major = models.ForeignKey(Major, on_delete=models.CASCADE)
+    major = models.ForeignKey(
+        Major, on_delete=models.CASCADE, blank=True, null=True)
     major_code = models.CharField(max_length=5)
     title = models.TextField()
     major_title = models.TextField(null=True, blank=True)
@@ -41,7 +42,7 @@ class CurriculumMajor(models.Model):
     cupt_code = models.ForeignKey(MajorCuptCode,
                                   on_delete=models.CASCADE)
     major = models.ForeignKey(Major,
-                              on_delete=models.CASCADE)
+                              on_delete=models.CASCADE, null=True)
     admission_criterias = models.ManyToManyField(
         AdmissionCriteria, through='CurriculumMajorAdmissionCriteria')
 
