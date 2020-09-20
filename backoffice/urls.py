@@ -15,13 +15,18 @@ urlpatterns = [
     url(r'^$', views.index, name='index'),
 
     url(r'^payment/$', payments.index, name='payment-index'),
-    url(r'^payment/update/(?P<payment_id>\d+)/$', payments.update, name='payment-update'),
+    url(r'^payment/update/(?P<payment_id>\d+)/$',
+        payments.update, name='payment-update'),
 
-    url(r'^applicants/([0-9a-zA-Z\d]\d+)/$', views.show, name='show-applicant'),
-    url(r'^applicants/(\d+)/([0-9a-zA-Z]\d*)/$', views.show, name='show-applicant-in-project'),
+    url(r'^applicants/([0-9a-zA-Z\d]\d+)/$',
+        views.show, name='show-applicant'),
+    url(r'^applicants/(\d+)/([0-9a-zA-Z]\d*)/$',
+        views.show, name='show-applicant-in-project'),
 
-    url(r'^new_password/([0-9a-zA-Z]\d+)/$', views.new_password, name='new-password'),
-    url(r'^update/([0-9a-zA-Z]\d+)/$', views.update_applicant, name='update-applicant'),
+    url(r'^new_password/([0-9a-zA-Z]\d+)/$',
+        views.new_password, name='new-password'),
+    url(r'^update/([0-9a-zA-Z]\d+)/$',
+        views.update_applicant, name='update-applicant'),
 
     url(r'^login/(\d+)/(.+)/$', views.login_as_applicant, name='login-as-applicant'),
 
@@ -29,8 +34,10 @@ urlpatterns = [
     url(r'^search/(\d+)/$', views.search, name='search-project'),
 
     url(r'^projects/(\d+)/(\d+)/$', projects.index, name='projects-index'),
-    url(r'^projects/(\d+)/(\d+)/list/$', projects.list_applicants, name='projects-list'),
-    url(r'^projects/(\d+)/(\d+)/majors/$', projects.list_major_details, name='projects-list-majors'),
+    url(r'^projects/(\d+)/(\d+)/list/$',
+        projects.list_applicants, name='projects-list'),
+    url(r'^projects/(\d+)/(\d+)/majors/$',
+        projects.list_major_details, name='projects-list-majors'),
     url(r'^projects/(\d+)/(\d+)/interview-descriptions/$', projects.list_major_interview_descriptions,
         name='projects-list-majors-interview-descriptions'),
 
@@ -68,7 +75,7 @@ urlpatterns = [
 
     url(r'^projects/applicants/(\d+)/(\d+)/(\d+)/sheet/interview$',
         reports.download_applicants_sheet,
-        { 'only_interview': True },
+        {'only_interview': True},
         name='projects-download-app-sheet-only-interview'),
 
     url(r'^projects/applicants/(\d+)/(\d+)/(\d+)/interview-sheet$',
@@ -95,9 +102,10 @@ urlpatterns = [
         adjustment.index,
         name='adjustment'),
     path('adjustment/<major_full_code>/',
-        adjustment.major_index,
-        name='adjustment-major'),
-
+         adjustment.major_index,
+         name='adjustment-major'),
+    url(r'^criteria/', include('criteria.urls')),
     url(r'^criterion/(\d+)/$', criterion.index, name='criterion-index'),
-    url(r'^projects/(\d+)/(\d+)/add-major$', criterion.create, name='criterion-create'),
+    url(r'^projects/(\d+)/(\d+)/add-major$',
+        criterion.create, name='criterion-create'),
 ]
