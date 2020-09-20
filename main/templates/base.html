@@ -3,83 +3,90 @@
 {% load appl_tags %}
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <link rel="icon" href="{% static 'icon/favicon.ico' %}">
 
-    <title>{% web_title %}</title>
-    <!-- SWEET ALERT -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/6.10.1/sweetalert2.min.css">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <link rel="icon" href="{% static 'icon/favicon.ico' %}">
 
-    <!-- Bootstrap core CSS -->
-    <link href="{% static 'lib/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+  <title>{% web_title %}</title>
+  <!-- SWEET ALERT -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/6.10.1/sweetalert2.min.css">
 
-    <!-- Font Awesome -->
-    <link href="{% static 'lib/font-awesome/css/font-awesome.min.css' %}" rel="stylesheet">
+  <!-- Bootstrap core CSS -->
+  <link href="{% static 'lib/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
 
-    <!-- Google fonts -->
-    <link href="https://fonts.googleapis.com/css?family=Pridi" rel="stylesheet">
-    
-    <!-- Custom styles for this template -->
-    <link href="{% static 'css/base.css' %}" rel="stylesheet">
-    <link href="{% static 'css/major_multiple_selection.css' %}" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link href="{% static 'lib/font-awesome/css/font-awesome.min.css' %}" rel="stylesheet">
 
-    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
-    <script>window.jQuery || document.write('<script src="{% static 'lib/jquery/jquery-3.2.1.min.js' %}"><\/script>')</script>
-    <script src="{% static 'lib/jquery/jq-ajax-progress.min.js' %}"></script>
+  <!-- Google fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Pridi" rel="stylesheet">
 
-    <!-- Jquery ui -->
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-    <script src="{% static 'lib/jquery/jquery.ui.touch-punch.min.js' %}"></script>
-    {% block additional_head %}
+  <!-- Jquery UI -->
+  <link href="{% static 'lib/jquery/jquery-ui.min.css' %}" rel="stylesheet">
+
+  <!-- Custom styles for this template -->
+  <link href="{% static 'css/base.css' %}" rel="stylesheet">
+  <link href="{% static 'css/major_multiple_selection.css' %}" rel="stylesheet">
+
+  <script src="https://code.jquery.com/jquery-3.2.1.min.js"
+    integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script>window.jQuery || document.write('<script src="{% static 'lib / jquery / jquery - 3.2.1.min.js' %}"><\/script>')</script>
+  <script src="{% static 'lib/jquery/jq-ajax-progress.min.js' %}"></script>
+
+  <!-- Jquery ui -->
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <script src="{% static 'lib/jquery/jquery.ui.touch-punch.min.js' %}"></script>
+  {% block additional_head %}
+  {% endblock %}
+</head>
+
+<body>
+
+  {% block navbar %}
+  <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+    {% block navbar-brand %}
+    <a class="navbar-brand" href="{% url 'main-index' %}">{% web_branding %}</a>
     {% endblock %}
-  </head>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarMenu"
+      aria-controls="navbarMenu" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
 
-  <body>
-
-    {% block navbar %}
-      <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-        {% block navbar-brand %}
-          <a class="navbar-brand" href="{% url 'main-index' %}">{% web_branding %}</a>
-        {% endblock %}
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarMenu" aria-controls="navbarMenu" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-
-        {% block navbar-additional %}
-        {% endblock %}
-      </nav>
+    {% block navbar-additional %}
     {% endblock %}
+  </nav>
+  {% endblock %}
 
-    <div class="container">
-      {% block content %}
-      {% endblock %}
-    </div>
+  <div class="container">
+    {% block content %}
+    {% endblock %}
+  </div>
 
-    <div class="container">
-      <div class="row">
-        <div class="col-md-12">
-          <hr>
-          <footer>
-            <p>
-              {% trans 'ฝ่ายรับสมัครและพัฒนาการรับเข้าศึกษา สำนักบริหารการศึกษา มหาวิทยาลัยเกษตรศาสตร์' %}<br />
-              {% trans 'โทร. 02 118 0100 ต่อ 8046-8051    E-mail: admission@ku.ac.th' %}<br />
-              <small>{% trans 'เครดิตรูปภาพ: KU-Photo และภาพจากเว็บไซต์วิทยาเขต' %}</small>
-            </p>
-          </footer>
-        </div>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <hr>
+        <footer>
+          <p>
+            {% trans 'ฝ่ายรับสมัครและพัฒนาการรับเข้าศึกษา สำนักบริหารการศึกษา มหาวิทยาลัยเกษตรศาสตร์' %}<br />
+            {% trans 'โทร. 02 118 0100 ต่อ 8046-8051    E-mail: admission@ku.ac.th' %}<br />
+            <small>{% trans 'เครดิตรูปภาพ: KU-Photo และภาพจากเว็บไซต์วิทยาเขต' %}</small>
+          </p>
+        </footer>
       </div>
     </div>
-    
-    <!-- Sweetalert2 -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/6.10.1/sweetalert2.min.js"></script>
+  </div>
 
-    <script src="{% static 'lib/bootstrap/assets/js/popper.min.js' %}"></script>
-    <script src="{% static 'lib/bootstrap/js/bootstrap.min.js' %}"></script>
-    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-    <script src="{% static 'lib/bootstrap/assets/js/ie10-viewport-bug-workaround.js' %}"></script>
-  </body>
+  <!-- Sweetalert2 -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/6.10.1/sweetalert2.min.js"></script>
+
+  <script src="{% static 'lib/bootstrap/assets/js/popper.min.js' %}"></script>
+  <script src="{% static 'lib/bootstrap/js/bootstrap.min.js' %}"></script>
+  <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+  <script src="{% static 'lib/bootstrap/assets/js/ie10-viewport-bug-workaround.js' %}"></script>
+</body>
+
 </html>
