@@ -9,8 +9,10 @@
     {% if notice %}
     <div class="alert alert-success">{{ notice }}</div>
     {% endif %}
-
-    <div id="add-criterion-form"></div>
+    <form method="post">
+      {% csrf_token %}
+      <div id="add-criterion-form"></div>
+    </form>
     <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
     <!-- Load our React component. -->
@@ -18,66 +20,16 @@
       href="https://cdn.jsdelivr.net/npm/@tarekraafat/autocomplete.js@7.2.0/dist/css/autoComplete.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@tarekraafat/autocomplete.js@7.2.0/dist/js/autoComplete.min.js"></script>
 
-    <script>
-      console.log('mameaw')
-      console.log(JSON.parse(`{{ majors|safe}}`))
-      const MAJORS = JSON.parse(`{{ majors|safe}}`)
-    </script>
-    <script src="{% static "react/component.js" %}" data-majors='{{ majors|safe }}'></script>
+    <script src="{% static "react/CreateCriterionForm.js" %}" data-majors='{{ majors|safe }}'></script>
     <style>
-      .ui-menu {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-        display: block;
-        outline: 0;
+      input.form-control:not(:focus):not(:hover),
+      textarea.form-control:not(:focus):not(:hover) {
+        border-width: 0;
       }
 
-      .ui-autocomplete {
-        position: absolute;
-        top: 0;
-        left: 0;
-        cursor: default;
-      }
-
-      .ui-front {
-        z-index: 100;
-      }
-
-      .ui-widget-content {
-        border: 1px solid #dddddd;
-        background: #ffffff;
-        color: #333333;
-      }
-
-      .ui-menu .ui-menu-item {
-        margin: 0;
-        cursor: pointer;
-        /* support: IE10, see #8844 */
-        list-style-image: url("data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7");
-      }
-
-      .ui-menu .ui-menu-item-wrapper {
-        position: relative;
-        padding: 3px 1em 3px .4em;
-      }
-
-      .ui-menu .ui-menu-divider {
-        margin: 5px 0;
-        height: 0;
-        font-size: 0;
-        line-height: 0;
-        border-width: 1px 0 0 0;
-      }
-
-      .ui-menu .ui-state-focus,
-      .ui-menu .ui-state-active {
-        margin: -1px;
-      }
-
-
-      .ui-widget.ui-widget-content {
-        border: 1px solid #c5c5c5;
+      input,
+      textarea {
+        resize: none;
       }
     </style>
   </div>

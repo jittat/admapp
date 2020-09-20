@@ -18,72 +18,87 @@ const Form = () => {
   }
   return (
     <div>
-      <form>
-        <div className="form-group">
-          <label htmlFor="majors">เลือกสาขา</label>
-          <input
-            type="text"
-            id="majors"
-            className="form-control"
-            onKeyUp={(e) => { setSearch((e.target.value).toUpperCase()) }}
-            placeholder="ค้นหาชื่อคณะ/สาขา"
-          />
-          <div className="list-group" style={{ zIndex: 1, height: 300, overflow: 'auto' }}>
-            {majors.map(major => {
-              const label = major.title
-              if (label.toUpperCase().indexOf(search) > -1)
-                return (
-                  <a
-                    href="#"
-                    key={major.id}
-                    className="list-group-item list-group-item-action"
-                    onClick={() => { toggleMajor(major) }}
-                  >{label}</a>
-                )
-            })}
-          </div>
-        </div>
-        {selectedMajors.length > 0 && <table className="table table-bordered">
-          <thead>
-            <tr>
-              <th scope="col">สาขา</th>
-              <th scope="col">จำนวนรับ</th>
-              <th scope="col"></th>
-            </tr>
-          </thead>
-          <tbody>
-            {selectedMajors.map(major => {
-              const label = major.title
+      <div className="form-group">
+        <label htmlFor="majors">เลือกสาขา</label>
+        <input
+          type="text"
+          id="majors"
+          name="majors"
+          className="form-control"
+          onKeyUp={(e) => { setSearch((e.target.value).toUpperCase()) }}
+          placeholder="ค้นหาชื่อคณะ/สาขา"
+        />
+        <div className="list-group" style={{ zIndex: 1, height: 300, overflow: 'auto' }}>
+          {majors.map(major => {
+            const label = major.title
+            if (label.toUpperCase().indexOf(search) > -1)
               return (
-                <tr key={`major-${major.id}`}>
-                  <td scope="row">{label}</td>
-                  <td><input type="number" className="form-control" /></td>
-                  <td><button htmltype="button" className="btn btn-secondary" onClick={() => toggleMajor(major)}>ลบ</button></td>
-                </tr>
+                <a
+                  href="#"
+                  key={major.id}
+                  className="list-group-item list-group-item-action"
+                  onClick={() => { toggleMajor(major) }}
+                >{label}</a>
               )
-            })}
-          </tbody>
-        </table>}
-        <RequiredCriteria />
-        <ScoringCriteria />
-      </form>
+          })}
+        </div>
+      </div>
+      {selectedMajors.length > 0 && <table className="table table-bordered">
+        <thead>
+          <tr>
+            <th scope="col">สาขา</th>
+            <th scope="col">จำนวนรับ</th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          {selectedMajors.map(major => {
+            const label = major.title
+            return (
+              <tr key={`major-${major.id}`}>
+                <td scope="row">{label}</td>
+                <td><input type="number" className="form-control" /></td>
+                <td><button htmltype="button" className="btn btn-secondary" onClick={() => toggleMajor(major)}>ลบ</button></td>
+              </tr>
+            )
+          })}
+        </tbody>
+      </table>}
+      <RequiredCriteria />
+      <ScoringCriteria />
+      <button className="btn btn-primary" htmlType="submit">สร้างเกณฑ์</button>
     </div>
   )
 }
 const RequiredCriteria = () => {
   const [topics, setTopics] = useState([
-    { id: 1, title: 'PAT 1', value: 22, unit: 'หน่วยกิต' },
+    { id: 1, title: 'PAT 1', value: 22, unit: 'หน่วยกิต', children: [] },
     { id: 2, title: 'PAT 2', value: 22, unit: 'หน่วยกิต', children: [{ id: 2.1, title: 'PAT 2.2', value: 22, unit: 'หน่วยกิต' }] }])
 
-  const addNewTopic = (topic) => {
+  const addNewTopic = (e) => {
+    e.preventDefault()
     const newTopic = topics.slice()
-    newTopic.push({ id: Date.now(), title: '', value: '', unit: '' })
+    newTopic.push({ id: Date.now(), title: '', value: 1, unit: '', children: [] })
+    console.log(newTopic)
     setTopics(newTopic)
   }
   const removeTopic = (topic) => {
     const newTopics = topics.slice()
     const index = newTopics.findIndex((t) => t.id === topic.id)
     newTopics.splice(index, 1)
+    setTopics(newTopics)
+  }
+  const updateTopic = (topicId, value) => {
+    console.log(`Updating topic`, topicId, value)
+    const newTopics = topics.slice()
+    const index = newTopics.findIndex((t) => t.id === topicId)
+    newTopics[index] = { ...newTopics[index], ...value }
+    setTopics(newTopics)
+  }
+  const setSecondaryTopics = (topicId, newSecondaryTopics) => {
+    const newTopics = topics.slice()
+    const index = newTopics.findIndex((t) => t.id === topicId)
+    newTopics[index] = { ...newTopics[index], children: newSecondaryTopics }
     setTopics(newTopics)
   }
   return (
@@ -103,7 +118,14 @@ const RequiredCriteria = () => {
         </thead>
         <tbody>
           {topics.map((topic, idx) =>
-            <PrimaryTopic key={topic.id} topic={topic} removeTopic={removeTopic} number={idx + 1} />
+            <PrimaryTopic
+              key={topic.id}
+              topic={topic}
+              removeTopic={removeTopic}
+              number={idx + 1}
+              secondaryTopics={topic.children}
+              setSecondaryTopics={(newSecondaryTopics) => setSecondaryTopics(topic.id, newSecondaryTopics)}
+            />
           )}
           <tr>
             <td>
@@ -124,7 +146,8 @@ const ScoringCriteria = () => {
     { id: 1, title: 'ผลการเรียนเฉลี่ยสะสม (GPAX)', value: 1, children: [{ id: 1.1, title: 'ผลการเรียนเฉลี่ยสะสม (GPAX)', value: 1 }] },
     { id: 2, title: 'การสอบปฏิบัติเครื่องดนตรีตะวันตก', value: 1, children: [{ id: 2.1, title: 'ความรู้พื้นฐานทางทฤษฎีและประวัติศาสตร์ดนตรีตะวันตก', value: 1 }] }])
 
-  const addNewTopic = () => {
+  const addNewTopic = (e) => {
+    e.preventDefault()
     const newTopic = topics.slice()
     newTopic.push({ id: Date.now(), title: '', value: 1, children: [] })
     console.log(newTopic)
@@ -191,58 +214,80 @@ const ScoringCriteria = () => {
       </table>
     </div>)
 }
-const PrimaryTopic = ({ topic, removeTopic, number }) => {
-  const [secondaryTopics, setSecondaryTopics] = useState([])
-  const addNewTopic = () => {
+const PrimaryTopic = ({ topic, removeTopic, number, updateTopic, secondaryTopics, setSecondaryTopics }) => {
+  const addNewTopic = (e) => {
+    e.preventDefault()
     const newSecondaryTopics = secondaryTopics.slice()
-    newSecondaryTopics.push({ id: Date.now(), title: '', value: '', unit: '' })
+    newSecondaryTopics.push({ id: Date.now(), title: '', value: 22, unit: 'หน่วยกิต' })
     setSecondaryTopics(newSecondaryTopics)
   }
-
   const removeSecondaryTopic = (topic) => {
     const newSecondaryTopics = secondaryTopics.slice()
     const index = newSecondaryTopics.findIndex((t) => t.id === topic.id)
     newSecondaryTopics.splice(index, 1)
     setSecondaryTopics(newSecondaryTopics)
   }
+
   return (
     <React.Fragment>
       <tr>
         <td>
           {number}
         </td>
-        <EditableCell initialValue={topic.title} focusOnMount={true} suffix={
-          <div>
-            <button className="btn btn-primary btn-sm" onClick={addNewTopic}>+</button>
-          </div>
-        } />
-        <EditableCell initialValue={topic.value} />
-        <EditableCell initialValue={topic.unit} />
+        <EditableCell
+          name={`required_${number}_title`}
+          initialValue={topic.title}
+          focusOnMount={true}
+          suffix={
+            <div>
+              <button className="btn btn-primary btn-sm ml-2" onClick={addNewTopic}>+</button>
+            </div>
+          }
+        />
+        <EditableCell
+          name={`required_${number}_value`}
+          initialValue={topic.value}
+        />
+        <EditableCell
+          name={`required_${number}_unit`}
+          initialValue={topic.unit}
+        />
         <td>
           <button className="btn btn-secondary btn-sm" onClick={() => removeTopic(topic)}>-</button>
         </td>
       </tr>
-      {secondaryTopics.map((topic, idx) => (
-        <tr key={topic.id}>
-          <td></td>
-          <EditableCell initialValue={topic.title} focusOnMount={true} prefix={<span>&nbsp;	&nbsp;	&nbsp;	&nbsp;{number}.{idx + 1}&nbsp;&nbsp;</span>} />
-          <EditableCell initialValue={topic.value} />
-          <EditableCell initialValue={topic.unit} />
-          <td>
-            <button className="btn btn-secondary btn-sm" onClick={() => removeSecondaryTopic(topic)}>-</button>
-          </td>
-        </tr>
-      ))}
+      {secondaryTopics.map((topic, idx) => {
+        const snumber = `${number}.${idx + 1}`
+        return (
+          <tr key={topic.id}>
+            <td></td>
+            <EditableCell
+              name={`required_${snumber}_title`}
+              initialValue={topic.title}
+              focusOnMount={true}
+              prefix={<span>{snumber}&nbsp;&nbsp;</span>} />
+            <EditableCell
+              name={`required_${snumber}_value`}
+              initialValue={topic.value}
+            />
+            <EditableCell
+              name={`required_${snumber}_unit`}
+              initialValue={topic.unit}
+            />
+            <td>
+              <button className="btn btn-secondary btn-sm" onClick={() => removeSecondaryTopic(topic)}>-</button>
+            </td>
+          </tr>
+        )
+      })}
     </React.Fragment>
   )
 }
 const PrimaryScoringTopic = ({ topic, removeTopic, number, updateTopic, maxScore, secondaryTopics, setSecondaryTopics }) => {
   const addNewTopic = (e) => {
-    console.log('eiei')
-    // e.stopPropagation()
+    e.preventDefault()
     const newSecondaryTopics = secondaryTopics.slice()
     newSecondaryTopics.push({ id: Date.now(), title: '', value: 1 })
-    console.log('addNewTopic', newSecondaryTopics)
     setSecondaryTopics(newSecondaryTopics)
   }
   const removeSecondaryTopic = (topic) => {
@@ -251,34 +296,63 @@ const PrimaryScoringTopic = ({ topic, removeTopic, number, updateTopic, maxScore
     newSecondaryTopics.splice(index, 1)
     setSecondaryTopics(newSecondaryTopics)
   }
+  const updateSecondaryTopic = (topicId, value) => {
+    const newSecondaryTopics = secondaryTopics.slice()
+    const index = newSecondaryTopics.findIndex((t) => t.id === topicId)
+    newSecondaryTopics[index] = { ...newSecondaryTopics[index], ...value }
+    setSecondaryTopics(newSecondaryTopics)
+  }
+  const primaryMaxScore = secondaryTopics.reduce((a, b) => a + b.value, 0)
   return (
     <React.Fragment>
       <tr>
         <td>
           {number}
         </td>
-        <EditableCell initialValue={topic.title} focusOnMount={true} suffix={
-          <div>
-            <button className="btn btn-primary btn-sm" onClick={addNewTopic}>+</button>
-          </div>
-        } />
-        <EditableCell initialValue={topic.value} onSave={(v) => { updateTopic(topic.id, { value: v }) }} inputType="number" />
-        <td>{(topic.value / maxScore * 100).toPrecision(2)}%</td>
+        <EditableCell
+          name={`scoring_${number}_title`}
+          initialValue={topic.title}
+          focusOnMount={true}
+          suffix={
+            <div>
+              <button className="btn btn-primary btn-sm ml-2" onClick={addNewTopic}>+</button>
+            </div>
+          } />
+        <EditableCell
+          name={`scoring_${number}_value`}
+          initialValue={topic.value}
+          onSave={(v) => { updateTopic(topic.id, { value: parseInt(v) }) }}
+          inputType="number"
+        />
+        <td><strong>{(topic.value / maxScore * 100).toLocaleString()}%</strong></td>
         <td>
           <button className="btn btn-secondary btn-sm" onClick={() => removeTopic(topic)}>-</button>
         </td>
       </tr>
-      {secondaryTopics.map((topic, idx) => (
-        <tr key={topic.id}>
-          <td></td>
-          <EditableCell initialValue={topic.title} focusOnMount={true} prefix={<span>&nbsp;	&nbsp;	&nbsp;	&nbsp;{number}.{idx + 1}&nbsp;&nbsp;</span>} />
-          <EditableCell initialValue={topic.value} />
-          <td>3%</td>
-          <td>
-            <button className="btn btn-secondary btn-sm" onClick={() => removeSecondaryTopic(topic)}>-</button>
-          </td>
-        </tr>
-      ))}
+      {secondaryTopics.map((topic, idx) => {
+        const snumber = `${number}.${idx + 1}`
+        return (
+          <tr key={topic.id}>
+            <td></td>
+            <EditableCell
+              name={`scoring_${snumber}_title`}
+              initialValue={topic.title}
+              focusOnMount={true}
+              prefix={<span>{number}.{idx + 1}&nbsp;&nbsp;</span>}
+            />
+            <EditableCell
+              name={`scoring_${snumber}_value`}
+              initialValue={topic.value}
+              onSave={(v) => { updateSecondaryTopic(topic.id, { value: parseInt(v) }) }}
+              inputType="number"
+            />
+            <td>{(topic.value / primaryMaxScore * 100).toLocaleString()}%</td>
+            <td>
+              <button className="btn btn-secondary btn-sm" onClick={() => removeSecondaryTopic(topic)}>-</button>
+            </td>
+          </tr>
+        )
+      })}
     </React.Fragment>
   )
 }
@@ -291,85 +365,67 @@ const EditableCell = ({
   prefix,
   suffix,
   inputType,
+  name,
   ...restProps }) => {
-  const [editing, setEditing] = useState(focusOnMount);
-  const [value, setValue] = useState(initialValue);
   const inputRef = useRef();
-  const toggleEdit = () => {
-    setEditing(!editing);
-  };
   useEffect(() => {
     var availableTags = [
-      "ActionScript",
-      "AppleScript",
-      "Asp",
-      "BASIC",
-      "C",
-      "C++",
-      "Clojure",
-      "COBOL",
-      "ColdFusion",
-      "Erlang",
-      "Fortran",
-      "Groovy",
-      "Haskell",
-      "Java",
-      "JavaScript",
-      "Lisp",
-      "Perl",
-      "PHP",
-      "Python",
-      "Ruby",
-      "Scala",
-      "Scheme"
+      "GAT",
+      "PAT 1",
+      "PAT 2",
+      "PAT 3",
+      "PAT 4",
+      "PAT 5",
+      "PAT 6",
+      "PAT 7",
+      "GPAX",
+      "9 วิชาสามัญ",
     ];
-    if (editing) {
+    if (editable) {
       $(inputRef.current).autocomplete({
         source: availableTags
       });
     }
-  }, [editing])
+  }, [editable])
 
   useEffect(() => {
-    if (editing) {
+    if (focusOnMount) {
       inputRef.current.focus();
       inputRef.current.select();
     }
-  }, [editing]);
+  }, [focusOnMount]);
   const save = e => {
     try {
-      toggleEdit();
-      setValue(inputRef.current.value)
       onSave && onSave(inputRef.current.value)
     } catch (errInfo) {
       console.log('Save failed:', errInfo);
     }
   };
 
-  let childNode = value
-  if (editable) {
-    childNode = editing ? (
-      <div className="form-group d-flex"
-      >
-        {prefix}
-        {inputType === 'number' ? (
-          <input type="text" className="form-control d-inline-block" ref={inputRef} onPressEnter={save} onBlur={save} defaultValue={value} />
-        ) :
-          (
-            <textarea className="form-control  d-inline-block" ref={inputRef} onPressEnter={save} onBlur={save} defaultValue={value} />
-          )
-        }
-      </div>
-    ) : (
-        <div className="form-group d-flex">
-          <button className="btn" style={{ textAlign: 'left', width: '100%', whiteSpace: 'pre-wrap' }} onClick={toggleEdit}>
-            {prefix}{value}
-          </button>
-          {suffix}
-        </div>
-      );
+  const calHeight = () => {
+    inputRef.current.style.height = ""
+    inputRef.current.style.height = inputRef.current.scrollHeight + 'px'
   }
-  return <td onClick={toggleEdit} style={{ cursor: 'pointer' }} {...restProps}> {childNode}</td >;
+  let childNode = initialValue
+  if (editable) {
+    childNode =
+      (
+        <div className="d-flex align-items-baseline"
+        >
+          {prefix}
+          {inputType === 'number' ? (
+            <input type="number" name={name} className="form-control d-inline-block" ref={inputRef} onPressEnter={save} onBlur={save} defaultValue={initialValue} />
+          ) :
+            (
+              <textarea className="d-hidden form-control  d-inline-block" rows={1} name={name} ref={inputRef} onPressEnter={save} onChange={calHeight} onBlur={save} defaultValue={initialValue} />
+            )
+          }
+          {suffix}
+
+        </div>
+      )
+  }
+  return <td style={{ cursor: 'pointer' }} {...restProps}> {childNode}</td >;
 }
 
 const domContainer = document.querySelector('#add-criterion-form');

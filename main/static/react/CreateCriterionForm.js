@@ -38,114 +38,118 @@ var Form = function Form() {
     'div',
     null,
     React.createElement(
-      'form',
-      null,
+      'div',
+      { className: 'form-group' },
+      React.createElement(
+        'label',
+        { htmlFor: 'majors' },
+        '\u0E40\u0E25\u0E37\u0E2D\u0E01\u0E2A\u0E32\u0E02\u0E32'
+      ),
+      React.createElement('input', {
+        type: 'text',
+        id: 'majors',
+        name: 'majors',
+        className: 'form-control',
+        onKeyUp: function onKeyUp(e) {
+          setSearch(e.target.value.toUpperCase());
+        },
+        placeholder: '\u0E04\u0E49\u0E19\u0E2B\u0E32\u0E0A\u0E37\u0E48\u0E2D\u0E04\u0E13\u0E30/\u0E2A\u0E32\u0E02\u0E32'
+      }),
       React.createElement(
         'div',
-        { className: 'form-group' },
+        { className: 'list-group', style: { zIndex: 1, height: 300, overflow: 'auto' } },
+        majors.map(function (major) {
+          var label = major.title;
+          if (label.toUpperCase().indexOf(search) > -1) return React.createElement(
+            'a',
+            {
+              href: '#',
+              key: major.id,
+              className: 'list-group-item list-group-item-action',
+              onClick: function onClick() {
+                toggleMajor(major);
+              }
+            },
+            label
+          );
+        })
+      )
+    ),
+    selectedMajors.length > 0 && React.createElement(
+      'table',
+      { className: 'table table-bordered' },
+      React.createElement(
+        'thead',
+        null,
         React.createElement(
-          'label',
-          { htmlFor: 'majors' },
-          '\u0E40\u0E25\u0E37\u0E2D\u0E01\u0E2A\u0E32\u0E02\u0E32'
-        ),
-        React.createElement('input', {
-          type: 'text',
-          id: 'majors',
-          className: 'form-control',
-          onKeyUp: function onKeyUp(e) {
-            setSearch(e.target.value.toUpperCase());
-          },
-          placeholder: '\u0E04\u0E49\u0E19\u0E2B\u0E32\u0E0A\u0E37\u0E48\u0E2D\u0E04\u0E13\u0E30/\u0E2A\u0E32\u0E02\u0E32'
-        }),
-        React.createElement(
-          'div',
-          { className: 'list-group', style: { zIndex: 1, height: 300, overflow: 'auto' } },
-          majors.map(function (major) {
-            var label = major.title;
-            if (label.toUpperCase().indexOf(search) > -1) return React.createElement(
-              'a',
-              {
-                href: '#',
-                key: major.id,
-                className: 'list-group-item list-group-item-action',
-                onClick: function onClick() {
-                  toggleMajor(major);
-                }
-              },
-              label
-            );
-          })
-        )
-      ),
-      selectedMajors.length > 0 && React.createElement(
-        'table',
-        { className: 'table table-bordered' },
-        React.createElement(
-          'thead',
+          'tr',
           null,
           React.createElement(
-            'tr',
-            null,
-            React.createElement(
-              'th',
-              { scope: 'col' },
-              '\u0E2A\u0E32\u0E02\u0E32'
-            ),
-            React.createElement(
-              'th',
-              { scope: 'col' },
-              '\u0E08\u0E33\u0E19\u0E27\u0E19\u0E23\u0E31\u0E1A'
-            ),
-            React.createElement('th', { scope: 'col' })
-          )
-        ),
-        React.createElement(
-          'tbody',
-          null,
-          selectedMajors.map(function (major) {
-            var label = major.title;
-            return React.createElement(
-              'tr',
-              { key: 'major-' + major.id },
-              React.createElement(
-                'td',
-                { scope: 'row' },
-                label
-              ),
-              React.createElement(
-                'td',
-                null,
-                React.createElement('input', { type: 'number', className: 'form-control' })
-              ),
-              React.createElement(
-                'td',
-                null,
-                React.createElement(
-                  'button',
-                  { htmltype: 'button', className: 'btn btn-secondary', onClick: function onClick() {
-                      return toggleMajor(major);
-                    } },
-                  '\u0E25\u0E1A'
-                )
-              )
-            );
-          })
+            'th',
+            { scope: 'col' },
+            '\u0E2A\u0E32\u0E02\u0E32'
+          ),
+          React.createElement(
+            'th',
+            { scope: 'col' },
+            '\u0E08\u0E33\u0E19\u0E27\u0E19\u0E23\u0E31\u0E1A'
+          ),
+          React.createElement('th', { scope: 'col' })
         )
       ),
-      React.createElement(RequiredCriteria, null),
-      React.createElement(ScoringCriteria, null)
+      React.createElement(
+        'tbody',
+        null,
+        selectedMajors.map(function (major) {
+          var label = major.title;
+          return React.createElement(
+            'tr',
+            { key: 'major-' + major.id },
+            React.createElement(
+              'td',
+              { scope: 'row' },
+              label
+            ),
+            React.createElement(
+              'td',
+              null,
+              React.createElement('input', { type: 'number', className: 'form-control' })
+            ),
+            React.createElement(
+              'td',
+              null,
+              React.createElement(
+                'button',
+                { htmltype: 'button', className: 'btn btn-secondary', onClick: function onClick() {
+                    return toggleMajor(major);
+                  } },
+                '\u0E25\u0E1A'
+              )
+            )
+          );
+        })
+      )
+    ),
+    React.createElement(RequiredCriteria, null),
+    React.createElement(ScoringCriteria, null),
+    React.createElement(
+      'button',
+      { className: 'btn btn-primary', htmlType: 'submit' },
+      '\u0E2A\u0E23\u0E49\u0E32\u0E07\u0E40\u0E01\u0E13\u0E11\u0E4C'
     )
   );
 };
 var RequiredCriteria = function RequiredCriteria() {
-  var _useState5 = useState([{ id: 1, title: 'PAT 1', value: 22, unit: 'หน่วยกิต' }, { id: 2, title: 'PAT 2', value: 22, unit: 'หน่วยกิต', children: [{ id: 2.1, title: 'PAT 2.2', value: 22, unit: 'หน่วยกิต' }] }]),
+  var _useState5 = useState([{ id: 1, title: 'PAT 1', value: 22, unit: 'หน่วยกิต', children: [] }, { id: 2, title: 'PAT 2', value: 22, unit: 'หน่วยกิต', children: [{ id: 2.1, title: 'PAT 2.2', value: 22, unit: 'หน่วยกิต' }] }]),
       _useState6 = _slicedToArray(_useState5, 2),
       topics = _useState6[0],
       setTopics = _useState6[1];
 
-  var addNewTopic = function addNewTopic(topic) {
+  var addNewTopic = function addNewTopic(e) {
+    e.preventDefault();
     var newTopic = topics.slice();
-    newTopic.push({ id: Date.now(), title: '', value: '', unit: '' });
+    newTopic.push({ id: Date.now(), title: '', value: 1, unit: '', children: [] });
+    console.log(newTopic);
     setTopics(newTopic);
   };
   var removeTopic = function removeTopic(topic) {
@@ -154,6 +158,23 @@ var RequiredCriteria = function RequiredCriteria() {
       return t.id === topic.id;
     });
     newTopics.splice(index, 1);
+    setTopics(newTopics);
+  };
+  var updateTopic = function updateTopic(topicId, value) {
+    console.log('Updating topic', topicId, value);
+    var newTopics = topics.slice();
+    var index = newTopics.findIndex(function (t) {
+      return t.id === topicId;
+    });
+    newTopics[index] = Object.assign({}, newTopics[index], value);
+    setTopics(newTopics);
+  };
+  var _setSecondaryTopics = function _setSecondaryTopics(topicId, newSecondaryTopics) {
+    var newTopics = topics.slice();
+    var index = newTopics.findIndex(function (t) {
+      return t.id === topicId;
+    });
+    newTopics[index] = Object.assign({}, newTopics[index], { children: newSecondaryTopics });
     setTopics(newTopics);
   };
   return React.createElement(
@@ -197,7 +218,16 @@ var RequiredCriteria = function RequiredCriteria() {
         'tbody',
         null,
         topics.map(function (topic, idx) {
-          return React.createElement(PrimaryTopic, { key: topic.id, topic: topic, removeTopic: removeTopic, number: idx + 1 });
+          return React.createElement(PrimaryTopic, {
+            key: topic.id,
+            topic: topic,
+            removeTopic: removeTopic,
+            number: idx + 1,
+            secondaryTopics: topic.children,
+            setSecondaryTopics: function setSecondaryTopics(newSecondaryTopics) {
+              return _setSecondaryTopics(topic.id, newSecondaryTopics);
+            }
+          });
         }),
         React.createElement(
           'tr',
@@ -227,7 +257,8 @@ var ScoringCriteria = function ScoringCriteria() {
       topics = _useState8[0],
       setTopics = _useState8[1];
 
-  var addNewTopic = function addNewTopic() {
+  var addNewTopic = function addNewTopic(e) {
+    e.preventDefault();
     var newTopic = topics.slice();
     newTopic.push({ id: Date.now(), title: '', value: 1, children: [] });
     console.log(newTopic);
@@ -250,7 +281,7 @@ var ScoringCriteria = function ScoringCriteria() {
     newTopics[index] = Object.assign({}, newTopics[index], value);
     setTopics(newTopics);
   };
-  var _setSecondaryTopics = function _setSecondaryTopics(topicId, newSecondaryTopics) {
+  var _setSecondaryTopics2 = function _setSecondaryTopics2(topicId, newSecondaryTopics) {
     var newTopics = topics.slice();
     var index = newTopics.findIndex(function (t) {
       return t.id === topicId;
@@ -310,7 +341,7 @@ var ScoringCriteria = function ScoringCriteria() {
             maxScore: maxScore,
             secondaryTopics: topic.children,
             setSecondaryTopics: function setSecondaryTopics(newSecondaryTopics) {
-              return _setSecondaryTopics(topic.id, newSecondaryTopics);
+              return _setSecondaryTopics2(topic.id, newSecondaryTopics);
             },
             key: topic.id
           });
@@ -339,19 +370,17 @@ var ScoringCriteria = function ScoringCriteria() {
 var PrimaryTopic = function PrimaryTopic(_ref) {
   var topic = _ref.topic,
       removeTopic = _ref.removeTopic,
-      number = _ref.number;
+      number = _ref.number,
+      updateTopic = _ref.updateTopic,
+      secondaryTopics = _ref.secondaryTopics,
+      setSecondaryTopics = _ref.setSecondaryTopics;
 
-  var _useState9 = useState([]),
-      _useState10 = _slicedToArray(_useState9, 2),
-      secondaryTopics = _useState10[0],
-      setSecondaryTopics = _useState10[1];
-
-  var addNewTopic = function addNewTopic() {
+  var addNewTopic = function addNewTopic(e) {
+    e.preventDefault();
     var newSecondaryTopics = secondaryTopics.slice();
-    newSecondaryTopics.push({ id: Date.now(), title: '', value: '', unit: '' });
+    newSecondaryTopics.push({ id: Date.now(), title: '', value: 22, unit: 'หน่วยกิต' });
     setSecondaryTopics(newSecondaryTopics);
   };
-
   var removeSecondaryTopic = function removeSecondaryTopic(topic) {
     var newSecondaryTopics = secondaryTopics.slice();
     var index = newSecondaryTopics.findIndex(function (t) {
@@ -360,6 +389,7 @@ var PrimaryTopic = function PrimaryTopic(_ref) {
     newSecondaryTopics.splice(index, 1);
     setSecondaryTopics(newSecondaryTopics);
   };
+
   return React.createElement(
     React.Fragment,
     null,
@@ -371,17 +401,28 @@ var PrimaryTopic = function PrimaryTopic(_ref) {
         null,
         number
       ),
-      React.createElement(EditableCell, { initialValue: topic.title, focusOnMount: true, suffix: React.createElement(
+      React.createElement(EditableCell, {
+        name: 'required_' + number + '_title',
+        initialValue: topic.title,
+        focusOnMount: true,
+        suffix: React.createElement(
           'div',
           null,
           React.createElement(
             'button',
-            { className: 'btn btn-primary btn-sm', onClick: addNewTopic },
+            { className: 'btn btn-primary btn-sm ml-2', onClick: addNewTopic },
             '+'
           )
-        ) }),
-      React.createElement(EditableCell, { initialValue: topic.value }),
-      React.createElement(EditableCell, { initialValue: topic.unit }),
+        )
+      }),
+      React.createElement(EditableCell, {
+        name: 'required_' + number + '_value',
+        initialValue: topic.value
+      }),
+      React.createElement(EditableCell, {
+        name: 'required_' + number + '_unit',
+        initialValue: topic.unit
+      }),
       React.createElement(
         'td',
         null,
@@ -395,21 +436,29 @@ var PrimaryTopic = function PrimaryTopic(_ref) {
       )
     ),
     secondaryTopics.map(function (topic, idx) {
+      var snumber = number + '.' + (idx + 1);
       return React.createElement(
         'tr',
         { key: topic.id },
         React.createElement('td', null),
-        React.createElement(EditableCell, { initialValue: topic.title, focusOnMount: true, prefix: React.createElement(
+        React.createElement(EditableCell, {
+          name: 'required_' + snumber + '_title',
+          initialValue: topic.title,
+          focusOnMount: true,
+          prefix: React.createElement(
             'span',
             null,
-            '\xA0 \xA0 \xA0 \xA0',
-            number,
-            '.',
-            idx + 1,
+            snumber,
             '\xA0\xA0'
           ) }),
-        React.createElement(EditableCell, { initialValue: topic.value }),
-        React.createElement(EditableCell, { initialValue: topic.unit }),
+        React.createElement(EditableCell, {
+          name: 'required_' + snumber + '_value',
+          initialValue: topic.value
+        }),
+        React.createElement(EditableCell, {
+          name: 'required_' + snumber + '_unit',
+          initialValue: topic.unit
+        }),
         React.createElement(
           'td',
           null,
@@ -435,11 +484,9 @@ var PrimaryScoringTopic = function PrimaryScoringTopic(_ref2) {
       setSecondaryTopics = _ref2.setSecondaryTopics;
 
   var addNewTopic = function addNewTopic(e) {
-    console.log('eiei');
-    // e.stopPropagation()
+    e.preventDefault();
     var newSecondaryTopics = secondaryTopics.slice();
     newSecondaryTopics.push({ id: Date.now(), title: '', value: 1 });
-    console.log('addNewTopic', newSecondaryTopics);
     setSecondaryTopics(newSecondaryTopics);
   };
   var removeSecondaryTopic = function removeSecondaryTopic(topic) {
@@ -450,6 +497,17 @@ var PrimaryScoringTopic = function PrimaryScoringTopic(_ref2) {
     newSecondaryTopics.splice(index, 1);
     setSecondaryTopics(newSecondaryTopics);
   };
+  var updateSecondaryTopic = function updateSecondaryTopic(topicId, value) {
+    var newSecondaryTopics = secondaryTopics.slice();
+    var index = newSecondaryTopics.findIndex(function (t) {
+      return t.id === topicId;
+    });
+    newSecondaryTopics[index] = Object.assign({}, newSecondaryTopics[index], value);
+    setSecondaryTopics(newSecondaryTopics);
+  };
+  var primaryMaxScore = secondaryTopics.reduce(function (a, b) {
+    return a + b.value;
+  }, 0);
   return React.createElement(
     React.Fragment,
     null,
@@ -461,23 +519,36 @@ var PrimaryScoringTopic = function PrimaryScoringTopic(_ref2) {
         null,
         number
       ),
-      React.createElement(EditableCell, { initialValue: topic.title, focusOnMount: true, suffix: React.createElement(
+      React.createElement(EditableCell, {
+        name: 'scoring_' + number + '_title',
+        initialValue: topic.title,
+        focusOnMount: true,
+        suffix: React.createElement(
           'div',
           null,
           React.createElement(
             'button',
-            { className: 'btn btn-primary btn-sm', onClick: addNewTopic },
+            { className: 'btn btn-primary btn-sm ml-2', onClick: addNewTopic },
             '+'
           )
         ) }),
-      React.createElement(EditableCell, { initialValue: topic.value, onSave: function onSave(v) {
-          updateTopic(topic.id, { value: v });
-        }, inputType: 'number' }),
+      React.createElement(EditableCell, {
+        name: 'scoring_' + number + '_value',
+        initialValue: topic.value,
+        onSave: function onSave(v) {
+          updateTopic(topic.id, { value: parseInt(v) });
+        },
+        inputType: 'number'
+      }),
       React.createElement(
         'td',
         null,
-        (topic.value / maxScore * 100).toPrecision(2),
-        '%'
+        React.createElement(
+          'strong',
+          null,
+          (topic.value / maxScore * 100).toLocaleString(),
+          '%'
+        )
       ),
       React.createElement(
         'td',
@@ -492,24 +563,37 @@ var PrimaryScoringTopic = function PrimaryScoringTopic(_ref2) {
       )
     ),
     secondaryTopics.map(function (topic, idx) {
+      var snumber = number + '.' + (idx + 1);
       return React.createElement(
         'tr',
         { key: topic.id },
         React.createElement('td', null),
-        React.createElement(EditableCell, { initialValue: topic.title, focusOnMount: true, prefix: React.createElement(
+        React.createElement(EditableCell, {
+          name: 'scoring_' + snumber + '_title',
+          initialValue: topic.title,
+          focusOnMount: true,
+          prefix: React.createElement(
             'span',
             null,
-            '\xA0 \xA0 \xA0 \xA0',
             number,
             '.',
             idx + 1,
             '\xA0\xA0'
-          ) }),
-        React.createElement(EditableCell, { initialValue: topic.value }),
+          )
+        }),
+        React.createElement(EditableCell, {
+          name: 'scoring_' + snumber + '_value',
+          initialValue: topic.value,
+          onSave: function onSave(v) {
+            updateSecondaryTopic(topic.id, { value: parseInt(v) });
+          },
+          inputType: 'number'
+        }),
         React.createElement(
           'td',
           null,
-          '3%'
+          (topic.value / primaryMaxScore * 100).toLocaleString(),
+          '%'
         ),
         React.createElement(
           'td',
@@ -537,70 +621,51 @@ var EditableCell = function EditableCell(_ref3) {
       prefix = _ref3.prefix,
       suffix = _ref3.suffix,
       inputType = _ref3.inputType,
-      restProps = _objectWithoutProperties(_ref3, ['initialValue', 'editable', 'focusOnMount', 'children', 'onSave', 'prefix', 'suffix', 'inputType']);
-
-  var _useState11 = useState(focusOnMount),
-      _useState12 = _slicedToArray(_useState11, 2),
-      editing = _useState12[0],
-      setEditing = _useState12[1];
-
-  var _useState13 = useState(initialValue),
-      _useState14 = _slicedToArray(_useState13, 2),
-      value = _useState14[0],
-      setValue = _useState14[1];
+      name = _ref3.name,
+      restProps = _objectWithoutProperties(_ref3, ['initialValue', 'editable', 'focusOnMount', 'children', 'onSave', 'prefix', 'suffix', 'inputType', 'name']);
 
   var inputRef = useRef();
-  var toggleEdit = function toggleEdit() {
-    setEditing(!editing);
-  };
   useEffect(function () {
-    var availableTags = ["ActionScript", "AppleScript", "Asp", "BASIC", "C", "C++", "Clojure", "COBOL", "ColdFusion", "Erlang", "Fortran", "Groovy", "Haskell", "Java", "JavaScript", "Lisp", "Perl", "PHP", "Python", "Ruby", "Scala", "Scheme"];
-    if (editing) {
+    var availableTags = ["GAT", "PAT 1", "PAT 2", "PAT 3", "PAT 4", "PAT 5", "PAT 6", "PAT 7", "GPAX", "9 วิชาสามัญ"];
+    if (editable) {
       $(inputRef.current).autocomplete({
         source: availableTags
       });
     }
-  }, [editing]);
+  }, [editable]);
 
   useEffect(function () {
-    if (editing) {
+    if (focusOnMount) {
       inputRef.current.focus();
       inputRef.current.select();
     }
-  }, [editing]);
+  }, [focusOnMount]);
   var save = function save(e) {
     try {
-      toggleEdit();
-      setValue(inputRef.current.value);
       onSave && onSave(inputRef.current.value);
     } catch (errInfo) {
       console.log('Save failed:', errInfo);
     }
   };
 
-  var childNode = value;
+  var calHeight = function calHeight() {
+    inputRef.current.style.height = "";
+    inputRef.current.style.height = inputRef.current.scrollHeight + 'px';
+  };
+  var childNode = initialValue;
   if (editable) {
-    childNode = editing ? React.createElement(
+    childNode = React.createElement(
       'div',
-      { className: 'form-group d-flex'
+      { className: 'd-flex align-items-baseline'
       },
       prefix,
-      inputType === 'number' ? React.createElement('input', { type: 'text', className: 'form-control d-inline-block', ref: inputRef, onPressEnter: save, onBlur: save, defaultValue: value }) : React.createElement('textarea', { className: 'form-control  d-inline-block', ref: inputRef, onPressEnter: save, onBlur: save, defaultValue: value })
-    ) : React.createElement(
-      'div',
-      { className: 'form-group d-flex' },
-      React.createElement(
-        'button',
-        { className: 'btn', style: { textAlign: 'left', width: '100%', whiteSpace: 'pre-wrap' }, onClick: toggleEdit },
-        prefix,
-        value
-      ),
+      inputType === 'number' ? React.createElement('input', { type: 'number', name: name, className: 'form-control d-inline-block', ref: inputRef, onPressEnter: save, onBlur: save, defaultValue: initialValue }) : React.createElement('textarea', { className: 'd-hidden form-control  d-inline-block', rows: 1, name: name, ref: inputRef, onPressEnter: save, onChange: calHeight, onBlur: save, defaultValue: initialValue }),
       suffix
     );
   }
   return React.createElement(
     'td',
-    Object.assign({ onClick: toggleEdit, style: { cursor: 'pointer' } }, restProps),
+    Object.assign({ style: { cursor: 'pointer' } }, restProps),
     ' ',
     childNode
   );
