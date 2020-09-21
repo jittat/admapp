@@ -15,6 +15,8 @@ from appl.models import ProjectUploadedDocument, UploadedDocument, ExamScoreProv
 from backoffice.views.permissions import can_user_view_project, can_user_view_applicant_in_major, can_user_view_applicants_in_major
 from backoffice.decorators import user_login_required
 
+from criteria.models import CurriculumMajor
+
 
 @user_login_required
 def index(request):
@@ -72,18 +74,18 @@ def create(request, project_id, round_id):
         faculty = None
         user_major_number = user.profile.ANY_MAJOR
 
-    majors = project.major_set.select_related(
-        'faculty').order_by('faculty_id').all()
+    majors = CurriculumMajor.objects.filter(
+        admission_project_id=project_id).select_related('cupt_code')
 
     if faculty:
-        majors = [m for m in majors if m.faculty_id == faculty.id]
+        majors = [m for m in majors if m.cupt_code.faculty_id == faculty.id]
 
     return render(request,
                   'criterion/create.html',
                   {'project': project,
                    'admission_round': admission_round,
                    'faculty': faculty,
-                   'majors': json.dumps([dict({"id": m.id, "title": m.title}) for m in majors]),
+                   'majors': json.dumps([dict({"id": m.id, "title": ("%s (%s) %s") % (m.cupt_code.title, m.cupt_code.program_type, m.cupt_code.major_title)}) for m in majors]),
 
                    'user_major_number': user_major_number,
                    'any_major': user.profile.ANY_MAJOR,
