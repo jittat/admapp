@@ -41,6 +41,7 @@ class CurriculumMajor(models.Model):
                                           on_delete=models.CASCADE)
     cupt_code = models.ForeignKey(MajorCuptCode,
                                   on_delete=models.CASCADE)
+    faculty = models.ForeignKey(Faculty, on_delete=models.CASCADE)
     major = models.ForeignKey(Major,
                               on_delete=models.CASCADE, null=True)
     admission_criterias = models.ManyToManyField(
