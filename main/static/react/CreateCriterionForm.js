@@ -4,6 +4,8 @@ var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = [
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 var e = React.createElement;
 var _React = React,
     useState = _React.useState,
@@ -102,7 +104,9 @@ var Form = function Form() {
       React.createElement(
         'tbody',
         null,
-        selectedMajors.map(function (major) {
+        selectedMajors.map(function (major, idx) {
+          var _React$createElement;
+
           var label = major.title;
           return React.createElement(
             'tr',
@@ -110,12 +114,13 @@ var Form = function Form() {
             React.createElement(
               'td',
               { scope: 'row' },
-              label
+              label,
+              React.createElement('input', (_React$createElement = { type: 'text', value: major.id }, _defineProperty(_React$createElement, 'type', 'hidden'), _defineProperty(_React$createElement, 'name', 'majors_' + (idx + 1) + '_id'), _defineProperty(_React$createElement, 'required', true), _React$createElement))
             ),
             React.createElement(
               'td',
               null,
-              React.createElement('input', { type: 'number', className: 'form-control' })
+              React.createElement('input', { type: 'number', className: 'form-control', name: 'majors_' + (idx + 1) + '_slot', required: true })
             ),
             React.createElement(
               'td',

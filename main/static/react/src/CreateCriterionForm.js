@@ -54,12 +54,14 @@ const Form = () => {
           </tr>
         </thead>
         <tbody>
-          {selectedMajors.map(major => {
+          {selectedMajors.map((major, idx) => {
             const label = major.title
             return (
               <tr key={`major-${major.id}`}>
-                <td scope="row">{label}</td>
-                <td><input type="number" className="form-control" /></td>
+                <td scope="row">{label}
+                  <input type="text" value={major.id} type="hidden" name={`majors_${idx + 1}_id`} required />
+                </td>
+                <td><input type="number" className="form-control" name={`majors_${idx + 1}_slot`} required /></td>
                 <td><button htmltype="button" className="btn btn-secondary" onClick={() => toggleMajor(major)}>ลบ</button></td>
               </tr>
             )
