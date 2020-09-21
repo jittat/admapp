@@ -16,20 +16,36 @@ var majors = JSON.parse(document.currentScript.getAttribute('data-majors'));
 var dataRequired = JSON.parse(document.currentScript.getAttribute('data-required'));
 var dataScoring = JSON.parse(document.currentScript.getAttribute('data-scoring'));
 var Form = function Form() {
-  var _useState = useState(''),
+  return React.createElement(
+    'div',
+    null,
+    React.createElement(SelectMajors, null),
+    React.createElement(RequiredCriteria, { initialTopics: dataRequired }),
+    React.createElement(ScoringCriteria, { initialTopics: dataScoring }),
+    React.createElement(
+      'button',
+      { className: 'btn btn-primary', htmlType: 'submit' },
+      '\u0E2A\u0E23\u0E49\u0E32\u0E07\u0E40\u0E01\u0E13\u0E11\u0E4C'
+    )
+  );
+};
+var SelectMajors = function SelectMajors() {
+  var _useState = useState([]),
       _useState2 = _slicedToArray(_useState, 2),
-      search = _useState2[0],
-      setSearch = _useState2[1];
+      selectedMajors = _useState2[0],
+      setSelectedMajors = _useState2[1];
 
-  var _useState3 = useState([]),
-      _useState4 = _slicedToArray(_useState3, 2),
-      selectedMajors = _useState4[0],
-      setSelectedMajors = _useState4[1];
-
+  var inputRef = useRef();
+  var jRef = useRef();
+  var choices = majors.map(function (m) {
+    return { label: m.title, value: m.id, raw: m };
+  });
+  // fix for jQuery
+  jRef.current = { selectedMajors: selectedMajors };
   var toggleMajor = function toggleMajor(major) {
-    var newSelectedMajors = selectedMajors.slice();
+    var newSelectedMajors = jRef.current.selectedMajors.slice();
     var index = newSelectedMajors.findIndex(function (m) {
-      return m.id === major.id;
+      return m.id == major.id;
     });
     if (index > -1) {
       newSelectedMajors.splice(index, 1);
@@ -38,47 +54,29 @@ var Form = function Form() {
     }
     setSelectedMajors(newSelectedMajors);
   };
+  useEffect(function () {
+    $(inputRef.current).autocomplete({
+      source: choices,
+      minLength: 0,
+      select: function select(e, ui) {
+        toggleMajor(ui.item.raw);
+        $(inputRef.current).blur();
+        return false;
+      }
+    }).focus(function () {
+      $(inputRef.current).autocomplete('search');
+    });
+  }, []);
+
   return React.createElement(
     'div',
-    null,
+    { className: 'form-group' },
     React.createElement(
-      'div',
-      { className: 'form-group' },
-      React.createElement(
-        'label',
-        { htmlFor: 'majors' },
-        '\u0E40\u0E25\u0E37\u0E2D\u0E01\u0E2A\u0E32\u0E02\u0E32'
-      ),
-      React.createElement('input', {
-        type: 'text',
-        id: 'majors',
-        name: 'majors',
-        className: 'form-control',
-        onKeyUp: function onKeyUp(e) {
-          setSearch(e.target.value.toUpperCase());
-        },
-        placeholder: '\u0E04\u0E49\u0E19\u0E2B\u0E32\u0E0A\u0E37\u0E48\u0E2D\u0E04\u0E13\u0E30/\u0E2A\u0E32\u0E02\u0E32'
-      }),
-      React.createElement(
-        'div',
-        { className: 'list-group', style: { zIndex: 1, height: 300, overflow: 'auto' } },
-        majors.map(function (major) {
-          var label = major.title;
-          if (label.toUpperCase().indexOf(search) > -1) return React.createElement(
-            'a',
-            {
-              href: '#',
-              key: major.id,
-              className: 'list-group-item list-group-item-action',
-              onClick: function onClick() {
-                toggleMajor(major);
-              }
-            },
-            label
-          );
-        })
-      )
+      'label',
+      { htmlFor: 'majors' },
+      '\u0E40\u0E25\u0E37\u0E2D\u0E01\u0E2A\u0E32\u0E02\u0E32'
     ),
+    React.createElement('input', { ref: inputRef, className: 'form-control d-inline-block mb-2', id: 'search-major', name: 'search', type: 'text', placeholder: '\u0E04\u0E49\u0E19\u0E2B\u0E32\u0E0A\u0E37\u0E48\u0E2D\u0E2A\u0E32\u0E02\u0E32' }),
     selectedMajors.length > 0 && React.createElement(
       'table',
       { className: 'table table-bordered' },
@@ -136,13 +134,6 @@ var Form = function Form() {
           );
         })
       )
-    ),
-    React.createElement(RequiredCriteria, { initialTopics: dataRequired }),
-    React.createElement(ScoringCriteria, { initialTopics: dataScoring }),
-    React.createElement(
-      'button',
-      { className: 'btn btn-primary', htmlType: 'submit' },
-      '\u0E2A\u0E23\u0E49\u0E32\u0E07\u0E40\u0E01\u0E13\u0E11\u0E4C'
     )
   );
 };
@@ -150,10 +141,10 @@ var RequiredCriteria = function RequiredCriteria(_ref) {
   var _ref$initialTopics = _ref.initialTopics,
       initialTopics = _ref$initialTopics === undefined ? [] : _ref$initialTopics;
 
-  var _useState5 = useState(initialTopics),
-      _useState6 = _slicedToArray(_useState5, 2),
-      topics = _useState6[0],
-      setTopics = _useState6[1];
+  var _useState3 = useState(initialTopics),
+      _useState4 = _slicedToArray(_useState3, 2),
+      topics = _useState4[0],
+      setTopics = _useState4[1];
 
   var addNewTopic = function addNewTopic(e) {
     e.preventDefault();
@@ -256,10 +247,10 @@ var ScoringCriteria = function ScoringCriteria(_ref2) {
   var _ref2$initialTopics = _ref2.initialTopics,
       initialTopics = _ref2$initialTopics === undefined ? [] : _ref2$initialTopics;
 
-  var _useState7 = useState(initialTopics),
-      _useState8 = _slicedToArray(_useState7, 2),
-      topics = _useState8[0],
-      setTopics = _useState8[1];
+  var _useState5 = useState(initialTopics),
+      _useState6 = _slicedToArray(_useState5, 2),
+      topics = _useState6[0],
+      setTopics = _useState6[1];
 
   var addNewTopic = function addNewTopic(e) {
     e.preventDefault();
@@ -417,7 +408,8 @@ var PrimaryTopic = function PrimaryTopic(_ref3) {
             { className: 'btn btn-primary btn-sm ml-2', onClick: addNewTopic },
             '+'
           )
-        )
+        ),
+        inputProps: { required: true }
       }),
       React.createElement(EditableCell, {
         name: 'required_' + number + '_value',
@@ -454,7 +446,9 @@ var PrimaryTopic = function PrimaryTopic(_ref3) {
             null,
             snumber,
             '\xA0\xA0'
-          ) }),
+          ),
+          inputProps: { required: true }
+        }),
         React.createElement(EditableCell, {
           name: 'required_' + snumber + '_value',
           initialValue: topic.value
@@ -535,7 +529,9 @@ var PrimaryScoringTopic = function PrimaryScoringTopic(_ref4) {
             { className: 'btn btn-primary btn-sm ml-2', onClick: addNewTopic },
             '+'
           )
-        ) }),
+        ),
+        inputProps: { required: true }
+      }),
       React.createElement(EditableCell, {
         name: 'scoring_' + number + '_value',
         initialValue: topic.value,
@@ -583,7 +579,8 @@ var PrimaryScoringTopic = function PrimaryScoringTopic(_ref4) {
             '.',
             idx + 1,
             '\xA0\xA0'
-          )
+          ),
+          inputProps: { required: true }
         }),
         React.createElement(EditableCell, {
           name: 'scoring_' + snumber + '_value',
@@ -626,14 +623,20 @@ var EditableCell = function EditableCell(_ref5) {
       suffix = _ref5.suffix,
       inputType = _ref5.inputType,
       name = _ref5.name,
-      restProps = _objectWithoutProperties(_ref5, ['initialValue', 'editable', 'focusOnMount', 'children', 'onSave', 'prefix', 'suffix', 'inputType', 'name']);
+      inputProps = _ref5.inputProps,
+      restProps = _objectWithoutProperties(_ref5, ['initialValue', 'editable', 'focusOnMount', 'children', 'onSave', 'prefix', 'suffix', 'inputType', 'name', 'inputProps']);
 
   var inputRef = useRef();
   useEffect(function () {
     var availableTags = ["GAT", "PAT 1", "PAT 2", "PAT 3", "PAT 4", "PAT 5", "PAT 6", "PAT 7", "GPAX", "9 วิชาสามัญ"];
     if (editable) {
       $(inputRef.current).autocomplete({
-        source: availableTags
+        source: availableTags,
+        minLength: 0
+      }).focus(function () {
+        if (inputRef.current.value == "") {
+          $(inputRef.current).autocomplete("search");
+        }
       });
     }
   }, [editable]);
@@ -663,7 +666,7 @@ var EditableCell = function EditableCell(_ref5) {
       { className: 'd-flex align-items-baseline'
       },
       prefix,
-      inputType === 'number' ? React.createElement('input', { type: 'number', name: name, className: 'form-control d-inline-block', ref: inputRef, onPressEnter: save, onBlur: save, defaultValue: initialValue }) : React.createElement('textarea', { className: 'd-hidden form-control  d-inline-block', rows: 1, name: name, ref: inputRef, onPressEnter: save, onChange: calHeight, onBlur: save, defaultValue: initialValue }),
+      inputType === 'number' ? React.createElement('input', Object.assign({ type: 'number', name: name, className: 'form-control d-inline-block', ref: inputRef, onPressEnter: save, onBlur: save, defaultValue: initialValue }, inputProps)) : React.createElement('textarea', Object.assign({ className: 'form-control d-inline-block', rows: 1, name: name, ref: inputRef, onPressEnter: save, onChange: calHeight, onBlur: save, defaultValue: initialValue }, inputProps)),
       suffix
     );
   }

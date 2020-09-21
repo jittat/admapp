@@ -6,11 +6,25 @@ let majors = JSON.parse(document.currentScript.getAttribute('data-majors'))
 let dataRequired = JSON.parse(document.currentScript.getAttribute('data-required'))
 let dataScoring = JSON.parse(document.currentScript.getAttribute('data-scoring'))
 const Form = () => {
-  const [search, setSearch] = useState('')
+  return (
+    <div>
+      <SelectMajors />
+      <RequiredCriteria initialTopics={dataRequired} />
+      <ScoringCriteria initialTopics={dataScoring} />
+      <button className="btn btn-primary" htmlType="submit">สร้างเกณฑ์</button>
+    </div>
+  )
+}
+const SelectMajors = () => {
   const [selectedMajors, setSelectedMajors] = useState([])
+  const inputRef = useRef()
+  const jRef = useRef()
+  const choices = majors.map((m) => ({ label: m.title, value: m.id, raw: m }))
+  // fix for jQuery
+  jRef.current = { selectedMajors: selectedMajors }
   const toggleMajor = (major) => {
-    const newSelectedMajors = selectedMajors.slice()
-    const index = newSelectedMajors.findIndex((m) => m.id === major.id)
+    const newSelectedMajors = jRef.current.selectedMajors.slice()
+    const index = newSelectedMajors.findIndex((m) => m.id == major.id)
     if (index > -1) {
       newSelectedMajors.splice(index, 1)
     } else {
@@ -18,33 +32,24 @@ const Form = () => {
     }
     setSelectedMajors(newSelectedMajors)
   }
+  useEffect(() => {
+    $(inputRef.current).autocomplete({
+      source: choices,
+      minLength: 0,
+      select: (e, ui) => {
+        toggleMajor(ui.item.raw);
+        $(inputRef.current).blur()
+        return false;
+      },
+    }).focus(function () {
+      $(inputRef.current).autocomplete('search')
+    })
+  }, [])
+
   return (
-    <div>
-      <div className="form-group">
-        <label htmlFor="majors">เลือกสาขา</label>
-        <input
-          type="text"
-          id="majors"
-          name="majors"
-          className="form-control"
-          onKeyUp={(e) => { setSearch((e.target.value).toUpperCase()) }}
-          placeholder="ค้นหาชื่อคณะ/สาขา"
-        />
-        <div className="list-group" style={{ zIndex: 1, height: 300, overflow: 'auto' }}>
-          {majors.map(major => {
-            const label = major.title
-            if (label.toUpperCase().indexOf(search) > -1)
-              return (
-                <a
-                  href="#"
-                  key={major.id}
-                  className="list-group-item list-group-item-action"
-                  onClick={() => { toggleMajor(major) }}
-                >{label}</a>
-              )
-          })}
-        </div>
-      </div>
+    <div className="form-group">
+      <label htmlFor="majors">เลือกสาขา</label>
+      <input ref={inputRef} className="form-control d-inline-block mb-2" id="search-major" name="search" type="text" placeholder="ค้นหาชื่อสาขา" />
       {selectedMajors.length > 0 && <table className="table table-bordered">
         <thead>
           <tr>
@@ -68,9 +73,6 @@ const Form = () => {
           })}
         </tbody>
       </table>}
-      <RequiredCriteria initialTopics={dataRequired} />
-      <ScoringCriteria initialTopics={dataScoring} />
-      <button className="btn btn-primary" htmlType="submit">สร้างเกณฑ์</button>
     </div>
   )
 }
@@ -236,6 +238,7 @@ const PrimaryTopic = ({ topic, removeTopic, number, updateTopic, secondaryTopics
               <button className="btn btn-primary btn-sm ml-2" onClick={addNewTopic}>+</button>
             </div>
           }
+          inputProps={{ required: true }}
         />
         <EditableCell
           name={`required_${number}_value`}
@@ -258,7 +261,9 @@ const PrimaryTopic = ({ topic, removeTopic, number, updateTopic, secondaryTopics
               name={`required_${snumber}_title`}
               initialValue={topic.title}
               focusOnMount={true}
-              prefix={<span>{snumber}&nbsp;&nbsp;</span>} />
+              prefix={<span>{snumber}&nbsp;&nbsp;</span>}
+              inputProps={{ required: true }}
+            />
             <EditableCell
               name={`required_${snumber}_value`}
               initialValue={topic.value}
@@ -310,7 +315,9 @@ const PrimaryScoringTopic = ({ topic, removeTopic, number, updateTopic, maxScore
             <div>
               <button className="btn btn-primary btn-sm ml-2" onClick={addNewTopic}>+</button>
             </div>
-          } />
+          }
+          inputProps={{ required: true }}
+        />
         <EditableCell
           name={`scoring_${number}_value`}
           initialValue={topic.value}
@@ -332,6 +339,7 @@ const PrimaryScoringTopic = ({ topic, removeTopic, number, updateTopic, maxScore
               initialValue={topic.title}
               focusOnMount={true}
               prefix={<span>{number}.{idx + 1}&nbsp;&nbsp;</span>}
+              inputProps={{ required: true }}
             />
             <EditableCell
               name={`scoring_${snumber}_value`}
@@ -359,6 +367,7 @@ const EditableCell = ({
   suffix,
   inputType,
   name,
+  inputProps,
   ...restProps }) => {
   const inputRef = useRef();
   useEffect(() => {
@@ -376,7 +385,12 @@ const EditableCell = ({
     ];
     if (editable) {
       $(inputRef.current).autocomplete({
-        source: availableTags
+        source: availableTags,
+        minLength: 0,
+      }).focus(function () {
+        if (inputRef.current.value == "") {
+          $(inputRef.current).autocomplete("search");
+        }
       });
     }
   }, [editable])
@@ -407,10 +421,10 @@ const EditableCell = ({
         >
           {prefix}
           {inputType === 'number' ? (
-            <input type="number" name={name} className="form-control d-inline-block" ref={inputRef} onPressEnter={save} onBlur={save} defaultValue={initialValue} />
+            <input type="number" name={name} className="form-control d-inline-block" ref={inputRef} onPressEnter={save} onBlur={save} defaultValue={initialValue} {...inputProps} />
           ) :
             (
-              <textarea className="d-hidden form-control  d-inline-block" rows={1} name={name} ref={inputRef} onPressEnter={save} onChange={calHeight} onBlur={save} defaultValue={initialValue} />
+              <textarea className="form-control d-inline-block" rows={1} name={name} ref={inputRef} onPressEnter={save} onChange={calHeight} onBlur={save} defaultValue={initialValue} {...inputProps} />
             )
           }
           {suffix}
