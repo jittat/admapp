@@ -1,14 +1,52 @@
-{% extends 'backoffice/base.html' %}
-{% block content %}
+{% extends 'backoffice/base.html' %} {% block content %}
 <div class="row">
   <div class="col-md-12">
-    <h2>
-      แก้ไขเกณฑ์ โครงการ{{ project.title }} ({{ admission_round }}) </h2>
-
+    <h2>แก้ไขเกณฑ์ โครงการ{{ project.title }} ({{ admission_round }})</h2>
+    <table class="table">
+      <tr>
+        <td>สาขาวิชาที่ใช้เกณฑ์</td>
+        <td>เงื่อนไข</td>
+        <td>เกณฑ์การรับสมัคร</td>
+        <td>แก้ไข</td>
+      </tr>
+      {% for admission_criteria in admission_criterias %}
+      {% with scorecriterias=admission_criteria.scorecriteria_set.all %}
+      <tr>
+        <td>
+          <ul>
+            {% for major in admission_criteria.curriculummajor_set.all %}
+            <li>{{major.cupt_code.title}}</li>
+            {% endfor %}
+          </ul>
+        </td>
+        <td>
+          <ul>
+          {% for scorecriteria in scorecriterias %}
+            {% if scorecriteria.criteria_type == "required" %}
+            <li>
+              {{scorecriteria.description}} ไม่ต่ำกว่า {{scorecriteria.value|floatformat:1}}
+              {{scorecriteria.unit}}
+            </li>
+            {% endif %}
+          {% endfor %}
+          </ul>
+        </td>
+        <td>
+          <ul>
+            {% for scorecriteria in scorecriterias %}
+            {% if scorecriteria.criteria_type == "scoring" %}
+            <li>{{scorecriteria.description}}</li>
+            {% endif %}
+            {% endfor %}
+          </ul>
+        </td>
+        <td>ปุ่มแก้ไข</td>
+      {% endwith %} {% endfor %}
+      </tr>
+    </table>
     {% if notice %}
     <div class="alert alert-success">{{ notice }}</div>
     {% endif %}
-
   </div>
 </div>
 {% endblock %}
