@@ -8,3 +8,5 @@ db.sqlite3
 ENV
 *.mo
 main/static/react/node_modules/*
+
+.vscode
