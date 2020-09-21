@@ -1,6 +1,7 @@
 import csv
 import json
 from datetime import datetime
+from django.core import serializers
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
@@ -47,7 +48,6 @@ def index(request):
                    'admission_round': admission_round,
                    'faculty': faculty,
                    'majors': majors,
-
                    'user_major_number': user_major_number,
                    'any_major': user.profile.ANY_MAJOR,
                    })
@@ -61,6 +61,9 @@ def create(request, project_id, round_id):
 
     if not can_user_view_project(user, project):
         return redirect(reverse('criteria:index'))
+
+    if request.method == 'POST':
+        return render(request, 'criterion/complete.html', {'project': project, 'admission_round': admission_round})
 
     if not user.profile.is_admission_admin:
         faculty = user.profile.faculty
@@ -80,7 +83,7 @@ def create(request, project_id, round_id):
                   {'project': project,
                    'admission_round': admission_round,
                    'faculty': faculty,
-                   'majors': majors,
+                   'majors': json.dumps([dict({"id": m.id, "title": m.title}) for m in majors]),
 
                    'user_major_number': user_major_number,
                    'any_major': user.profile.ANY_MAJOR,

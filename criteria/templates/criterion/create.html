@@ -1,5 +1,6 @@
 {% extends 'backoffice/base.html' %}
 {% block content %}
+{% load static %}
 <div class="row">
   <div class="col-md-12">
     <h2>
@@ -8,7 +9,28 @@
     {% if notice %}
     <div class="alert alert-success">{{ notice }}</div>
     {% endif %}
+    <form method="post">
+      {% csrf_token %}
+      <div id="add-criterion-form"></div>
+    </form>
+    <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
+    <!-- Load our React component. -->
 
+    <script src="{% static "react/CreateCriterionForm.js" %}" data-majors='{{ majors|safe }}'
+      data-required='[{"id":1,"title":"PAT 1","value":22,"unit":"หน่วยกิต","children":[]},{"id":2,"title":"PAT 2","value":22,"unit":"หน่วยกิต","children":[{"id":2.1,"title":"PAT 2.2","value":22,"unit":"หน่วยกิต"}]}]'
+      data-scoring='[{"id":1,"title":"ผลการเรียนเฉลี่ยสะสม (GPAX)","value":1,"children":[{"id":1.1,"title":"ผลการเรียนเฉลี่ยสะสม (GPAX)","value":1}]},{"id":2,"title":"การสอบปฏิบัติเครื่องดนตรีตะวันตก","value":1,"children":[{"id":2.1,"title":"ความรู้พื้นฐานทางทฤษฎีและประวัติศาสตร์ดนตรีตะวันตก","value":1}]}]'></script>
+    <style>
+      input.form-control:not(:focus):not(:hover),
+      textarea.form-control:not(:focus):not(:hover) {
+        border-width: 0;
+      }
+
+      input,
+      textarea {
+        resize: none;
+      }
+    </style>
   </div>
 </div>
 {% endblock %}
