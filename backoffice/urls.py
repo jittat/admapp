@@ -105,7 +105,4 @@ urlpatterns = [
          adjustment.major_index,
          name='adjustment-major'),
     url(r'^criteria/', include('criteria.urls')),
-    url(r'^criterion/(\d+)/$', criterion.index, name='criterion-index'),
-    url(r'^projects/(\d+)/(\d+)/add-major$',
-        criterion.create, name='criterion-create'),
 ]
