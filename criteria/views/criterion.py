@@ -17,11 +17,8 @@ from backoffice.decorators import user_login_required
 
 
 @user_login_required
-def index(request):
+def project_index(request, project_id, round_id):
     user = request.user
-    # mock
-    project_id = 1
-    round_id = 2
     project = get_object_or_404(AdmissionProject, pk=project_id)
     admission_round = get_object_or_404(AdmissionRound, pk=round_id)
     project_round = project.get_project_round_for(admission_round)
