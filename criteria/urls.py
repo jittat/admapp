@@ -7,6 +7,8 @@ from criteria.views import criterion
 app_name = 'criteria'
 
 urlpatterns = [
-    url(r'^$', criterion.index, name='criterion-index'),
-    url(r'^(\d+)/(\d+)/add-major$', criterion.create, name='criterion-create'),
+    path('', criterion.project_index, {'project_id':1, 'round_id':2}, name='project-index-default'),
+    path('<int:project_id>/<int:round_id>/', criterion.project_index, name='project-index'),
+
+    path('<int:project_id>/<int:round_id>/add-major/', criterion.create, name='create'),
 ]
