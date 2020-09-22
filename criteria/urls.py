@@ -11,4 +11,6 @@ urlpatterns = [
     path('<int:project_id>/<int:round_id>/', criterion.project_index, name='project-index'),
 
     path('<int:project_id>/<int:round_id>/add-major/', criterion.create, name='create'),
+
+    path('<int:project_id>/<int:round_id>/curriculum-majors/', criterion.select_curriculum_major, name='curriculum-majors'),
 ]

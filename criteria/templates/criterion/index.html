@@ -2,6 +2,10 @@
 <div class="row">
   <div class="col-md-12">
     <h2>แก้ไขเกณฑ์ โครงการ{{ project.title }} ({{ admission_round }})</h2>
+    <div class="alert alert-info">
+      เลือกสาขาวิชาที่เปิดรับในโครงการ{{ project.title }}
+      <a class="btn btn-sm btn-info" href="{% url 'backoffice:criteria:curriculum-majors' project.id admission_round.id %}">เลือกสาขาวิชา</a>
+    </div>
     <table class="table">
       <tr>
         <td>สาขาวิชาที่ใช้เกณฑ์</td>

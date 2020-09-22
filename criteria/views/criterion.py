@@ -18,7 +18,7 @@ from appl.models import ProjectUploadedDocument, UploadedDocument, ExamScoreProv
 from backoffice.views.permissions import can_user_view_project, can_user_view_applicant_in_major, can_user_view_applicants_in_major
 from backoffice.decorators import user_login_required
 
-from criteria.models import CurriculumMajor, AdmissionCriteria, ScoreCriteria, CurriculumMajorAdmissionCriteria
+from criteria.models import CurriculumMajor, AdmissionCriteria, ScoreCriteria, CurriculumMajorAdmissionCriteria, MajorCuptCode
 
 
 @user_login_required
@@ -33,24 +33,18 @@ def project_index(request, project_id, round_id):
 
     if not user.profile.is_admission_admin:
         faculty = user.profile.faculty
-        user_major_number = user.profile.major_number
         admission_criterias = AdmissionCriteria.objects.filter(
             admission_project_id=project_id, faculty_id=faculty.id)
     else:
         faculty = None
-        user_major_number = user.profile.ANY_MAJOR
         admission_criterias = AdmissionCriteria.objects.filter(
             admission_project_id=project_id)
-
-    admission_criterias
 
     return render(request,
                   'criterion/index.html',
                   {'project': project,
                    'admission_round': admission_round,
                    'faculty': faculty,
-                   'user_major_number': user_major_number,
-                   'any_major': user.profile.ANY_MAJOR,
                    'admission_criterias': admission_criterias
                    })
 
@@ -67,10 +61,8 @@ def create(request, project_id, round_id):
 
     if not user.profile.is_admission_admin:
         faculty = user.profile.faculty
-        user_major_number = user.profile.major_number
     else:
         faculty = None
-        user_major_number = user.profile.ANY_MAJOR
 
     majors = CurriculumMajor.objects.filter(
         admission_project_id=project_id).select_related('cupt_code')
@@ -138,6 +130,40 @@ def create(request, project_id, round_id):
                    'admission_round': admission_round,
                    'faculty': faculty,
                    'majors': json.dumps([dict({"id": m.id, "title": ("%s (%s) %s") % (m.cupt_code.title, m.cupt_code.program_type, m.cupt_code.major_title)}) for m in sorted(majors, key=(lambda m: (m.cupt_code.program_code, m.cupt_code.major_title)))]),
-                   'user_major_number': user_major_number,
-                   'any_major': user.profile.ANY_MAJOR,
                    })
+
+
+@user_login_required
+def select_curriculum_major(request, project_id, round_id):
+    user = request.user
+    project = get_object_or_404(AdmissionProject, pk=project_id)
+    admission_round = get_object_or_404(AdmissionRound, pk=round_id)
+    project_round = project.get_project_round_for(admission_round)
+
+    if not can_user_view_project(user, project):
+        return redirect(reverse('criteria:index'))
+
+    if not user.profile.is_admission_admin:
+        faculty = user.profile.faculty
+    else:
+        faculty = None
+
+    major_choices = MajorCuptCode.objects.filter(faculty=faculty)
+
+    curriculum_majors = CurriculumMajor.objects.filter(admission_project_id=project_id,
+                                                       faculty=faculty).all()
+
+    selected_cupt_codes = set([m.cupt_code_id for m in curriculum_majors])
+    for major in major_choices:
+        major.is_selected = major.id in selected_cupt_codes
+
+    return render(request,
+                  'criterion/select_curriculum_majors.html',
+                  {'project': project,
+                   'admission_round': admission_round,
+                   'faculty': faculty,
+                   'major_choices': major_choices,
+                   })
+
+
+    

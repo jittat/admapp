@@ -1,0 +1,25 @@
+{% extends 'backoffice/base.html' %} {% block content %}
+<div class="row">
+  <div class="col-md-12">
+    <h2>เลือกสาขาที่เปิดรับในโครงการ{{ project.title }} ({{ admission_round }})</h2>
+    <div class="alert alert-info">
+      หน้าหลักเกณฑ์การรับในโครงการ{{ project.title }}
+      <a class="btn btn-sm btn-info" href="{% url 'backoffice:criteria:project-index' project.id admission_round.id %}">เกณฑ์การรับ</a>
+    </div>
+    <table class="table table-striped">
+      <thead class="thead-dark">
+	<tr>
+	  <th></th>
+          <th>สาขาวิชา</th>
+	</tr>
+      </thead>
+      {% for major in major_choices %}
+        <tr>
+	  <td>{% if major.is_selected %}<i class="fa fa-check-square-o"></i>{% else %}<i class="fa fa-square-o"></i>{% endif %}</td>
+	  <td>{{ major }}</td>
+	</tr>
+      {% endfor %}
+    </table>
+  </div>
+</div>
+{% endblock %}

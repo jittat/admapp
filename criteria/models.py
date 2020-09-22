@@ -37,6 +37,11 @@ class MajorCuptCode(models.Model):
     title = models.TextField()
     major_title = models.TextField(null=True, blank=True)
 
+    def __str__(self):
+        if self.major_title:
+            return f'{self.title} ({self.major_title})'
+        else:
+            return self.title
 
 class CurriculumMajor(models.Model):
     admission_project = models.ForeignKey(AdmissionProject,
