@@ -44,7 +44,10 @@
                 <td>{{ project }}</td>
                 <td>{{ round }}</td>
                 <td>{{ stats.num_applicants }}</td>
-                <td>
+		<td>
+		  <a class="btn btn-sm btn-primary" href="{% url 'backoffice:criteria:project-index' project.id round.id %}">เปิดสาขาที่รับและป้อนเกณฑ์</a>
+		</td>
+                <td class="d-none">
                   <a class="btn btn-sm btn-success" href="{% url 'backoffice:projects-index' project.id round.id %}">พิจารณา</a>
                 </td>
                 {% if is_admission_admin %}
