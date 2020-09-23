@@ -54,8 +54,14 @@ class CurriculumMajor(models.Model):
     admission_criterias = models.ManyToManyField(
         AdmissionCriteria, through='CurriculumMajorAdmissionCriteria')
 
+    def is_with_some_admission_criteria(self):
+        return self.admission_criterias.count() != 0
 
+    
 class CurriculumMajorAdmissionCriteria(models.Model):
+    """
+    This is the join table.
+    """
     curriculum_major = models.ForeignKey(
         CurriculumMajor, on_delete=models.CASCADE)
     admission_criteria = models.ForeignKey(

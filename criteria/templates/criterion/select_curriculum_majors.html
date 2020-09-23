@@ -15,11 +15,58 @@
       </thead>
       {% for major in major_choices %}
         <tr>
-	  <td>{% if major.is_selected %}<i class="fa fa-check-square-o"></i>{% else %}<i class="fa fa-square-o"></i>{% endif %}</td>
+	  <td><a class="major-toggles text-body" data-cupt-id="{{ major.id }}" href="#">{% if major.is_selected %}<i class="fa fa-check-square-o"></i>{% else %}<i class="fa fa-square-o"></i>{% endif %}</a></td>
 	  <td>{{ major }}</td>
 	</tr>
       {% endfor %}
     </table>
   </div>
 </div>
+<script>
+  function getCookie(name) {
+      var cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+          var cookies = document.cookie.split(';');
+          for (var i = 0; i < cookies.length; i++) {
+              var cookie = cookies[i].trim();
+              // Does this cookie string begin with the name we want?
+              if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                  cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                  break;
+              }
+          }
+      }
+      return cookieValue;
+  }
+
+  var csrftoken = getCookie('csrftoken');
+  var majorStatus = {};
+
+  {% for major in major_choices %}
+  majorStatus[{{ major.id }}] = {% if major.is_selected %}true{% else %}false{% endif %};
+  {% endfor %}
+  $(function(){
+      $(".major-toggles").click(function(){
+	  var thisElement = this;
+	  var cuptId = $(this).data('cuptId');
+	  if (majorStatus[cuptId]) {
+	      var val = 'unselect';
+	  } else {
+	      var val = 'select';
+	  }
+	  var url = "{% url 'backoffice:criteria:curriculum-majors' project.id admission_round.id %}" + "toggle/" + cuptId + "/" + val + "/";
+	  jQuery.post(url, {
+	      csrfmiddlewaretoken: csrftoken
+	  }, function(result) {
+	      majorStatus[cuptId] = (result === 'true');
+	      if (majorStatus[cuptId]) {
+		  $(thisElement).html('<i class="fa fa-check-square-o"></i>');
+	      } else {
+		  $(thisElement).html('<i class="fa fa-square-o"></i>');
+	      }
+	  });
+	  return false;
+      });
+  });
+</script>
 {% endblock %}

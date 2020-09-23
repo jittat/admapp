@@ -134,7 +134,7 @@ def create(request, project_id, round_id):
 
 
 @user_login_required
-def select_curriculum_major(request, project_id, round_id):
+def select_curriculum_major(request, project_id, round_id, code_id=0, value='none'):
     user = request.user
     project = get_object_or_404(AdmissionProject, pk=project_id)
     admission_round = get_object_or_404(AdmissionRound, pk=round_id)
@@ -153,10 +153,32 @@ def select_curriculum_major(request, project_id, round_id):
     curriculum_majors = CurriculumMajor.objects.filter(admission_project_id=project_id,
                                                        faculty=faculty).all()
 
-    selected_cupt_codes = set([m.cupt_code_id for m in curriculum_majors])
+    selected_curriculum_majors = dict([(m.cupt_code_id, m) for m in curriculum_majors])
     for major in major_choices:
-        major.is_selected = major.id in selected_cupt_codes
+        major.is_selected = major.id in selected_curriculum_majors
+        if major.is_selected:
+            major.can_be_deleted = not selected_curriculum_majors[major.id].is_with_some_admission_criteria()
+        
+    if request.method == 'POST':
+        major_cupt_codes = [m for m in major_choices if m.id == int(code_id)]
+        if len(major_cupt_codes)!=1:
+            return HttpResponseNotFound()
+        major_cupt_code = major_cupt_codes[0]
 
+        if value == 'select':
+            curriculum_major = CurriculumMajor(admission_project=project,
+                                               cupt_code=major_cupt_code,
+                                               faculty=faculty)
+            curriculum_major.save()
+            return HttpResponse('true')
+        elif value == 'unselect':
+            if not major_cupt_code.is_selected or (not major_cupt_code.can_be_deleted):
+                return HttpResponseForbidden()
+            curriculum_major = selected_curriculum_majors[major_cupt_code.id]
+            curriculum_major.delete()
+            return HttpResponse('false')
+        return HttpResponseNotFound()
+            
     return render(request,
                   'criterion/select_curriculum_majors.html',
                   {'project': project,
