@@ -399,7 +399,7 @@ const EditableCell = ({
   }, [editable])
 
   useEffect(() => {
-    if (focusOnMount) {
+    if (focusOnMount && !initialValue) {
       inputRef.current.focus();
       inputRef.current.select();
     }
@@ -423,7 +423,7 @@ const EditableCell = ({
         <div className="d-flex align-items-baseline">
           {prefix}
           {inputType === 'number' ? (
-            <input type="number" name={name} className="form-control d-inline-block" ref={inputRef} onBlur={save} defaultValue={initialValue} {...inputProps} />
+            <input type="number" name={name} className="form-control d-inline-block" ref={inputRef} onChange={save} onBlur={save} defaultValue={initialValue} {...inputProps} />
           ) :
             (
               <textarea className="form-control d-inline-block" rows={1} name={name} ref={inputRef} onChange={calHeight} onBlur={save} defaultValue={initialValue} {...inputProps} />

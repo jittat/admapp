@@ -641,7 +641,7 @@ var EditableCell = function EditableCell(_ref5) {
   }, [editable]);
 
   useEffect(function () {
-    if (focusOnMount) {
+    if (focusOnMount && !initialValue) {
       inputRef.current.focus();
       inputRef.current.select();
     }
@@ -664,7 +664,7 @@ var EditableCell = function EditableCell(_ref5) {
       'div',
       { className: 'd-flex align-items-baseline' },
       prefix,
-      inputType === 'number' ? React.createElement('input', Object.assign({ type: 'number', name: name, className: 'form-control d-inline-block', ref: inputRef, onBlur: save, defaultValue: initialValue }, inputProps)) : React.createElement('textarea', Object.assign({ className: 'form-control d-inline-block', rows: 1, name: name, ref: inputRef, onChange: calHeight, onBlur: save, defaultValue: initialValue }, inputProps)),
+      inputType === 'number' ? React.createElement('input', Object.assign({ type: 'number', name: name, className: 'form-control d-inline-block', ref: inputRef, onChange: save, onBlur: save, defaultValue: initialValue }, inputProps)) : React.createElement('textarea', Object.assign({ className: 'form-control d-inline-block', rows: 1, name: name, ref: inputRef, onChange: calHeight, onBlur: save, defaultValue: initialValue }, inputProps)),
       suffix
     );
   }
