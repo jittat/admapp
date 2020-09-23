@@ -235,7 +235,8 @@ const PrimaryTopic = ({ topic, removeTopic, number, updateTopic, secondaryTopics
           initialValue={topic.title}
           focusOnMount={true}
           suffix={
-            <div>
+            <div className="d-flex ml-2">
+              {secondaryTopics.length > 0 && <SelectRelation name={`required_${number}_relation`} relations={["คะแนนมากสุดในข้อใดต่อไปนี้", "ข้อใดข้อหนึ่ง"]} className="ml-2" initialValue={topic.relation} />}
               <button className="btn btn-primary btn-sm ml-2" onClick={addNewTopic}>+</button>
             </div>
           }
@@ -313,7 +314,8 @@ const PrimaryScoringTopic = ({ topic, removeTopic, number, updateTopic, maxScore
           initialValue={topic.title}
           focusOnMount={true}
           suffix={
-            <div>
+            <div className="d-flex">
+              {secondaryTopics.length > 0 && <SelectRelation name={`required_${number}_relation`} relations={["คะแนนมากสุดในข้อใดต่อไปนี้", "ข้อใดข้อหนึ่ง"]} className="ml-2" initialValue={topic.relation} />}
               <button className="btn btn-primary btn-sm ml-2" onClick={addNewTopic}>+</button>
             </div>
           }
@@ -418,8 +420,7 @@ const EditableCell = ({
   if (editable) {
     childNode =
       (
-        <div className="d-flex align-items-baseline"
-        >
+        <div className="d-flex align-items-baseline">
           {prefix}
           {inputType === 'number' ? (
             <input type="number" name={name} className="form-control d-inline-block" ref={inputRef} onPressEnter={save} onBlur={save} defaultValue={initialValue} {...inputProps} />
@@ -429,11 +430,16 @@ const EditableCell = ({
             )
           }
           {suffix}
-
         </div>
       )
   }
   return <td style={{ cursor: 'pointer' }} {...restProps}> {childNode}</td >;
+}
+const SelectRelation = ({ name, relations, className, initialValue }) => {
+  return (<select name={name} id={name} className={className} defaultValue={initialValue}>
+    <option disabled selected>เลือกความสัมพันธ์</option>
+    {relations.map(r => (<option>{r}</option>))}
+  </select>)
 }
 
 const domContainer = document.querySelector('#add-criterion-form');

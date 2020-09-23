@@ -21,7 +21,7 @@
     <script src="{% static "react/CreateCriterionForm.js" %}" data-majors='{{ majors|safe }}'
       data-selected-majors='[{"id":85,"title":"วท.บ. สาขาวิชาเทคโนโลยีระบบเกษตร (ภาษาไทย ปกติ) ","slot":10},{"id":82,"title":"วท.บ. สาขาวิชาเกษตรเขตร้อน (นานาชาติ) ","slot":20}]'
       data-required='[{"id":1,"title":"PAT 1","value":22,"unit":"หน่วยกิต","children":[]},{"id":2,"title":"PAT 2","value":22,"unit":"หน่วยกิต","children":[{"id":2.1,"title":"PAT 2.2","value":22,"unit":"หน่วยกิต"}]}]'
-      data-scoring='[{"id":1,"title":"ผลการเรียนเฉลี่ยสะสม (GPAX)","value":1,"children":[{"id":1.1,"title":"ผลการเรียนเฉลี่ยสะสม (GPAX)","value":1}]},{"id":2,"title":"การสอบปฏิบัติเครื่องดนตรีตะวันตก","value":1,"children":[{"id":2.1,"title":"ความรู้พื้นฐานทางทฤษฎีและประวัติศาสตร์ดนตรีตะวันตก","value":1}]}]'></script>
+      data-scoring='[{"id":1,"title":"ผลการเรียนเฉลี่ยสะสม (GPAX)","value":1,"relation":"ข้อใดข้อหนึ่ง","children":[{"id":1.1,"title":"ผลการเรียนเฉลี่ยสะสม (GPAX)","value":1}]},{"id":2,"title":"การสอบปฏิบัติเครื่องดนตรีตะวันตก","value":1,"children":[{"id":2.1,"title":"ความรู้พื้นฐานทางทฤษฎีและประวัติศาสตร์ดนตรีตะวันตก","value":1}]}]'></script>
     <style>
       td input.form-control:not(:focus):not(:hover),
       td textarea.form-control:not(:focus):not(:hover) {

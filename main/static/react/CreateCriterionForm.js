@@ -399,7 +399,8 @@ var PrimaryTopic = function PrimaryTopic(_ref3) {
         focusOnMount: true,
         suffix: React.createElement(
           'div',
-          null,
+          { className: 'd-flex ml-2' },
+          secondaryTopics.length > 0 && React.createElement(SelectRelation, { name: 'required_' + number + '_relation', relations: ["คะแนนมากสุดในข้อใดต่อไปนี้", "ข้อใดข้อหนึ่ง"], className: 'ml-2', initialValue: topic.relation }),
           React.createElement(
             'button',
             { className: 'btn btn-primary btn-sm ml-2', onClick: addNewTopic },
@@ -520,7 +521,8 @@ var PrimaryScoringTopic = function PrimaryScoringTopic(_ref4) {
         focusOnMount: true,
         suffix: React.createElement(
           'div',
-          null,
+          { className: 'd-flex' },
+          secondaryTopics.length > 0 && React.createElement(SelectRelation, { name: 'required_' + number + '_relation', relations: ["คะแนนมากสุดในข้อใดต่อไปนี้", "ข้อใดข้อหนึ่ง"], className: 'ml-2', initialValue: topic.relation }),
           React.createElement(
             'button',
             { className: 'btn btn-primary btn-sm ml-2', onClick: addNewTopic },
@@ -660,8 +662,7 @@ var EditableCell = function EditableCell(_ref5) {
   if (editable) {
     childNode = React.createElement(
       'div',
-      { className: 'd-flex align-items-baseline'
-      },
+      { className: 'd-flex align-items-baseline' },
       prefix,
       inputType === 'number' ? React.createElement('input', Object.assign({ type: 'number', name: name, className: 'form-control d-inline-block', ref: inputRef, onPressEnter: save, onBlur: save, defaultValue: initialValue }, inputProps)) : React.createElement('textarea', Object.assign({ className: 'form-control d-inline-block', rows: 1, name: name, ref: inputRef, onPressEnter: save, onChange: calHeight, onBlur: save, defaultValue: initialValue }, inputProps)),
       suffix
@@ -672,6 +673,29 @@ var EditableCell = function EditableCell(_ref5) {
     Object.assign({ style: { cursor: 'pointer' } }, restProps),
     ' ',
     childNode
+  );
+};
+var SelectRelation = function SelectRelation(_ref6) {
+  var name = _ref6.name,
+      relations = _ref6.relations,
+      className = _ref6.className,
+      initialValue = _ref6.initialValue;
+
+  return React.createElement(
+    'select',
+    { name: name, id: name, className: className, defaultValue: initialValue },
+    React.createElement(
+      'option',
+      { disabled: true, selected: true },
+      '\u0E40\u0E25\u0E37\u0E2D\u0E01\u0E04\u0E27\u0E32\u0E21\u0E2A\u0E31\u0E21\u0E1E\u0E31\u0E19\u0E18\u0E4C'
+    ),
+    relations.map(function (r) {
+      return React.createElement(
+        'option',
+        null,
+        r
+      );
+    })
   );
 };
 
