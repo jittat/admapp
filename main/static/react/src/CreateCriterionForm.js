@@ -315,7 +315,7 @@ const PrimaryScoringTopic = ({ topic, removeTopic, number, updateTopic, maxScore
           focusOnMount={true}
           suffix={
             <div className="d-flex">
-              {secondaryTopics.length > 0 && <SelectRelation name={`required_${number}_relation`} relations={["คะแนนรวม", "คะแนนมากสุดในข้อใดต่อไปนี้", "ข้อใดข้อหนึ่ง"]} className="ml-2" initialValue={topic.relation} />}
+              {secondaryTopics.length > 0 && <SelectRelation name={`scoring_${number}_relation`} relations={["คะแนนรวม", "คะแนนมากสุดในข้อใดต่อไปนี้", "ข้อใดข้อหนึ่ง"]} className="ml-2" initialValue={topic.relation} />}
               <button className="btn btn-primary btn-sm ml-2" onClick={addNewTopic}>+</button>
             </div>
           }
@@ -436,7 +436,8 @@ const EditableCell = ({
   return <td style={{ cursor: 'pointer' }} {...restProps}> {childNode}</td >;
 }
 const SelectRelation = ({ name, relations, className, initialValue }) => {
-  return (<select name={name} id={name} className={className} defaultValue={initialValue}>
+  console.log('name', name)
+  return (<select name={name} id={name} className={className} defaultValue={initialValue || null}>
     <option disabled>เลือกความสัมพันธ์</option>
     {relations.map(r => (<option key={r}>{r}</option>))}
   </select>)
