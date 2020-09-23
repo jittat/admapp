@@ -236,7 +236,7 @@ const PrimaryTopic = ({ topic, removeTopic, number, updateTopic, secondaryTopics
           focusOnMount={true}
           suffix={
             <div className="d-flex ml-2">
-              {secondaryTopics.length > 0 && <SelectRelation name={`required_${number}_relation`} relations={["คะแนนมากสุดในข้อใดต่อไปนี้", "ข้อใดข้อหนึ่ง"]} className="ml-2" initialValue={topic.relation} />}
+              {secondaryTopics.length > 0 && <SelectRelation name={`required_${number}_relation`} relations={["ต้องผ่านทุกข้อ", "ในข้อใดต่อไปนี้", "ข้อใดข้อหนึ่ง"]} className="ml-2" initialValue={topic.relation} />}
               <button className="btn btn-primary btn-sm ml-2" onClick={addNewTopic}>+</button>
             </div>
           }
@@ -315,7 +315,7 @@ const PrimaryScoringTopic = ({ topic, removeTopic, number, updateTopic, maxScore
           focusOnMount={true}
           suffix={
             <div className="d-flex">
-              {secondaryTopics.length > 0 && <SelectRelation name={`required_${number}_relation`} relations={["คะแนนมากสุดในข้อใดต่อไปนี้", "ข้อใดข้อหนึ่ง"]} className="ml-2" initialValue={topic.relation} />}
+              {secondaryTopics.length > 0 && <SelectRelation name={`required_${number}_relation`} relations={["คะแนนรวม", "คะแนนมากสุดในข้อใดต่อไปนี้", "ข้อใดข้อหนึ่ง"]} className="ml-2" initialValue={topic.relation} />}
               <button className="btn btn-primary btn-sm ml-2" onClick={addNewTopic}>+</button>
             </div>
           }
@@ -423,10 +423,10 @@ const EditableCell = ({
         <div className="d-flex align-items-baseline">
           {prefix}
           {inputType === 'number' ? (
-            <input type="number" name={name} className="form-control d-inline-block" ref={inputRef} onPressEnter={save} onBlur={save} defaultValue={initialValue} {...inputProps} />
+            <input type="number" name={name} className="form-control d-inline-block" ref={inputRef} onBlur={save} defaultValue={initialValue} {...inputProps} />
           ) :
             (
-              <textarea className="form-control d-inline-block" rows={1} name={name} ref={inputRef} onPressEnter={save} onChange={calHeight} onBlur={save} defaultValue={initialValue} {...inputProps} />
+              <textarea className="form-control d-inline-block" rows={1} name={name} ref={inputRef} onChange={calHeight} onBlur={save} defaultValue={initialValue} {...inputProps} />
             )
           }
           {suffix}
@@ -437,8 +437,8 @@ const EditableCell = ({
 }
 const SelectRelation = ({ name, relations, className, initialValue }) => {
   return (<select name={name} id={name} className={className} defaultValue={initialValue}>
-    <option disabled selected>เลือกความสัมพันธ์</option>
-    {relations.map(r => (<option>{r}</option>))}
+    <option disabled>เลือกความสัมพันธ์</option>
+    {relations.map(r => (<option key={r}>{r}</option>))}
   </select>)
 }
 
