@@ -39,9 +39,9 @@ class MajorCuptCode(models.Model):
 
     def __str__(self):
         if self.major_title:
-            return f'{self.title} ({self.major_title})'
+            return f'{self.title} {self.major_title} ({self.program_type})'
         else:
-            return self.title
+            return f'{self.title} ({self.program_type})'
 
 class CurriculumMajor(models.Model):
     admission_project = models.ForeignKey(AdmissionProject,
