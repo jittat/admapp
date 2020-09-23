@@ -15,22 +15,18 @@ var _React = React,
 var majors = JSON.parse(document.currentScript.getAttribute('data-majors'));
 var dataRequired = JSON.parse(document.currentScript.getAttribute('data-required'));
 var dataScoring = JSON.parse(document.currentScript.getAttribute('data-scoring'));
+var dataSelectedMajors = JSON.parse(document.currentScript.getAttribute('data-selected-majors'));
 var Form = function Form() {
   return React.createElement(
     'div',
     null,
     React.createElement(SelectMajors, null),
-    React.createElement(RequiredCriteria, { initialTopics: dataRequired }),
-    React.createElement(ScoringCriteria, { initialTopics: dataScoring }),
-    React.createElement(
-      'button',
-      { className: 'btn btn-primary', htmlType: 'submit' },
-      '\u0E2A\u0E23\u0E49\u0E32\u0E07\u0E40\u0E01\u0E13\u0E11\u0E4C'
-    )
+    React.createElement(RequiredCriteria, { initialTopics: dataRequired || [] }),
+    React.createElement(ScoringCriteria, { initialTopics: dataScoring || [] })
   );
 };
 var SelectMajors = function SelectMajors() {
-  var _useState = useState([]),
+  var _useState = useState(dataSelectedMajors || []),
       _useState2 = _slicedToArray(_useState, 2),
       selectedMajors = _useState2[0],
       setSelectedMajors = _useState2[1];
@@ -40,6 +36,7 @@ var SelectMajors = function SelectMajors() {
   var choices = majors.map(function (m) {
     return { label: m.title, value: m.id, raw: m };
   });
+  // console.log(selectedMajors, dataSelectedMajors)
   // fix for jQuery
   jRef.current = { selectedMajors: selectedMajors };
   var toggleMajor = function toggleMajor(major) {
@@ -118,7 +115,7 @@ var SelectMajors = function SelectMajors() {
             React.createElement(
               'td',
               null,
-              React.createElement('input', { type: 'number', className: 'form-control', name: 'majors_' + (idx + 1) + '_slot', required: true })
+              React.createElement('input', { type: 'number', className: 'form-control', name: 'majors_' + (idx + 1) + '_slot', defaultValue: major.slot, required: true })
             ),
             React.createElement(
               'td',

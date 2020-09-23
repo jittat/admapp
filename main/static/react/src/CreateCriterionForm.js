@@ -5,21 +5,22 @@ const { useState, useRef, useEffect } = React
 let majors = JSON.parse(document.currentScript.getAttribute('data-majors'))
 let dataRequired = JSON.parse(document.currentScript.getAttribute('data-required'))
 let dataScoring = JSON.parse(document.currentScript.getAttribute('data-scoring'))
+let dataSelectedMajors = JSON.parse(document.currentScript.getAttribute('data-selected-majors'))
 const Form = () => {
   return (
     <div>
       <SelectMajors />
-      <RequiredCriteria initialTopics={dataRequired} />
-      <ScoringCriteria initialTopics={dataScoring} />
-      <button className="btn btn-primary" htmlType="submit">สร้างเกณฑ์</button>
+      <RequiredCriteria initialTopics={dataRequired || []} />
+      <ScoringCriteria initialTopics={dataScoring || []} />
     </div>
   )
 }
 const SelectMajors = () => {
-  const [selectedMajors, setSelectedMajors] = useState([])
+  const [selectedMajors, setSelectedMajors] = useState(dataSelectedMajors || [])
   const inputRef = useRef()
   const jRef = useRef()
   const choices = majors.map((m) => ({ label: m.title, value: m.id, raw: m }))
+  // console.log(selectedMajors, dataSelectedMajors)
   // fix for jQuery
   jRef.current = { selectedMajors: selectedMajors }
   const toggleMajor = (major) => {
@@ -66,7 +67,7 @@ const SelectMajors = () => {
                 <td scope="row">{label}
                   <input type="text" value={major.id} type="hidden" name={`majors_${idx + 1}_id`} required />
                 </td>
-                <td><input type="number" className="form-control" name={`majors_${idx + 1}_slot`} required /></td>
+                <td><input type="number" className="form-control" name={`majors_${idx + 1}_slot`} defaultValue={major.slot} required /></td>
                 <td><button htmltype="button" className="btn btn-secondary" onClick={() => toggleMajor(major)}>ลบ</button></td>
               </tr>
             )
