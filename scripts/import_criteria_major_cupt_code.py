@@ -23,6 +23,7 @@ def main():
                 faculty_name = worksheet.cell_value(row, 9)
                 program_type = worksheet.cell_value(row, 20)
                 program_code = worksheet.cell_value(row, 21)
+                program_type_code = worksheet.cell_value(row, 19)
                 major_code = worksheet.cell_value(row, 27) or ""
                 title = worksheet.cell_value(row, 17)
                 major_title = worksheet.cell_value(row, 28)
@@ -30,8 +31,27 @@ def main():
                       major_code, title, major_title)
 
                 faculty = Faculty.objects.get(title=faculty_name)
-                major_cupt_code = MajorCuptCode(program_code=program_code, program_type=program_type,
-                                                major_code=major_code, title=title, major_title=major_title, faculty=faculty)
+
+                old_codes = MajorCuptCode.objects.filter(program_code=program_code,
+                                                         major_code=major_code).all()
+
+                if len(old_codes) != 0:
+                    major_cupt_code = old_codes[0]
+                    major_cupt_code.program_code=program_code
+                    major_cupt_code.program_type=program_type
+                    major_cupt_code.major_code=major_code
+                    major_cupt_code.title=title
+                    major_cupt_code.major_title=major_title
+                    major_cupt_code.faculty=faculty
+                    major_cupt_code.program_type_code = program_type_code
+                else:
+                    major_cupt_code = MajorCuptCode(program_code=program_code,
+                                                    program_type=program_type,
+                                                    program_type_code=program_type_code,
+                                                    major_code=major_code,
+                                                    title=title,
+                                                    major_title=major_title,
+                                                    faculty=faculty)
                 major_cupt_code.save()
             except IntegrityError as e:
                 s = str(e)

@@ -13,20 +13,22 @@
     {% if notice %}
     <div class="alert alert-success">{{ notice }}</div>
     {% endif %}
-    <table class="table">
-      <tr>
-        <td>สาขาวิชาที่ใช้เกณฑ์</td>
-        <td>เงื่อนไข</td>
-        <td>เกณฑ์การรับสมัคร</td>
-        <td>แก้ไข</td>
-      </tr>
+    <table class="table table-sm">
+      <thead class="thead-dark">
+	<tr>
+          <th>สาขาวิชาที่ใช้เกณฑ์</th>
+          <th>เงื่อนไขขั้นต่ำ</th>
+          <th>เกณฑ์การพิจารณา</th>
+          <th>แก้ไข</th>
+	</tr>
+      </thead>
       {% for admission_criteria in admission_criterias %}
       {% with scorecriterias=admission_criteria.scorecriteria_set.all %}
       <tr>
         <td>
           <ul>
             {% for major in admission_criteria.curriculummajor_set.all %}
-            <li>{{major.cupt_code.title}}</li>
+            <li>{{major.cupt_code}}</li>
             {% endfor %}
           </ul>
         </td>
@@ -52,8 +54,23 @@
         <td>
         <a href="{% url 'backoffice:criteria:edit' project.id admission_round.id admission_criteria.id %}" type="button" class="btn btn-primary">แก้ไข</a>
         </td>
-        {% endwith %} {% endfor %}
       </tr>
+      {% endwith %}
+      {% endfor %}
+      {% for major in free_curriculum_majors %}
+        <tr>
+	  <td>
+            <ul><li>{{major.cupt_code}}</li></ul>
+	  </td>
+	  <td>
+	    (ยังไม่มีการกำหนดเกณฑ์)
+	  </td>
+	  <td>
+	  </td>
+	  <td>
+	  </td>
+	</tr>
+      {% endfor %}
     </table>
   </div>
 </div>

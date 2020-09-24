@@ -21,6 +21,18 @@ from backoffice.decorators import user_login_required
 from criteria.models import CurriculumMajor, AdmissionCriteria, ScoreCriteria, CurriculumMajorAdmissionCriteria, MajorCuptCode
 
 
+def get_all_curriculum_majors(project, faculty=None):
+    if not faculty:
+        majors = CurriculumMajor.objects.filter(
+            admission_project_id=project.id).select_related('cupt_code')
+    else:
+        majors = CurriculumMajor.objects.filter(
+            admission_project_id=project.id,
+            faculty_id=faculty.id).select_related('cupt_code')
+
+    return majors
+
+
 @user_login_required
 def project_index(request, project_id, round_id):
     user = request.user
@@ -41,13 +53,24 @@ def project_index(request, project_id, round_id):
             admission_project_id=project_id)
     notice = request.session.pop('notice', None)
 
+    curriculum_majors = get_all_curriculum_majors(project, faculty)
+    curriculum_majors_with_criterias = []
+    for criteria in admission_criterias:
+        curriculum_majors_with_criterias += criteria.curriculummajor_set.all()
+    curriculum_majors_with_criteria_ids = set([m.id for m
+                                               in curriculum_majors_with_criterias])
+
+    free_curriculum_majors = [m for m in curriculum_majors
+                              if m.id not in curriculum_majors_with_criteria_ids]
+
     return render(request,
                   'criterion/index.html',
                   {'project': project,
                    'admission_round': admission_round,
                    'faculty': faculty,
                    'admission_criterias': admission_criterias,
-                   'notice': notice
+                   'notice': notice,
+                   'free_curriculum_majors': free_curriculum_majors,
                    })
 
 
@@ -155,11 +178,7 @@ def create(request, project_id, round_id):
     else:
         faculty = None
 
-    majors = CurriculumMajor.objects.filter(
-        admission_project_id=project_id).select_related('cupt_code')
-
-    if faculty:
-        majors = [m for m in majors if m.faculty_id == faculty.id]
+    majors = get_all_curriculum_majors(project, faculty)
 
     if request.method == 'POST':
         upsert_admission_criteria(
