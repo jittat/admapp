@@ -4,8 +4,15 @@
     <h2>แก้ไขเกณฑ์ โครงการ{{ project.title }} ({{ admission_round }})</h2>
     <div class="alert alert-info">
       เลือกสาขาวิชาที่เปิดรับในโครงการ{{ project.title }}
-      <a class="btn btn-sm btn-info" href="{% url 'backoffice:criteria:curriculum-majors' project.id admission_round.id %}">เลือกสาขาวิชา</a>
+      <a
+        class="btn btn-sm btn-info"
+        href="{% url 'backoffice:criteria:curriculum-majors' project.id admission_round.id %}"
+        >เลือกสาขาวิชา</a
+      >
     </div>
+    {% if notice %}
+    <div class="alert alert-success">{{ notice }}</div>
+    {% endif %}
     <table class="table">
       <tr>
         <td>สาขาวิชาที่ใช้เกณฑ์</td>
@@ -25,32 +32,29 @@
         </td>
         <td>
           <ul>
-          {% for scorecriteria in scorecriterias %}
+            {% for scorecriteria in scorecriterias %}
             {% if scorecriteria.criteria_type == "required" %}
             <li>
-              {{scorecriteria.description}} ไม่ต่ำกว่า {{scorecriteria.value|floatformat:1}}
-              {{scorecriteria.unit}}
+              {{scorecriteria.description}} ไม่ต่ำกว่า
+              {{scorecriteria.value|floatformat:1}} {{scorecriteria.unit}}
             </li>
-            {% endif %}
-          {% endfor %}
+            {% endif %} {% endfor %}
           </ul>
         </td>
         <td>
           <ul>
-            {% for scorecriteria in scorecriterias %}
+            {% for scorecriteria in scorecriterias %} 
             {% if scorecriteria.criteria_type == "scoring" %}
             <li>{{scorecriteria.description}}</li>
-            {% endif %}
-            {% endfor %}
+            {% endif %} {% endfor %}
           </ul>
         </td>
-        <td>ปุ่มแก้ไข</td>
-      {% endwith %} {% endfor %}
+        <td>
+        <a href="{% url 'backoffice:criteria:edit' project.id admission_round.id admission_criteria.id %}" type="button" class="btn btn-primary">แก้ไข</a>
+        </td>
+        {% endwith %} {% endfor %}
       </tr>
     </table>
-    {% if notice %}
-    <div class="alert alert-success">{{ notice }}</div>
-    {% endif %}
   </div>
 </div>
 {% endblock %}

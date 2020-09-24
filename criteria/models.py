@@ -25,6 +25,9 @@ class ScoreCriteria(models.Model):
         decimal_places=4, max_digits=12, null=True, blank=True)
     unit = models.CharField(max_length=30, default="")
     description = models.TextField(default="")
+    parent = models.ForeignKey('self', null=True, blank=True,
+                               on_delete=models.CASCADE, related_name='childs')
+    relation = models.CharField(max_length=30, null=True, blank=True)
 
 
 class MajorCuptCode(models.Model):
@@ -43,6 +46,7 @@ class MajorCuptCode(models.Model):
         else:
             return f'{self.title} ({self.program_type})'
 
+
 class CurriculumMajor(models.Model):
     admission_project = models.ForeignKey(AdmissionProject,
                                           on_delete=models.CASCADE)
@@ -57,7 +61,7 @@ class CurriculumMajor(models.Model):
     def is_with_some_admission_criteria(self):
         return self.admission_criterias.count() != 0
 
-    
+
 class CurriculumMajorAdmissionCriteria(models.Model):
     """
     This is the join table.
