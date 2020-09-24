@@ -1,10 +1,18 @@
-{% extends 'backoffice/base.html' %} {% block content %}
+{% extends 'backoffice/base.html' %}
+{% block content %}
 <div class="row">
   <div class="col-md-12">
     <h2>เลือกสาขาที่เปิดรับในโครงการ{{ project.title }} ({{ admission_round }})</h2>
     <div class="alert alert-info">
       หน้าหลักเกณฑ์การรับในโครงการ{{ project.title }}
-      <a class="btn btn-sm btn-info" href="{% url 'backoffice:criteria:project-index' project.id admission_round.id %}">เกณฑ์การรับ</a>
+      <a
+	class="btn btn-sm btn-info"
+	href="{% url 'backoffice:criteria:project-index' project.id admission_round.id %}"
+	>เกณฑ์การรับ</a>
+      <a
+	class="btn btn-sm btn-secondary"
+	href="{% url 'backoffice:criteria:list-curriculum-majors' %}"
+	>แสดงรายการสาขาวิชาที่เลือกเปิด</a>
     </div>
     <table class="table table-striped">
       <thead class="thead-dark">

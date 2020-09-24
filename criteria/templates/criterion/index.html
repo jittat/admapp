@@ -7,8 +7,11 @@
       <a
         class="btn btn-sm btn-info"
         href="{% url 'backoffice:criteria:curriculum-majors' project.id admission_round.id %}"
-        >เลือกสาขาวิชา</a
-      >
+        >เลือกสาขาวิชา</a>
+      <a
+	class="btn btn-sm btn-secondary"
+	href="{% url 'backoffice:criteria:list-curriculum-majors' %}"
+	>แสดงรายการสาขาวิชาที่เลือกเปิด</a>
     </div>
     {% if notice %}
     <div class="alert alert-success">{{ notice }}</div>

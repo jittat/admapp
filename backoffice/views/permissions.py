@@ -22,6 +22,7 @@ def can_user_view_project(user, project):
 
     if not profile:
         return False
+
     return profile.admission_projects.filter(id=project.id).count() == 1
 
 
