@@ -4,8 +4,8 @@
 <div class="row">
   <div class="col-md-12">
     <h2>
-      แก้ไขเกณฑ์ โครงการ{{ project.title }} ({{ admission_round }}) </h2>
-
+      แก้ไขเกณฑ์ โครงการ{{ project.title }} ({{ admission_round }})
+    </h2>
     {% if notice %}
     <div class="alert alert-success">{{ notice }}</div>
     {% endif %}
@@ -19,8 +19,7 @@
     <!-- Load our React component. -->
 
     <script src="{% static "react/CreateCriterionForm.js" %}" data-majors='{{ majors|safe }}'
-      data-selected-majors='{{ data_selected_majors|safe }}'
-      data-required='{{ data_required|safe }}'
+      data-selected-majors='{{ data_selected_majors|safe }}' data-required='{{ data_required|safe }}'
       data-scoring='{{ data_scoring|safe }}'></script>
     <style>
       .table td {

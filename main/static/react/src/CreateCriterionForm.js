@@ -6,6 +6,35 @@ let majors = JSON.parse(document.currentScript.getAttribute('data-majors'))
 let dataRequired = JSON.parse(document.currentScript.getAttribute('data-required'))
 let dataScoring = JSON.parse(document.currentScript.getAttribute('data-scoring'))
 let dataSelectedMajors = JSON.parse(document.currentScript.getAttribute('data-selected-majors'))
+
+const relationRequired = [
+  {
+    "value": "OR",
+    "label": "ข้อใดข้อหนึ่ง"
+  },
+  {
+    "value": "AND",
+    "label": "ทุกข้อ"
+  },
+  {
+    "value": "SUM",
+    "label": "ใช้คะแนนรวม"
+  },
+  {
+    "value": "MAX",
+    "label": "ใช้คะแนนมากที่สุด"
+  }
+]
+const relationScoring = [
+  {
+    "value": "MAX",
+    "label": "ใช้คะแนนมากที่สุด"
+  },
+  {
+    "value": "SUM",
+    "label": "ใช้คะแนนรวมตามสัดส่วน"
+  }
+]
 const Form = () => {
   return (
     <div>
@@ -55,7 +84,7 @@ const SelectMajors = () => {
         <thead>
           <tr>
             <th scope="col">สาขา</th>
-            <th scope="col">จำนวนรับ</th>
+            <th scope="col">จำนวนรับ (คน)</th>
             <th scope="col"></th>
           </tr>
         </thead>
@@ -236,7 +265,7 @@ const PrimaryTopic = ({ topic, removeTopic, number, updateTopic, secondaryTopics
           focusOnMount={true}
           suffix={
             <div className="d-flex ml-2">
-              {secondaryTopics.length > 0 && <SelectRelation name={`required_${number}_relation`} relations={["ต้องผ่านทุกข้อ", "ในข้อใดต่อไปนี้", "ข้อใดข้อหนึ่ง"]} className="ml-2" initialValue={topic.relation} />}
+              {secondaryTopics.length > 0 && <SelectRelation name={`required_${number}_relation`} relations={relationRequired} className="ml-2" initialValue={topic.relation || 'AND'} />}
               <button className="btn btn-primary btn-sm ml-2" onClick={addNewTopic}>+</button>
             </div>
           }
@@ -315,7 +344,7 @@ const PrimaryScoringTopic = ({ topic, removeTopic, number, updateTopic, maxScore
           focusOnMount={true}
           suffix={
             <div className="d-flex">
-              {secondaryTopics.length > 0 && <SelectRelation name={`scoring_${number}_relation`} relations={["คะแนนรวม", "คะแนนมากสุดในข้อใดต่อไปนี้", "ข้อใดข้อหนึ่ง"]} className="ml-2" initialValue={topic.relation} />}
+              {secondaryTopics.length > 0 && <SelectRelation name={`scoring_${number}_relation`} relations={relationScoring} className="ml-2" initialValue={topic.relation || 'SUM'} />}
               <button className="btn btn-primary btn-sm ml-2" onClick={addNewTopic}>+</button>
             </div>
           }
@@ -436,10 +465,10 @@ const EditableCell = ({
   return <td style={{ cursor: 'pointer' }} {...restProps}> {childNode}</td >;
 }
 const SelectRelation = ({ name, relations, className, initialValue }) => {
-  console.log('name', name)
+  console.log('initialValue', initialValue);
   return (<select name={name} id={name} className={className} defaultValue={initialValue || null}>
     <option disabled>เลือกความสัมพันธ์</option>
-    {relations.map(r => (<option key={r}>{r}</option>))}
+    {relations.map(r => (<option value={r.value} key={r.value}>{r.label}</option>))}
   </select>)
 }
 

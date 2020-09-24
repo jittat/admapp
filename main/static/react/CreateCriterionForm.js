@@ -16,6 +16,27 @@ var majors = JSON.parse(document.currentScript.getAttribute('data-majors'));
 var dataRequired = JSON.parse(document.currentScript.getAttribute('data-required'));
 var dataScoring = JSON.parse(document.currentScript.getAttribute('data-scoring'));
 var dataSelectedMajors = JSON.parse(document.currentScript.getAttribute('data-selected-majors'));
+
+var relationRequired = [{
+  "value": "OR",
+  "label": "ข้อใดข้อหนึ่ง"
+}, {
+  "value": "AND",
+  "label": "ทุกข้อ"
+}, {
+  "value": "SUM",
+  "label": "ใช้คะแนนรวม"
+}, {
+  "value": "MAX",
+  "label": "ใช้คะแนนมากที่สุด"
+}];
+var relationScoring = [{
+  "value": "MAX",
+  "label": "ใช้คะแนนมากที่สุด"
+}, {
+  "value": "SUM",
+  "label": "ใช้คะแนนรวมตามสัดส่วน"
+}];
 var Form = function Form() {
   return React.createElement(
     'div',
@@ -91,7 +112,7 @@ var SelectMajors = function SelectMajors() {
           React.createElement(
             'th',
             { scope: 'col' },
-            '\u0E08\u0E33\u0E19\u0E27\u0E19\u0E23\u0E31\u0E1A'
+            '\u0E08\u0E33\u0E19\u0E27\u0E19\u0E23\u0E31\u0E1A (\u0E04\u0E19)'
           ),
           React.createElement('th', { scope: 'col' })
         )
@@ -400,7 +421,7 @@ var PrimaryTopic = function PrimaryTopic(_ref3) {
         suffix: React.createElement(
           'div',
           { className: 'd-flex ml-2' },
-          secondaryTopics.length > 0 && React.createElement(SelectRelation, { name: 'required_' + number + '_relation', relations: ["ต้องผ่านทุกข้อ", "ในข้อใดต่อไปนี้", "ข้อใดข้อหนึ่ง"], className: 'ml-2', initialValue: topic.relation }),
+          secondaryTopics.length > 0 && React.createElement(SelectRelation, { name: 'required_' + number + '_relation', relations: relationRequired, className: 'ml-2', initialValue: topic.relation || 'AND' }),
           React.createElement(
             'button',
             { className: 'btn btn-primary btn-sm ml-2', onClick: addNewTopic },
@@ -522,7 +543,7 @@ var PrimaryScoringTopic = function PrimaryScoringTopic(_ref4) {
         suffix: React.createElement(
           'div',
           { className: 'd-flex' },
-          secondaryTopics.length > 0 && React.createElement(SelectRelation, { name: 'scoring_' + number + '_relation', relations: ["คะแนนรวม", "คะแนนมากสุดในข้อใดต่อไปนี้", "ข้อใดข้อหนึ่ง"], className: 'ml-2', initialValue: topic.relation }),
+          secondaryTopics.length > 0 && React.createElement(SelectRelation, { name: 'scoring_' + number + '_relation', relations: relationScoring, className: 'ml-2', initialValue: topic.relation || 'SUM' }),
           React.createElement(
             'button',
             { className: 'btn btn-primary btn-sm ml-2', onClick: addNewTopic },
@@ -681,7 +702,7 @@ var SelectRelation = function SelectRelation(_ref6) {
       className = _ref6.className,
       initialValue = _ref6.initialValue;
 
-  console.log('name', name);
+  console.log('initialValue', initialValue);
   return React.createElement(
     'select',
     { name: name, id: name, className: className, defaultValue: initialValue || null },
@@ -693,8 +714,8 @@ var SelectRelation = function SelectRelation(_ref6) {
     relations.map(function (r) {
       return React.createElement(
         'option',
-        { key: r },
-        r
+        { value: r.value, key: r.value },
+        r.label
       );
     })
   );
