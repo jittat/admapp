@@ -36,14 +36,16 @@ def main():
             next_col_base = 7 + num_rounds*2
             max_num_selections = int(items[next_col_base])
             base_fee = int(items[next_col_base + 1])
-
+            cupt_code = items[next_col_base + 2]
+            
             project = AdmissionProject(id=pid,
                                        title=title,
                                        short_title=short_title,
                                        short_descriptions=short_descriptions,
                                        slots=slots,
                                        max_num_selections=max_num_selections,
-                                       base_fee=base_fee)
+                                       base_fee=base_fee,
+                                       cupt_code=cupt_code)
             
             if items[4] != '':
                 campus = Campus.objects.get(pk=items[4])

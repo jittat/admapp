@@ -1,0 +1,62 @@
+[
+{
+  "model": "appl.admissionround",
+  "pk": 1,
+  "fields": {
+    "number": 1,
+    "subround_number": 0,
+    "rank": 1,
+    "short_descriptions": "\u0e23\u0e2d\u0e1a\u0e41\u0e1f\u0e49\u0e21\u0e1c\u0e25\u0e07\u0e32\u0e19",
+    "admission_dates": "",
+    "is_available": false,
+    "is_application_available": false,
+    "clearing_house_description": "",
+    "clearing_house_dates": ""
+  }
+},
+{
+  "model": "appl.admissionround",
+  "pk": 2,
+  "fields": {
+    "number": 2,
+    "subround_number": 0,
+    "rank": 2,
+    "short_descriptions": "\u0e42\u0e04\u0e27\u0e15\u0e32",
+    "admission_dates": "",
+    "is_available": false,
+    "is_application_available": false,
+    "clearing_house_description": "",
+    "clearing_house_dates": ""
+  }
+},
+{
+  "model": "appl.admissionround",
+  "pk": 3,
+  "fields": {
+    "number": 3,
+    "subround_number": 0,
+    "rank": 3,
+    "short_descriptions": "Admission 1",
+    "admission_dates": "",
+    "is_available": false,
+    "is_application_available": false,
+    "clearing_house_description": "",
+    "clearing_house_dates": ""
+  }
+},
+{
+  "model": "appl.admissionround",
+  "pk": 4,
+  "fields": {
+    "number": 4,
+    "subround_number": 0,
+    "rank": 4,
+    "short_descriptions": "Admission2",
+    "admission_dates": "",
+    "is_available": false,
+    "is_application_available": false,
+    "clearing_house_description": "",
+    "clearing_house_dates": ""
+  }
+}
+]
