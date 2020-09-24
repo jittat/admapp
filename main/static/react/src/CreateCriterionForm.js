@@ -7,34 +7,6 @@ let dataRequired = JSON.parse(document.currentScript.getAttribute('data-required
 let dataScoring = JSON.parse(document.currentScript.getAttribute('data-scoring'))
 let dataSelectedMajors = JSON.parse(document.currentScript.getAttribute('data-selected-majors'))
 
-const relationRequired = [
-  {
-    "value": "OR",
-    "label": "ข้อใดข้อหนึ่ง"
-  },
-  {
-    "value": "AND",
-    "label": "ทุกข้อ"
-  },
-  {
-    "value": "SUM",
-    "label": "ใช้คะแนนรวม"
-  },
-  {
-    "value": "MAX",
-    "label": "ใช้คะแนนมากที่สุด"
-  }
-]
-const relationScoring = [
-  {
-    "value": "MAX",
-    "label": "ใช้คะแนนมากที่สุด"
-  },
-  {
-    "value": "SUM",
-    "label": "ใช้คะแนนรวมตามสัดส่วน"
-  }
-]
 const Form = () => {
   return (
     <div>
@@ -270,6 +242,7 @@ const PrimaryTopic = ({ topic, removeTopic, number, updateTopic, secondaryTopics
             </div>
           }
           inputProps={{ required: true }}
+          tags={[...generalRequiredTags, ...testTags]}
         />
         <EditableCell
           name={`required_${number}_value`}
@@ -277,7 +250,8 @@ const PrimaryTopic = ({ topic, removeTopic, number, updateTopic, secondaryTopics
         />
         <EditableCell
           name={`required_${number}_unit`}
-          initialValue={topic.unit}
+          initialValue={topic.unit || ''}
+          tags={unitTags}
         />
         <td>
           <button className="btn btn-secondary btn-sm" onClick={() => removeTopic(topic)}>-</button>
@@ -294,6 +268,7 @@ const PrimaryTopic = ({ topic, removeTopic, number, updateTopic, secondaryTopics
               focusOnMount={true}
               prefix={<span>{snumber}&nbsp;&nbsp;</span>}
               inputProps={{ required: true }}
+              tags={[...generalRequiredTags, ...testTags]}
             />
             <EditableCell
               name={`required_${snumber}_value`}
@@ -302,6 +277,7 @@ const PrimaryTopic = ({ topic, removeTopic, number, updateTopic, secondaryTopics
             <EditableCell
               name={`required_${snumber}_unit`}
               initialValue={topic.unit}
+              tags={unitTags}
             />
             <td>
               <button className="btn btn-secondary btn-sm" onClick={() => removeSecondaryTopic(topic)}>-</button>
@@ -349,6 +325,7 @@ const PrimaryScoringTopic = ({ topic, removeTopic, number, updateTopic, maxScore
             </div>
           }
           inputProps={{ required: true }}
+          tags={[...generalScoringTags, ...testTags]}
         />
         <EditableCell
           name={`scoring_${number}_value`}
@@ -372,6 +349,7 @@ const PrimaryScoringTopic = ({ topic, removeTopic, number, updateTopic, maxScore
               focusOnMount={true}
               prefix={<span>{number}.{idx + 1}&nbsp;&nbsp;</span>}
               inputProps={{ required: true }}
+              tags={[...generalScoringTags, ...testTags]}
             />
             <EditableCell
               name={`scoring_${snumber}_value`}
@@ -400,24 +378,13 @@ const EditableCell = ({
   inputType,
   name,
   inputProps,
+  tags = [],
   ...restProps }) => {
   const inputRef = useRef();
   useEffect(() => {
-    var availableTags = [
-      "GAT",
-      "PAT 1",
-      "PAT 2",
-      "PAT 3",
-      "PAT 4",
-      "PAT 5",
-      "PAT 6",
-      "PAT 7",
-      "GPAX",
-      "9 วิชาสามัญ",
-    ];
     if (editable) {
       $(inputRef.current).autocomplete({
-        source: availableTags,
+        source: tags,
         minLength: 0,
       }).focus(function () {
         if (inputRef.current.value == "") {
