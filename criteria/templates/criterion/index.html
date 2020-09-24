@@ -35,9 +35,9 @@
         <td>
           <ul>
             {% for scorecriteria in scorecriterias %}
-            {% if scorecriteria.criteria_type == "required" %}
+            {% if scorecriteria.criteria_type == "required" and scorecriteria.secondary_order == 0  %}
             <li>
-              {{scorecriteria.description}} ไม่ต่ำกว่า
+              {{scorecriteria.description}} {%if scorecriteria.unit %}ไม่ต่ำกว่า {% endif %}
               {{scorecriteria.value|floatformat:1}} {{scorecriteria.unit}}
             </li>
             {% endif %} {% endfor %}
@@ -46,7 +46,7 @@
         <td>
           <ul>
             {% for scorecriteria in scorecriterias %} 
-            {% if scorecriteria.criteria_type == "scoring" %}
+            {% if scorecriteria.criteria_type == "scoring" and scorecriteria.secondary_order == 0 %}
             <li>{{scorecriteria.description}}</li>
             {% endif %} {% endfor %}
           </ul>

@@ -111,6 +111,7 @@ def upsert_admission_criteria(post_request, project=None, faculty=None, admissio
     with transaction.atomic():
 
         if admission_criteria is None:
+            version = 1
             admission_criteria = AdmissionCriteria(
                 admission_project=project, version=version, faculty=faculty)
             admission_criteria.save()
