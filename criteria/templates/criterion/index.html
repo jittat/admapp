@@ -52,7 +52,11 @@
           </ul>
         </td>
         <td>
-        <a href="{% url 'backoffice:criteria:edit' project.id admission_round.id admission_criteria.id %}" type="button" class="btn btn-primary">แก้ไข</a>
+        <a href="{% url 'backoffice:criteria:create' project.id admission_round.id %}?duplicate_score_id={{admission_criteria.id}}" type="button" class="btn btn-primary">คัดลอกเงื่อนไขและเกณฑ์การพิจารณา</a>
+        <br>
+        <a href="#" type="button" class="btn btn-secondary">คัดลอกไปยังโครงการอื่น</a>
+        <br>
+        <a href="{% url 'backoffice:criteria:edit' project.id admission_round.id admission_criteria.id %}" type="button" class="btn btn-info">แก้ไข</a>
         </td>
       </tr>
       {% endwith %}
@@ -68,6 +72,7 @@
 	  <td>
 	  </td>
 	  <td>
+       <a href="{% url 'backoffice:criteria:create' project.id admission_round.id %}?selected_major_id={{major.id}}" type="button" class="btn btn-success">กำหนดเงื่อนไขและเกณฑ์การพิจารณา</a>
 	  </td>
 	</tr>
       {% endfor %}

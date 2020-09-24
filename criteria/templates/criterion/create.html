@@ -18,7 +18,10 @@
     <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
     <!-- Load our React component. -->
     <!-- TODO: Remove mock -->
-    <script src="{% static "react/CreateCriterionForm.js" %}" data-majors='{{ majors|safe }}'></script>
+    <script src="{% static "react/CreateCriterionForm.js" %}" data-majors='{{ majors|safe }}'
+      data-selected-majors='{{ data_selected_majors|safe }}'
+      data-required='{{ data_required|safe }}'
+      data-scoring='{{ data_scoring|safe }}'></script>
     <style>
       .table td {
         vertical-align: baseline;

@@ -12,7 +12,7 @@ urlpatterns = [
     path('<int:project_id>/<int:round_id>/',
          criterion.project_index, name='project-index'),
 
-    path('<int:project_id>/<int:round_id>/add-major/',
+    path('<int:project_id>/<int:round_id>/create/',
          criterion.create, name='create'),
     path('<int:project_id>/<int:round_id>/<int:criteria_id>/edit/',
          criterion.edit, name='edit'),

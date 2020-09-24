@@ -189,12 +189,53 @@ def create(request, project_id, round_id):
 
         # return render(request, 'criterion/complete.html', {'project': project, 'admission_round': admission_round})
 
+    data_required = []
+    data_scoring = []
+    data_selected_majors = []
+
+    duplicate_score_id = request.GET.get('duplicate_score_id', None)
+    selected_major_id = request.GET.get('selected_major_id', None)
+
+    if duplicate_score_id is not None:
+        score_criterias = get_object_or_404(
+            AdmissionCriteria, pk=duplicate_score_id).scorecriteria_set.filter(secondary_order=0)
+        data_criteria = [
+            [{
+                "id": str(s.primary_order),
+                "title": s.description,
+                "value": float(s.value),
+                "unit": s.unit,
+                "children": [{
+                    "id": "%s.%s" % (ss.primary_order, ss.secondary_order),
+                    "title": ss.description,
+                    "value": float(ss.value),
+                    "unit": ss.unit
+                } for ss in s.childs.all()]
+            }, s.criteria_type] for s in score_criterias
+        ]
+
+        data_required = [d[0] for d in data_criteria if d[1] == "required"]
+        data_scoring = [d[0] for d in data_criteria if d[1] == "scoring"]
+    if selected_major_id is not None:
+        preselected_major = get_object_or_404(
+            CurriculumMajor, pk=selected_major_id)
+        data_selected_majors = [
+            {
+                "id": preselected_major.id,
+                "title": preselected_major.cupt_code.title,
+                "slot": 0
+            }
+        ]
+
     return render(request,
                   'criterion/create.html',
                   {'project': project,
                    'admission_round': admission_round,
                    'faculty': faculty,
                    'majors': json.dumps([dict({"id": m.id, "title": ("%s (%s) %s") % (m.cupt_code.title, m.cupt_code.program_type, m.cupt_code.major_title)}) for m in sorted(majors, key=(lambda m: (m.cupt_code.program_code, m.cupt_code.major_title)))]),
+                   'data_required': json.dumps(data_required),
+                   'data_scoring': json.dumps(data_scoring),
+                   'data_selected_majors': json.dumps(data_selected_majors)
                    })
 
 
@@ -233,7 +274,7 @@ def edit(request, project_id, round_id, criteria_id):
 
     score_criterias = admission_criteria.scorecriteria_set.filter(
         secondary_order=0)
-    selected_major = admission_criteria.curriculummajoradmissioncriteria_set.all()
+    selected_majors = admission_criteria.curriculummajoradmissioncriteria_set.all()
 
     data_criteria = [
         [{
@@ -259,7 +300,7 @@ def edit(request, project_id, round_id, criteria_id):
             "id": m.curriculum_major.id,
             "title": m.curriculum_major.cupt_code.title,
             "slot": int(m.slots)
-        } for m in selected_major
+        } for m in selected_majors
     ]
 
     return render(request,
