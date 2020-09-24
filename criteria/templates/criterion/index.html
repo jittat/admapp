@@ -57,6 +57,11 @@
         <a href="#" type="button" class="btn btn-secondary">คัดลอกไปยังโครงการอื่น</a>
         <br>
         <a href="{% url 'backoffice:criteria:edit' project.id admission_round.id admission_criteria.id %}" type="button" class="btn btn-info">แก้ไข</a>
+        <br>
+        <form action="{% url 'backoffice:criteria:delete' project.id admission_round.id admission_criteria.id %}" method="post">
+            {% csrf_token %}
+            <input type="submit" name="delete" value="ลบเกณฑ์" class="btn btn-danger" />
+        </form>      
         </td>
       </tr>
       {% endwith %}

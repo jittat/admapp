@@ -204,12 +204,12 @@ def create(request, project_id, round_id):
             [{
                 "id": str(s.primary_order),
                 "title": s.description,
-                "value": float(s.value),
+                "value": float(s.value) if s.value is not None else None,
                 "unit": s.unit,
                 "children": [{
                     "id": "%s.%s" % (ss.primary_order, ss.secondary_order),
                     "title": ss.description,
-                    "value": float(ss.value),
+                    "value": float(ss.value) if ss.value is not None else None,
                     "unit": ss.unit
                 } for ss in s.childs.all()]
             }, s.criteria_type] for s in score_criterias
@@ -223,8 +223,7 @@ def create(request, project_id, round_id):
         data_selected_majors = [
             {
                 "id": preselected_major.id,
-                "title": preselected_major.cupt_code.title,
-                "slot": 0
+                "title": ("%s (%s) %s") % (preselected_major.cupt_code.title,  preselected_major.cupt_code.program_type,  preselected_major.cupt_code.major_title),
             }
         ]
 
@@ -281,12 +280,12 @@ def edit(request, project_id, round_id, criteria_id):
         [{
             "id": str(s.primary_order),
             "title": s.description,
-            "value": float(s.value),
+            "value": float(s.value) if s.value is not None else None,
             "unit": s.unit,
             "children": [{
                 "id": "%s.%s" % (ss.primary_order, ss.secondary_order),
                 "title": ss.description,
-                "value": float(ss.value),
+                "value": float(ss.value) if ss.value is not None else None,
                 "unit": ss.unit
             } for ss in s.childs.all()]
         }, s.criteria_type] for s in score_criterias
@@ -299,7 +298,7 @@ def edit(request, project_id, round_id, criteria_id):
     data_selected_majors = [
         {
             "id": m.curriculum_major.id,
-            "title": m.curriculum_major.cupt_code.title,
+            "title": ("%s (%s) %s") % (m.curriculum_major.cupt_code.title,  m.curriculum_major.cupt_code.program_type,  m.curriculum_major.cupt_code.major_title),
             "slot": int(m.slots)
         } for m in selected_majors
     ]
@@ -314,6 +313,33 @@ def edit(request, project_id, round_id, criteria_id):
                    'data_scoring': json.dumps(data_scoring),
                    'data_selected_majors': json.dumps(data_selected_majors)
                    })
+
+
+@user_login_required
+def delete(request, project_id, round_id, criteria_id):
+    user = request.user
+    project = get_object_or_404(AdmissionProject, pk=project_id)
+    admission_round = get_object_or_404(AdmissionRound, pk=round_id)
+    project_round = project.get_project_round_for(admission_round)
+    admission_criteria = get_object_or_404(AdmissionCriteria, pk=criteria_id)
+
+    if not can_user_view_project(user, project):
+        return redirect(reverse('backoffice:criteria:project-index', args=[project_id, round_id]))
+
+    if not user.profile.is_admission_admin:
+        faculty = user.profile.faculty
+    else:
+        faculty = None
+
+    if admission_criteria.admission_project.id != project_id or (not user.profile.is_admission_admin and faculty.id != admission_criteria.faculty.id):
+        return redirect(reverse('backoffice:criteria:project-index', args=[project_id, round_id]))
+
+    if request.method == 'POST':
+        admission_criteria.delete()
+
+        request.session['notice'] = "ลบเกณฑ์ สำเร็จ"
+
+    return redirect(reverse('backoffice:criteria:project-index', args=[project_id, round_id]))
 
 
 @user_login_required
