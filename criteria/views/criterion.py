@@ -41,7 +41,7 @@ def project_index(request, project_id, round_id):
     project_round = project.get_project_round_for(admission_round)
 
     if not can_user_view_project(user, project):
-        return redirect(reverse('criteria:index'))
+        return redirect(reverse('backoffice:index'))
 
     if not user.profile.is_admission_admin:
         faculty = user.profile.faculty
@@ -148,7 +148,6 @@ def upsert_admission_criteria(post_request, project=None, faculty=None, admissio
             primary_scoring_criterias = ScoreCriteria.objects.filter(
                 admission_criteria=admission_criteria)
             for s in secondary_scoring_criterias:
-                print(s)
                 criteria_order = s.primary_order - 1
                 s.parent = primary_scoring_criterias[criteria_order]
 
@@ -343,14 +342,14 @@ def delete(request, project_id, round_id, criteria_id):
 
 
 @user_login_required
-def select_curriculum_major(request, project_id, round_id, code_id=0, value='none'):
+def select_curriculum_majors(request, project_id, round_id, code_id=0, value='none'):
     user = request.user
     project = get_object_or_404(AdmissionProject, pk=project_id)
     admission_round = get_object_or_404(AdmissionRound, pk=round_id)
     project_round = project.get_project_round_for(admission_round)
 
     if not can_user_view_project(user, project):
-        return redirect(reverse('criteria:index'))
+        return redirect(reverse('backoffice:index'))
 
     if not user.profile.is_admission_admin:
         faculty = user.profile.faculty
@@ -397,3 +396,58 @@ def select_curriculum_major(request, project_id, round_id, code_id=0, value='non
                    'faculty': faculty,
                    'major_choices': major_choices,
                    })
+
+
+@user_login_required
+def list_curriculum_majors(request):
+    user = request.user
+
+    admission_rounds = AdmissionRound.objects.all()
+    
+    if not user.profile.is_admission_admin:
+        faculty = user.profile.faculty
+    else:
+        faculty = None
+
+    major_choices = MajorCuptCode.objects.filter(faculty=faculty)
+    curriculum_majors = CurriculumMajor.objects.filter(faculty=faculty).all()
+    admission_projects = user.profile.admission_projects.filter(is_available=True).all()
+
+    for p in admission_projects:
+        p.adm_rounds = set([r.id for r in p.admission_rounds.all()])
+    
+    major_table = []
+    project_lists = []
+    
+    for r in admission_rounds:
+        round_table = []
+        for m in major_choices:
+            row = []
+            for p in admission_projects:
+                if r.id in p.adm_rounds:
+                    row.append(False)
+            round_table.append(row)
+
+        c = 0
+        for p in admission_projects:
+            if r.id in p.adm_rounds:
+                cmajor_set = set([cm.cupt_code_id for cm in curriculum_majors
+                                  if cm.admission_project_id == p.id])
+                for m,i in zip(major_choices, range(len(major_choices))):
+                    round_table[i][c] = m.id in cmajor_set
+                
+                c += 1
+
+        project_lists.append([p for p in admission_projects if r.id in p.adm_rounds])
+        major_table.append(zip(major_choices, round_table))
+
+    return render(request,
+                  'criterion/list_curriculum_majors.html',
+                  { 'admission_rounds': admission_rounds,
+                    'faculty': faculty,
+                    'major_choices': major_choices,
+                    'project_lists': project_lists,
+                    'major_table': major_table,
+                    'round_data': list(zip(admission_rounds, major_table, project_lists)),
+                   })
+

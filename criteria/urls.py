@@ -7,8 +7,6 @@ from criteria.views import criterion
 app_name = 'criteria'
 
 urlpatterns = [
-    path('', criterion.project_index, {
-         'project_id': 1, 'round_id': 2}, name='project-index-default'),
     path('<int:project_id>/<int:round_id>/',
          criterion.project_index, name='project-index'),
 
@@ -18,8 +16,12 @@ urlpatterns = [
          criterion.edit, name='edit'),
     path('<int:project_id>/<int:round_id>/<int:criteria_id>/delete/',
          criterion.delete, name='delete'),
+
     path('<int:project_id>/<int:round_id>/curriculum-majors/',
-         criterion.select_curriculum_major, name='curriculum-majors'),
+         criterion.select_curriculum_majors, name='curriculum-majors'),
     path('<int:project_id>/<int:round_id>/curriculum-majors/toggle/<int:code_id>/<value>/',
-         criterion.select_curriculum_major, name='curriculum-majors-toggle'),
+         criterion.select_curriculum_majors, name='curriculum-majors-toggle'),
+
+    path('curriculum-majors/',
+         criterion.list_curriculum_majors, name='list-curriculum-majors'),
 ]
