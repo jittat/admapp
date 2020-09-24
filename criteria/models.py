@@ -30,13 +30,21 @@ class ScoreCriteria(models.Model):
 class MajorCuptCode(models.Model):
     program_code = models.CharField(max_length=30)
     program_type = models.CharField(max_length=30)
+    program_type_code = models.CharField(max_length=5)
     faculty = models.ForeignKey(Faculty, on_delete=models.CASCADE)
     major = models.ForeignKey(
         Major, on_delete=models.CASCADE, blank=True, null=True)
-    major_code = models.CharField(max_length=5)
+    major_code = models.CharField(max_length=5,
+                                  blank=True)
     title = models.TextField()
     major_title = models.TextField(null=True, blank=True)
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['program_code','major_code'], name='unique_program_major')
+        ]
+        ordering = ['program_type_code', 'program_code']
+    
     def __str__(self):
         if self.major_title:
             return f'{self.title} {self.major_title} ({self.program_type})'
