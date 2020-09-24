@@ -92,6 +92,9 @@
     </script>
     <script src="https://unpkg.com/react@16/umd/react.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js" crossorigin></script>
+
+    <!-- Mameaw: to modify react component go to "/main/static/react" 
+      run "yarn" then "yarn dev" and modify file in src folder-->
     <script src="{% static "react/CreateCriterionForm.js" %}" data-majors='{{ majors|safe }}'
       data-selected-majors='{{ data_selected_majors|safe }}' data-required='{{ data_required|safe }}'
       data-scoring='{{ data_scoring|safe }}'></script>
