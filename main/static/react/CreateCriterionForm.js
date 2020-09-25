@@ -372,7 +372,7 @@ var PrimaryTopic = function PrimaryTopic(_ref3) {
   var addNewTopic = function addNewTopic(e) {
     e.preventDefault();
     var newSecondaryTopics = secondaryTopics.slice();
-    newSecondaryTopics.push({ id: Date.now(), title: '', value: 22, unit: 'หน่วยกิต' });
+    newSecondaryTopics.push({ id: Date.now(), title: '' });
     setSecondaryTopics(newSecondaryTopics);
   };
   var removeSecondaryTopic = function removeSecondaryTopic(topic) {

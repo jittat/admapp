@@ -214,7 +214,7 @@ const PrimaryTopic = ({ topic, removeTopic, number, updateTopic, secondaryTopics
   const addNewTopic = (e) => {
     e.preventDefault()
     const newSecondaryTopics = secondaryTopics.slice()
-    newSecondaryTopics.push({ id: Date.now(), title: '', value: 22, unit: 'หน่วยกิต' })
+    newSecondaryTopics.push({ id: Date.now(), title: '' })
     setSecondaryTopics(newSecondaryTopics)
   }
   const removeSecondaryTopic = (topic) => {
