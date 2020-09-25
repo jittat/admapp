@@ -18,7 +18,6 @@ var majors = JSON.parse(document.currentScript.getAttribute('data-majors'));
 var dataRequired = JSON.parse(document.currentScript.getAttribute('data-required'));
 var dataScoring = JSON.parse(document.currentScript.getAttribute('data-scoring'));
 var dataSelectedMajors = JSON.parse(document.currentScript.getAttribute('data-selected-majors'));
-
 var Form = function Form() {
   return React.createElement(
     'div',

@@ -147,9 +147,13 @@ def upsert_admission_criteria(post_request, project=None, faculty=None, admissio
         with transaction.atomic():
             primary_scoring_criterias = ScoreCriteria.objects.filter(
                 admission_criteria=admission_criteria)
+            primary_scoring_criteria_map = dict()
+
+            for p in primary_scoring_criterias:
+                primary_scoring_criteria_map["%s_%s"%(p.criteria_type,p.primary_order)] = p
+
             for s in secondary_scoring_criterias:
-                criteria_order = s.primary_order - 1
-                s.parent = primary_scoring_criterias[criteria_order]
+                s.parent = primary_scoring_criteria_map["%s_%s"%(s.criteria_type,s.primary_order)]
 
             ScoreCriteria.objects.bulk_create(
                 secondary_scoring_criterias)
@@ -205,6 +209,7 @@ def create(request, project_id, round_id):
                 "title": s.description,
                 "value": float(s.value) if s.value is not None else None,
                 "unit": s.unit,
+                "relation":s.relation if s.relation is not None else None,
                 "children": [{
                     "id": "%s.%s" % (ss.primary_order, ss.secondary_order),
                     "title": ss.description,
@@ -281,6 +286,7 @@ def edit(request, project_id, round_id, criteria_id):
             "title": s.description,
             "value": float(s.value) if s.value is not None else None,
             "unit": s.unit,
+            "relation":s.relation if s.relation is not None else None,
             "children": [{
                 "id": "%s.%s" % (ss.primary_order, ss.secondary_order),
                 "title": ss.description,

@@ -6,7 +6,6 @@ let majors = JSON.parse(document.currentScript.getAttribute('data-majors'))
 let dataRequired = JSON.parse(document.currentScript.getAttribute('data-required'))
 let dataScoring = JSON.parse(document.currentScript.getAttribute('data-scoring'))
 let dataSelectedMajors = JSON.parse(document.currentScript.getAttribute('data-selected-majors'))
-
 const Form = () => {
   return (
     <div>
