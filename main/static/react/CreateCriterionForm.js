@@ -148,7 +148,7 @@ var RequiredCriteria = function RequiredCriteria(_ref) {
   var addNewTopic = function addNewTopic(e) {
     e.preventDefault();
     var newTopic = topics.slice();
-    newTopic.push({ id: Date.now(), title: '', value: 1, unit: '', children: [] });
+    newTopic.push({ id: Date.now(), title: '', unit: '', children: [] });
     console.log(newTopic);
     setTopics(newTopic);
   };
@@ -544,7 +544,8 @@ var PrimaryScoringTopic = function PrimaryScoringTopic(_ref4) {
         onSave: function onSave(v) {
           updateTopic(topic.id, { value: parseInt(v) });
         },
-        inputType: 'number'
+        inputType: 'number',
+        inputProps: { required: true }
       }),
       React.createElement(
         'td',
@@ -595,7 +596,8 @@ var PrimaryScoringTopic = function PrimaryScoringTopic(_ref4) {
           onSave: function onSave(v) {
             updateSecondaryTopic(topic.id, { value: parseInt(v) });
           },
-          inputType: 'number'
+          inputType: 'number',
+          inputProps: { required: true }
         }),
         React.createElement(
           'td',

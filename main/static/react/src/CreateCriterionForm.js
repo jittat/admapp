@@ -83,7 +83,7 @@ const RequiredCriteria = ({ initialTopics = [] }) => {
   const addNewTopic = (e) => {
     e.preventDefault()
     const newTopic = topics.slice()
-    newTopic.push({ id: Date.now(), title: '', value: 1, unit: '', children: [] })
+    newTopic.push({ id: Date.now(), title: '', unit: '', children: [] })
     console.log(newTopic)
     setTopics(newTopic)
   }
@@ -331,6 +331,7 @@ const PrimaryScoringTopic = ({ topic, removeTopic, number, updateTopic, maxScore
           initialValue={topic.value}
           onSave={(v) => { updateTopic(topic.id, { value: parseInt(v) }) }}
           inputType="number"
+          inputProps={{ required: true }}
         />
         <td><strong>{(topic.value / maxScore * 100).toLocaleString()}%</strong></td>
         <td>
@@ -355,6 +356,7 @@ const PrimaryScoringTopic = ({ topic, removeTopic, number, updateTopic, maxScore
               initialValue={topic.value}
               onSave={(v) => { updateSecondaryTopic(topic.id, { value: parseInt(v) }) }}
               inputType="number"
+              inputProps={{ required: true }}
             />
             <td>{(topic.value / primaryMaxScore * 100).toLocaleString()}%</td>
             <td>
