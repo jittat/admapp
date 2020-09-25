@@ -2,6 +2,17 @@
 <div class="row">
   <div class="col-md-12">
     <h2>แก้ไขเกณฑ์ โครงการ{{ project.title }} ({{ admission_round }})</h2>
+    <div class="alert alert-warning">
+      ในการป้อนเกณฑ์การรับ สามารถกำหนดให้หลาย ๆ สาขาใช้เกณฑ์เดียวกันได้ เพื่อความสะดวกสามารถคัดลอกเกณฑ์ที่ป้อนแล้วเป็นเกณฑ์ใหม่เพื่อปรับเปลี่ยนได้ นอกจากนี้ เร็ว ๆ นี้จะสามารถคัดลอกเกณฑ์ไปยังโครงการอื่น ๆ ได้ด้วย &nbsp;&nbsp;&nbsp;
+      <b>จะมีคลิปอธิบายการป้อนเกณฑ์เร็ว ๆ นี้ ขออภัยในความไม่สะดวก</b>
+    </div>
+    {% if not admission_criterias %}
+      {% if not free_curriculum_majors %}
+        <div class="alert alert-warning">
+	  <span class="badge badge-warning"><b>ยังไม่ได้เลือกสาขา</span> ขณะนี้คุณยังไม่ได้เลือกว่าจะมีสาขาใดที่มีการรับเข้าภายใต้โครงการ{{ project.title }} กรุณาเลือกสาขาที่จะเปิดรับก่อน</b>
+	</div>
+      {% endif %}
+    {% endif %}
     <div class="alert alert-info">
       เลือกสาขาวิชาที่เปิดรับในโครงการ{{ project.title }}
       <a
@@ -27,11 +38,13 @@
       </thead>
       {% for admission_criteria in admission_criterias %}
       {% with scorecriterias=admission_criteria.scorecriteria_set.all %}
-      <tr>
+      <tr class="{% if admission_criteria.curriculummajor_set.all %}{% else %}table-warning{% endif %}">
         <td>
           <ul>
             {% for major in admission_criteria.curriculummajor_set.all %}
             <li>{{major.cupt_code}}</li>
+	    {% empty %}
+	    <li>(ยังไม่ได้ระบุสาขา)</li>
             {% endfor %}
           </ul>
         </td>
@@ -55,13 +68,10 @@
           </ul>
         </td>
         <td>
-        <a href="{% url 'backoffice:criteria:create' project.id admission_round.id %}?duplicate_score_id={{admission_criteria.id}}" type="button" class="btn btn-primary">คัดลอกเงื่อนไขและเกณฑ์การพิจารณา</a>
-        <br>
-        <a href="#" type="button" class="btn btn-secondary">คัดลอกไปยังโครงการอื่น</a>
-        <br>
+        <a href="{% url 'backoffice:criteria:create' project.id admission_round.id %}?duplicate_score_id={{admission_criteria.id}}" type="button" class="btn btn-primary">คัดลอก</a>
+        <a href="#" type="button" class="d-none btn btn-secondary">คัดลอกไปยังโครงการอื่น</a>
         <a href="{% url 'backoffice:criteria:edit' project.id admission_round.id admission_criteria.id %}" type="button" class="btn btn-info">แก้ไข</a>
-        <br>
-        <form action="{% url 'backoffice:criteria:delete' project.id admission_round.id admission_criteria.id %}" method="post">
+        <form class="d-inline" action="{% url 'backoffice:criteria:delete' project.id admission_round.id admission_criteria.id %}" method="post">
             {% csrf_token %}
             <input type="submit" name="delete" value="ลบเกณฑ์" class="btn btn-danger" />
         </form>      
@@ -74,16 +84,19 @@
 	  <td>
             <ul><li>{{major.cupt_code}}</li></ul>
 	  </td>
-	  <td>
+	  <td colspan="2">
 	    (ยังไม่มีการกำหนดเกณฑ์)
-	  </td>
-	  <td>
 	  </td>
 	  <td>
        <a href="{% url 'backoffice:criteria:create' project.id admission_round.id %}?selected_major_id={{major.id}}" type="button" class="btn btn-success">กำหนดเงื่อนไขและเกณฑ์การพิจารณา</a>
 	  </td>
 	</tr>
       {% endfor %}
+      {% if not admission_criterias %}
+        {% if not free_curriculum_majors %}
+	  <tr><td>(ยังไม่มีการเลือกสาขาที่เปิดรับในโครงการนี้)</td></tr>
+        {% endif %}
+      {% endif %}
     </table>
   </div>
 </div>
