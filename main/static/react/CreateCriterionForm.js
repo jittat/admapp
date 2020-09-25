@@ -4,6 +4,8 @@ var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = [
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 var e = React.createElement;
@@ -17,26 +19,6 @@ var dataRequired = JSON.parse(document.currentScript.getAttribute('data-required
 var dataScoring = JSON.parse(document.currentScript.getAttribute('data-scoring'));
 var dataSelectedMajors = JSON.parse(document.currentScript.getAttribute('data-selected-majors'));
 
-var relationRequired = [{
-  "value": "OR",
-  "label": "ข้อใดข้อหนึ่ง"
-}, {
-  "value": "AND",
-  "label": "ทุกข้อ"
-}, {
-  "value": "SUM",
-  "label": "ใช้คะแนนรวม"
-}, {
-  "value": "MAX",
-  "label": "ใช้คะแนนมากที่สุด"
-}];
-var relationScoring = [{
-  "value": "MAX",
-  "label": "ใช้คะแนนมากที่สุด"
-}, {
-  "value": "SUM",
-  "label": "ใช้คะแนนรวมตามสัดส่วน"
-}];
 var Form = function Form() {
   return React.createElement(
     'div',
@@ -428,7 +410,8 @@ var PrimaryTopic = function PrimaryTopic(_ref3) {
             '+'
           )
         ),
-        inputProps: { required: true }
+        inputProps: { required: true },
+        tags: [].concat(_toConsumableArray(generalRequiredTags), _toConsumableArray(testTags))
       }),
       React.createElement(EditableCell, {
         name: 'required_' + number + '_value',
@@ -436,7 +419,8 @@ var PrimaryTopic = function PrimaryTopic(_ref3) {
       }),
       React.createElement(EditableCell, {
         name: 'required_' + number + '_unit',
-        initialValue: topic.unit
+        initialValue: topic.unit || '',
+        tags: unitTags
       }),
       React.createElement(
         'td',
@@ -466,7 +450,8 @@ var PrimaryTopic = function PrimaryTopic(_ref3) {
             snumber,
             '\xA0\xA0'
           ),
-          inputProps: { required: true }
+          inputProps: { required: true },
+          tags: [].concat(_toConsumableArray(generalRequiredTags), _toConsumableArray(testTags))
         }),
         React.createElement(EditableCell, {
           name: 'required_' + snumber + '_value',
@@ -474,7 +459,8 @@ var PrimaryTopic = function PrimaryTopic(_ref3) {
         }),
         React.createElement(EditableCell, {
           name: 'required_' + snumber + '_unit',
-          initialValue: topic.unit
+          initialValue: topic.unit,
+          tags: unitTags
         }),
         React.createElement(
           'td',
@@ -550,7 +536,8 @@ var PrimaryScoringTopic = function PrimaryScoringTopic(_ref4) {
             '+'
           )
         ),
-        inputProps: { required: true }
+        inputProps: { required: true },
+        tags: [].concat(_toConsumableArray(generalScoringTags), _toConsumableArray(testTags))
       }),
       React.createElement(EditableCell, {
         name: 'scoring_' + number + '_value',
@@ -600,7 +587,8 @@ var PrimaryScoringTopic = function PrimaryScoringTopic(_ref4) {
             idx + 1,
             '\xA0\xA0'
           ),
-          inputProps: { required: true }
+          inputProps: { required: true },
+          tags: [].concat(_toConsumableArray(generalScoringTags), _toConsumableArray(testTags))
         }),
         React.createElement(EditableCell, {
           name: 'scoring_' + snumber + '_value',
@@ -644,14 +632,15 @@ var EditableCell = function EditableCell(_ref5) {
       inputType = _ref5.inputType,
       name = _ref5.name,
       inputProps = _ref5.inputProps,
-      restProps = _objectWithoutProperties(_ref5, ['initialValue', 'editable', 'focusOnMount', 'children', 'onSave', 'prefix', 'suffix', 'inputType', 'name', 'inputProps']);
+      _ref5$tags = _ref5.tags,
+      tags = _ref5$tags === undefined ? [] : _ref5$tags,
+      restProps = _objectWithoutProperties(_ref5, ['initialValue', 'editable', 'focusOnMount', 'children', 'onSave', 'prefix', 'suffix', 'inputType', 'name', 'inputProps', 'tags']);
 
   var inputRef = useRef();
   useEffect(function () {
-    var availableTags = ["GAT", "PAT 1", "PAT 2", "PAT 3", "PAT 4", "PAT 5", "PAT 6", "PAT 7", "GPAX", "9 วิชาสามัญ"];
     if (editable) {
       $(inputRef.current).autocomplete({
-        source: availableTags,
+        source: tags,
         minLength: 0
       }).focus(function () {
         if (inputRef.current.value == "") {

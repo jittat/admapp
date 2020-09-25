@@ -15,26 +15,22 @@
     {% endif %}
     <div class="alert alert-info">
       เลือกสาขาวิชาที่เปิดรับในโครงการ{{ project.title }}
-      <a
-        class="btn btn-sm btn-info"
-        href="{% url 'backoffice:criteria:curriculum-majors' project.id admission_round.id %}"
-        >เลือกสาขาวิชา</a>
-      <a
-	class="btn btn-sm btn-secondary"
-	href="{% url 'backoffice:criteria:list-curriculum-majors' %}"
-	>แสดงรายการสาขาวิชาที่เลือกเปิด</a>
+      <a class="btn btn-sm btn-info"
+        href="{% url 'backoffice:criteria:curriculum-majors' project.id admission_round.id %}">เลือกสาขาวิชา</a>
+      <a class="btn btn-sm btn-secondary"
+        href="{% url 'backoffice:criteria:list-curriculum-majors' %}">แสดงรายการสาขาวิชาที่เลือกเปิด</a>
     </div>
     {% if notice %}
     <div class="alert alert-success">{{ notice }}</div>
     {% endif %}
     <table class="table table-sm">
       <thead class="thead-dark">
-	<tr>
+        <tr>
           <th>สาขาวิชาที่ใช้เกณฑ์</th>
           <th>เงื่อนไขขั้นต่ำ</th>
           <th>เกณฑ์การพิจารณา</th>
           <th>แก้ไข</th>
-	</tr>
+        </tr>
       </thead>
       {% for admission_criteria in admission_criterias %}
       {% with scorecriterias=admission_criteria.scorecriteria_set.all %}
@@ -61,36 +57,43 @@
         </td>
         <td>
           <ul>
-            {% for scorecriteria in scorecriterias %} 
+            {% for scorecriteria in scorecriterias %}
             {% if scorecriteria.criteria_type == "scoring" and scorecriteria.secondary_order == 0 %}
             <li>{{scorecriteria.description}}</li>
             {% endif %} {% endfor %}
           </ul>
         </td>
         <td>
-        <a href="{% url 'backoffice:criteria:create' project.id admission_round.id %}?duplicate_score_id={{admission_criteria.id}}" type="button" class="btn btn-primary">คัดลอก</a>
-        <a href="#" type="button" class="d-none btn btn-secondary">คัดลอกไปยังโครงการอื่น</a>
-        <a href="{% url 'backoffice:criteria:edit' project.id admission_round.id admission_criteria.id %}" type="button" class="btn btn-info">แก้ไข</a>
-        <form class="d-inline" action="{% url 'backoffice:criteria:delete' project.id admission_round.id admission_criteria.id %}" method="post">
+          <a
+            href="{% url 'backoffice:criteria:create' project.id admission_round.id %}?duplicate_score_id={{admission_criteria.id}}"
+            class="btn btn-primary btn-sm">คัดลอก</a>
+          <a href="#" class="btn btn-secondary d-none btn-sm">คัดลอกไปยังโครงการอื่น</a>
+          <a href="{% url 'backoffice:criteria:edit' project.id admission_round.id admission_criteria.id %}"
+            class="btn btn-info btn-sm">แก้ไข</a>
+          <form class="d-inline" action="{% url 'backoffice:criteria:delete' project.id admission_round.id admission_criteria.id %}"
+            id="delete_{{admission_criteria.id}}" method="post">
             {% csrf_token %}
-            <input type="submit" name="delete" value="ลบเกณฑ์" class="btn btn-danger" />
-        </form>      
+          </form>
+          <button class="btn btn-danger btn-sm" onclick="deleteCriteria('delete_{{admission_criteria.id}}')">ลบ</button>
         </td>
       </tr>
       {% endwith %}
       {% endfor %}
       {% for major in free_curriculum_majors %}
-        <tr>
-	  <td>
-            <ul><li>{{major.cupt_code}}</li></ul>
-	  </td>
-	  <td colspan="2">
-	    (ยังไม่มีการกำหนดเกณฑ์)
-	  </td>
-	  <td>
-       <a href="{% url 'backoffice:criteria:create' project.id admission_round.id %}?selected_major_id={{major.id}}" type="button" class="btn btn-success">กำหนดเงื่อนไขและเกณฑ์การพิจารณา</a>
-	  </td>
-	</tr>
+      <tr>
+        <td>
+          <ul>
+            <li>{{major.cupt_code}}</li>
+          </ul>
+        </td>
+        <td colspan="2">
+          (ยังไม่มีการกำหนดเกณฑ์)
+        </td>
+        <td>
+          <a href="{% url 'backoffice:criteria:create' project.id admission_round.id %}?selected_major_id={{major.id}}"
+            class="btn btn-success btn-sm">กำหนดเงื่อนไขและเกณฑ์การพิจารณา</a>
+        </td>
+      </tr>
       {% endfor %}
       {% if not admission_criterias %}
         {% if not free_curriculum_majors %}
@@ -99,5 +102,13 @@
       {% endif %}
     </table>
   </div>
+  <script>
+    function deleteCriteria(text) {
+      let ok = confirm('ต้องการลบเกณฑ์?')
+      if (ok) {
+        $('form#' + text).submit()
+      }
+    }
+  </script>
 </div>
 {% endblock %}
