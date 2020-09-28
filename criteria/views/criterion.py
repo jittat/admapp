@@ -21,6 +21,14 @@ from backoffice.decorators import user_login_required
 from criteria.models import CurriculumMajor, AdmissionCriteria, ScoreCriteria, CurriculumMajorAdmissionCriteria, MajorCuptCode
 
 
+def is_number(string):
+    try:
+        float(string)
+        return True
+    except ValueError:
+        return False
+
+
 def get_all_curriculum_majors(project, faculty=None):
     if not faculty:
         majors = CurriculumMajor.objects.filter(
@@ -94,7 +102,7 @@ def upsert_admission_criteria(post_request, project=None, faculty=None, admissio
                 score_criteria_dict[data_key] = initial_data
 
             value = post_request[key]
-            if value.isnumeric():
+            if is_number(value):
                 value = Decimal(value)
 
             score_criteria_dict[data_key][splitted_keys[2]
@@ -104,7 +112,7 @@ def upsert_admission_criteria(post_request, project=None, faculty=None, admissio
             if data_key not in selected_major_dict:
                 selected_major_dict[data_key] = dict()
             value = post_request[key]
-            if value.isnumeric():
+            if is_number(value):
                 value = Decimal(value)
             selected_major_dict[data_key][splitted_keys[2]] = value
 
@@ -150,10 +158,12 @@ def upsert_admission_criteria(post_request, project=None, faculty=None, admissio
             primary_scoring_criteria_map = dict()
 
             for p in primary_scoring_criterias:
-                primary_scoring_criteria_map["%s_%s"%(p.criteria_type,p.primary_order)] = p
+                primary_scoring_criteria_map["%s_%s" % (
+                    p.criteria_type, p.primary_order)] = p
 
             for s in secondary_scoring_criterias:
-                s.parent = primary_scoring_criteria_map["%s_%s"%(s.criteria_type,s.primary_order)]
+                s.parent = primary_scoring_criteria_map["%s_%s" % (
+                    s.criteria_type, s.primary_order)]
 
             ScoreCriteria.objects.bulk_create(
                 secondary_scoring_criterias)
@@ -209,7 +219,7 @@ def create(request, project_id, round_id):
                 "title": s.description,
                 "value": float(s.value) if s.value is not None else None,
                 "unit": s.unit,
-                "relation":s.relation if s.relation is not None else None,
+                "relation": s.relation if s.relation is not None else None,
                 "children": [{
                     "id": "%s.%s" % (ss.primary_order, ss.secondary_order),
                     "title": ss.description,
@@ -286,7 +296,7 @@ def edit(request, project_id, round_id, criteria_id):
             "title": s.description,
             "value": float(s.value) if s.value is not None else None,
             "unit": s.unit,
-            "relation":s.relation if s.relation is not None else None,
+            "relation": s.relation if s.relation is not None else None,
             "children": [{
                 "id": "%s.%s" % (ss.primary_order, ss.secondary_order),
                 "title": ss.description,
@@ -409,7 +419,7 @@ def list_curriculum_majors(request):
     user = request.user
 
     admission_rounds = AdmissionRound.objects.all()
-    
+
     if not user.profile.is_admission_admin:
         faculty = user.profile.faculty
     else:
@@ -417,14 +427,15 @@ def list_curriculum_majors(request):
 
     major_choices = MajorCuptCode.objects.filter(faculty=faculty)
     curriculum_majors = CurriculumMajor.objects.filter(faculty=faculty).all()
-    admission_projects = user.profile.admission_projects.filter(is_available=True).all()
+    admission_projects = user.profile.admission_projects.filter(
+        is_available=True).all()
 
     for p in admission_projects:
         p.adm_rounds = set([r.id for r in p.admission_rounds.all()])
-    
+
     major_table = []
     project_lists = []
-    
+
     for r in admission_rounds:
         round_table = []
         for m in major_choices:
@@ -439,21 +450,21 @@ def list_curriculum_majors(request):
             if r.id in p.adm_rounds:
                 cmajor_set = set([cm.cupt_code_id for cm in curriculum_majors
                                   if cm.admission_project_id == p.id])
-                for m,i in zip(major_choices, range(len(major_choices))):
+                for m, i in zip(major_choices, range(len(major_choices))):
                     round_table[i][c] = m.id in cmajor_set
-                
+
                 c += 1
 
-        project_lists.append([p for p in admission_projects if r.id in p.adm_rounds])
+        project_lists.append(
+            [p for p in admission_projects if r.id in p.adm_rounds])
         major_table.append(zip(major_choices, round_table))
 
     return render(request,
                   'criterion/list_curriculum_majors.html',
-                  { 'admission_rounds': admission_rounds,
-                    'faculty': faculty,
-                    'major_choices': major_choices,
-                    'project_lists': project_lists,
-                    'major_table': major_table,
-                    'round_data': list(zip(admission_rounds, major_table, project_lists)),
+                  {'admission_rounds': admission_rounds,
+                   'faculty': faculty,
+                   'major_choices': major_choices,
+                   'project_lists': project_lists,
+                   'major_table': major_table,
+                   'round_data': list(zip(admission_rounds, major_table, project_lists)),
                    })
-
