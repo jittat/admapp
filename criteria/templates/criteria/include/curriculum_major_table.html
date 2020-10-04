@@ -16,7 +16,7 @@
       <td class="text-center">
 	<a
           class="btn btn-sm btn-outline-secondary"
-          href="{% url 'backoffice:criteria:curriculum-majors' p.id admission_round.id %}"
+          href="{% url 'backoffice:criteria:curriculum-majors' p.id admission_round.id %}{{ faculty_url_query }}"
           >แก้ไข</a>
       </td>
     {% endfor %}
@@ -37,7 +37,7 @@
       <td class="text-center">
 	<a
           class="btn btn-sm btn-outline-secondary"
-          href="{% url 'backoffice:criteria:curriculum-majors' p.id admission_round.id %}"
+          href="{% url 'backoffice:criteria:curriculum-majors' p.id admission_round.id %}{{ faculty_url_query }}"
           >แก้ไข</a>
       </td>
     {% endfor %}

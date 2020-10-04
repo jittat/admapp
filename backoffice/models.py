@@ -23,6 +23,14 @@ class Profile(models.Model):
                                 null=True,
                                 blank=True,
                                 on_delete=models.SET_NULL)
+    is_campus_admin = models.BooleanField(verbose_name='ดูแลข้อมูลในวิทยาเขต',
+                                          default=False)
+    campus = models.ForeignKey(Campus,
+                               verbose_name='วิทยาเขต',
+                               default=None,
+                               null=True,
+                               blank=True,
+                               on_delete=models.SET_NULL)
     is_admission_admin = models.BooleanField(verbose_name='ดูแลข้อมูลทุกคณะ',
                                              default=False)
 

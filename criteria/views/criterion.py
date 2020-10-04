@@ -20,14 +20,12 @@ from backoffice.decorators import user_login_required
 
 from criteria.models import CurriculumMajor, AdmissionCriteria, ScoreCriteria, CurriculumMajorAdmissionCriteria, MajorCuptCode
 
-
 def is_number(string):
     try:
         float(string)
         return True
     except ValueError:
         return False
-
 
 def get_all_curriculum_majors(project, faculty=None):
     if not faculty:
@@ -40,6 +38,34 @@ def get_all_curriculum_majors(project, faculty=None):
 
     return majors
 
+def get_user_faculty_choices(user):
+    if (not user.profile.is_admission_admin) and (not user.profile.is_campus_admin):
+        return []
+    else:
+        if user.profile.is_campus_admin:
+            return Faculty.objects.filter(campus_id=user.profile.campus_id)
+        else:
+            return Faculty.objects.all()
+
+def extract_user_faculty(request, user):
+    faculty_choices = get_user_faculty_choices(user)
+    if (not user.profile.is_admission_admin) and (not user.profile.is_campus_admin):
+        faculty = user.profile.faculty
+    elif user.profile.is_campus_admin:
+        if request.GET.get('faculty_id', None) != None:
+            faculty = get_object_or_404(Faculty, pk=request.GET['faculty_id'])
+            if faculty.campus_id != user.profile.campus_id:
+                return None, faculty_choices
+        else:
+            faculty = faculty_choices[0]
+    else:
+        if request.GET.get('faculty_id', None) != None:
+            faculty = get_object_or_404(Faculty, pk=request.GET['faculty_id'])
+        else:
+            faculty = faculty_choices[0]
+
+    print(faculty, faculty_choices)
+    return faculty, faculty_choices
 
 @user_login_required
 def project_index(request, project_id, round_id):
@@ -51,14 +77,10 @@ def project_index(request, project_id, round_id):
     if not can_user_view_project(user, project):
         return redirect(reverse('backoffice:index'))
 
-    if not user.profile.is_admission_admin:
-        faculty = user.profile.faculty
-        admission_criterias = AdmissionCriteria.objects.filter(
-            admission_project_id=project_id, faculty_id=faculty.id)
-    else:
-        faculty = None
-        admission_criterias = AdmissionCriteria.objects.filter(
-            admission_project_id=project_id)
+    faculty, faculty_choices = extract_user_faculty(request, user)
+
+    admission_criterias = AdmissionCriteria.objects.filter(
+        admission_project_id=project_id, faculty_id=faculty.id)
     notice = request.session.pop('notice', None)
 
     curriculum_majors = get_all_curriculum_majors(project, faculty)
@@ -72,10 +94,12 @@ def project_index(request, project_id, round_id):
                               if m.id not in curriculum_majors_with_criteria_ids]
 
     return render(request,
-                  'criterion/index.html',
+                  'criteria/index.html',
                   {'project': project,
                    'admission_round': admission_round,
                    'faculty': faculty,
+                   'faculty_url_query': '' if faculty_choices == [] else '?faculty_id=' + str(faculty.id),
+                   'faculty_choices': faculty_choices,
                    'admission_criterias': admission_criterias,
                    'notice': notice,
                    'free_curriculum_majors': free_curriculum_majors,
@@ -187,11 +211,7 @@ def create(request, project_id, round_id):
     if not can_user_view_project(user, project):
         return redirect(reverse('backoffice:criteria:project-index', args=[project_id, round_id]))
 
-    if not user.profile.is_admission_admin:
-        faculty = user.profile.faculty
-    else:
-        faculty = None
-
+    faculty, faculty_choices = extract_user_faculty(request, user)
     majors = get_all_curriculum_majors(project, faculty)
 
     if request.method == 'POST':
@@ -199,7 +219,10 @@ def create(request, project_id, round_id):
             request.POST, project=project, faculty=faculty)
 
         request.session['notice'] = "สร้างเกณฑ์ใหม่ สำเร็จ"
-        return redirect(reverse('backoffice:criteria:project-index', args=[project_id, round_id]), is_complete=True)
+
+        faculty_url_query = '' if faculty_choices == [] else '?faculty_id=' + str(faculty.id)
+
+        return redirect(reverse('backoffice:criteria:project-index', args=[project_id, round_id]) + faculty_url_query, is_complete=True)
 
         # return render(request, 'criterion/complete.html', {'project': project, 'admission_round': admission_round})
 
@@ -242,7 +265,7 @@ def create(request, project_id, round_id):
         ]
 
     return render(request,
-                  'criterion/create.html',
+                  'criteria/create.html',
                   {'project': project,
                    'admission_round': admission_round,
                    'faculty': faculty,
@@ -253,7 +276,6 @@ def create(request, project_id, round_id):
                    })
 
 
-# TODO: get real data
 @user_login_required
 def edit(request, project_id, round_id, criteria_id):
     user = request.user
@@ -265,11 +287,7 @@ def edit(request, project_id, round_id, criteria_id):
     if not can_user_view_project(user, project):
         return redirect(reverse('backoffice:criteria:project-index', args=[project_id, round_id]))
 
-    if not user.profile.is_admission_admin:
-        faculty = user.profile.faculty
-    else:
-        faculty = None
-
+    faculty, faculty_choices = extract_user_faculty(request, user)
     if admission_criteria.admission_project.id != project_id or (not user.profile.is_admission_admin and faculty.id != admission_criteria.faculty.id):
         return redirect(reverse('backoffice:criteria:project-index', args=[project_id, round_id]))
 
@@ -284,7 +302,10 @@ def edit(request, project_id, round_id, criteria_id):
             request.POST, admission_criteria=admission_criteria)
 
         request.session['notice'] = "แก้ไขเกณฑ์ สำเร็จ"
-        return redirect(reverse('backoffice:criteria:project-index', args=[project_id, round_id]), is_complete=True)
+
+        faculty_url_query = '' if faculty_choices == [] else '?faculty_id=' + str(faculty.id)
+
+        return redirect(reverse('backoffice:criteria:project-index', args=[project_id, round_id]) + faculty_url_query, is_complete=True)
 
     score_criterias = admission_criteria.scorecriteria_set.filter(
         secondary_order=0)
@@ -319,7 +340,7 @@ def edit(request, project_id, round_id, criteria_id):
     ]
 
     return render(request,
-                  'criterion/edit.html',
+                  'criteria/edit.html',
                   {'project': project,
                    'admission_round': admission_round,
                    'faculty': faculty,
@@ -341,11 +362,7 @@ def delete(request, project_id, round_id, criteria_id):
     if not can_user_view_project(user, project):
         return redirect(reverse('backoffice:criteria:project-index', args=[project_id, round_id]))
 
-    if not user.profile.is_admission_admin:
-        faculty = user.profile.faculty
-    else:
-        faculty = None
-
+    faculty, faculty_choices = extract_user_faculty(request, user)
     if admission_criteria.admission_project.id != project_id or (not user.profile.is_admission_admin and faculty.id != admission_criteria.faculty.id):
         return redirect(reverse('backoffice:criteria:project-index', args=[project_id, round_id]))
 
@@ -354,7 +371,9 @@ def delete(request, project_id, round_id, criteria_id):
 
         request.session['notice'] = "ลบเกณฑ์ สำเร็จ"
 
-    return redirect(reverse('backoffice:criteria:project-index', args=[project_id, round_id]))
+    faculty_url_query = '' if faculty_choices == [] else '?faculty_id=' + str(faculty.id)
+
+    return redirect(reverse('backoffice:criteria:project-index', args=[project_id, round_id]) + faculty_url_query)
 
 
 @user_login_required
@@ -367,11 +386,7 @@ def select_curriculum_majors(request, project_id, round_id, code_id=0, value='no
     if not can_user_view_project(user, project):
         return redirect(reverse('backoffice:index'))
 
-    if not user.profile.is_admission_admin:
-        faculty = user.profile.faculty
-    else:
-        faculty = None
-
+    faculty, faculty_choices = extract_user_faculty(request, user)
     major_choices = MajorCuptCode.objects.filter(faculty=faculty)
 
     curriculum_majors = CurriculumMajor.objects.filter(admission_project_id=project_id,
@@ -406,10 +421,12 @@ def select_curriculum_majors(request, project_id, round_id, code_id=0, value='no
         return HttpResponseNotFound()
 
     return render(request,
-                  'criterion/select_curriculum_majors.html',
+                  'criteria/select_curriculum_majors.html',
                   {'project': project,
                    'admission_round': admission_round,
                    'faculty': faculty,
+                   'faculty_url_query': '' if faculty_choices == [] else '?faculty_id=' + str(faculty.id),
+                   'faculty_choices': faculty_choices,
                    'major_choices': major_choices,
                    })
 
@@ -420,15 +437,14 @@ def list_curriculum_majors(request):
 
     admission_rounds = AdmissionRound.objects.all()
 
-    if not user.profile.is_admission_admin:
-        faculty = user.profile.faculty
-    else:
-        faculty = None
-
+    faculty, faculty_choices = extract_user_faculty(request, user)
     major_choices = MajorCuptCode.objects.filter(faculty=faculty)
     curriculum_majors = CurriculumMajor.objects.filter(faculty=faculty).all()
-    admission_projects = user.profile.admission_projects.filter(
-        is_available=True).all()
+    if not user.profile.is_admission_admin:
+        admission_projects = user.profile.admission_projects.filter(
+            is_available=True).all()
+    else:
+        admission_projects = AdmissionProject.objects.filter(is_available=True)
 
     for p in admission_projects:
         p.adm_rounds = set([r.id for r in p.admission_rounds.all()])
@@ -460,9 +476,11 @@ def list_curriculum_majors(request):
         major_table.append(zip(major_choices, round_table))
 
     return render(request,
-                  'criterion/list_curriculum_majors.html',
+                  'criteria/list_curriculum_majors.html',
                   {'admission_rounds': admission_rounds,
                    'faculty': faculty,
+                   'faculty_url_query': '' if faculty_choices == [] else '?faculty_id=' + str(faculty.id),
+                   'faculty_choices': faculty_choices,
                    'major_choices': major_choices,
                    'project_lists': project_lists,
                    'major_table': major_table,

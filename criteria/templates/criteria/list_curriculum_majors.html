@@ -4,6 +4,8 @@
   <div class="col-md-12">
     <h2>สาขาที่เปิดรับสำหรับ{{ faculty }}</h2>
 
+    {% include "criteria/include/faculty_menu.html" %}
+
     <ul class="nav nav-pills" id="tableTab" role="tablist">
       <li class="nav-item"><a class="nav-link disabled">เลือกรอบ:</a></li>
       {% for r, round_major_table, projects in round_data %}
@@ -16,7 +18,7 @@
       {% for r, round_major_table, projects in round_data %}
         <div class="tab-pane {% if forloop.first %}active{% endif %}" id="round-{{ r.id }}" role="tabpanel" aria-labelledby="round-{{ r.id }}-tab">
           {% with r as admission_round %}
-            {% include 'criterion/include/curriculum_major_table.html' %}
+            {% include 'criteria/include/curriculum_major_table.html' %}
           {% endwith %}
 	</div>
       {% endfor %}
