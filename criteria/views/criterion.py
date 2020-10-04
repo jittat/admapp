@@ -64,7 +64,6 @@ def extract_user_faculty(request, user):
         else:
             faculty = faculty_choices[0]
 
-    print(faculty, faculty_choices)
     return faculty, faculty_choices
 
 @user_login_required
