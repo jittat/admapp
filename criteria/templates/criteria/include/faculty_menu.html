@@ -1,6 +1,6 @@
 {% if faculty_choices %}
 <div class="alert alert-info">
-  คุณสามารถจัดการข้อมูลได้หลายคณะ เลือกคณะ:
+  คุณสามารถจัดการข้อมูลได้หลายคณะ » เลือกคณะ:
   <select id="facultySelectId">
     {% for f in faculty_choices %}
       <option {% if faculty.id == f.id %}selected{% endif %} value="{{ f.id }}">{{ f }}</option>

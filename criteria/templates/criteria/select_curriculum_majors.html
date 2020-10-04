@@ -30,7 +30,7 @@
       {% for major in major_choices %}
         <tr>
 	  <td><a class="major-toggles text-body" data-cupt-id="{{ major.id }}" href="#">{% if major.is_selected %}<i class="fa fa-check-square-o"></i>{% else %}<i class="fa fa-square-o"></i>{% endif %}</a></td>
-	  <td>{{ major }}</td>
+	  <td>{{ major }} <span id="spinner-{{ major.id }}" style="display:none;"><i class="fa fa-spinner fa-spin"></i></span></td>
 	</tr>
       {% endfor %}
     </table>
@@ -69,6 +69,7 @@
 	      var val = 'select';
 	  }
 	  var url = "{% url 'backoffice:criteria:curriculum-majors' project.id admission_round.id %}" + "toggle/" + cuptId + "/" + val + "/?faculty_id=" + {{ faculty.id }};
+	  $("#spinner-" + cuptId).show();
 	  jQuery.post(url, {
 	      csrfmiddlewaretoken: csrftoken
 	  }, function(result) {
@@ -78,6 +79,7 @@
 	      } else {
 		  $(thisElement).html('<i class="fa fa-square-o"></i>');
 	      }
+	      $("#spinner-" + cuptId).hide();
 	  });
 	  return false;
       });
