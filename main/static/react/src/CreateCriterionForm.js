@@ -241,7 +241,7 @@ const PrimaryTopic = ({ topic, removeTopic, number, updateTopic, secondaryTopics
             </div>
           }
           inputProps={{ required: true }}
-          tags={[...generalRequiredTags, ...testTags]}
+          tags={requiredTags}
         />
         <EditableCell
           name={`required_${number}_value`}
@@ -267,7 +267,7 @@ const PrimaryTopic = ({ topic, removeTopic, number, updateTopic, secondaryTopics
               focusOnMount={true}
               prefix={<span>{snumber}&nbsp;&nbsp;</span>}
               inputProps={{ required: true }}
-              tags={[...generalRequiredTags, ...testTags]}
+              tags={requiredTags}
             />
             <EditableCell
               name={`required_${snumber}_value`}
@@ -324,7 +324,7 @@ const PrimaryScoringTopic = ({ topic, removeTopic, number, updateTopic, maxScore
             </div>
           }
           inputProps={{ required: true }}
-          tags={[...generalScoringTags, ...testTags]}
+          tags={scoringTags}
         />
         <EditableCell
           name={`scoring_${number}_value`}
@@ -349,7 +349,7 @@ const PrimaryScoringTopic = ({ topic, removeTopic, number, updateTopic, maxScore
               focusOnMount={true}
               prefix={<span>{number}.{idx + 1}&nbsp;&nbsp;</span>}
               inputProps={{ required: true }}
-              tags={[...generalScoringTags, ...testTags]}
+              tags={scoringTags}
             />
             <EditableCell
               name={`scoring_${snumber}_value`}
@@ -385,13 +385,31 @@ const EditableCell = ({
   useEffect(() => {
     if (editable) {
       $(inputRef.current).autocomplete({
-        source: tags,
+        source: typeof (tags[0]) === 'string' ? tags :
+          // for required and scoring tags
+          // TODO: refactor this
+          tags.map(o => ({
+            label: o.description,
+            value: o.description,
+            onSelect: () => {
+              let temp = name.split('_')
+              temp[temp.length - 1] = 'unit'
+              const unitName = temp.join('_')
+              const unitEl = $(`[name="${unitName}"]`)[0]
+              if (unitEl) {
+                unitEl.value = o.unit
+              }
+            }
+          })),
         minLength: 0,
+        select: ((event, ui) => {
+          ui.item.onSelect && ui.item.onSelect()
+        })
       }).focus(function () {
         if (inputRef.current.value == "") {
           $(inputRef.current).autocomplete("search");
         }
-      });
+      })
     }
   }, [editable])
 
@@ -413,6 +431,7 @@ const EditableCell = ({
     inputRef.current.style.height = ""
     inputRef.current.style.height = inputRef.current.scrollHeight + 'px'
   }
+  useEffect(() => { calHeight() }, [])
   let childNode = initialValue
   if (editable) {
     childNode =
@@ -433,7 +452,6 @@ const EditableCell = ({
   return <td style={{ cursor: 'pointer' }} {...restProps}> {childNode}</td >;
 }
 const SelectRelation = ({ name, relations, className, initialValue }) => {
-  console.log('initialValue', initialValue);
   return (<select name={name} id={name} className={className} defaultValue={initialValue || null}>
     <option disabled>เลือกความสัมพันธ์</option>
     {relations.map(r => (<option value={r.value} key={r.value}>{r.label}</option>))}

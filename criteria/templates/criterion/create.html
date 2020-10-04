@@ -43,48 +43,101 @@
           "label": "ใช้คะแนนรวมตามสัดส่วน"
         }
       ]
-      const generalRequiredTags = [
-        "ผลการเรียนเฉลี่ยสะสม (GPAX) 5 ภาคเรียน",
-        "ผลการเรียนเฉลี่ยสะสม (GPAX)",
-        "เป็นผู้ที่กำลังศึกษาอยู่ชั้นมัธยมศึกษาปีที่ 6 หรือเทียบเท่า",
-        "กำลังศึกษาหรือสำเร็จศึกษาชั้นมัธยมศึกษาปีที่ 6 หรือเทียบเท่า",
+      const general_required_tags = [
+        {
+          "score_type": "GPAX_5_SEMESTER",
+          "description": "ผลการเรียนเฉลี่ยสะสม (GPAX) 5 ภาคเรียน", "unit": ""
+        },
+        {
+          "score_type": "GPAX",
+          "description": "ผลการเรียนเฉลี่ยสะสม (GPAX)", "unit": ""
+        },
+        {
+          "score_type": "STUDY_AT_12",
+          "description": "เป็นผู้ที่กำลังศึกษาอยู่ชั้นมัธยมศึกษาปีที่ 6 หรือเทียบเท่า", "unit": ""
+        },
+        {
+          "score_type": "GRAD_OR_STUDY_AT_12",
+          "description": "กำลังศึกษาหรือสำเร็จศึกษาชั้นมัธยมศึกษาปีที่ 6 หรือเทียบเท่า", "unit": ""
+        },
+        {
+          "score_type": "UNIT_MATH",
+          "description": "เรียนรายวิชาในกลุ่มสาระการเรียนรู้คณิตศาสตร์", "unit": ""
+        },
+        {
+          "score_type": "UNIT_FOREIGN",
+          "description": "เรียนรายวิชาในกลุ่มสาระการเรียนรู้ภาษาต่างประเทศ", "unit": ""
+        },
+        {
+          "score_type": "UNIT_SCI",
+          "description": "เรียนรายวิชาในกลุ่มสาระการเรียนรู้วิทยาศาสตร์", "unit": ""
+        },
       ]
-      const generalScoringTags = [
-        "ผลการเรียนเฉลี่ยสะสม (GPAX) 5 ภาคเรียน",
-        "ผลการเรียนเฉลี่ยสะสม (GPAX)",
-        "การสอบสัมภาษณ์",
-        "การสอบสัมภาษณ์เป็นภาษาอังกฤษ",
+      const general_scoring_tags = [
+        {
+          "score_type": "GPAX_5_SEMESTER",
+          "description": "ผลการเรียนเฉลี่ยสะสม (GPAX) 5 ภาคเรียน", "unit": ""
+        },
+        {
+          "score_type": "GPAX",
+          "description": "ผลการเรียนเฉลี่ยสะสม (GPAX)", "unit": ""
+        },
+        { "score_type": "INTERVIEW", "description": "การสอบสัมภาษณ์", "unit": "" },
+        {
+          "score_type": "INTERVIEW_ENGLISH",
+          "description": "การสอบสัมภาษณ์เป็นภาษาอังกฤษ", "unit": ""
+        },
       ]
-      const testTags = [
-        "O-NET (5 กลุ่มสาระวิชา)",
-        "O-NET (01) ภาษาไทย",
-        "O-NET (02) สังคมศึกษา",
-        "O-NET (03) ภาษาอังกฤษ",
-        "O-NET (04) คณิตศาสตร์",
-        "O-NET (04) วิทยาศาสตร์",
-        "GAT",
-        "PAT 1",
-        "PAT 2",
-        "PAT 3",
-        "PAT 4",
-        "PAT 5",
-        "PAT 6",
-        "PAT 7",
-        "PAT 7.1",
-        "PAT 7.2",
-        "PAT 7.3",
-        "PAT 7.4",
-        "PAT 7.5",
-        "PAT 7.6",
-        "PAT 7.7",
-        "TOEFL PBT/ITP",
-        "TOEFL CBT",
-        "TOEFL IBT",
-        "IELTS",
-        "OOPT",
-        "KU-EPT",
-        "วิชาสามัญ 9 วิชา"
-      ];
+      const test_tags = [
+        {
+          "score_type": "ONET",
+          "description": "O-NET (5 กลุ่มสาระวิชา)", "unit": "คะแนน"
+        },
+        {
+          "score_type": "ONET_THA",
+          "description": "O-NET (01) ภาษาไทย", "unit": "คะแนน"
+        },
+        {
+          "score_type": "ONET_SOC",
+          "description": "O-NET (02) สังคมศึกษา", "unit": "คะแนน"
+        },
+        {
+          "score_type": "ONET_ENG",
+          "description": "O-NET (03) ภาษาอังกฤษ", "unit": "คะแนน"
+        },
+        {
+          "score_type": "ONET_MAT",
+          "description": "O-NET (04) คณิตศาสตร์", "unit": "คะแนน"
+        },
+        {
+          "score_type": "ONET_SCI",
+          "description": "O-NET (04) วิทยาศาสตร์", "unit": "คะแนน"
+        },
+        { "score_type": "GAT", "description": "GAT", "unit": "คะแนน" },
+        { "score_type": "PAT_1", "description": "PAT 1", "unit": "คะแนน" },
+        { "score_type": "PAT_2", "description": "PAT 2", "unit": "คะแนน" },
+        { "score_type": "PAT_3", "description": "PAT 3", "unit": "คะแนน" },
+        { "score_type": "PAT_4", "description": "PAT 4", "unit": "คะแนน" },
+        { "score_type": "PAT_5", "description": "PAT 5", "unit": "คะแนน" },
+        { "score_type": "PAT_6", "description": "PAT 6", "unit": "คะแนน" },
+        { "score_type": "PAT_7_1", "description": "PAT 7", "unit": "คะแนน" },
+        { "score_type": "PAT_7_1", "description": "PAT 7.1", "unit": "คะแนน" },
+        { "score_type": "PAT_7_2", "description": "PAT 7.2", "unit": "คะแนน" },
+        { "score_type": "PAT_7_3", "description": "PAT 7.3", "unit": "คะแนน" },
+        { "score_type": "PAT_7_4", "description": "PAT 7.4", "unit": "คะแนน" },
+        { "score_type": "PAT_7_5", "description": "PAT 7.5", "unit": "คะแนน" },
+        { "score_type": "PAT_7_6", "description": "PAT 7.6", "unit": "คะแนน" },
+        { "score_type": "PAT_7_7", "description": "PAT 7.7", "unit": "คะแนน" },
+        { "score_type": "TOEFL_PBT_ITP", "description": "TOEFL PBT/ITP", "unit": "คะแนน" },
+        { "score_type": "TOEFL_CBT", "description": "TOEFL CBT", "unit": "คะแนน" },
+        { "score_type": "TOEFL_IBT", "description": "TOEFL IBT", "unit": "คะแนน" },
+        { "score_type": "IELTS", "description": "IELTS", "unit": "คะแนน" },
+        { "score_type": "OOPT", "description": "OOPT", "unit": "คะแนน" },
+        { "score_type": "KU_EPT", "description": "KU-EPT", "unit": "คะแนน" },
+        { "score_type": "9SUB", "description": "วิชาสามัญ 9 วิชา", "unit": "คะแนน" },
+      ]
+      const requiredTags = general_required_tags.concat(test_tags)
+      const scoringTags = general_scoring_tags.concat(test_tags)
       const unitTags = [
         "คะแนน",
         "หน่วยกิต",
