@@ -6,6 +6,9 @@
       เลือกสาขาที่เปิดรับในโครงการ{{ project.title }} ({{ admission_round }})
       {% if faculty_choices %}{{ faculty }} ({{ faculty.campus }}){% endif %}
     </h2>
+
+    {% include "criteria/include/faculty_menu.html" %}
+
     <div class="alert alert-info">
       หน้าหลักเกณฑ์การรับในโครงการ{{ project.title }}
       <a
