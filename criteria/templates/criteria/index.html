@@ -1,13 +1,16 @@
 {% extends 'backoffice/base.html' %} {% block content %}
 <div class="row">
   <div class="col-md-12">
-    <h2>แก้ไขเกณฑ์ โครงการ{{ project.title }} ({{ admission_round }})</h2>
+    <h2>แก้ไขเกณฑ์ โครงการ{{ project.title }} ({{ admission_round }}) - {{ faculty }} ({{ faculty.campus }})</h2>
     <div class="alert alert-warning">
       ในการป้อนเกณฑ์การรับ สามารถกำหนดให้หลาย ๆ สาขาใช้เกณฑ์เดียวกันได้
       เพื่อความสะดวกสามารถคัดลอกเกณฑ์ที่ป้อนแล้วเป็นเกณฑ์ใหม่เพื่อปรับเปลี่ยนได้ นอกจากนี้ เร็ว ๆ
       นี้จะสามารถคัดลอกเกณฑ์ไปยังโครงการอื่น ๆ ได้ด้วย &nbsp;&nbsp;&nbsp;
       <b>จะมีคลิปอธิบายการป้อนเกณฑ์เร็ว ๆ นี้ ขออภัยในความไม่สะดวก</b>
     </div>
+    
+    {% include "criteria/include/faculty_menu.html" %}
+    
     {% if not admission_criterias %}
     {% if not free_curriculum_majors %}
     <div class="alert alert-warning">
@@ -20,9 +23,9 @@
     <div class="alert alert-info">
       เลือกสาขาวิชาที่เปิดรับในโครงการ{{ project.title }}
       <a class="btn btn-sm btn-info"
-        href="{% url 'backoffice:criteria:curriculum-majors' project.id admission_round.id %}">เลือกสาขาวิชา</a>
+        href="{% url 'backoffice:criteria:curriculum-majors' project.id admission_round.id %}{{ faculty_url_query }}">เลือกสาขาวิชา</a>
       <a class="btn btn-sm btn-secondary"
-        href="{% url 'backoffice:criteria:list-curriculum-majors' %}">แสดงรายการสาขาวิชาที่เลือกเปิด</a>
+        href="{% url 'backoffice:criteria:list-curriculum-majors' %}{{ faculty_url_query }}">แสดงรายการสาขาวิชาที่เลือกเปิด</a>
     </div>
     {% if notice %}
     <div class="alert alert-success">{{ notice }}</div>
@@ -68,13 +71,13 @@
           </ul>
         </td>
         <td>
-          <a href="{% url 'backoffice:criteria:create' project.id admission_round.id %}?duplicate_score_id={{admission_criteria.id}}"
+          <a href="{% url 'backoffice:criteria:create' project.id admission_round.id %}?duplicate_score_id={{admission_criteria.id}}{% if faculty_choices %}&faculty_id={{ faculty.id }}{% endif %}"
             class="btn btn-primary btn-sm">คัดลอก</a>
           <a href="#" class="btn btn-secondary d-none btn-sm">คัดลอกไปยังโครงการอื่น</a>
-          <a href="{% url 'backoffice:criteria:edit' project.id admission_round.id admission_criteria.id %}"
+          <a href="{% url 'backoffice:criteria:edit' project.id admission_round.id admission_criteria.id %}{{ faculty_url_query }}"
             class="btn btn-info btn-sm">แก้ไข</a>
           <form class="d-inline"
-            action="{% url 'backoffice:criteria:delete' project.id admission_round.id admission_criteria.id %}"
+            action="{% url 'backoffice:criteria:delete' project.id admission_round.id admission_criteria.id %}{{ faculty_url_query }}"
             id="delete_{{admission_criteria.id}}" method="post">
             {% csrf_token %}
           </form>
@@ -94,7 +97,7 @@
           (ยังไม่มีการกำหนดเกณฑ์)
         </td>
         <td>
-          <a href="{% url 'backoffice:criteria:create' project.id admission_round.id %}?selected_major_id={{major.id}}"
+          <a href="{% url 'backoffice:criteria:create' project.id admission_round.id %}?selected_major_id={{major.id}}{% if faculty_choices %}&faculty_id={{ faculty.id }}{% endif %}"
             class="btn btn-success btn-sm">กำหนดเงื่อนไขและเกณฑ์การพิจารณา</a>
         </td>
       </tr>

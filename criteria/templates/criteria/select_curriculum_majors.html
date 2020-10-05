@@ -2,16 +2,22 @@
 {% block content %}
 <div class="row">
   <div class="col-md-12">
-    <h2>เลือกสาขาที่เปิดรับในโครงการ{{ project.title }} ({{ admission_round }})</h2>
+    <h2>
+      เลือกสาขาที่เปิดรับในโครงการ{{ project.title }} ({{ admission_round }})
+      {% if faculty_choices %}{{ faculty }} ({{ faculty.campus }}){% endif %}
+    </h2>
+
+    {% include "criteria/include/faculty_menu.html" %}
+
     <div class="alert alert-info">
       หน้าหลักเกณฑ์การรับในโครงการ{{ project.title }}
       <a
 	class="btn btn-sm btn-info"
-	href="{% url 'backoffice:criteria:project-index' project.id admission_round.id %}"
+	href="{% url 'backoffice:criteria:project-index' project.id admission_round.id %}{{ faculty_url_query }}"
 	>เกณฑ์การรับ</a>
       <a
 	class="btn btn-sm btn-secondary"
-	href="{% url 'backoffice:criteria:list-curriculum-majors' %}"
+	href="{% url 'backoffice:criteria:list-curriculum-majors' %}{{ faculty_url_query }}"
 	>แสดงรายการสาขาวิชาที่เลือกเปิด</a>
     </div>
     <table class="table table-striped">
@@ -24,7 +30,7 @@
       {% for major in major_choices %}
         <tr>
 	  <td><a class="major-toggles text-body" data-cupt-id="{{ major.id }}" href="#">{% if major.is_selected %}<i class="fa fa-check-square-o"></i>{% else %}<i class="fa fa-square-o"></i>{% endif %}</a></td>
-	  <td>{{ major }}</td>
+	  <td>{{ major }} <span id="spinner-{{ major.id }}" style="display:none;"><i class="fa fa-spinner fa-spin"></i></span></td>
 	</tr>
       {% endfor %}
     </table>
@@ -62,7 +68,8 @@
 	  } else {
 	      var val = 'select';
 	  }
-	  var url = "{% url 'backoffice:criteria:curriculum-majors' project.id admission_round.id %}" + "toggle/" + cuptId + "/" + val + "/";
+	  var url = "{% url 'backoffice:criteria:curriculum-majors' project.id admission_round.id %}" + "toggle/" + cuptId + "/" + val + "/?faculty_id=" + {{ faculty.id }};
+	  $("#spinner-" + cuptId).show();
 	  jQuery.post(url, {
 	      csrfmiddlewaretoken: csrftoken
 	  }, function(result) {
@@ -72,6 +79,7 @@
 	      } else {
 		  $(thisElement).html('<i class="fa fa-square-o"></i>');
 	      }
+	      $("#spinner-" + cuptId).hide();
 	  });
 	  return false;
       });
