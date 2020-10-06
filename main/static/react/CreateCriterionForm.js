@@ -4,8 +4,6 @@ var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = [
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 var e = React.createElement;
@@ -410,7 +408,7 @@ var PrimaryTopic = function PrimaryTopic(_ref3) {
           )
         ),
         inputProps: { required: true },
-        tags: [].concat(_toConsumableArray(generalRequiredTags), _toConsumableArray(testTags))
+        tags: requiredTags
       }),
       React.createElement(EditableCell, {
         name: 'required_' + number + '_value',
@@ -450,7 +448,7 @@ var PrimaryTopic = function PrimaryTopic(_ref3) {
             '\xA0\xA0'
           ),
           inputProps: { required: true },
-          tags: [].concat(_toConsumableArray(generalRequiredTags), _toConsumableArray(testTags))
+          tags: requiredTags
         }),
         React.createElement(EditableCell, {
           name: 'required_' + snumber + '_value',
@@ -536,7 +534,7 @@ var PrimaryScoringTopic = function PrimaryScoringTopic(_ref4) {
           )
         ),
         inputProps: { required: true },
-        tags: [].concat(_toConsumableArray(generalScoringTags), _toConsumableArray(testTags))
+        tags: scoringTags
       }),
       React.createElement(EditableCell, {
         name: 'scoring_' + number + '_value',
@@ -588,7 +586,7 @@ var PrimaryScoringTopic = function PrimaryScoringTopic(_ref4) {
             '\xA0\xA0'
           ),
           inputProps: { required: true },
-          tags: [].concat(_toConsumableArray(generalScoringTags), _toConsumableArray(testTags))
+          tags: scoringTags
         }),
         React.createElement(EditableCell, {
           name: 'scoring_' + snumber + '_value',
@@ -641,8 +639,28 @@ var EditableCell = function EditableCell(_ref5) {
   useEffect(function () {
     if (editable) {
       $(inputRef.current).autocomplete({
-        source: tags,
-        minLength: 0
+        source: typeof tags[0] === 'string' ? tags :
+        // for required and scoring tags
+        // TODO: refactor this
+        tags.map(function (o) {
+          return {
+            label: o.description,
+            value: o.description,
+            onSelect: function onSelect() {
+              var temp = name.split('_');
+              temp[temp.length - 1] = 'unit';
+              var unitName = temp.join('_');
+              var unitEl = $('[name="' + unitName + '"]')[0];
+              if (unitEl) {
+                unitEl.value = o.unit;
+              }
+            }
+          };
+        }),
+        minLength: 0,
+        select: function select(event, ui) {
+          ui.item.onSelect && ui.item.onSelect();
+        }
       }).focus(function () {
         if (inputRef.current.value == "") {
           $(inputRef.current).autocomplete("search");
@@ -669,6 +687,9 @@ var EditableCell = function EditableCell(_ref5) {
     inputRef.current.style.height = "";
     inputRef.current.style.height = inputRef.current.scrollHeight + 'px';
   };
+  useEffect(function () {
+    calHeight();
+  }, []);
   var childNode = initialValue;
   if (editable) {
     childNode = React.createElement(
@@ -692,7 +713,6 @@ var SelectRelation = function SelectRelation(_ref6) {
       className = _ref6.className,
       initialValue = _ref6.initialValue;
 
-  console.log('initialValue', initialValue);
   return React.createElement(
     'select',
     { name: name, id: name, className: className, defaultValue: initialValue || null },
