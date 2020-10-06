@@ -11,6 +11,7 @@ class AdmissionCriteria(models.Model):
     faculty = models.ForeignKey(
         Faculty, on_delete=models.CASCADE, null=True, blank=False)
     version = models.IntegerField(default=1)
+    is_deleted = models.BooleanField(default=False)
 
 
 class ScoreCriteria(models.Model):

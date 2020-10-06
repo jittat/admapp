@@ -78,8 +78,9 @@ def project_index(request, project_id, round_id):
 
     faculty, faculty_choices = extract_user_faculty(request, user)
 
-    admission_criterias = AdmissionCriteria.objects.filter(
-        admission_project_id=project_id, faculty_id=faculty.id)
+    admission_criterias = AdmissionCriteria.objects.filter(admission_project_id=project_id,
+                                                           faculty_id=faculty.id,
+                                                           is_deleted=False)
     notice = request.session.pop('notice', None)
 
     curriculum_majors = get_all_curriculum_majors(project, faculty)
@@ -144,14 +145,22 @@ def upsert_admission_criteria(post_request, project=None, faculty=None, admissio
         if admission_criteria is None:
             version = 1
             admission_criteria = AdmissionCriteria(
-                admission_project=project, version=version, faculty=faculty)
+                admission_project=project,
+                version=version,
+                faculty=faculty)
             admission_criteria.save()
         else:
-            admission_criteria.scorecriteria_set.all().delete()
-            admission_criteria.curriculummajoradmissioncriteria_set.all().delete()
-            version = admission_criteria.version + 1
-            admission_criteria.version = version
+            old_admission_criteria = admission_criteria
+            version = old_admission_criteria.version + 1
+
+            admission_criteria = AdmissionCriteria(
+                admission_project=old_admission_criteria.admission_project,
+                faculty=admission_criteria.faculty,
+                version=version)
             admission_criteria.save()
+
+            old_admission_criteria.is_deleted = True
+            old_admission_criteria.save()
 
         scoring_criterias = [ScoreCriteria(
             admission_criteria=admission_criteria,
