@@ -70,6 +70,8 @@ class CurriculumMajor(models.Model):
     def is_with_some_admission_criteria(self):
         return self.admission_criterias.filter(is_deleted=False).count() != 0
 
+    class Meta:
+        ordering = ['cupt_code']
 
 class CurriculumMajorAdmissionCriteria(models.Model):
     """
