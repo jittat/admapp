@@ -12,7 +12,7 @@ class AdmissionCriteria(models.Model):
         Faculty, on_delete=models.CASCADE, null=True, blank=False)
     version = models.IntegerField(default=1)
     is_deleted = models.BooleanField(default=False)
-
+    created_at = models.DateTimeField(auto_now_add=True)
 
 class ScoreCriteria(models.Model):
     admission_criteria = models.ForeignKey(AdmissionCriteria,
