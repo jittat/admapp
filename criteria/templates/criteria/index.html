@@ -56,7 +56,7 @@
             {% for scorecriteria in scorecriterias %}
             {% if scorecriteria.criteria_type == "required" and scorecriteria.secondary_order == 0  %}
             <li>
-              {{scorecriteria.description}} {%if scorecriteria.value %}ไม่ต่ำกว่า {{scorecriteria.value|floatformat:1}}
+              {{scorecriteria.description}} {%if scorecriteria.value %}ไม่ต่ำกว่า {{scorecriteria.value|floatformat:2}}
               {{scorecriteria.unit}} {% endif %}
             </li>
             {% endif %} {% endfor %}
