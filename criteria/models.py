@@ -68,7 +68,7 @@ class CurriculumMajor(models.Model):
         AdmissionCriteria, through='CurriculumMajorAdmissionCriteria')
 
     def is_with_some_admission_criteria(self):
-        return self.admission_criterias.count() != 0
+        return self.admission_criterias.filter(is_deleted=False).count() != 0
 
 
 class CurriculumMajorAdmissionCriteria(models.Model):

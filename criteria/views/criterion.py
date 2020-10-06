@@ -375,7 +375,8 @@ def delete(request, project_id, round_id, criteria_id):
         return redirect(reverse('backoffice:criteria:project-index', args=[project_id, round_id]))
 
     if request.method == 'POST':
-        admission_criteria.delete()
+        admission_criteria.is_deleted = True
+        admission_criteria.save()
 
         request.session['notice'] = "ลบเกณฑ์ สำเร็จ"
 
@@ -405,8 +406,7 @@ def select_curriculum_majors(request, project_id, round_id, code_id=0, value='no
     for major in major_choices:
         major.is_selected = major.id in selected_curriculum_majors
         if major.is_selected:
-            major.can_be_deleted = not selected_curriculum_majors[major.id].is_with_some_admission_criteria(
-            )
+            major.can_be_deleted = not selected_curriculum_majors[major.id].is_with_some_admission_criteria()
 
     if request.method == 'POST':
         major_cupt_codes = [m for m in major_choices if m.id == int(code_id)]
