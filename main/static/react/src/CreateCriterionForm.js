@@ -10,7 +10,9 @@ const Form = () => {
   return (
     <div>
       <SelectMajors />
-      <RequiredCriteria initialTopics={dataRequired || []} />
+      { (!hideRequiredSection) && (
+        <RequiredCriteria initialTopics={dataRequired || []} />
+      )}
       <ScoringCriteria initialTopics={dataScoring || []} />
     </div>
   )
@@ -172,7 +174,17 @@ const ScoringCriteria = ({ initialTopics = [] }) => {
   return (
     <div className="form-group" >
       <label htmlFor="majors">เกณฑ์การคัดเลือก</label>
-      <small className="form-text text-muted">เกณฑ์สำหรับคำนวนคะแนน จัดลำดับ เช่น GAT 50%, PAT-1 50%</small>
+      {(!useComponentWeightType) && (
+        <small className="form-text text-muted">เกณฑ์สำหรับคำนวนคะแนน จัดลำดับ เช่น GAT 50%, PAT-1 50%</small>
+      )}
+      {(useComponentWeightType) && (
+        <small className="form-text text-muted">
+          สำหรับเกณฑ์รอบ Admission 2 ให้เลือกแค่องค์ประกอบเดียว 
+          (ตอนนี้ในระบบอาจเลือกได้หลายเกณฑ์ แต่รบกวนเลือกแค่อันเดียวก่อน) 
+          ถ้ามีการรับหลายรูปแบบให้สร้างเงื่อนไขการรับเพิ่มเติม &nbsp;
+          ถ้าต้องการแก้เกณฑ์ที่เลือกแล้วโดยการเลือกใหม่ ให้ลบข้อความทิ้งจะมีตัวเลือกขึ้นมาแสดงเหมือนเดิม
+        </small>
+      )}
       {/* TODO: add known criteria */}
       <table className="table table-bordered" style={{ tableLayout: 'fixed' }}>
         <thead>

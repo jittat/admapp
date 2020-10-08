@@ -19,6 +19,7 @@ from backoffice.views.permissions import can_user_view_project, can_user_view_ap
 from backoffice.decorators import user_login_required
 
 from criteria.models import CurriculumMajor, AdmissionCriteria, ScoreCriteria, CurriculumMajorAdmissionCriteria, MajorCuptCode
+from criteria.models import COMPONENT_WEIGHT_TYPE_CHOICES
 
 def is_number(string):
     try:
@@ -272,12 +273,18 @@ def create(request, project_id, round_id):
             }
         ]
 
+    uses_component_weights = (project.id == 28)
+    component_weight_type_choices = COMPONENT_WEIGHT_TYPE_CHOICES
+
     return render(request,
                   'criteria/create.html',
                   {'project': project,
                    'admission_round': admission_round,
                    'faculty': faculty,
                    'majors': json.dumps([dict({"id": m.id, "title": ("%s (%s) %s") % (m.cupt_code.title, m.cupt_code.program_type, m.cupt_code.major_title)}) for m in sorted(majors, key=(lambda m: (m.cupt_code.program_code, m.cupt_code.major_title)))]),
+                   'uses_component_weights': uses_component_weights,
+                   'component_weight_type_choices': component_weight_type_choices,
+                   
                    'data_required': json.dumps(data_required),
                    'data_scoring': json.dumps(data_scoring),
                    'data_selected_majors': json.dumps(data_selected_majors)
@@ -347,12 +354,19 @@ def edit(request, project_id, round_id, criteria_id):
         } for m in selected_majors
     ]
 
+    uses_component_weights = (project.id == 28)
+    component_weight_type_choices = COMPONENT_WEIGHT_TYPE_CHOICES
+
     return render(request,
                   'criteria/edit.html',
                   {'project': project,
                    'admission_round': admission_round,
                    'faculty': faculty,
                    'majors': json.dumps([dict({"id": m.id, "title": ("%s (%s) %s") % (m.cupt_code.title, m.cupt_code.program_type, m.cupt_code.major_title)}) for m in sorted(majors, key=(lambda m: (m.cupt_code.program_code, m.cupt_code.major_title)))]),
+
+                   'uses_component_weights': uses_component_weights,
+                   'component_weight_type_choices': component_weight_type_choices,
+                   
                    'data_required': json.dumps(data_required),
                    'data_scoring': json.dumps(data_scoring),
                    'data_selected_majors': json.dumps(data_selected_majors)
