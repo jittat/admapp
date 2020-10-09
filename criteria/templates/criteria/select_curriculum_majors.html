@@ -30,7 +30,9 @@
       {% for major in major_choices %}
         <tr>
 	  <td><a class="major-toggles text-body" data-cupt-id="{{ major.id }}" href="#">{% if major.is_selected %}<i class="fa fa-check-square-o"></i>{% else %}<i class="fa fa-square-o"></i>{% endif %}</a></td>
-	  <td>{{ major }} <span id="spinner-{{ major.id }}" style="display:none;"><i class="fa fa-spinner fa-spin"></i></span></td>
+	  <td>{{ major }}
+	    [{{ major.program_code }}{% if major.major_code %}-{{ major.major_code }}{% endif %}]
+	    <span id="spinner-{{ major.id }}" style="display:none;"><i class="fa fa-spinner fa-spin"></i></span></td>
 	</tr>
       {% endfor %}
     </table>
