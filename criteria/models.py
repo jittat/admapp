@@ -34,7 +34,7 @@ class ScoreCriteria(models.Model):
 COMPONENT_WEIGHT_TYPE_CHOICES = [
     ('CW110','1.1: กลุ่ม 1 วิทยาศาสตร์สุขภาพ - สัตวแพทย์ศาสตร์ สหเวชศาสตร์ สาธารณสุขศาสตร์ เทคนิคการแพทย์ พยาบาลศาสตร์ วิทยาศาสตร์การกีฬา'),
     ('CW120','1.2: กลุ่ม 1 วิทยาศาสตร์สุขภาพ - ทันตแพทย์ศาสตร์'),
-    ('CW130','1.3: เภสัชศาสตร์'),
+    ('CW130','1.3: กลุ่ม 1 วิทยาศาสตร์สุขภาพ - เภสัชศาสตร์'),
     ('CW210','2.1: กลุ่ม 2 วิทยาศาสตร์กายภาพและชีวภาพ - วิทยาศาสตร์ ทรัพยากรธรรมชาติ'),
     ('CW220','2.2: กลุ่ม 2 วิทยาศาสตร์กายภาพและชีวภาพ - เทคโนโลยีสารสนเทศ'),
     ('CW300','3: กลุ่ม 3 วิศวกรรมศาสตร์'),
@@ -93,6 +93,29 @@ class CurriculumMajor(models.Model):
     class Meta:
         ordering = ['cupt_code']
 
+    def get_component_weight_type_choices(self):
+        component_weight_type = self.cupt_code.component_weight_type
+
+        if component_weight_type.endswith('0'):
+            prefix = 'CW' + component_weight_type[0]
+        else:
+            prefix = 'CW' + component_weight_type
+        
+        choices = [ch for ch in COMPONENT_WEIGHT_TYPE_CHOICES
+                   if ch[0].startswith(prefix)]
+        return choices
+
+    @staticmethod
+    def get_component_weight_type_choices_unique(curriculum_majors):
+        added = set()
+        choices = []
+        for m in curriculum_majors:
+            for ch in m.get_component_weight_type_choices():
+                if ch[0] not in added:
+                    choices.append(ch)
+                    added.add(ch[0])
+        return choices
+        
 class CurriculumMajorAdmissionCriteria(models.Model):
     """
     This is the join table.

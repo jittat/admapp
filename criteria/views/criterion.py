@@ -274,7 +274,7 @@ def create(request, project_id, round_id):
         ]
 
     uses_component_weights = (project.id == 28)
-    component_weight_type_choices = COMPONENT_WEIGHT_TYPE_CHOICES
+    component_weight_type_choices = CurriculumMajor.get_component_weight_type_choices_unique(majors)
 
     return render(request,
                   'criteria/create.html',
@@ -355,7 +355,7 @@ def edit(request, project_id, round_id, criteria_id):
     ]
 
     uses_component_weights = (project.id == 28)
-    component_weight_type_choices = COMPONENT_WEIGHT_TYPE_CHOICES
+    component_weight_type_choices = CurriculumMajor.get_component_weight_type_choices_unique(majors)
 
     return render(request,
                   'criteria/edit.html',
