@@ -12,8 +12,15 @@
       <tr class="{% if admission_criteria.curriculummajor_set.all %}{% else %}table-warning{% endif %}">
         <td>
           <ul>
-	    {% for major in admission_criteria.curriculummajor_set.all %}
-	      <li>{{major.cupt_code}}</li>
+	    {% for majorcriteria in admission_criteria.curriculummajoradmissioncriteria_set.all %}
+	      <li>
+	        {{majorcriteria.curriculum_major.cupt_code}}
+		{% if majorcriteria.slots != 0 %}
+  		  ({{majorcriteria.slots}} คน)
+		{% else %}
+		  (*จำนวนรับรวมกับเงื่อนไขอื่น)
+		{% endif %}
+	      </li>
 	    {% empty %}
 	      <li>(ยังไม่ได้ระบุสาขา)</li>
 	    {% endfor %}
