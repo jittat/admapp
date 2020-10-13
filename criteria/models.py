@@ -14,6 +14,16 @@ class AdmissionCriteria(models.Model):
     is_deleted = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    def get_all_score_criteria(self, criteria_type):
+        return self.scorecriteria_set.filter(criteria_type=criteria_type, secondary_order=0).all()
+    
+    def get_all_required_score_criteria(self):
+        return self.get_all_score_criteria('required')
+
+    def get_all_scoring_score_criteria(self):
+        return self.get_all_score_criteria('scoring')
+    
+
 class ScoreCriteria(models.Model):
     admission_criteria = models.ForeignKey(AdmissionCriteria,
                                            on_delete=models.CASCADE)
@@ -29,6 +39,49 @@ class ScoreCriteria(models.Model):
     parent = models.ForeignKey('self', null=True, blank=True,
                                on_delete=models.CASCADE, related_name='childs')
     relation = models.CharField(max_length=30, null=True, blank=True)
+    
+    class Meta:
+        ordering = ['primary_order', 'secondary_order']
+
+    def __str__(self):
+        if self.criteria_type == 'required':
+            if self.value:
+                return f'{self.description} {self.get_relation_display()} ไม่ต่ำกว่า {self.value:.2f} {self.unit}'
+            else:
+                return f'{self.description} {self.get_relation_display()}'
+        elif self.criteria_type == 'scoring':
+            if self.value:
+                if self.secondary_order == 0:
+                    return f'{self.description} {self.get_relation_display()} สัดส่วน {self.value:.2f}'
+                else:
+                    return f'{self.description} {self.get_relation_display()} สัดส่วนย่อย {self.value:.2f}'
+            else:
+                return f'{self.description} {self.get_relation_display()}'
+        else:
+            return self.description
+        
+    def has_children(self):
+        return self.childs.count() != 0
+        
+    def get_relation_display(self):
+        REQUIRED_REL_DISPLAY = {
+            "OR": "ข้อใดข้อหนึ่ง",
+            "AND": "ทุกข้อ",
+            "SUM": "ใช้คะแนนรวม",
+            "MAX": "ใช้คะแนนมากที่สุด",
+        }         
+        SCORING_REL_DISPLAY = {
+            "MAX": "ใช้คะแนนมากที่สุด",
+            "SUM": "ใช้คะแนนรวมตามสัดส่วน",
+        }
+
+        if self.relation:
+            if self.criteria_type == 'required':
+                return REQUIRED_REL_DISPLAY.get(self.relation, self.relation)
+            else:
+                return SCORING_REL_DISPLAY.get(self.relation, self.relation)
+        else:
+            return ''
 
 
 COMPONENT_WEIGHT_TYPE_CHOICES = [

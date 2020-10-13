@@ -1,0 +1,16 @@
+<ul>
+  {% for scorecriteria in scorecriterias %}
+  <li>
+    {{scorecriteria}} 
+    {% if scorecriteria.has_children %}
+    <ul>
+      {% for schild in scorecriteria.childs.all %}
+      <li>
+	{{schild}}
+      </li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+  </li>
+  {% endfor %}
+</ul>
