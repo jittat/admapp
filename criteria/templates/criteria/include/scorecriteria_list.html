@@ -1,16 +1,26 @@
-<ul>
+<ol class="scorecriteria-lists">
   {% for scorecriteria in scorecriterias %}
   <li>
     {{scorecriteria}} 
     {% if scorecriteria.has_children %}
-    <ul>
-      {% for schild in scorecriteria.childs.all %}
-      <li>
-	{{schild}}
-      </li>
-      {% endfor %}
-    </ul>
+      <ol class="scorecriteria-lists">
+	{% for schild in scorecriteria.childs.all %}
+	  <li>
+	    {{schild}}
+	  </li>
+	{% endfor %}
+      </ol>
     {% endif %}
   </li>
   {% endfor %}
-</ul>
+</ol>
+<style>
+ ol.scorecriteria-lists {
+     counter-reset: section;
+     list-style-type: none;
+ }
+ ol.scorecriteria-lists li::before {
+     counter-increment: section;
+     content: counters(section, ".") ".";
+ }
+</style>
