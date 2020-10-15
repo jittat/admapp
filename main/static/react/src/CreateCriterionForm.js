@@ -175,7 +175,7 @@ const ScoringCriteria = ({ initialTopics = [] }) => {
     <div className="form-group" >
       <label htmlFor="majors">เกณฑ์การคัดเลือก</label>
       {(!useComponentWeightType) && (
-        <small className="form-text text-muted">เกณฑ์สำหรับคำนวนคะแนน จัดลำดับ เช่น GAT 50%, PAT-1 50%</small>
+        <small className="form-text text-muted">เกณฑ์สำหรับคำนวนคะแนน จัดลำดับ เช่น GAT 50%, PAT-1 50%  สำหรับรอบที่ 1 ถ้าไม่ต้องการระบุสัดส่วนให้ใส่ 0</small>
       )}
       {(useComponentWeightType) && (
         <small className="form-text text-muted">

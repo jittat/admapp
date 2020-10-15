@@ -1,12 +1,12 @@
 <ol class="scorecriteria-lists">
   {% for scorecriteria in scorecriterias %}
   <li>
-    {{scorecriteria}} 
+    {{scorecriteria|linebreaksbr}} 
     {% if scorecriteria.has_children %}
       <ol class="scorecriteria-lists">
 	{% for schild in scorecriteria.childs.all %}
 	  <li>
-	    {{schild}}
+	    {{schild|linebreaksbr}}
 	  </li>
 	{% endfor %}
       </ol>
