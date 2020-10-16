@@ -24,4 +24,7 @@ urlpatterns = [
 
     path('curriculum-majors/',
          criterion.list_curriculum_majors, name='list-curriculum-majors'),
+
+    path('report/<int:project_id>/<int:round_id>/',
+         criterion.project_report, name='project-report'),
 ]

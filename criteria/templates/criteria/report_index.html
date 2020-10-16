@@ -1,0 +1,14 @@
+{% extends 'backoffice/base.html' %}
+{% block content %}
+<div class="row">
+  <div class="col-md-12">
+    <h2>เกณฑ์ โครงการ{{ project.title }} ({{ admission_round }})</h2>
+
+    {% with True as is_faculty_row_visible %}
+      {% with True as is_edit_link_hidden %}
+	{% include "criteria/include/criteria_table.html" %}
+      {% endwith %}
+    {% endwith %}
+  </div>
+</div>
+{% endblock %}

@@ -4,10 +4,24 @@
       <th>สาขาวิชาที่ใช้เกณฑ์</th>
       <th>เงื่อนไขขั้นต่ำ</th>
       <th>เกณฑ์การพิจารณา</th>
-      <th>แก้ไข</th>
+      <th>
+	{% if is_edit_link_hidden %}
+	{% else  %}
+	  แก้ไข
+	{% endif %}
+      </th>
     </tr>
   </thead>
   {% for admission_criteria in admission_criterias %}
+    {% if is_faculty_row_visible %}
+      {% ifchanged admission_criteria.faculty %}
+	<tr class="table-info">
+	  <th colspan="300" class="text-center">
+	    {{ admission_criteria.faculty }}
+	  </th>
+	</tr>
+      {% endifchanged  %}
+    {% endif %}
     <tr class="{% if admission_criteria.curriculummajor_set.all %}{% else %}table-warning{% endif %}">
       <td>
         <ul>
@@ -36,17 +50,20 @@
 	{% endwith %}
       </td>
       <td>
-	<a href="{% url 'backoffice:criteria:create' project.id admission_round.id %}?duplicate_score_id={{admission_criteria.id}}{% if faculty_choices %}&faculty_id={{ faculty.id }}{% endif %}"
-	   class="btn btn-primary btn-sm">คัดลอก</a>
-	<a href="#" class="btn btn-secondary d-none btn-sm">คัดลอกไปยังโครงการอื่น</a>
-	<a href="{% url 'backoffice:criteria:edit' project.id admission_round.id admission_criteria.id %}{{ faculty_url_query }}"
-	   class="btn btn-info btn-sm">แก้ไข</a>
-	<form class="d-inline"
-	      action="{% url 'backoffice:criteria:delete' project.id admission_round.id admission_criteria.id %}{{ faculty_url_query }}"
-	      id="delete_{{admission_criteria.id}}" method="post">
-	  {% csrf_token %}
-	</form>
-	<button class="btn btn-danger btn-sm" onclick="deleteCriteria('delete_{{admission_criteria.id}}')">ลบ</button>
+	{% if is_edit_link_hidden %}
+	{% else %}
+	  <a href="{% url 'backoffice:criteria:create' project.id admission_round.id %}?duplicate_score_id={{admission_criteria.id}}{% if faculty_choices %}&faculty_id={{ faculty.id }}{% endif %}"
+	     class="btn btn-primary btn-sm">คัดลอก</a>
+	  <a href="#" class="btn btn-secondary d-none btn-sm">คัดลอกไปยังโครงการอื่น</a>
+	  <a href="{% url 'backoffice:criteria:edit' project.id admission_round.id admission_criteria.id %}{{ faculty_url_query }}"
+	     class="btn btn-info btn-sm">แก้ไข</a>
+	  <form class="d-inline"
+		action="{% url 'backoffice:criteria:delete' project.id admission_round.id admission_criteria.id %}{{ faculty_url_query }}"
+		id="delete_{{admission_criteria.id}}" method="post">
+	    {% csrf_token %}
+	  </form>
+	  <button class="btn btn-danger btn-sm" onclick="deleteCriteria('delete_{{admission_criteria.id}}')">ลบ</button>
+	{% endif %}
       </td>
     </tr>
   {% endfor %}
@@ -61,8 +78,11 @@
         (ยังไม่มีการกำหนดเกณฑ์)
       </td>
       <td>
-        <a href="{% url 'backoffice:criteria:create' project.id admission_round.id %}?selected_major_id={{major.id}}{% if faculty_choices %}&faculty_id={{ faculty.id }}{% endif %}"
-	   class="btn btn-success btn-sm">กำหนดเงื่อนไขและเกณฑ์การพิจารณา</a>
+	{% if is_edit_link_hidden %}
+	{% else %}
+          <a href="{% url 'backoffice:criteria:create' project.id admission_round.id %}?selected_major_id={{major.id}}{% if faculty_choices %}&faculty_id={{ faculty.id }}{% endif %}"
+	     class="btn btn-success btn-sm">กำหนดเงื่อนไขและเกณฑ์การพิจารณา</a>
+	{% endif %}
       </td>
     </tr>
   {% endfor %}

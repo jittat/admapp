@@ -508,3 +508,41 @@ def list_curriculum_majors(request):
                    'major_table': major_table,
                    'round_data': list(zip(admission_rounds, major_table, project_lists)),
                    })
+
+@user_login_required
+def project_report(request, project_id, round_id):
+    user = request.user
+    project = get_object_or_404(AdmissionProject, pk=project_id)
+    admission_round = get_object_or_404(AdmissionRound, pk=round_id)
+    project_round = project.get_project_round_for(admission_round)
+
+    if not user.profile.is_admission_admin:
+        return redirect(reverse('backoffice:index'))
+
+    faculties = Faculty.objects.all()
+    
+    admission_criterias = (AdmissionCriteria
+                           .objects
+                           .filter(admission_project_id=project_id,
+                                   is_deleted=False)
+                           .order_by('faculty_id'))
+    
+    curriculum_majors = get_all_curriculum_majors(project)
+    curriculum_majors_with_criterias = []
+    for criteria in admission_criterias:
+        curriculum_majors_with_criterias += criteria.curriculummajor_set.all()
+    curriculum_majors_with_criteria_ids = set([m.id for m
+                                               in curriculum_majors_with_criterias])
+
+    free_curriculum_majors = [m for m in curriculum_majors
+                              if m.id not in curriculum_majors_with_criteria_ids]
+
+    return render(request,
+                  'criteria/report_index.html',
+                  {'project': project,
+                   'admission_round': admission_round,
+                   'admission_criterias': admission_criterias,
+                   'free_curriculum_majors': free_curriculum_majors,
+                   })
+
+
