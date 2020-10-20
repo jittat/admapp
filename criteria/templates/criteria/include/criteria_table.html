@@ -67,7 +67,25 @@
       </td>
     </tr>
   {% endfor %}
+  {% if is_faculty_row_visible %}
+    {% if free_curriculum_majors %}
+      <tr class="table-primary">
+	<th colspan="300" class="text-center">
+	  สาขาที่ยังไม่มีการกำหนดเกณฑ์
+	</th>
+      </tr>
+    {% endif %}
+  {% endif %}
   {% for major in free_curriculum_majors %}
+    {% if is_faculty_row_visible %}
+      {% ifchanged major.faculty %}
+	<tr class="table-info">
+	  <th colspan="300" class="text-center">
+	    {{ major.faculty }}
+	  </th>
+	</tr>
+      {% endifchanged  %}
+    {% endif %}
     <tr>
       <td>
         <ul>
