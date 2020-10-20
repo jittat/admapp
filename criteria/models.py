@@ -13,6 +13,9 @@ class AdmissionCriteria(models.Model):
     version = models.IntegerField(default=1)
     is_deleted = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
+    created_by = models.CharField(max_length=30, blank=True)
+
+    curriculum_majors_json = models.TextField(blank=True) 
 
     def get_all_score_criteria(self, criteria_type):
         return self.scorecriteria_set.filter(criteria_type=criteria_type, secondary_order=0).all()
@@ -22,7 +25,29 @@ class AdmissionCriteria(models.Model):
 
     def get_all_scoring_score_criteria(self):
         return self.get_all_score_criteria('scoring')
-    
+
+    def save_curriculum_majors(self, curriculum_major_admission_criterias=None):
+        import json
+        
+        if not curriculum_major_admission_criterias:
+            curriculum_major_admission_criterias = self.curriculummajoradmissioncriteria_set.all()
+        data = []
+        for c in curriculum_major_admission_criterias:
+            major_cupt_code = c.curriculum_major.cupt_code
+            try:
+                slots = int(float(c.slots))
+            except:
+                slots = 0
+            data.append({'curriculum_major_id': c.curriculum_major.id,
+                         'slots': slots,
+                         'major_cupt_code_id': major_cupt_code.id,
+                         'program_code': major_cupt_code.program_code,
+                         'program_type_code': major_cupt_code.program_type_code,
+                         'major_code': major_cupt_code.major_code})
+
+        self.curriculum_majors_json = json.dumps(data)
+        self.save()
+        
 
 class ScoreCriteria(models.Model):
     admission_criteria = models.ForeignKey(AdmissionCriteria,

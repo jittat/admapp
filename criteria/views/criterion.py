@@ -107,7 +107,7 @@ def project_index(request, project_id, round_id):
                    })
 
 
-def upsert_admission_criteria(post_request, project=None, faculty=None, admission_criteria=None):
+def upsert_admission_criteria(post_request, project=None, faculty=None, admission_criteria=None, user=None):
     score_criteria_dict = dict()
     selected_major_dict = dict()
     for key in post_request:
@@ -209,6 +209,9 @@ def upsert_admission_criteria(post_request, project=None, faculty=None, admissio
         CurriculumMajorAdmissionCriteria.objects.bulk_create(
             major_criterias)
 
+        if user:
+            admission_criteria.created_by = user.username
+        admission_criteria.save_curriculum_majors(major_criterias)
 
 @user_login_required
 def create(request, project_id, round_id):
@@ -225,7 +228,8 @@ def create(request, project_id, round_id):
 
     if request.method == 'POST':
         upsert_admission_criteria(
-            request.POST, project=project, faculty=faculty)
+            request.POST, project=project, faculty=faculty,
+            user=user)
 
         request.session['notice'] = "สร้างเกณฑ์ใหม่ สำเร็จ"
 
@@ -314,7 +318,8 @@ def edit(request, project_id, round_id, criteria_id):
 
     if request.method == 'POST':
         upsert_admission_criteria(
-            request.POST, admission_criteria=admission_criteria)
+            request.POST, admission_criteria=admission_criteria,
+            user=user)
 
         request.session['notice'] = "แก้ไขเกณฑ์ สำเร็จ"
 
