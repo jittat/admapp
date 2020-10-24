@@ -10,6 +10,8 @@ from django.urls import reverse
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseNotFound
 from django.db import transaction
 
+from django.http import Http404
+
 from regis.models import Applicant, LogItem
 from appl.models import AdmissionProject, AdmissionRound
 from appl.models import ProjectApplication, Payment, Major, AdmissionResult, Faculty
@@ -141,6 +143,9 @@ def upsert_admission_criteria(post_request, project=None, faculty=None, admissio
                 value = Decimal(value)
             selected_major_dict[data_key][splitted_keys[2]] = value
 
+    if (len(selected_major_dict) == 0) and (len(score_criteria_dict) == 0):
+        raise Http404("Error ")
+            
     with transaction.atomic():
 
         if admission_criteria is None:
