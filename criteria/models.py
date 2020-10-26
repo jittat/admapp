@@ -18,13 +18,20 @@ class AdmissionCriteria(models.Model):
     curriculum_majors_json = models.TextField(blank=True) 
 
     def get_all_score_criteria(self, criteria_type):
-        return self.scorecriteria_set.filter(criteria_type=criteria_type, secondary_order=0).all()
+        if getattr(self,'cached_score_criteria',None) == None:
+            self.cached_score_criteria = self.scorecriteria_set.all()
+        return [c for c in self.cached_score_criteria
+                if c.criteria_type==criteria_type and c.secondary_order==0]
     
     def get_all_required_score_criteria(self):
-        return self.get_all_score_criteria('required')
+        if getattr(self,'cached_required_score_criteria',None) == None:
+            self.cached_required_score_criteria = list(self.get_all_score_criteria('required'))
+        return self.cached_required_score_criteria
 
     def get_all_scoring_score_criteria(self):
-        return self.get_all_score_criteria('scoring')
+        if getattr(self,'cached_scoring_score_criteria',None) == None:
+            self.cached_scoring_score_criteria = list(self.get_all_score_criteria('scoring'))
+        return self.cached_scoring_score_criteria
 
     def save_curriculum_majors(self, curriculum_major_admission_criterias=None):
         import json
@@ -47,7 +54,15 @@ class AdmissionCriteria(models.Model):
 
         self.curriculum_majors_json = json.dumps(data)
         self.save()
-        
+
+    def cache_score_criteria_children(self):
+        required = self.get_all_required_score_criteria()
+        scoring = self.get_all_scoring_score_criteria()
+
+        all_score_criterias = self.cached_score_criteria
+        for lst in [required, scoring]:
+            for sc in lst:
+                sc.cache_children(all_score_criterias)
 
 class ScoreCriteria(models.Model):
     admission_criteria = models.ForeignKey(AdmissionCriteria,
@@ -84,9 +99,18 @@ class ScoreCriteria(models.Model):
                 return f'{self.description} {self.get_relation_display()}'
         else:
             return self.description
+
+    def cache_children(self, score_criterias):
+        self.cached_children = []
+        for c in score_criterias:
+            if c.parent_id == self.id:
+                self.cached_children.append(c)
         
     def has_children(self):
-        return self.childs.count() != 0
+        if getattr(self,'cached_children',None) != None:
+            return self.cached_children != []
+        else:
+            return self.childs.count() != 0
         
     def get_relation_display(self):
         REQUIRED_REL_DISPLAY = {

@@ -69,6 +69,33 @@ def extract_user_faculty(request, user):
 
     return faculty, faculty_choices
 
+def sort_admission_criterias(admission_criterias):
+    lst = []
+    for criteria in admission_criterias:
+        key = '-'.join([m.cupt_code.program_code + m.cupt_code.major_code for m in criteria.curriculum_majors])
+        lst.append((criteria.faculty_id, key, criteria.id, criteria))
+
+    return [item[3] for item in sorted(lst)]
+
+def prepare_admission_criteria(admission_criterias, curriculum_majors):
+    curriculum_majors_with_criterias = []
+    for criteria in admission_criterias:
+        criteria.cache_score_criteria_children()
+        criteria.curriculum_major_admission_criterias = criteria.curriculummajoradmissioncriteria_set.select_related('curriculum_major').all()
+        criteria.curriculum_major_admission_criteria_count = len(criteria.curriculum_major_admission_criterias)
+        criteria.curriculum_majors = [mj.curriculum_major for mj in criteria.curriculum_major_admission_criterias]
+        curriculum_majors_with_criterias += criteria.curriculum_majors
+
+    curriculum_majors_with_criteria_ids = set([m.id for m
+                                               in curriculum_majors_with_criterias])
+
+    free_curriculum_majors = [m for m in curriculum_majors
+                              if m.id not in curriculum_majors_with_criteria_ids]
+
+    admission_criteria_rows = sort_admission_criterias(admission_criterias)
+
+    return admission_criteria_rows, free_curriculum_majors
+
 @user_login_required
 def project_index(request, project_id, round_id):
     user = request.user
@@ -87,15 +114,8 @@ def project_index(request, project_id, round_id):
     notice = request.session.pop('notice', None)
 
     curriculum_majors = get_all_curriculum_majors(project, faculty)
-    curriculum_majors_with_criterias = []
-    for criteria in admission_criterias:
-        curriculum_majors_with_criterias += criteria.curriculummajor_set.all()
-    curriculum_majors_with_criteria_ids = set([m.id for m
-                                               in curriculum_majors_with_criterias])
-
-    free_curriculum_majors = [m for m in curriculum_majors
-                              if m.id not in curriculum_majors_with_criteria_ids]
-
+    admission_criteria_rows, free_curriculum_majors = prepare_admission_criteria(admission_criterias, curriculum_majors)
+    
     return render(request,
                   'criteria/index.html',
                   {'project': project,
@@ -103,8 +123,38 @@ def project_index(request, project_id, round_id):
                    'faculty': faculty,
                    'faculty_url_query': '' if faculty_choices == [] else '?faculty_id=' + str(faculty.id),
                    'faculty_choices': faculty_choices,
-                   'admission_criterias': admission_criterias,
+                   'admission_criteria_rows': admission_criteria_rows,
                    'notice': notice,
+                   'free_curriculum_majors': free_curriculum_majors,
+                   })
+
+
+@user_login_required
+def project_report(request, project_id, round_id):
+    user = request.user
+    project = get_object_or_404(AdmissionProject, pk=project_id)
+    admission_round = get_object_or_404(AdmissionRound, pk=round_id)
+    project_round = project.get_project_round_for(admission_round)
+
+    if not user.profile.is_admission_admin:
+        return redirect(reverse('backoffice:index'))
+
+    faculties = Faculty.objects.all()
+    
+    admission_criterias = (AdmissionCriteria
+                           .objects
+                           .filter(admission_project_id=project_id,
+                                   is_deleted=False)
+                           .order_by('faculty_id'))
+    
+    curriculum_majors = get_all_curriculum_majors(project)
+    admission_criteria_rows, free_curriculum_majors = prepare_admission_criteria(admission_criterias, curriculum_majors)
+
+    return render(request,
+                  'criteria/report_index.html',
+                  {'project': project,
+                   'admission_round': admission_round,
+                   'admission_criteria_rows': admission_criteria_rows,
                    'free_curriculum_majors': free_curriculum_majors,
                    })
 
@@ -518,41 +568,4 @@ def list_curriculum_majors(request):
                    'major_table': major_table,
                    'round_data': list(zip(admission_rounds, major_table, project_lists)),
                    })
-
-@user_login_required
-def project_report(request, project_id, round_id):
-    user = request.user
-    project = get_object_or_404(AdmissionProject, pk=project_id)
-    admission_round = get_object_or_404(AdmissionRound, pk=round_id)
-    project_round = project.get_project_round_for(admission_round)
-
-    if not user.profile.is_admission_admin:
-        return redirect(reverse('backoffice:index'))
-
-    faculties = Faculty.objects.all()
-    
-    admission_criterias = (AdmissionCriteria
-                           .objects
-                           .filter(admission_project_id=project_id,
-                                   is_deleted=False)
-                           .order_by('faculty_id'))
-    
-    curriculum_majors = get_all_curriculum_majors(project)
-    curriculum_majors_with_criterias = []
-    for criteria in admission_criterias:
-        curriculum_majors_with_criterias += criteria.curriculummajor_set.all()
-    curriculum_majors_with_criteria_ids = set([m.id for m
-                                               in curriculum_majors_with_criterias])
-
-    free_curriculum_majors = [m for m in curriculum_majors
-                              if m.id not in curriculum_majors_with_criteria_ids]
-
-    return render(request,
-                  'criteria/report_index.html',
-                  {'project': project,
-                   'admission_round': admission_round,
-                   'admission_criterias': admission_criterias,
-                   'free_curriculum_majors': free_curriculum_majors,
-                   })
-
 

@@ -1,7 +1,8 @@
-<table class="table table-sm">
+<table class="table table-sm table-bordered table-striped">
   <thead class="thead-dark">
     <tr>
       <th>สาขาวิชาที่ใช้เกณฑ์</th>
+      <th>จำนวนรับ</th>
       <th>เงื่อนไขขั้นต่ำ</th>
       <th>เกณฑ์การพิจารณา</th>
       <th>
@@ -12,7 +13,7 @@
       </th>
     </tr>
   </thead>
-  {% for admission_criteria in admission_criterias %}
+  {% for admission_criteria in admission_criteria_rows %}
     {% if is_faculty_row_visible %}
       {% ifchanged admission_criteria.faculty %}
 	<tr class="table-info">
@@ -22,50 +23,66 @@
 	</tr>
       {% endifchanged  %}
     {% endif %}
-    <tr class="{% if admission_criteria.curriculummajor_set.all %}{% else %}table-warning{% endif %}">
-      <td>
-        <ul>
-	  {% for majorcriteria in admission_criteria.curriculummajoradmissioncriteria_set.all %}
-	    <li>
-	      {{majorcriteria.curriculum_major.cupt_code}}
-	      {% if majorcriteria.slots != 0 %}
-  		({{majorcriteria.slots}} คน)
-	      {% else %}
-		(*จำนวนรับรวมกับเงื่อนไขอื่น)
-	      {% endif %}
-	    </li>
-	  {% empty %}
-	    <li>(ยังไม่ได้ระบุสาขา)</li>
-	  {% endfor %}
-        </ul>
-      </td>
-      <td>
-	{% with scorecriterias=admission_criteria.get_all_required_score_criteria %}
-	  {% include "criteria/include/scorecriteria_list.html" %}
+    <tr class="{% if admission_criteria.curriculum_major_admission_criteria_count == 0 %}table-warning{% endif %}">
+      {% if admission_criteria.curriculum_major_admission_criteria_count > 0 %}
+	{% with admission_criteria.curriculum_major_admission_criterias.0 as majorcriteria %}
+	  <td {% if admission_criteria.is_combined %}rowspan="{{ admission_criteria.combined_count }}"{% endif %}>
+	    {{majorcriteria.curriculum_major.cupt_code}}
+	  </td>
+	  <td
+	    {% if admission_criteria.is_combined %}rowspan="{{ admission_criteria.combined_count }}"{% endif %}
+	    class="text-center"
+	  >
+	    {% if majorcriteria.slots != 0 %}
+  	      {{majorcriteria.slots}}
+	    {% else %}
+	      *จำนวนรับรวมกับเงื่อนไขอื่น
+	    {% endif %}
+	  </td>
 	{% endwith %}
-      </td>
-      <td>
-	{% with scorecriterias=admission_criteria.get_all_scoring_score_criteria %}
-	  {% include "criteria/include/scorecriteria_list.html" %}
+      {% else %}
+	<td>
+	  (ยังไม่ได้ระบุสาขา)
+	</td>
+	<td></td>
+      {% endif %}
+
+      {% if not admission_criteria.is_combined %}
+	{% include "criteria/include/criteria_table_scorecriteria_cols.html" %}
+      {% else %}
+	{% with admission_criteria.criteria_items.0 as admission_criteria %}
+	  {% include "criteria/include/criteria_table_scorecriteria_cols.html" %}
 	{% endwith %}
-      </td>
-      <td>
-	{% if is_edit_link_hidden %}
-	{% else %}
-	  <a href="{% url 'backoffice:criteria:create' project.id admission_round.id %}?duplicate_score_id={{admission_criteria.id}}{% if faculty_choices %}&faculty_id={{ faculty.id }}{% endif %}"
-	     class="btn btn-primary btn-sm">คัดลอก</a>
-	  <a href="#" class="btn btn-secondary d-none btn-sm">คัดลอกไปยังโครงการอื่น</a>
-	  <a href="{% url 'backoffice:criteria:edit' project.id admission_round.id admission_criteria.id %}{{ faculty_url_query }}"
-	     class="btn btn-info btn-sm">แก้ไข</a>
-	  <form class="d-inline"
-		action="{% url 'backoffice:criteria:delete' project.id admission_round.id admission_criteria.id %}{{ faculty_url_query }}"
-		id="delete_{{admission_criteria.id}}" method="post">
-	    {% csrf_token %}
-	  </form>
-	  <button class="btn btn-danger btn-sm" onclick="deleteCriteria('delete_{{admission_criteria.id}}')">ลบ</button>
-	{% endif %}
-      </td>
+      {% endif %}
     </tr>
+
+    {% for majorcriteria in admission_criteria.curriculum_major_admission_criterias %}
+      {% if not forloop.first %}
+	<tr>
+	  <td>
+	    {{majorcriteria.curriculum_major.cupt_code}}
+	  </td>
+	  <td class="text-center">
+	    {% if majorcriteria.slots != 0 %}
+  	      {{majorcriteria.slots}}
+	    {% else %}
+	      *จำนวนรับรวมกับเงื่อนไขอื่น
+	    {% endif %}
+	  </td>
+	</tr>
+      {% endif %}
+    {% endfor %}
+
+    {% if not admission_criteria.is_combined %}
+      {% for item in admission_criteria.criteria_items %}
+	{% if not forloop.first %}
+	  {% with item as admission_criteria %}
+	    {% include "criteria/include/criteria_table_scorecriteria_cols.html" %}
+	  {% endwith %}
+	{% endif %}
+      {% endfor %}
+    {% endif %}
+      
   {% endfor %}
   {% if is_faculty_row_visible %}
     {% if free_curriculum_majors %}
@@ -88,10 +105,9 @@
     {% endif %}
     <tr>
       <td>
-        <ul>
-          <li>{{major.cupt_code}}</li>
-        </ul>
+        {{major.cupt_code}}
       </td>
+      <td></td>
       <td colspan="2">
         (ยังไม่มีการกำหนดเกณฑ์)
       </td>
@@ -104,7 +120,7 @@
       </td>
     </tr>
   {% endfor %}
-  {% if not admission_criterias %}
+  {% if not admission_criteria_rows %}
     {% if not free_curriculum_majors %}
       <tr>
         <td>(ยังไม่มีการเลือกสาขาที่เปิดรับในโครงการนี้)</td>
