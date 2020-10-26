@@ -11,11 +11,24 @@
     {% endif %}
     <form method="post">
       {% csrf_token %}
+      <div id="ie-error" class="text-danger"></div>
       <div id="add-criterion-form"></div>
-      <button class="btn btn-primary" type="submit">แก้ไขเกณฑ์</button>
+      <button class="btn btn-primary" type="submit" id="add-criterion-submit-button">แก้ไขเกณฑ์</button>
     </form>
 
     {% include "criteria/include/criteria_form_option_script.html" %}
+    <script>
+      const isIE = /MSIE|Trident\//.test(window.navigator.userAgent)
+      if (isIE) {
+        const form = document.getElementById('add-criterion-form')
+        form.parentNode.removeChild(form)
+
+        const button = document.getElementById('add-criterion-submit-button')
+        button.parentNode.removeChild(button)
+
+        document.getElementById('ie-error').innerHTML = "ไม่รองรับ Internet Explorer กรุณาใช้ Google Chrome / Mozilla Firefox / Microsoft Edge"
+      }
+    </script>
     
     <script src="https://unpkg.com/react@16/umd/react.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js" crossorigin></script>
@@ -25,6 +38,7 @@
     <script src="{% static "react/CreateCriterionForm.js" %}" data-majors='{{ majors|safe }}'
       data-selected-majors='{{ data_selected_majors|safe }}' data-required='{{ data_required|safe }}'
       data-scoring='{{ data_scoring|safe }}'></script>
+
     <style>
       .table td {
         vertical-align: baseline;
