@@ -15,6 +15,7 @@
   </thead>
   {% for row in admission_criteria_rows %}
     {% with curriculum_major_admission_criterias=row.majors criterias=row.criterias major_count=row.major_count criteria_count=row.criteria_count %}
+
       {% if is_faculty_row_visible %}
 	{% ifchanged criterias.0.faculty %}
 	  <tr class="table-info">
@@ -24,6 +25,7 @@
 	  </tr>
 	{% endifchanged  %}
       {% endif %}
+
       <tr class="{% if major_count == 0 %}table-warning{% endif %}">
 	{% if major_count > 0 %}
 	  {% with curriculum_major_admission_criterias.0 as majorcriteria %}

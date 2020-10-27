@@ -110,7 +110,7 @@ def combine_criteria_rows(rows):
                     deleted_major_ids.add(mc.id)
 
     output_rows = []
-    
+
     for r in rows:
         curriculum_major_admission_criterias = r['majors']
         output_majors = []
@@ -125,7 +125,7 @@ def combine_criteria_rows(rows):
                 'major_count': len(output_majors),
                 'criteria_count': len(r['criterias']),
             })
-        
+
     return output_rows + combined_rows
         
 def prepare_admission_criteria(admission_criterias, curriculum_majors, combine_majors=False):

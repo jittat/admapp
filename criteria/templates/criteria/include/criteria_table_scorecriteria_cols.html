@@ -1,14 +1,14 @@
-<td rowspan="{{ admission_criteria.curriculum_major_admission_criteria_count }}">
+<td rowspan="{{ major_count }}">
   {% with scorecriterias=admission_criteria.get_all_required_score_criteria %}
     {% include "criteria/include/scorecriteria_list.html" %}
   {% endwith %}
 </td>
-<td rowspan="{{ admission_criteria.curriculum_major_admission_criteria_count }}">
+<td rowspan="{{ major_count }}">
   {% with scorecriterias=admission_criteria.get_all_scoring_score_criteria %}
     {% include "criteria/include/scorecriteria_list.html" %}
   {% endwith %}
 </td>
-<td rowspan="{{ admission_criteria.curriculum_major_admission_criteria_count }}">
+<td rowspan="{{ major_count }}">
   {% if is_edit_link_hidden %}
   {% else %}
     <a href="{% url 'backoffice:criteria:create' project.id admission_round.id %}?duplicate_score_id={{admission_criteria.id}}{% if faculty_choices %}&faculty_id={{ faculty.id }}{% endif %}"
