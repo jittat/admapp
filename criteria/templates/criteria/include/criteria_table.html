@@ -49,7 +49,7 @@
 	  {% include "criteria/include/criteria_table_scorecriteria_cols.html" %}
 	{% endwith %}
       </tr>
-
+      
       {% for majorcriteria in curriculum_major_admission_criterias %}
 	{% if not forloop.first %}
 	  <tr>
@@ -71,7 +71,9 @@
 	{% for item in criterias %}
 	  {% if not forloop.first %}
 	    {% with item as admission_criteria %}
-	      {% include "criteria/include/criteria_table_scorecriteria_cols.html" %}
+	      <tr>
+		{% include "criteria/include/criteria_table_scorecriteria_cols.html" %}
+	      </tr>
 	    {% endwith %}
 	  {% endif %}
 	{% endfor %}

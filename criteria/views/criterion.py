@@ -69,15 +69,66 @@ def extract_user_faculty(request, user):
 
     return faculty, faculty_choices
 
-def sort_admission_criterias(admission_criterias):
+def sort_admission_criteria_rows(admission_criteria_rows):
     lst = []
-    for criteria in admission_criterias:
-        key = '-'.join([m.cupt_code.program_code + m.cupt_code.major_code for m in criteria.curriculum_majors])
-        lst.append((criteria.faculty_id, key, criteria.id, criteria))
+    for criteria in admission_criteria_rows:
+        first_criteria = criteria['criterias'][0]
+        key = '-'.join([mc.curriculum_major.cupt_code.program_code + mc.curriculum_major.cupt_code.major_code for mc in criteria['majors']])
+        total_slots = sum([mc.slots for mc in criteria['majors']])
+        lst.append((first_criteria.faculty_id, key, -total_slots, first_criteria.id, criteria))
 
-    return [item[3] for item in sorted(lst)]
+    return [item[4] for item in sorted(lst)]
 
-def prepare_admission_criteria(admission_criterias, curriculum_majors):
+def combine_criteria_rows(rows):
+    major_slots = {}
+
+    for r in rows:
+        curriculum_major_admission_criterias = r['majors']
+        for mc in curriculum_major_admission_criterias:
+            major = mc.curriculum_major
+            major_id = mc.curriculum_major.id
+            if major_id not in major_slots:
+                major_slots[major_id] = []
+            major_slots[major_id].append((mc.slots, mc, r['criterias'][0]))
+
+    combined_rows = []
+    deleted_major_ids = set()
+            
+    for major_id in major_slots:
+        slots = major_slots[major_id]
+        if len(slots) > 1:
+            non_zero_mc = [s for s in slots if s[0] > 0]
+            if len(non_zero_mc) == 1:
+                combined_rows.append({
+                    'majors': [non_zero_mc[0][1]],
+                    'criterias': [s[2] for s in slots],
+                    'major_count': 1,
+                    'criteria_count': len(slots),
+                })
+
+                for _,mc,_ in slots:
+                    deleted_major_ids.add(mc.id)
+
+    output_rows = []
+    
+    for r in rows:
+        curriculum_major_admission_criterias = r['majors']
+        output_majors = []
+        for mc in curriculum_major_admission_criterias:
+            if mc.id not in deleted_major_ids:
+                output_majors.append(mc)
+
+        if len(output_majors) != 0:
+            output_rows.append({
+                'majors': output_majors,
+                'criterias': r['criterias'],
+                'major_count': len(output_majors),
+                'criteria_count': len(r['criterias']),
+            })
+        
+    return output_rows + combined_rows
+        
+def prepare_admission_criteria(admission_criterias, curriculum_majors, combine_majors=False):
     curriculum_majors_with_criterias = []
     for criteria in admission_criterias:
         criteria.cache_score_criteria_children()
@@ -95,9 +146,12 @@ def prepare_admission_criteria(admission_criterias, curriculum_majors):
     admission_criteria_rows = [{'majors': c.curriculum_major_admission_criterias,
                                 'criterias': [c],
                                 'major_count': len(c.curriculum_major_admission_criterias),
-                                'criteria_count': len([c])} for c in sort_admission_criterias(admission_criterias)]
+                                'criteria_count': len([c])} for c in admission_criterias]
 
-    return admission_criteria_rows, free_curriculum_majors
+    if combine_majors:
+        admission_criteria_rows = combine_criteria_rows(admission_criteria_rows)
+
+    return sort_admission_criteria_rows(admission_criteria_rows), free_curriculum_majors
 
 @user_login_required
 def project_index(request, project_id, round_id):
@@ -151,7 +205,7 @@ def project_report(request, project_id, round_id):
                            .order_by('faculty_id'))
     
     curriculum_majors = get_all_curriculum_majors(project)
-    admission_criteria_rows, free_curriculum_majors = prepare_admission_criteria(admission_criterias, curriculum_majors)
+    admission_criteria_rows, free_curriculum_majors = prepare_admission_criteria(admission_criterias, curriculum_majors, True)
 
     return render(request,
                   'criteria/report_index.html',
