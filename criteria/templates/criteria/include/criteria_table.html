@@ -13,76 +13,70 @@
       </th>
     </tr>
   </thead>
-  {% for admission_criteria in admission_criteria_rows %}
-    {% if is_faculty_row_visible %}
-      {% ifchanged admission_criteria.faculty %}
-	<tr class="table-info">
-	  <th colspan="300" class="text-center">
-	    {{ admission_criteria.faculty }}
-	  </th>
-	</tr>
-      {% endifchanged  %}
-    {% endif %}
-    <tr class="{% if admission_criteria.curriculum_major_admission_criteria_count == 0 %}table-warning{% endif %}">
-      {% if admission_criteria.curriculum_major_admission_criteria_count > 0 %}
-	{% with admission_criteria.curriculum_major_admission_criterias.0 as majorcriteria %}
-	  <td {% if admission_criteria.is_combined %}rowspan="{{ admission_criteria.combined_count }}"{% endif %}>
-	    {{majorcriteria.curriculum_major.cupt_code}}
-	  </td>
-	  <td
-	    {% if admission_criteria.is_combined %}rowspan="{{ admission_criteria.combined_count }}"{% endif %}
-	    class="text-center"
-	  >
-	    {% if majorcriteria.slots != 0 %}
-  	      {{majorcriteria.slots}}
-	    {% else %}
-	      *จำนวนรับรวมกับเงื่อนไขอื่น
-	    {% endif %}
-	  </td>
-	{% endwith %}
-      {% else %}
-	<td>
-	  (ยังไม่ได้ระบุสาขา)
-	</td>
-	<td></td>
+  {% for row in admission_criteria_rows %}
+    {% with curriculum_major_admission_criterias=row.majors criterias=row.criterias major_count=row.major_count criteria_count=row.criteria_count %}
+      {% if is_faculty_row_visible %}
+	{% ifchanged criterias.0.faculty %}
+	  <tr class="table-info">
+	    <th colspan="300" class="text-center">
+	      {{ criterias.0.faculty }}
+	    </th>
+	  </tr>
+	{% endifchanged  %}
       {% endif %}
+      <tr class="{% if major_count == 0 %}table-warning{% endif %}">
+	{% if major_count > 0 %}
+	  {% with curriculum_major_admission_criterias.0 as majorcriteria %}
+	    <td rowspan="{{ criteria_count }}">
+	      {{ majorcriteria.curriculum_major.cupt_code }}
+	    </td>
+	    <td rowspan="{{ criteria_count }}" class="text-center">
+	      {% if majorcriteria.slots != 0 %}
+  		{{majorcriteria.slots}}
+	      {% else %}
+		*จำนวนรับรวมกับเงื่อนไขอื่น
+	      {% endif %}
+	    </td>
+	  {% endwith %}
+	{% else %}
+	  <td>
+	    (ยังไม่ได้ระบุสาขา)
+	  </td>
+	  <td></td>
+	{% endif %}
 
-      {% if not admission_criteria.is_combined %}
-	{% include "criteria/include/criteria_table_scorecriteria_cols.html" %}
-      {% else %}
-	{% with admission_criteria.criteria_items.0 as admission_criteria %}
+	{% with criterias.0 as admission_criteria %}
 	  {% include "criteria/include/criteria_table_scorecriteria_cols.html" %}
 	{% endwith %}
-      {% endif %}
-    </tr>
+      </tr>
 
-    {% for majorcriteria in admission_criteria.curriculum_major_admission_criterias %}
-      {% if not forloop.first %}
-	<tr>
-	  <td>
-	    {{majorcriteria.curriculum_major.cupt_code}}
-	  </td>
-	  <td class="text-center">
-	    {% if majorcriteria.slots != 0 %}
-  	      {{majorcriteria.slots}}
-	    {% else %}
-	      *จำนวนรับรวมกับเงื่อนไขอื่น
-	    {% endif %}
-	  </td>
-	</tr>
-      {% endif %}
-    {% endfor %}
-
-    {% if not admission_criteria.is_combined %}
-      {% for item in admission_criteria.criteria_items %}
+      {% for majorcriteria in curriculum_major_admission_criterias %}
 	{% if not forloop.first %}
-	  {% with item as admission_criteria %}
-	    {% include "criteria/include/criteria_table_scorecriteria_cols.html" %}
-	  {% endwith %}
+	  <tr>
+	    <td>
+	      {{majorcriteria.curriculum_major.cupt_code}}
+	    </td>
+	    <td class="text-center">
+	      {% if majorcriteria.slots != 0 %}
+  		{{majorcriteria.slots}}
+	      {% else %}
+		*จำนวนรับรวมกับเงื่อนไขอื่น
+	      {% endif %}
+	    </td>
+	  </tr>
 	{% endif %}
       {% endfor %}
-    {% endif %}
-      
+
+      {% if criteria_count > 0 %}
+	{% for item in criterias %}
+	  {% if not forloop.first %}
+	    {% with item as admission_criteria %}
+	      {% include "criteria/include/criteria_table_scorecriteria_cols.html" %}
+	    {% endwith %}
+	  {% endif %}
+	{% endfor %}
+      {% endif %}
+    {% endwith %}
   {% endfor %}
   {% if is_faculty_row_visible %}
     {% if free_curriculum_majors %}

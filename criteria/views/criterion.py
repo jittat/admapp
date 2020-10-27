@@ -92,7 +92,10 @@ def prepare_admission_criteria(admission_criterias, curriculum_majors):
     free_curriculum_majors = [m for m in curriculum_majors
                               if m.id not in curriculum_majors_with_criteria_ids]
 
-    admission_criteria_rows = sort_admission_criterias(admission_criterias)
+    admission_criteria_rows = [{'majors': c.curriculum_major_admission_criterias,
+                                'criterias': [c],
+                                'major_count': len(c.curriculum_major_admission_criterias),
+                                'criteria_count': len([c])} for c in sort_admission_criterias(admission_criterias)]
 
     return admission_criteria_rows, free_curriculum_majors
 
