@@ -16,7 +16,7 @@ class AdmissionCriteria(models.Model):
     created_by = models.CharField(max_length=30, blank=True)
 
     additional_description = models.CharField(max_length=100, blank=True)
-    additional_condition = models.CharField(max_length=100, blank=True)
+    additional_condition = models.CharField(max_length=500, blank=True)
     
     curriculum_majors_json = models.TextField(blank=True) 
 

@@ -377,6 +377,9 @@ def gen_row(curriculum_major, slots, admission_criteria, admission_project):
 
     items['description'] = f'{curriculum_major.faculty} {major_cupt_code}'
 
+    if admission_criteria.additional_condition != '':
+        items['condition'] = admission_criteria.additional_condition
+    
     items['receive_student_number'] = slots
     items['receive_add_limit'] = 'A'
     
