@@ -15,6 +15,9 @@ class AdmissionCriteria(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     created_by = models.CharField(max_length=30, blank=True)
 
+    additional_description = models.CharField(max_length=100, blank=True)
+    additional_condition = models.CharField(max_length=100, blank=True)
+    
     curriculum_majors_json = models.TextField(blank=True) 
 
     def get_all_score_criteria(self, criteria_type):

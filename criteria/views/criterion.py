@@ -269,6 +269,8 @@ def upsert_admission_criteria(post_request, project=None, faculty=None, admissio
             admission_criteria = AdmissionCriteria(
                 admission_project=old_admission_criteria.admission_project,
                 faculty=admission_criteria.faculty,
+                additional_description=old_admission_criteria.additional_description,
+                additional_condition=old_admission_criteria.additional_condition,
                 version=version)
             admission_criteria.save()
 
