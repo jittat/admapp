@@ -6,7 +6,7 @@ import csv
 from datetime import datetime
 
 from appl.models import AdmissionProject, AdmissionRound, Faculty
-from criteria.models import AdmissionCriteria
+from criteria.models import AdmissionCriteria, COMPONENT_WEIGHT_TYPE_CHOICES
 
 FIELDS = [
     'program_id',
@@ -135,6 +135,10 @@ FIELDS = [
 SLOTS_FIELD_NAME = 'receive_student_number'
 
 DEFAULT_VALUES = {
+    'only_formal': 1,
+    'only_international': 1,
+    'only_non_formal': 1,
+    'only_vocational': 1,
     'condition': '',
     'interview_location': 'มหาวิทยาลัยเกษตรศาสตร์',
     'interview_date': '',
@@ -228,34 +232,107 @@ SCORE_TYPE_TAGS = [
     { "score_type": "ONET_MAT", "description": "O-NET (04) วิชาคณิตศาสตร์", "unit": "คะแนน" },
     { "score_type": "GAT", "description": "GAT85", "unit": "คะแนน" },
     { "score_type": "GAT", "description": "GAT ไม่ตำ่กว่า", "unit": "คะแนน" },
+    { "score_type": "PAT_1", "description": "PAT I ความถนัดทางคณิตศาสตร์", "unit": "คะแนน" },
     { "score_type": "PAT_5", "description": "PAT 5 ไม่ต่ำกว่า", "unit": "คะแนน" },
     { "score_type": "UNIT_MATH", "description": "กลุ่มสาระการเรียนรู้คณิตศาสตร์", "unit": "" },
     { "score_type": "UNIT_MATH", "description": "เรียนรายวิชาในกลุ่มสาระการเรียนรู้คณิตศาสตร์ (แผนการเรียนวิทยาศาสตร์-คณิตศาสตร์)", "unit": "" },
     { "score_type": "UNIT_MATH", "description": "เรียนรายวิชาในกลุ่มสาระการเรียนรู้คณิตศาสตร์ (แผนการเรียนศิลป์คำนวณ)", "unit": "" },
+    { "score_type": "UNIT_MATH", "description": "เรียนรายวิชาในกลุ่มสาระการเรียนรู้คณิตศาสตร์ ไม่น้อยกว่า", "unit": "" },
     { "score_type": "UNIT_MATH", "description": "เรียนรายวิชาในกลุ่มสาระการเรียนรู้คณิตศาสตร์ ต้องเรียนรายวิชาพื้นฐานและรายวิชาเพิ่มเติม รวมกัน", "unit": "" },
+    { "score_type": "UNIT_MATH", "description": "เรียนรายวิชาในกลุ่มสาระการเรียนรู้คณิตศาสตร์ (แผนการเรียนศิลป์คำนวณ) ไม่ต่ำกว่า 12.00", "unit": "" },
+    { "score_type": "UNIT_MATH", "description": "เรียนรายวิชาในกลุ่มสาระการเรียนรู้คณิตศาสตร์ ต้องเรียนรายวิชาพื้นฐานและรายวิชาเพิ่มเติมรวมกัน", "unit": "" },
+    { "score_type": "UNIT_MATH", "description": "เรียนรายวิชาในกลุ่มสาระการเรียนรู้คณิตศาสตร์ ไม่น้อยกว่า", "unit": "" },
 
     { "score_type": "UNIT_FOREIGN", "description": "กลุ่มสาระการเรียนรู้ภาษาต่างประเทศ", "unit": "" },
     { "score_type": "UNIT_FOREIGN", "description": "เรียนรายวิชาในกลุ่มสาระการเรียนรู้ภาษาต่างประเทศ (แผนการเรียนวิทยาศาสตร์-คณิตศาสตร์)", "unit": "" },
+    { "score_type": "UNIT_FOREIGN", "description": "เรียนรายวิชาในกลุ่มสาระการเรียนรู้ภาษาต่างประเทศ (ภาษาอังกฤษ)", "unit": "" },
 
     { "score_type": "UNIT_SCI", "description": "กลุ่มสาระการเรียนรู้วิทยาศาสตร์", "unit": "" },
     { "score_type": "UNIT_SCI", "description": "เรียนรายวิชาในกลุ่มสาระการเรียนรู้วิทยาศาสตร์ (แผนการเรียนวิทยาศาสตร์-คณิตศาสตร์)", "unit": "" },
     { "score_type": "UNIT_SCI", "description": "เรียนรายวิชาในกลุ่มสาระการเรียนรู้วิทยาศาสตร์ (แผนการเรียนศิลป์คำนวณ)", "unit": "" },
+    { "score_type": "UNIT_SCI", "description": "เรียนรายวิชาในกลุ่มสาระการเรียนรู้วิทยาศาสตร์ ไม่น้อยกว่า", "unit": "" },
     { "score_type": "UNIT_SCI", "description": "เรียนรายวิชาในกลุ่มสาระการเรียนรู้วิทยาศาสตร์ ต้องเรียนรายวิชาพื้นฐานและรายวิชาเพิ่มเติม รวมกัน", "unit": "" },
+    { "score_type": "UNIT_SCI", "description": "เรียนรายวิชาในกลุ่มสาระการเรียนรู้วิทยาศาสตร์ ต้องเรียนรายวิชาพื้นฐานและรายวิชาเพิ่มเติมรวมกัน", "unit": "" },
+    { "score_type": "UNIT_SCI", "description": "เรียนรายวิชาในกลุ่มสาระการเรียนรู้วิทยาศาสตร์ ไม่น้อยกว่า", "unit": "" },
     
     { "score_type": "GAT_2", "description": "GAT (ตอน 2 ภาษาอังกฤษ)", "unit": "คะแนน" },
     { "score_type": "GAT_2", "description": "GAT ตอน 2", "unit": "คะแนน" },
     { "score_type": "GAT_2", "description": "GAT ตอน2", "unit": "คะแนน" },
+    { "score_type": "GAT_2", "description": "GAT General (English)", "unit": "คะแนน" },
+
     { "score_type": "GPAX", "description": "ผลการเรียนเฉลี่ยสะสม (GPAX) 5 ภาคเรียน", "unit": "" },
     { "score_type": "UDAT_09", "description": "วิชา 09", "unit": "คะแนน" },
     { "score_type": "UDAT_19", "description": "วิชา 19", "unit": "คะแนน" },
     { "score_type": "UDAT_29", "description": "วิชา 29", "unit": "คะแนน" },
+    { "score_type": "UDAT_29", "description": "29", "unit": "คะแนน" },
     { "score_type": "UDAT_39", "description": "วิชา 39", "unit": "คะแนน" },
     { "score_type": "UDAT_49", "description": "วิชา 49", "unit": "คะแนน" },
     { "score_type": "UDAT_59", "description": "วิชา 59", "unit": "คะแนน" },
     { "score_type": "UDAT_69", "description": "วิชา 69", "unit": "คะแนน" },
     { "score_type": "UDAT_89", "description": "วิชา 89", "unit": "คะแนน" },
     { "score_type": "UDAT_99", "description": "วิชา 99", "unit": "คะแนน" },
+
+
+    # HACK ad1
+    { "score_type": 'CW701', 'description': '7 (รูปแบบที่ 1): **** ยังไม่ได้เลือก PAT **** กลุ่ม 7 ครุศาสตร์ ศึกษาศาสตร์ พลศึกษา สุขศึกษา (รูปแบบที่ 1)' },
+
+    { "score_type": 'MIN_GPA21', 'description': 'ผลการเรียนเฉลี่ยรวมของกลุ่มสาระการเรียนรู้ภาษาไทย'},
+    { "score_type": 'MIN_GPA22', 'description': 'คะแนนเฉลี่ยกลุ่มสาระคณิตศาสตร์'},
+    { "score_type": 'MIN_GPA22', 'description': 'มีคะแนนเฉลี่ยกลุ่มสาระคณิตศาสตร์'},
+    { "score_type": 'MIN_GPA23', 'description': 'คะแนนเฉลี่ยกลุ่มสาระวิทยาศาสตร์'},
+    { "score_type": 'MIN_GPA23', 'description': 'มีคะแนนเฉลี่ยกลุ่มสาระวิทยาศาสตร์'},
+    { "score_type": 'MIN_GPA28', 'description': 'มีคะแนนเฉลี่ยกลุ่มสาระภาษาต่างประเทศ'},
+    { "score_type": 'MIN_GPA28', 'description': 'ผลการเรียนเฉลี่ยรวมของกลุ่มสาระการเรียนรู้ภาษาต่างประเทศ'},
 ]
+
+for t,d in COMPONENT_WEIGHT_TYPE_CHOICES:
+    SCORE_TYPE_TAGS.append({"score_type": t, "description": d})
+
+COMPONENT_WEIGHT_OPTIONS = [
+    ('CW110','1.1',0),
+    ('CW120','1.2',0),
+    ('CW130','1.3',0),
+    ('CW210','2.1',0),
+    ('CW220','2.2',0),
+    ('CW300','3',0),
+    ('CW400','4',0),
+    ('CW500','5',0),
+    ('CW610','6.1',0),
+    ('CW621','6.2.1',0),
+    ('CW62271','6.2.2','PAT7.1'),
+    ('CW62272','6.2.2','PAT7.2'),
+    ('CW62273','6.2.2','PAT7.3'),
+    ('CW62274','6.2.2','PAT7.4'),
+    ('CW62275','6.2.2','PAT7.5'),
+    ('CW62276','6.2.2','PAT7.6'),
+    ('CW62277','6.2.2','PAT7.7'),
+    ('CW701','7.1',0),
+    ('CW7021','7.2','PAT1'),
+    ('CW7022','7.2','PAT2'),
+    ('CW7023','7.2','PAT3'),
+    ('CW7024','7.2','PAT4'),
+    ('CW7026','7.2','PAT6'),
+    ('CW70271','7.2','PAT7.1'),
+    ('CW70272','7.2','PAT7.2'),
+    ('CW70273','7.2','PAT7.3'),
+    ('CW70274','7.2','PAT7.4'),
+    ('CW70275','7.2','PAT7.5'),
+    ('CW70276','7.2','PAT7.6'),
+    ('CW70277','7.2','PAT7.7'),
+    ('CW8004','8','PAT4'),
+    ('CW8006','8','PAT6'),
+    ('CW910','9.1',0),
+    ('CW921','9.2.1',0),
+    ('CW92271','9.2.2','PAT7.1'),
+    ('CW92272','9.2.2','PAT7.2'),
+    ('CW92273','9.2.2','PAT7.3'),
+    ('CW92274','9.2.2','PAT7.4'),
+    ('CW92275','9.2.2','PAT7.5'),
+    ('CW92276','9.2.2','PAT7.6'),
+    ('CW92277','9.2.2','PAT7.7'),
+]
+
+COMPONENT_WEIGHT_MAP = { c[0]:(c[1],c[2]) for c in COMPONENT_WEIGHT_OPTIONS }
 
 SCORE_TYPE_REVERSE_MAP = dict([
     (t['description'].strip(), t['score_type'].strip())
@@ -299,6 +376,11 @@ SCORE_TYPE_FIELD_MAP = {
     "UDAT_69": 'min_9sub_69',
     "UDAT_89": 'min_9sub_89',
     "UDAT_99": 'min_9sub_99',
+
+    "MIN_GPA21": 'min_gpa21',
+    "MIN_GPA22": 'min_gpa22',
+    "MIN_GPA23": 'min_gpa23',
+    "MIN_GPA28": 'min_gpa28',
 }
 
 def reverse_score_type(score_criteria):
@@ -390,13 +472,9 @@ def gen_row(curriculum_major, slots, admission_criteria, admission_project):
         'component_weight',
         'component_pat',
         'join_id',
-        'only_formal',
         'receive_student_number_formal ',
-        'only_international',
         'receive_student_number_international ',
-        'only_vocational',
         'receive_student_number_vocational',
-        'only_non_formal',
         'receive_student_number_nonformal ',
     ]
 
@@ -513,20 +591,61 @@ def mark_join_ids(project_rows, join_id_base):
             if r['receive_student_number'] == 0:
                 slots = [s for s in key_slots[k] if s > 0][0]
                 r['receive_student_number'] = slots
-                
-                
+
+def update_component_weight(row, admission_criteria):
+    score_criterias = []
+    is_error = False
+    is_assigned = False
+    
+    for c in admission_criteria.get_all_scoring_score_criteria():
+        if c.has_children():
+            print('Error type:', c.relation)
+            for child in c.childs.all():
+                print(f"    - {child}")
+                is_error = True
+        else:
+            score_criterias.append(c)        
+
+    if len(score_criterias) != 1:
+        print('Too many', len(score_criterias))
+        is_error = True
+        
+    for c in score_criterias:
+        score_type = c.score_type
+        if score_type == 'OTHER':
+            score_type = reverse_score_type(c)
+
+        if score_type in COMPONENT_WEIGHT_MAP:
+            cw, cpat = COMPONENT_WEIGHT_MAP[score_type]
+            row['component_weight'] = cw
+            row['component_pat'] = cpat
+            is_assigned = True
+        else:
+            print('Unknown scoring', c)
+            is_error = True
+
+    if not is_assigned:
+        print('ERROR not assigned')
+        
+    if is_error or (not is_assigned):
+        print("---------------------------------")
+
+        
 def main():
     csv_filename = sys.argv[1]
     project_ids = sys.argv[2:]
 
     is_empty_criteria = False
     is_slots_combined = False
+    is_admission_2 = False
          
     while project_ids[0].startswith('--'):
         if project_ids[0] == '--empty':
             is_empty_criteria = True
         elif project_ids[0] == '--combine':
             is_slots_combined = True
+        elif project_ids[0] == '--ad2':
+            is_admission_2 = True
         else:
             print(f'Option unknown: {project_ids[0]}')
         del project_ids[0]
@@ -558,6 +677,9 @@ def main():
                 
                 row = gen_row(curriculum_major, mc.slots, row_criteria, admission_project)
 
+                if is_admission_2:
+                    update_component_weight(row, row_criteria)
+                
                 project_rows.append(row)
                 row_criterias.append(row_criteria)
 
