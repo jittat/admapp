@@ -228,11 +228,17 @@ SCORE_TYPE_TAGS = [
 
     # HACK
     { "score_type": "GPAX", "description": "ผลการเรียนเฉลี่ยสะสม (GPAX) 6 ภาคเรียน", "unit": "" },
+    { "score_type": "GPAX", "description": "ผลการเรียนเฉลี่ยสะสม (GPAX) ไม่ต่ำกว่า", "unit": "" },
     { "score_type": "ONET_ENG", "description": "O-NET 03 ภาษาอังกฤษ", "unit": "คะแนน" },
+    { "score_type": "ONET_ENG", "description": "O-NET (03)", "unit": "คะแนน" },
+    { "score_type": "ONET_ENG", "description": "O-NET (03) ภาษาอังกฤษ ไม่ต่ำกว่า", "unit": "คะแนน" },
     { "score_type": "ONET_MAT", "description": "O-NET (04) วิชาคณิตศาสตร์", "unit": "คะแนน" },
     { "score_type": "GAT", "description": "GAT85", "unit": "คะแนน" },
     { "score_type": "GAT", "description": "GAT ไม่ตำ่กว่า", "unit": "คะแนน" },
+    { "score_type": "GAT", "description": "GAT (85): วิชาความถนัดทั่วไป", "unit": "คะแนน" },
     { "score_type": "PAT_1", "description": "PAT I ความถนัดทางคณิตศาสตร์", "unit": "คะแนน" },
+    { "score_type": "PAT_1", "description": "PAT1 (71): วิชาความถนัดทางคณิตศาสตร์", "unit": "คะแนน" },
+    { "score_type": "PAT_2", "description": "PAT2 (72): วิชาความถนัดทางวิทยาศาสตร์", "unit": "คะแนน" },
     { "score_type": "PAT_5", "description": "PAT 5 ไม่ต่ำกว่า", "unit": "คะแนน" },
     { "score_type": "UNIT_MATH", "description": "กลุ่มสาระการเรียนรู้คณิตศาสตร์", "unit": "" },
     { "score_type": "UNIT_MATH", "description": "เรียนรายวิชาในกลุ่มสาระการเรียนรู้คณิตศาสตร์ (แผนการเรียนวิทยาศาสตร์-คณิตศาสตร์)", "unit": "" },
@@ -241,11 +247,14 @@ SCORE_TYPE_TAGS = [
     { "score_type": "UNIT_MATH", "description": "เรียนรายวิชาในกลุ่มสาระการเรียนรู้คณิตศาสตร์ ต้องเรียนรายวิชาพื้นฐานและรายวิชาเพิ่มเติม รวมกัน", "unit": "" },
     { "score_type": "UNIT_MATH", "description": "เรียนรายวิชาในกลุ่มสาระการเรียนรู้คณิตศาสตร์ (แผนการเรียนศิลป์คำนวณ) ไม่ต่ำกว่า 12.00", "unit": "" },
     { "score_type": "UNIT_MATH", "description": "เรียนรายวิชาในกลุ่มสาระการเรียนรู้คณิตศาสตร์ ต้องเรียนรายวิชาพื้นฐานและรายวิชาเพิ่มเติมรวมกัน", "unit": "" },
+    { "score_type": "UNIT_MATH", "description": "เรียนรายวิชาในกลุ่มสาระการเรียนรู้คณิตศาสตร์ ต้องเรียนรายวิชาพิ้นฐานและรายวิชาเพิ่มเติม รวมกัน", "unit": "" },
     { "score_type": "UNIT_MATH", "description": "เรียนรายวิชาในกลุ่มสาระการเรียนรู้คณิตศาสตร์ ไม่น้อยกว่า", "unit": "" },
+    { "score_type": "UNIT_MATH", "description": "หน่วยกิจกลุ่มสาระคณิตศาสตร์", "unit": "" },
 
     { "score_type": "UNIT_FOREIGN", "description": "กลุ่มสาระการเรียนรู้ภาษาต่างประเทศ", "unit": "" },
     { "score_type": "UNIT_FOREIGN", "description": "เรียนรายวิชาในกลุ่มสาระการเรียนรู้ภาษาต่างประเทศ (แผนการเรียนวิทยาศาสตร์-คณิตศาสตร์)", "unit": "" },
     { "score_type": "UNIT_FOREIGN", "description": "เรียนรายวิชาในกลุ่มสาระการเรียนรู้ภาษาต่างประเทศ (ภาษาอังกฤษ)", "unit": "" },
+    { "score_type": "UNIT_FOREIGN", "description": "หน่วยกิจกลุ่มสาระภาษาต่างประเทศ", "unit": "" },
 
     { "score_type": "UNIT_SCI", "description": "กลุ่มสาระการเรียนรู้วิทยาศาสตร์", "unit": "" },
     { "score_type": "UNIT_SCI", "description": "เรียนรายวิชาในกลุ่มสาระการเรียนรู้วิทยาศาสตร์ (แผนการเรียนวิทยาศาสตร์-คณิตศาสตร์)", "unit": "" },
@@ -253,7 +262,9 @@ SCORE_TYPE_TAGS = [
     { "score_type": "UNIT_SCI", "description": "เรียนรายวิชาในกลุ่มสาระการเรียนรู้วิทยาศาสตร์ ไม่น้อยกว่า", "unit": "" },
     { "score_type": "UNIT_SCI", "description": "เรียนรายวิชาในกลุ่มสาระการเรียนรู้วิทยาศาสตร์ ต้องเรียนรายวิชาพื้นฐานและรายวิชาเพิ่มเติม รวมกัน", "unit": "" },
     { "score_type": "UNIT_SCI", "description": "เรียนรายวิชาในกลุ่มสาระการเรียนรู้วิทยาศาสตร์ ต้องเรียนรายวิชาพื้นฐานและรายวิชาเพิ่มเติมรวมกัน", "unit": "" },
+    { "score_type": "UNIT_SCI", "description": "เรียนรายวิชาในกลุ่มสาระการเรียนรู้วิทยาศาสตร์ ต้องเรียนวิชาพื้นฐานและรายวิชาเพิ่มเติม รวมกัน", "unit": "" },
     { "score_type": "UNIT_SCI", "description": "เรียนรายวิชาในกลุ่มสาระการเรียนรู้วิทยาศาสตร์ ไม่น้อยกว่า", "unit": "" },
+    { "score_type": "UNIT_SCI", "description": "หน่วยกิตกลุ่มสาระวิทยาศาสตร์", "unit": "" },
     
     { "score_type": "GAT_2", "description": "GAT (ตอน 2 ภาษาอังกฤษ)", "unit": "คะแนน" },
     { "score_type": "GAT_2", "description": "GAT ตอน 2", "unit": "คะแนน" },
@@ -275,6 +286,7 @@ SCORE_TYPE_TAGS = [
 
     # HACK ad1
     { "score_type": 'CW701', 'description': '7 (รูปแบบที่ 1): **** ยังไม่ได้เลือก PAT **** กลุ่ม 7 ครุศาสตร์ ศึกษาศาสตร์ พลศึกษา สุขศึกษา (รูปแบบที่ 1)' },
+    { "score_type": 'CW701', 'description': '7 (รูปแบบที่ 1) กลุ่ม 7 ครุศาสตร์ ศึกษาศาสตร์ พลศึกษา สุขศึกษา (รูปแบบที่ 1)' },
 
     { "score_type": 'MIN_GPA21', 'description': 'ผลการเรียนเฉลี่ยรวมของกลุ่มสาระการเรียนรู้ภาษาไทย'},
     { "score_type": 'MIN_GPA22', 'description': 'คะแนนเฉลี่ยกลุ่มสาระคณิตศาสตร์'},
@@ -393,30 +405,16 @@ def reverse_score_type(score_criteria):
 
 all_missing_descriptions = []
     
-def min_score_vector(admission_criteria, curriculum_major):
+def min_score_vector_from_criterias(score_criterias, curriculum_major):
     value_vectors = {}
     for f in FIELDS:
         if f.startswith('min') or f.startswith('max'):
             value_vectors[f] = 0
 
-    if not admission_criteria:
+    if score_criterias == []:
         return value_vectors
-
+            
     is_error = False
-    score_criterias = []
-    for c in admission_criteria.get_all_required_score_criteria():
-        if c.has_children():
-            if c.relation != 'AND':
-                print('Error type:', c.relation)
-                for child in c.childs.all():
-                    print(f"    - {child}")
-                is_error = True
-            else:
-                for child in c.childs.all():
-                    score_criterias.append(child)
-        else:
-            score_criterias.append(c)        
-
     for c in score_criterias:
         score_type = c.score_type
         if score_type == 'OTHER':
@@ -438,50 +436,117 @@ def min_score_vector(admission_criteria, curriculum_major):
                 
     return value_vectors
 
-def gen_row(curriculum_major, slots, admission_criteria, admission_project):
-    items = {}
+def min_score_vectors(admission_criteria, curriculum_major):
+    if not admission_criteria:
+        return min_score_vector_from_criterias([], curriculum_major)
 
-    for k,v in DEFAULT_VALUES.items():
-        items[k] = v
+    or_count = 0
+    or_criterias = []
     
-    score_items = min_score_vector(admission_criteria, curriculum_major)
-    for k,v in score_items.items():
-        items[k] = v
+    is_error = False
+    score_criterias = []
+    for c in admission_criteria.get_all_required_score_criteria():
+        if c.has_children():
+            if c.relation != 'AND':
+                if c.relation == 'OR':
+                    or_count += 1
+                    for child in c.childs.all():
+                        or_criterias.append(child)
+                if (or_count > 1) or (c.relation != 'OR'):
+                    print('Error type (or too many OR):', c.relation)
+                    for child in c.childs.all():
+                        print(f"    - {child}")
+                    is_error = True
+            else:
+                for child in c.childs.all():
+                    score_criterias.append(child)
+        else:
+            score_criterias.append(c)        
 
-    major_cupt_code = curriculum_major.cupt_code
-
-    items['program_id'] = major_cupt_code.program_code
-    items['major_id'] = major_cupt_code.major_code
-    items['project_id'] = admission_project.cupt_code
-    items['project_name_th'] = admission_project.short_title
-
-    items['type'] = PROJECT_TYPES[admission_project.cupt_code]
-
-    items['description'] = f'{curriculum_major.faculty} {major_cupt_code}'
-
-    if admission_criteria.additional_condition != '':
-        items['condition'] = admission_criteria.additional_condition
+    if or_count == 0:
+        value_vectors = min_score_vector_from_criterias(score_criterias, curriculum_major)
     
-    items['receive_student_number'] = slots
-    items['receive_add_limit'] = 'A'
+        if is_error:
+            print('=============', curriculum_major.faculty, '==========', curriculum_major.cupt_code)
+                
+        return [value_vectors]
+    elif or_count == 1:
+        output = []
+        for or_criteria in or_criterias:
+            this_score_criterias = [c for c in score_criterias] + [or_criteria]
+            
+            value_vectors = min_score_vector_from_criterias(this_score_criterias, curriculum_major)
+
+            output.append(value_vectors)
+            
+        if is_error:
+            print('=============', curriculum_major.faculty, '==========', curriculum_major.cupt_code)
+                
+        return output
+
+    else:
+        if is_error:
+            print('=============', curriculum_major.faculty, '==========', curriculum_major.cupt_code)
+                
+        
+
+def gen_rows(curriculum_major, slots, admission_criteria, admission_project):
+    score_items_list = min_score_vectors(admission_criteria, curriculum_major)
+
+    rows = []
+
+    first_row = True
+    for score_items in score_items_list:
+        items = {}
+
+        for k,v in DEFAULT_VALUES.items():
+            items[k] = v
     
-    ZERO_FIELDS = [
-        'project_name_en',
-        'gender_male_number',
-        'gender_female_number',
-        'component_weight',
-        'component_pat',
-        'join_id',
-        'receive_student_number_formal ',
-        'receive_student_number_international ',
-        'receive_student_number_vocational',
-        'receive_student_number_nonformal ',
-    ]
+        for k,v in score_items.items():
+            items[k] = v
 
-    for f in ZERO_FIELDS:
-        items[f] = 0
+        major_cupt_code = curriculum_major.cupt_code
 
-    return items
+        items['program_id'] = major_cupt_code.program_code
+        items['major_id'] = major_cupt_code.major_code
+        items['project_id'] = admission_project.cupt_code
+        items['project_name_th'] = admission_project.short_title
+
+        items['type'] = PROJECT_TYPES[admission_project.cupt_code]
+
+        items['description'] = f'{curriculum_major.faculty} {major_cupt_code}'
+
+        if admission_criteria.additional_condition != '':
+            items['condition'] = admission_criteria.additional_condition
+
+        if first_row:
+            items['receive_student_number'] = slots
+        else:
+            items['receive_student_number'] = 0
+            
+        items['receive_add_limit'] = 'A'
+    
+        ZERO_FIELDS = [
+            'project_name_en',
+            'gender_male_number',
+            'gender_female_number',
+            'component_weight',
+            'component_pat',
+            'join_id',
+            'receive_student_number_formal ',
+            'receive_student_number_international ',
+            'receive_student_number_vocational',
+            'receive_student_number_nonformal ',
+        ]
+        
+        for f in ZERO_FIELDS:
+            items[f] = 0
+
+        rows.append(items)
+
+        first_row = False
+        
+    return rows
 
 def row_key(row, short_project_id=False):
     if short_project_id:
@@ -592,7 +657,7 @@ def mark_join_ids(project_rows, join_id_base):
                 slots = [s for s in key_slots[k] if s > 0][0]
                 r['receive_student_number'] = slots
 
-def update_component_weight(row, admission_criteria):
+def update_component_weight(row, admission_criteria, curriculum_major):
     score_criterias = []
     is_error = False
     is_assigned = False
@@ -628,7 +693,7 @@ def update_component_weight(row, admission_criteria):
         print('ERROR not assigned')
         
     if is_error or (not is_assigned):
-        print("---------------------------------")
+        print("----------------", curriculum_major.cupt_code)
 
         
 def main():
@@ -675,13 +740,14 @@ def main():
                 if is_empty_criteria:
                     row_criteria = None
                 
-                row = gen_row(curriculum_major, mc.slots, row_criteria, admission_project)
+                rows = gen_rows(curriculum_major, mc.slots, row_criteria, admission_project)
 
-                if is_admission_2:
-                    update_component_weight(row, row_criteria)
+                for row in rows:
+                    if is_admission_2:
+                        update_component_weight(row, row_criteria, curriculum_major)
                 
-                project_rows.append(row)
-                row_criterias.append(row_criteria)
+                    project_rows.append(row)
+                    row_criterias.append(row_criteria)
 
         if is_slots_combined:
             project_rows = combine_slots(project_rows)
