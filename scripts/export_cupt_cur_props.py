@@ -492,6 +492,10 @@ def min_score_vector_from_criterias(score_criterias, curriculum_major):
                 is_error = True
             else:
                 value_vectors[SCORE_TYPE_FIELD_MAP[score_type]] = float(c.value)
+        else:
+            if score_type == 'OTHER':
+                is_error = True
+                print(f'OTHER - None: Error missing {score_type} {c} "{c.description.strip()}"')
 
     if is_error:
         print('=============', curriculum_major.faculty, '==========', curriculum_major.cupt_code)
