@@ -405,20 +405,7 @@ ADD_LIMITS_CONFIG = """C3	10020222900201A		C2700
 C3	10020222902501A		C2700
 C10	10020222902501B		C2700
 C3	10020222900201A		C2800
-C3	10020222900201A		C2800
-C3	10020222900201A		C2800
-C3	10020222900201A		C2800
-C3	10020222900201A		C2800
-C3	10020222900201A		C2800
-C3	10020222900201A		C2800
-C3	10020222900201A		C2800
-B	10020222902501A		C2800
 C1	10020222902501A		C2800
-C1	10020222902501A		C2800
-C1	10020222902501A		C2800
-C3	10020222902501B		C2800
-C2	10020222902501B		C2800
-C2	10020222902501B		C2800
 C3	10020222902501B		C2800
 C5	10020108901001A		C2700
 C5	10020108901001B		C2700
@@ -505,7 +492,7 @@ def min_score_vector_from_criterias(score_criterias, curriculum_major):
 
 def min_score_vectors(admission_criteria, curriculum_major):
     if not admission_criteria:
-        return min_score_vector_from_criterias([], curriculum_major)
+        return [min_score_vector_from_criterias([], curriculum_major)]
 
     or_count = 0
     or_criterias = []
@@ -549,14 +536,17 @@ def min_score_vectors(admission_criteria, curriculum_major):
             
         if is_error:
             print('=============', curriculum_major.faculty, '==========', curriculum_major.cupt_code)
-                
+
         return output
 
     else:
+        value_vectors = min_score_vector_from_criterias(score_criterias, curriculum_major)
+    
         if is_error:
-            print('=============', curriculum_major.faculty, '==========', curriculum_major.cupt_code)
+            print('TOO MANY ORs =============', curriculum_major.faculty, '==========', curriculum_major.cupt_code)
                 
-        
+        return [value_vectors]
+
 
 def gen_rows(curriculum_major, slots, admission_criteria, admission_project):
     score_items_list = min_score_vectors(admission_criteria, curriculum_major)
@@ -569,7 +559,7 @@ def gen_rows(curriculum_major, slots, admission_criteria, admission_project):
 
         for k,v in DEFAULT_VALUES.items():
             items[k] = v
-    
+
         for k,v in score_items.items():
             items[k] = v
 
@@ -584,7 +574,7 @@ def gen_rows(curriculum_major, slots, admission_criteria, admission_project):
 
         items['description'] = f'{curriculum_major.faculty} {major_cupt_code}'
 
-        if admission_criteria.additional_condition != '':
+        if admission_criteria and admission_criteria.additional_condition != '':
             items['condition'] = admission_criteria.additional_condition
 
         if first_row:
@@ -613,7 +603,7 @@ def gen_rows(curriculum_major, slots, admission_criteria, admission_project):
         rows.append(items)
 
         first_row = False
-        
+
     return rows
 
 def row_key(row, short_project_id=False):
@@ -656,7 +646,7 @@ def combine_slots(project_rows):
         output_project_rows.append(new_row)
         
         reported.add(k)
-        
+
     return output_project_rows
 
 def update_project_id(old_project_id, counter):
@@ -776,6 +766,7 @@ def main():
     is_empty_criteria = False
     is_slots_combined = False
     is_admission_2 = False
+    is_no_add_limits = False
          
     while project_ids[0].startswith('--'):
         if project_ids[0] == '--empty':
@@ -784,11 +775,13 @@ def main():
             is_slots_combined = True
         elif project_ids[0] == '--ad2':
             is_admission_2 = True
+        elif project_ids[0] == '--r12':
+            is_no_add_limits = True
         else:
             print(f'Option unknown: {project_ids[0]}')
         del project_ids[0]
     
-    rows = []
+    all_rows = []
 
     for project_id in project_ids:
         admission_project = AdmissionProject.objects.get(pk=project_id)
@@ -823,24 +816,27 @@ def main():
                     project_rows.append(row)
                     row_criterias.append(row_criteria)
 
+                    if is_no_add_limits:
+                        row['receive_add_limit'] = 0
+
         if is_slots_combined:
             project_rows = combine_slots(project_rows)
         else:
             mark_join_ids(project_rows, int(project_id)*100)
             mark_multiline_majors(project_rows, row_criterias)
-        
-        rows += project_rows
 
+        all_rows += project_rows
+        
     for d in set(all_missing_descriptions):
         print(d.strip())
-        
-    rows = sort_rows(rows)
+
+    all_rows = sort_rows(all_rows)
     
     with open(csv_filename, 'w', newline='') as csv_file:
         writer = csv.DictWriter(csv_file, fieldnames=FIELDS)
 
         writer.writeheader()
-        for r in rows:
+        for r in all_rows:
             writer.writerow(r)
 
 
