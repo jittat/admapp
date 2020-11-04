@@ -250,11 +250,13 @@ SCORE_TYPE_TAGS = [
     { "score_type": "UNIT_MATH", "description": "เรียนรายวิชาในกลุ่มสาระการเรียนรู้คณิตศาสตร์ ต้องเรียนรายวิชาพิ้นฐานและรายวิชาเพิ่มเติม รวมกัน", "unit": "" },
     { "score_type": "UNIT_MATH", "description": "เรียนรายวิชาในกลุ่มสาระการเรียนรู้คณิตศาสตร์ ไม่น้อยกว่า", "unit": "" },
     { "score_type": "UNIT_MATH", "description": "หน่วยกิจกลุ่มสาระคณิตศาสตร์", "unit": "" },
+    { "score_type": "UNIT_MATH", "description": "หน่วยกิตกลุ่มสาระคณิตศาสตร์", "unit": "" },
 
     { "score_type": "UNIT_FOREIGN", "description": "กลุ่มสาระการเรียนรู้ภาษาต่างประเทศ", "unit": "" },
     { "score_type": "UNIT_FOREIGN", "description": "เรียนรายวิชาในกลุ่มสาระการเรียนรู้ภาษาต่างประเทศ (แผนการเรียนวิทยาศาสตร์-คณิตศาสตร์)", "unit": "" },
     { "score_type": "UNIT_FOREIGN", "description": "เรียนรายวิชาในกลุ่มสาระการเรียนรู้ภาษาต่างประเทศ (ภาษาอังกฤษ)", "unit": "" },
     { "score_type": "UNIT_FOREIGN", "description": "หน่วยกิจกลุ่มสาระภาษาต่างประเทศ", "unit": "" },
+    { "score_type": "UNIT_FOREIGN", "description": "หน่วยกิตกลุ่มสาระภาษาต่างประเทศ", "unit": "" },
 
     { "score_type": "UNIT_SCI", "description": "กลุ่มสาระการเรียนรู้วิทยาศาสตร์", "unit": "" },
     { "score_type": "UNIT_SCI", "description": "เรียนรายวิชาในกลุ่มสาระการเรียนรู้วิทยาศาสตร์ (แผนการเรียนวิทยาศาสตร์-คณิตศาสตร์)", "unit": "" },
@@ -287,6 +289,8 @@ SCORE_TYPE_TAGS = [
     # HACK ad1
     { "score_type": 'CW701', 'description': '7 (รูปแบบที่ 1): **** ยังไม่ได้เลือก PAT **** กลุ่ม 7 ครุศาสตร์ ศึกษาศาสตร์ พลศึกษา สุขศึกษา (รูปแบบที่ 1)' },
     { "score_type": 'CW701', 'description': '7 (รูปแบบที่ 1) กลุ่ม 7 ครุศาสตร์ ศึกษาศาสตร์ พลศึกษา สุขศึกษา (รูปแบบที่ 1)' },
+    { "score_type": 'CW140', 'description': '1.4: กลุ่ม 1 วิทยาศาสตร์สุขภาพ - สัตวแพทย์ศาสตร์' },
+    { "score_type": 'CW110', 'description': '1.1: กลุ่ม 1 วิทยาศาสตร์สุขภาพ - สัตวแพทย์ศาสตร์ สหเวชศาสตร์ สาธารณสุขศาสตร์ เทคนิคการแพทย์ พยาบาลศาสตร์ วิทยาศาสตร์การกีฬา' },
 
     { "score_type": 'MIN_GPA21', 'description': 'ผลการเรียนเฉลี่ยรวมของกลุ่มสาระการเรียนรู้ภาษาไทย'},
     { "score_type": 'MIN_GPA22', 'description': 'คะแนนเฉลี่ยกลุ่มสาระคณิตศาสตร์'},
@@ -344,6 +348,7 @@ COMPONENT_WEIGHT_OPTIONS = [
     ('CW92277','9.2.2','PAT7.7'),
 ]
 
+
 COMPONENT_WEIGHT_MAP = { c[0]:(c[1],c[2]) for c in COMPONENT_WEIGHT_OPTIONS }
 
 SCORE_TYPE_REVERSE_MAP = dict([
@@ -394,6 +399,63 @@ SCORE_TYPE_FIELD_MAP = {
     "MIN_GPA23": 'min_gpa23',
     "MIN_GPA28": 'min_gpa28',
 }
+
+ADD_LIMITS_CONFIG = """C3	10020222900201A		C2700
+C3	10020222902501A		C2700
+C10	10020222902501B		C2700
+C3	10020222900201A		C2800
+C3	10020222900201A		C2800
+C3	10020222900201A		C2800
+C3	10020222900201A		C2800
+C3	10020222900201A		C2800
+C3	10020222900201A		C2800
+C3	10020222900201A		C2800
+C3	10020222900201A		C2800
+B	10020222902501A		C2800
+C1	10020222902501A		C2800
+C1	10020222902501A		C2800
+C1	10020222902501A		C2800
+C3	10020222902501B		C2800
+C2	10020222902501B		C2800
+C2	10020222902501B		C2800
+C3	10020222902501B		C2800
+C5	10020108901001A		C2700
+C5	10020108901001B		C2700
+C5	10020108901001A		C2800
+C5	10020108901001A		C2800
+C5	10020108901001A		C2800
+C5	10020108901001A		C2800
+C5	10020108901001A		C2800
+C5	10020108901001A		C2800
+C5	10020108901001B		C2800
+C5	10020108901001B		C2800
+C5	10020108901001B		C2800
+C5	10020108901001B		C2800
+C5	10020108901001B		C2800
+C5	10020108901001B		C2800
+C5	10020101111801A		C2800
+C5	10020101500101A		C2800
+C5	10020101500201A		C2800
+C5	10020101500202A		C2800
+C5	10020101500203A		C2800
+C5	10020101500204A		C2800
+C5	10020101500205A		C2800
+C5	10020101500205E		C2800
+C5	10020101500301A		C2800
+C5	10020101111801A		C2700
+C5	10020101500101A		C2700
+C5	10020101500201A		C2700
+C5	10020101500202A		C2700
+C5	10020101500203A		C2700
+C5	10020101500204A		C2700
+C5	10020101500205A		C2700
+C5	10020101500205E		C2700
+C5	10020101500301A		C2700
+"""
+
+ADD_LIMITS = dict({
+    (i[3],i[1],i[2]): i[0] for i in [l.strip().split("\t") for l in ADD_LIMITS_CONFIG.split("\n")] if len(i) == 4
+})
 
 def reverse_score_type(score_criteria):
     if score_criteria.score_type != 'OTHER':
@@ -471,6 +533,7 @@ def min_score_vectors(admission_criteria, curriculum_major):
                 
         return [value_vectors]
     elif or_count == 1:
+        print('OR found:', or_criterias)
         output = []
         for or_criteria in or_criterias:
             this_score_criterias = [c for c in score_criterias] + [or_criteria]
@@ -695,6 +758,11 @@ def update_component_weight(row, admission_criteria, curriculum_major):
     if is_error or (not is_assigned):
         print("----------------", curriculum_major.cupt_code)
 
+def set_add_limits(row, admission_project):
+    k = (admission_project.cupt_code, row['program_id'], row['major_id'])
+    if k in ADD_LIMITS:
+        #print('update add limits', k, ADD_LIMITS[k])
+        row['receive_add_limit'] = ADD_LIMITS[k]
         
 def main():
     csv_filename = sys.argv[1]
@@ -743,6 +811,7 @@ def main():
                 rows = gen_rows(curriculum_major, mc.slots, row_criteria, admission_project)
 
                 for row in rows:
+                    set_add_limits(row, admission_project)
                     if is_admission_2:
                         update_component_weight(row, row_criteria, curriculum_major)
                 
