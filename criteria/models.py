@@ -1,6 +1,5 @@
 from django.db import models
 
-# Create your models here.
 from appl.models import AdmissionProject, AdmissionRound, ProjectApplication
 from appl.models import Major, Faculty
 

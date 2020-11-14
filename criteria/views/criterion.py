@@ -23,6 +23,8 @@ from backoffice.decorators import user_login_required
 from criteria.models import CurriculumMajor, AdmissionCriteria, ScoreCriteria, CurriculumMajorAdmissionCriteria, MajorCuptCode
 from criteria.models import COMPONENT_WEIGHT_TYPE_CHOICES
 
+ONLY_ALLOW_ADMIN_EDIT = True
+
 def is_number(string):
     try:
         float(string)
@@ -341,6 +343,9 @@ def create(request, project_id, round_id):
     majors = get_all_curriculum_majors(project, faculty)
 
     if request.method == 'POST':
+        if ONLY_ALLOW_ADMIN_EDIT and (not user.is_super_admin):
+            return HttpResponseForbidden()
+        
         upsert_admission_criteria(
             request.POST, project=project, faculty=faculty,
             user=user)
@@ -431,6 +436,9 @@ def edit(request, project_id, round_id, criteria_id):
         majors = [m for m in majors if m.faculty_id == faculty.id]
 
     if request.method == 'POST':
+        if ONLY_ALLOW_ADMIN_EDIT and (not user.is_super_admin):
+            return HttpResponseForbidden()
+        
         upsert_admission_criteria(
             request.POST, admission_criteria=admission_criteria,
             user=user)
