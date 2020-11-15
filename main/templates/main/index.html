@@ -10,45 +10,54 @@
     </h1>
 
     {% include "appl/include/deadline_announcement_hook.html" %}
-    
-    {% trans 'เข้าใช้ระบบรับสมัคร' %}
-    {% if LANGUAGE_CODE == 'th' %}
-      {% language 'en' %}
-      <div class="btn-group">
-        <a class="btn btn-xsm btn-primary" href="{% url 'main-index' %}">EN</a>
-        <a class="btn btn-xsm btn-outline-primary" href="{% url 'main-index' %}">Apply in English</a>
-      </div>
-      {% endlanguage %}
+
+    {% if login_enabled %}
+      {% trans 'เข้าใช้ระบบรับสมัคร' %}
+      {% if LANGUAGE_CODE == 'th' %}
+	{% language 'en' %}
+  	  <div class="btn-group">
+            <a class="btn btn-xsm btn-primary" href="{% url 'main-index' %}">EN</a>
+            <a class="btn btn-xsm btn-outline-primary" href="{% url 'main-index' %}">Apply in English</a>
+	  </div>
+        {% endlanguage %}
+      {% else %}
+	{% language 'th' %}
+	  <div class="btn-group">
+            <a class="btn btn-xsm btn-primary" href="{% url 'main-index' %}">TH</a>
+            <a class="btn btn-xsm btn-outline-primary" href="{% url 'main-index' %}">ใช้ระบบรับสมัครเป็นภาษาไทย</a>
+	  </div>
+        {% endlanguage %}
+      {% endif %}
+      <div class="mb10"></div>
+      {% if error_message %}
+	<div class="alert alert-danger">
+          {% if error_message == 'no-login' %}
+            {% trans 'กรุณา login เข้าใช้ระบบก่อนใช้งาน' %}
+          {% endif %}
+          {% if error_message == 'wrong-password' %}
+            {% trans 'ขออภัย ไม่สามารถเข้าใช้ระบบได้ เนื่องจากรหัสผ่านหรือรหัสประจำตัวประชาชนผิดพลาด' %}
+          {% endif %}
+          {% if error_message == 'invalide' %}
+            {% trans 'ขออภัย ไม่สามารถเข้าใช้ระบบได้ เนื่องจากฟอร์มผิดพลาด' %}
+          {% endif %}
+	</div>
+      {% endif %}
+      <form action="{% url 'regis:login' %}" method="post">
+	{% csrf_token %}
+	{{ login_form|crispy }}
+	<input class="btn btn-primary btn-lg" type="submit" value="{% trans 'เข้าใช้ระบบ' %}" />
+      </form>
+      {% if registration_enabled %}
+	{% trans 'หรือลงทะเบียนสำหรับผู้ใช้ใหม่' %}<br />
+	<a class="btn btn-success btn-lg" href="{% url 'regis:register' %}">{% trans 'ลงทะเบียน' %}</a><br />
+      {% endif %}
+      {% trans 'ถ้าลืมรหัสผ่าน' %} <a class="btn" href="{% url 'regis:forget' %}">{% trans 'สามารถขอรหัสผ่านใหม่ได้' %}</a>
     {% else %}
-      {% language 'th' %}
-      <div class="btn-group">
-        <a class="btn btn-xsm btn-primary" href="{% url 'main-index' %}">TH</a>
-        <a class="btn btn-xsm btn-outline-primary" href="{% url 'main-index' %}">ใช้ระบบรับสมัครเป็นภาษาไทย</a>
-      </div>
-      {% endlanguage %}
-    {% endif %}
-    <div class="mb10"></div>
-    {% if error_message %}
-      <div class="alert alert-danger">
-        {% if error_message == 'no-login' %}
-          {% trans 'กรุณา login เข้าใช้ระบบก่อนใช้งาน' %}
-        {% endif %}
-        {% if error_message == 'wrong-password' %}
-          {% trans 'ขออภัย ไม่สามารถเข้าใช้ระบบได้ เนื่องจากรหัสผ่านหรือรหัสประจำตัวประชาชนผิดพลาด' %}
-        {% endif %}
-        {% if error_message == 'invalide' %}
-          {% trans 'ขออภัย ไม่สามารถเข้าใช้ระบบได้ เนื่องจากฟอร์มผิดพลาด' %}
-        {% endif %}
+      <div class="alert alert-info">
+	ขออภัย ขณะนี้ระบบรับสมัครยังไม่เปิดให้ลงทะเบียน กรุณากลับมาตรวจสอบอีกครั้งประมาณต้นเดือน ธ.ค.<br>
+	สำหรับรายละเอียดเกี่ยวกับการรับสมัครสามารถติดตามได้ที่ <a href="https://admission.ku.ac.th">admission.ku.ac.th</a>
       </div>
     {% endif %}
-    <form action="{% url 'regis:login' %}" method="post">
-      {% csrf_token %}
-      {{ login_form|crispy }}
-      <input class="btn btn-primary btn-lg" type="submit" value="{% trans 'เข้าใช้ระบบ' %}" />
-    </form>
-    {% trans 'หรือลงทะเบียนสำหรับผู้ใช้ใหม่' %}<br />
-    <a class="btn btn-success btn-lg" href="{% url 'regis:register' %}">{% trans 'ลงทะเบียน' %}</a><br />
-    {% trans 'ถ้าลืมรหัสผ่าน' %} <a class="btn" href="{% url 'regis:forget' %}">{% trans 'สามารถขอรหัสผ่านใหม่ได้' %}</a>
   </div>
 </div>
 {% endblock %}

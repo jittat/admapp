@@ -1,8 +1,12 @@
 from django.shortcuts import render
 
 from regis.views import LoginForm
+from django.conf import settings
 
 def index(request):
+    login_enabled = settings.LOGIN_ENABLED
+    registration_enabled = settings.REGISTRATION_ENABLED
+    
     login_form = LoginForm()
 
     if 'error' in request.GET:
@@ -12,7 +16,9 @@ def index(request):
     
     return render(request,
                   'main/index.html',
-                  { 'login_form': login_form,
+                  { 'login_enabled': login_enabled,
+                    'registration_enabled': registration_enabled,
+                    'login_form': login_form,
                     'error_message': error_message })
 
 
