@@ -21,7 +21,7 @@
 {% endif %}
 
 <div class="row">
-  <div class="col-md-6">
+  <div class="{% if common_uploaded_documents %}col-md-6{% else %}col-md-12{% endif %}">
     <ul>
       {% if personal_profile %}
         <li>
@@ -36,7 +36,7 @@
       {% if educational_profile %}
         <li>
           {% trans 'โรงเรียน' %}: {{ educational_profile.school_title }}<br />
-          {% trans 'แผนการเรียน' %}: {{ educational_profile.get_education_plan_display }}, GPAX: {{ educational_profile.gpa|floatformat:"2" }}<br />
+          {% trans 'แผนการเรียน' %}: {{ educational_profile.get_education_plan_display }} (หน่วยกิตกลุ่มสาระ - วิทย์ {{ educational_profile.sci_credit }}, คณิต {{ educational_profile.math_credit }}, ภาษาต่างประเทศ {{ educational_profile.lang_credit }}), GPAX: {{ educational_profile.gpa|floatformat:"2" }}<br />
           <a class="btn btn-sm btn-secondary" href="{% url 'appl:education-profile' %}">{% trans 'แก้ไขข้อมูลการศึกษา' %}</a>
         </li>
       {% else %}

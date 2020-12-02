@@ -41,6 +41,17 @@ class EducationForm(ModelForm):
                 Div('gpa', css_class='col-md-6'),
             ),
             Row(
+                Div('sci_credit', css_class='col-md-4'),
+                Div('math_credit', css_class='col-md-4'),
+                Div('lang_credit', css_class='col-md-4'),
+            ),
+            Row(
+                Div(
+                    HTML('<small>กรอกหน่วยกิตกลุ่มสาระต่าง ๆ ให้กรอบหน่วยกิตรวม 6 ภาคการศึกษา</small>')
+                    ,css_class='col-md-12 form-text mb5'
+                ),
+            ),
+            Row(
                 Div(
                     HTML(format_lazy('<b>{0}</b>',_('ข้อมูลโรงเรียน'))),
                     css_class='col-md-12',

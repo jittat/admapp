@@ -460,6 +460,13 @@ class EducationalProfile(models.Model):
                                           verbose_name=_('ระดับการศึกษา'))
     education_plan = models.IntegerField(choices=EDUCATION_PLAN_CHOICES,
                                          verbose_name=_('แผนการศึกษา'))
+    sci_credit = models.IntegerField(default=0,
+                                     verbose_name=_('หน่วยกิตกลุ่มสาระวิทยาศาสตร์'))
+    math_credit = models.IntegerField(default=0,
+                                      verbose_name=_('หน่วยกิตกลุ่มสาระคณิตศาสตร์'))
+    lang_credit = models.IntegerField(default=0,
+                                      verbose_name=_('หน่วยกิตกลุ่มสาระภาษาต่างประเทศ'))
+    
     gpa = models.FloatField(default=0,
                             verbose_name='GPAX',
                             validators=[MinValueValidator(0.0), MaxValueValidator(5.0)],
@@ -1003,7 +1010,7 @@ class Eligibility(object):
         from supplements.models import AdvancedPlacementApplicant
         self.is_eligible = False
         self.is_hidden = False
-        self.notice_text = 'โครงการนี้ผู้สมัครต้องผ่านการเข้าร่วมโครงการเรียนล่วงหน้าของม.เกษตรศาสตร์ รุ่นที่ 14 ปีการศึกษา 2562'
+        self.notice_text = 'โครงการนี้ผู้สมัครต้องผ่านการเข้าร่วมโครงการเรียนล่วงหน้าของม.เกษตรศาสตร์ รุ่นที่ 15 ปีการศึกษา 2563'
 
         try:
             app = AdvancedPlacementApplicant.objects.get(national_id=self._applicant.national_id)
