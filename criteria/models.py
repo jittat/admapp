@@ -85,22 +85,33 @@ class ScoreCriteria(models.Model):
     class Meta:
         ordering = ['primary_order', 'secondary_order']
 
-    def __str__(self):
+    def __str__(self, relation_display=None):
+        if relation_display == None:
+            relation_display = self.get_relation_display()
+            
         if self.criteria_type == 'required':
             if self.value:
-                return f'{self.description} {self.get_relation_display()} ไม่ต่ำกว่า {self.value:.2f} {self.unit}'
+                return f'{self.description} {relation_display} ไม่ต่ำกว่า {self.value:.2f} {self.unit}'
             else:
-                return f'{self.description} {self.get_relation_display()}'
+                return f'{self.description} {relation_display}'
         elif self.criteria_type == 'scoring':
             if self.value:
                 if self.secondary_order == 0:
-                    return f'{self.description} {self.get_relation_display()} สัดส่วน {self.value:.2f}'
+                    return f'{self.description} {relation_display} สัดส่วน {self.value:.2f}'
                 else:
-                    return f'{self.description} {self.get_relation_display()} สัดส่วนย่อย {self.value:.2f}'
+                    return f'{self.description} {relation_display} สัดส่วนย่อย {self.value:.2f}'
             else:
-                return f'{self.description} {self.get_relation_display()}'
+                return f'{self.description} {relation_display}'
         else:
             return self.description
+
+    def display_with_short_relation(self):
+        if self.relation == 'AND':
+            relation_display = ''
+        else:
+            relation_display = self.get_relation_display()
+
+        return self.__str__(relation_display)
 
     def cache_children(self, score_criterias):
         self.cached_children = []
@@ -207,6 +218,18 @@ class MajorCuptCode(models.Model):
             return f'{self.title} {self.major_title} ({self.program_type})'
         else:
             return f'{self.title} ({self.program_type})'
+
+    def display_title(self):
+        type_code_map = {'A': '',
+                         'B': ' (ภาคพิเศษ)',
+                         'D': ' (หลักสูตรภาษาอังกฤษ)',
+                         'E': ' (นานาชาติ)',
+                         'G': ' (Double Degree - นานาชาติ)'}
+        
+        if self.major_title:
+            return f'{self.title} {self.major_title}{type_code_map[self.program_type_code]}'
+        else:
+            return f'{self.title}{type_code_map[self.program_type_code]}'
 
 class CurriculumMajor(models.Model):
     admission_project = models.ForeignKey(AdmissionProject,
