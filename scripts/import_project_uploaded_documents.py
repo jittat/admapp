@@ -26,6 +26,8 @@ def main():
         lines = [l for l in reader]
 
         for items in lines[1:]:
+            if items[0].strip() == '':
+                continue
             document_key = items[3]
 
             old_documents = ProjectUploadedDocument.objects.filter(document_key=document_key).all()
