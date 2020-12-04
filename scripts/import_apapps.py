@@ -26,7 +26,7 @@ def main():
                 pass
 
             app = AdvancedPlacementApplicant(national_id=nat_id,
-                                             student_id=items[0])
+                                             student_id=items[2])
             app.save()
             counter += 1
 
