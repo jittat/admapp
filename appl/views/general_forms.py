@@ -47,7 +47,7 @@ class EducationForm(ModelForm):
             ),
             Row(
                 Div(
-                    HTML('<small>กรอกหน่วยกิตกลุ่มสาระต่าง ๆ ให้กรอบหน่วยกิตรวม 6 ภาคการศึกษา</small>')
+                    HTML('<small>กรอกหน่วยกิตกลุ่มสาระต่าง ๆ ให้ระบุหน่วยกิตรวม 6 ภาคการศึกษา (ตลอดหลักสูตร ม.ปลาย)</small>')
                     ,css_class='col-md-12 form-text mb5'
                 ),
             ),
