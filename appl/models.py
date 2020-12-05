@@ -460,11 +460,11 @@ class EducationalProfile(models.Model):
                                           verbose_name=_('ระดับการศึกษา'))
     education_plan = models.IntegerField(choices=EDUCATION_PLAN_CHOICES,
                                          verbose_name=_('แผนการศึกษา'))
-    sci_credit = models.IntegerField(default=0,
-                                     verbose_name=_('หน่วยกิตกลุ่มสาระวิทยาศาสตร์'))
-    math_credit = models.IntegerField(default=0,
+    sci_credit = models.FloatField(default=0,
+                                   verbose_name=_('หน่วยกิตกลุ่มสาระวิทยาศาสตร์'))
+    math_credit = models.FloatField(default=0,
                                       verbose_name=_('หน่วยกิตกลุ่มสาระคณิตศาสตร์'))
-    lang_credit = models.IntegerField(default=0,
+    lang_credit = models.FloatField(default=0,
                                       verbose_name=_('หน่วยกิตกลุ่มสาระภาษาต่างประเทศ'))
     
     gpa = models.FloatField(default=0,
