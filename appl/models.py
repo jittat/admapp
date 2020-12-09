@@ -130,6 +130,7 @@ class AdmissionProject(models.Model):
                                                verbose_name='แสดงรายละเอียดสาขา')
 
     is_available = models.BooleanField(default=False)
+    is_visible_in_backoffice = models.BooleanField(default=False)
 
     max_num_selections = models.IntegerField(default=1,
                                              verbose_name='จำนวนสาขาที่เลือกได้')

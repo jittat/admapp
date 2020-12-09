@@ -12,6 +12,12 @@ def make_available(modeladmin, request, queryset):
         project.save()
 make_available.short_description = 'Mark selected project as available'
         
+def make_visible(modeladmin, request, queryset):
+    for project in queryset:
+        project.is_visible_in_backoffice = True
+        project.save()
+make_visible.short_description = 'Mark selected project as visible in backoffice'
+        
 def make_project_round_started(modeladmin, request, queryset):
     for project in queryset:
         project.is_started = True
@@ -30,9 +36,10 @@ class AdmissionProjectAdmin(admin.ModelAdmin):
                     'get_admission_rounds_display',
                     'max_num_selections',
                     'base_fee',
-                    'is_available']
+                    'is_available',
+                    'is_visible_in_backoffice']
     ordering = ['id']
-    actions = [make_available]
+    actions = [make_available, make_visible]
     inlines = (ProjectUploadedDocumentInline,)
 
 class ProjectUploadedDocumentAdmin(admin.ModelAdmin):

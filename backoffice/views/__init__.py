@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.http import HttpResponseForbidden
+from django.db.models import Q
 
 from django import forms
 from crispy_forms.helper import FormHelper
@@ -73,7 +74,7 @@ def index(request):
     if user.is_super_admin:
         is_admission_admin = True
         is_application_admin = True
-        admission_projects = AdmissionProject.objects.filter(is_available=True).all()
+        admission_projects = AdmissionProject.objects.filter(Q(is_available=True) | Q(is_visible_in_backoffice=True)).all()
         stats['applicant_count'] = Applicant.objects.count()
         stats['project_application_count'] = ProjectApplication.objects.filter(is_canceled=False).count()
 

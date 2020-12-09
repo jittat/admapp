@@ -44,22 +44,27 @@
                 <td>{{ project }}</td>
                 <td>{{ round }}</td>
                 <td>{{ stats.num_applicants }}</td>
+                <td>
+		  {% if project.is_available %}
+                    <a class="btn btn-sm btn-success" href="{% url 'backoffice:projects-index' project.id round.id %}">พิจารณาผู้สมัคร</a>
+		  {% endif %}
+                </td>
 		<td>
 		  <a class="btn btn-sm btn-primary" href="{% url 'backoffice:criteria:project-index' project.id round.id %}">เปิดสาขาที่รับและป้อนเกณฑ์</a>
 		</td>
-                <td class="d-none">
-                  <a class="btn btn-sm btn-success" href="{% url 'backoffice:projects-index' project.id round.id %}">พิจารณา</a>
-                </td>
                 {% if is_admission_admin %}
 		  <td>
-		    <a class="btn btn-sm btn-info" href="{% url 'backoffice:criteria:project-report' project.id round.id %}">พิจารณาเกณฑ์ทั้งหมด</a>
+		    <div class="dropdown">
+		      <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" id="adminButton-{{ project.id }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+			ผู้ดูแล
+		      </button>
+		      <div class="dropdown-menu" aria-labelledby="adminButton-{{ project.id }}">
+			<a class="dropdown-item" href="{% url 'backoffice:criteria:project-report' project.id round.id %}">พิจารณาเกณฑ์ทั้งหมด</a>
+			<a class="dropdown-item" href="{% url 'backoffice:projects-list-majors' project.id round.id %}">ข้อมูลสาขาที่รับ</a>
+			<a class="dropdown-item" href="{% url 'backoffice:projects-list-majors-interview-descriptions' project.id round.id %}">ข้อมูลการสัมภาษณ์</a>
+		      </div>
+		    </div>
 		  </td>
-                  <td>
-                    <a class="btn btn-sm btn-secondary" href="{% url 'backoffice:projects-list-majors' project.id round.id %}">ข้อมูลสาขาที่รับ</a>
-                  </td>
-                  <td>
-                    <a class="btn btn-sm btn-outline-secondary" href="{% url 'backoffice:projects-list-majors-interview-descriptions' project.id round.id %}">ข้อมูลการสัมภาษณ์</a>
-                  </td>
                 {% endif %}
               </tr>
             {% endfor %}
