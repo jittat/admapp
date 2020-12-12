@@ -174,6 +174,7 @@ PROJECT_TYPES = {
     'B2500': '2_2564',
     'B2600': '2_2564',
     'B0300': '2_2564',
+    'B3200': '2_2564',
     'C2700': '31_2564',
     'C2800': '32_2564',
 }
@@ -669,16 +670,17 @@ def mark_multiline_majors(project_rows, row_criterias):
             else:
                 project_id_counter[k] += 1
                 r['project_id'] = update_project_id(r['project_id'], project_id_counter[k])
-            
-            if c.additional_description != '':
-                r['description'] += f' {c.additional_description}'
-            else:
-                r['description'] += f' (#{c.id})'
 
-            if c.additional_condition != '':
-                r['condition'] += f'{c.additional_condition}'
-            else:
-                r['condition'] += f'(#{c.id})'
+            if c!=None:
+                if c.additional_description != '':
+                    r['description'] += f' {c.additional_description}'
+                else:
+                    r['description'] += f' (#{c.id})'
+
+                if c.additional_condition != '':
+                    r['condition'] += f'{c.additional_condition}'
+                else:
+                    r['condition'] += f'(#{c.id})'
 
 def mark_join_ids(project_rows, join_id_base):
     key_slots = {}
