@@ -22,7 +22,10 @@
       {% else %}
         {% for app_doc in doc.applicant_uploaded_documents %}
           {% if not doc.is_url_document %}
-            <a class="app-document-links" href="{% url 'backoffice:projects-download-app-document' project.id admission_round.id major.number applicant.national_id doc.id app_doc.id %}" data-is-pdf="{{ app_doc.is_pdf }}"><i class="fa fa-angle-right"></i> {{ doc.title }}</a>
+            <a class="app-document-links" href="{% url 'backoffice:projects-download-app-document' project.id admission_round.id major.number applicant.national_id doc.id app_doc.id %}" data-is-pdf="{{ app_doc.is_pdf }}">
+	      <i class="fa fa-angle-right"></i>
+	      {{ doc.title }}
+	    </a>
             <span class="badge badge-secondary">{{ doc.applicant_uploaded_documents|length }}</span>
           {% else %}
             <a target="_blank" href="{{ app_doc.document_url }}">
@@ -36,6 +39,7 @@
 {% endfor %}
 <script>
   $(function(){
+    $(".selected-markers").hide();
     $(".app-document-links").click(function(){
       var href = $(this).attr('href');
       var isPdf = ($(this).data('isPdf') == 'True');
@@ -46,6 +50,8 @@
       }
       $('#document_panel_id').html(imgstr);
       $('#download_link_id').attr('href', href).show();
+      $(".app-document-links").removeClass("font-weight-bold");
+      $(this).addClass("font-weight-bold");
       return false;
     });
   });
