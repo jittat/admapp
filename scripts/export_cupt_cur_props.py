@@ -297,9 +297,11 @@ SCORE_TYPE_TAGS = [
     { "score_type": 'MIN_GPA22', 'description': 'คะแนนเฉลี่ยกลุ่มสาระคณิตศาสตร์'},
     { "score_type": 'MIN_GPA22', 'description': 'มีคะแนนเฉลี่ยกลุ่มสาระคณิตศาสตร์'},
     { "score_type": 'MIN_GPA22', 'description': 'ผลการเรียนกลุ่มสาระการเรียนรู้คณิตศาสตร์'},
+    { "score_type": 'MIN_GPA22', 'description': 'คะแนนเฉลี่ยต่ำสุดของกลุ่มสาระการเรียนรู้คณิตศาสตร์'},
     { "score_type": 'MIN_GPA23', 'description': 'คะแนนเฉลี่ยกลุ่มสาระวิทยาศาสตร์'},
     { "score_type": 'MIN_GPA23', 'description': 'มีคะแนนเฉลี่ยกลุ่มสาระวิทยาศาสตร์'},
     { "score_type": 'MIN_GPA23', 'description': 'ผลการเรียนกลุ่มสาระการเรียนรู้วิทยาศาสตร์'},
+    { "score_type": 'MIN_GPA23', 'description': 'คะแนนเฉลี่ยต่ำสุดในกลุ่มสาระการเรียนรู้วิทยาศาสตร์'},
     { "score_type": 'MIN_GPA28', 'description': 'มีคะแนนเฉลี่ยกลุ่มสาระภาษาต่างประเทศ'},
     { "score_type": 'MIN_GPA28', 'description': 'ผลการเรียนเฉลี่ยรวมของกลุ่มสาระการเรียนรู้ภาษาต่างประเทศ'},
 ]
