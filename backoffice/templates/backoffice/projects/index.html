@@ -116,7 +116,7 @@
             {% if applicant_info_viewable %}
               <td>
                 {% if user_major_number == any_major or user_major_number == major.number %}
-                  <a class="d-none btn btn-sm btn-outline-secondary" href="{% url 'backoffice:projects-list-applicants-for-acceptance-calls' project.id admission_round.id major.number %}">กรอกผลสัมภาษณ์</a>
+                  <a class="btn btn-sm btn-outline-secondary" href="{% url 'backoffice:projects-list-applicants-for-acceptance-calls' project.id admission_round.id major.number %}">กรอกผลสัมภาษณ์</a>
                 {% endif %}
               </td>
               <td>
@@ -147,8 +147,8 @@
                   <div class="dropdown">
                     <a class="btn btn-sm btn-outline-secondary dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">ดาวน์โหลด</a>
                     <div class="dropdown-menu">
-                      <a class="d-none dropdown-item" href="{% url 'backoffice:projects-download-app-interview-sheet' project.id admission_round.id major.number %}">ฟอร์มสัมภาษณ์</a>
-                      <a class="d-none dropdown-item" href="{% url 'backoffice:projects-download-app-sheet-only-interview' project.id admission_round.id major.number %}">ข้อมูลผู้มีสิทธิ์สอบสัมภาษณ์</a>
+                      <a class="dropdown-item" href="{% url 'backoffice:projects-download-app-interview-sheet' project.id admission_round.id major.number %}">ฟอร์มสัมภาษณ์</a>
+                      <a class="dropdown-item" href="{% url 'backoffice:projects-download-app-sheet-only-interview' project.id admission_round.id major.number %}">ข้อมูลผู้มีสิทธิ์สอบสัมภาษณ์</a>
                       <a class="dropdown-item" href="{% url 'backoffice:projects-download-app-sheet' project.id admission_round.id major.number %}">ข้อมูลทั่วไป</a>
                       <a class="d-none dropdown-item" href="{% url 'backoffice:projects-download-app-interview-score-sheet' project.id admission_round.id major.number %}">ดาวน์โหลดรายงานคะแนน</a>
                     </div>
