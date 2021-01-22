@@ -4,7 +4,7 @@
   {% with project_uploaded_document as doc %}
     <div class="card {% if doc.is_interview_document %}interview-document-card{% endif %}"
          id="upload-card-{{ doc.id }}"
-         {% if doc.is_interview_document %}style="display: none;"{% endif %}>
+         {% if doc.is_interview_document %}style="-x-display: none;"{% endif %}>
 
       <div class="card-header p10" role="tab" id="accordian-upload-header-{{ doc.id }}">
         {% if doc.is_required and doc.applicant_uploaded_documents|length > 0 %}<i class="fa fa-check text-success"></i>{% endif %}
