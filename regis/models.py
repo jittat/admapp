@@ -26,6 +26,9 @@ class Applicant(models.Model):
                                                  related_name='confirmed_applicant',
                                                  null=True,
                                                  on_delete=models.SET_NULL)
+
+    additional_data = models.CharField(max_length=50,
+                                       blank=True)
     
     class Meta:
         unique_together = ('national_id', 'passport_number')
@@ -184,6 +187,16 @@ class Applicant(models.Model):
             self.exam_score_provider = ExamScoreProvider(self)
         
         return self.exam_score_provider
+
+    def get_additional_data(self):
+        if self.additional_data == '':
+            return None
+        else:
+            import json
+            try:
+                return json.dumps(self.additional_data)
+            except:
+                return {}
 
     
 class CuptConfirmation(models.Model):
