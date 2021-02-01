@@ -684,6 +684,14 @@ class ProjectApplication(models.Model):
 
             fee += one_time_fee + acc_fee
 
+        if majors:
+            applicant = self.applicant
+            applicant_additional_data = applicant.get_additional_data()
+            if applicant_additional_data:
+                if 'p' in applicant_additional_data:
+                    if ((self.admission_project_id == applicant_additional_data['p']) and
+                        (majors[0].number in applicant_additional_data['m'])):
+                        return 0
         return fee
 
     def get_major_selection(self):

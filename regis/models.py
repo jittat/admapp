@@ -194,7 +194,7 @@ class Applicant(models.Model):
         else:
             import json
             try:
-                return json.dumps(self.additional_data)
+                return json.loads(self.additional_data)
             except:
                 return {}
 
