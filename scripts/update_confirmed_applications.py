@@ -43,7 +43,7 @@ def main():
         applicant.confirmed_application = application
 
         if not is_fake:
-            admission_result.save()
+            applicant.save()
 
         counter += 1
         print(counter, admission_result.has_confirmed, applicant)
