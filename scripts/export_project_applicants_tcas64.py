@@ -99,6 +99,15 @@ def get_admission_result(application,
     else:
         return results[0]
 
+MAJOR_MAP = {
+    1:{
+        100: [
+            '10020118620101A,A',
+            '10020118620101A,B',
+        ],
+    },
+}
+    
 def main():
     project_id = sys.argv[1]
     round_id = sys.argv[2]
@@ -109,9 +118,11 @@ def main():
     else:
         tcas_data = {}
 
-    major_map_files = [f for f in sys.argv[4:] if not f.startswith('--')]
-    major_map = load_major_map(major_map_files)
+    #major_map_files = [f for f in sys.argv[4:] if not f.startswith('--')]
+    #major_map = load_major_map(major_map_files)
 
+    major_map = MAJOR_MAP
+    
     only_accepted = False
     if '--accepted' in sys.argv:
         only_accepted = True
@@ -187,11 +198,21 @@ def main():
                     if (not result) or (not result.is_accepted):
                         continue
 
+                    
+                    
                 cupt_majors = [{
                     'program_id': m.get_detail_items()[-2],
                     'major_id': m.get_detail_items()[-1],
                     'project_id': project.cupt_code,
                 }]
+                if (project.id in major_map) and (m.number in major_map[project.id]):
+                    cupt_majors = []
+                    for mj in major_map[project.id][m.number]:
+                        cupt_majors.append({
+                            'program_id': mj.split(',')[0],
+                            'major_id': mj.split(',')[1],
+                            'project_id': project.cupt_code,
+                        })
 
                 interview_status = '0'
                 if with_interview_status:
