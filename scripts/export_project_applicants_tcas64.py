@@ -68,12 +68,15 @@ def print_csv_line(applicant, application, personal_profile, app_date, cupt_majo
         'last_name_th': applicant.last_name,
         'first_name_en': personal_profile.first_name_english,
         'last_name_en': personal_profile.last_name_english,
+        'priority': 0,
         'application_id': application.get_number(),
         'application_date': app_date,
         'tcas_id': tcas_id,
         'ranking': ranking,
+        'score': 0,
         'interview_status': interview_status,
         'interview_description': interview_description,
+        'status': 0,
     }
 
     if not applicant.has_registered_with_passport():
@@ -105,6 +108,9 @@ MAJOR_MAP = {
             '10020118620101A,A',
             '10020118620101A,B',
         ],
+    },
+    2:{
+        40: ['10020107611106A,'],
     },
 }
     
