@@ -158,12 +158,15 @@ def main():
               'last_name_th',
               'first_name_en',
               'last_name_en',
+              'priority',
               'application_id',
               'application_date',
               'tcas_id',
               'ranking',
+              'score',
               'interview_status',
-              'interview_description']
+              'interview_description',
+              'status',]
 
     print(','.join(header))
     
