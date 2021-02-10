@@ -590,7 +590,7 @@ def show_applicant(request, project_id, round_id, major_number, rank):
     if real_rank < 0:
         return redirect(reverse('backoffice:projects-show-applicant',args=[project_id, round_id, major_number, 1]))
 
-    shows_for_interview = project_round.accepted_for_interview_result_frozen,
+    shows_for_interview = project_round.accepted_for_interview_result_frozen
 
     applicant, major_stat = load_major_applicant_with_major_stats(project,
                                                                   admission_round,
