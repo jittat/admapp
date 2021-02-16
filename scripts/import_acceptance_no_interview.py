@@ -32,18 +32,23 @@ def main():
         for items in reader:
             nat_id = items[0].strip()
 
-            if not re.match(r'\d+',nat_id) and nat_id != '':
-                continue
+            if not re.match(r'\d+',nat_id):
+                nat_id = ''
 
             if nat_id == '':
-                name = ' '.join(items[1].split())
+                name = ' '.join(items[0].split())
+                if name.startswith('นาย'):
+                    name = name[3:]
+                elif name.startswith('น.ส.'):
+                    name = name[4:]
                 for nat in all_applications.keys():
                     app = all_applications[nat].applicant
-                    if app.first_name + ' ' + app.last_name == name:
+                    app.first_name = app.first_name.replace('\u200b','')
+                    if ' '.join(f'{app.first_name} {app.last_name}'.split()) == name:
                         nat_id = nat
             
             if nat_id not in all_applications:
-                print('ERROR', nat_id, name)
+                print('ERROR nat not found', nat_id, name)
                 continue
 
             major_num = int(items[1])
@@ -66,7 +71,7 @@ def main():
                     print('ERROR', nat_id,'major not found',major_num)
                     continue
             elif major_num == -1:
-                fac_title = 'คณะ' + items[2].strip()
+                fac_title = items[2].strip()
                 major_title = items[3].strip()
                 accepted_major = None
                 for m in majors:
@@ -81,7 +86,8 @@ def main():
                     if m.number == major_num:
                         accepted_major = m
                 if not accepted_major:
-                    print('ERROR', nat_id,'major not found',major_num)
+                    print('ERROR', name, nat_id,'major not found',major_num)
+                    print([(m.faculty, m.title) for m in majors])
                     continue
 
             results = AdmissionResult.objects.filter(applicant=application.applicant,
