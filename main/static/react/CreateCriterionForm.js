@@ -16,6 +16,11 @@ var majors = JSON.parse(document.currentScript.getAttribute('data-majors'));
 var dataRequired = JSON.parse(document.currentScript.getAttribute('data-required'));
 var dataScoring = JSON.parse(document.currentScript.getAttribute('data-scoring'));
 var dataSelectedMajors = JSON.parse(document.currentScript.getAttribute('data-selected-majors'));
+var mode = document.currentScript.getAttribute('data-mode');
+var MODE = {
+  CREATE: 'create',
+  EDIT: 'edit'
+};
 var Form = function Form() {
   return React.createElement(
     'div',
@@ -399,8 +404,9 @@ var PrimaryTopic = function PrimaryTopic(_ref3) {
         number
       ),
       React.createElement(EditableCell, {
-        name: 'required_' + number + '_title',
-        initialValue: topic.title,
+        name: 'required_' + number + '_title'
+        // editable={mode === MODE.CREATE}
+        , initialValue: topic.title,
         focusOnMount: true,
         suffix: React.createElement(
           'div',
@@ -416,12 +422,14 @@ var PrimaryTopic = function PrimaryTopic(_ref3) {
         tags: requiredTags
       }),
       React.createElement(EditableCell, {
-        name: 'required_' + number + '_value',
-        initialValue: topic.value
+        name: 'required_' + number + '_value'
+        // editable={mode === MODE.CREATE}
+        , initialValue: topic.value
       }),
       React.createElement(EditableCell, {
-        name: 'required_' + number + '_unit',
-        initialValue: topic.unit || '',
+        name: 'required_' + number + '_unit'
+        // editable={mode === MODE.CREATE}
+        , initialValue: topic.unit || '',
         tags: unitTags
       }),
       React.createElement(
@@ -443,8 +451,9 @@ var PrimaryTopic = function PrimaryTopic(_ref3) {
         { key: topic.id },
         React.createElement('td', null),
         React.createElement(EditableCell, {
-          name: 'required_' + snumber + '_title',
-          initialValue: topic.title,
+          name: 'required_' + snumber + '_title'
+          // editable={mode === MODE.CREATE}
+          , initialValue: topic.title,
           focusOnMount: true,
           prefix: React.createElement(
             'span',
@@ -456,12 +465,14 @@ var PrimaryTopic = function PrimaryTopic(_ref3) {
           tags: requiredTags
         }),
         React.createElement(EditableCell, {
-          name: 'required_' + snumber + '_value',
-          initialValue: topic.value
+          name: 'required_' + snumber + '_value'
+          // editable={mode === MODE.CREATE}
+          , initialValue: topic.value
         }),
         React.createElement(EditableCell, {
-          name: 'required_' + snumber + '_unit',
-          initialValue: topic.unit,
+          name: 'required_' + snumber + '_unit'
+          // editable={mode === MODE.CREATE}
+          , initialValue: topic.unit,
           tags: unitTags
         }),
         React.createElement(
@@ -525,8 +536,9 @@ var PrimaryScoringTopic = function PrimaryScoringTopic(_ref4) {
         number
       ),
       React.createElement(EditableCell, {
-        name: 'scoring_' + number + '_title',
-        initialValue: topic.title,
+        name: 'scoring_' + number + '_title'
+        // editable={mode === MODE.CREATE}
+        , initialValue: topic.title,
         focusOnMount: true,
         suffix: React.createElement(
           'div',
@@ -542,8 +554,9 @@ var PrimaryScoringTopic = function PrimaryScoringTopic(_ref4) {
         tags: scoringTags
       }),
       React.createElement(EditableCell, {
-        name: 'scoring_' + number + '_value',
-        initialValue: topic.value,
+        name: 'scoring_' + number + '_value'
+        // editable={mode === MODE.CREATE}
+        , initialValue: topic.value,
         onSave: function onSave(v) {
           updateTopic(topic.id, { value: parseInt(v) });
         },
@@ -579,8 +592,9 @@ var PrimaryScoringTopic = function PrimaryScoringTopic(_ref4) {
         { key: topic.id },
         React.createElement('td', null),
         React.createElement(EditableCell, {
-          name: 'scoring_' + snumber + '_title',
-          initialValue: topic.title,
+          name: 'scoring_' + snumber + '_title'
+          // editable={mode === MODE.CREATE}
+          , initialValue: topic.title,
           focusOnMount: true,
           prefix: React.createElement(
             'span',
@@ -594,8 +608,9 @@ var PrimaryScoringTopic = function PrimaryScoringTopic(_ref4) {
           tags: scoringTags
         }),
         React.createElement(EditableCell, {
-          name: 'scoring_' + snumber + '_value',
-          initialValue: topic.value,
+          name: 'scoring_' + snumber + '_value'
+          // editable={mode === MODE.CREATE}
+          , initialValue: topic.value,
           onSave: function onSave(v) {
             updateSecondaryTopic(topic.id, { value: parseInt(v) });
           },
@@ -671,7 +686,7 @@ var EditableCell = function EditableCell(_ref5) {
           $(inputRef.current).autocomplete("search");
         }
       });
-    }
+    } else {}
   }, [editable]);
 
   useEffect(function () {
@@ -693,7 +708,9 @@ var EditableCell = function EditableCell(_ref5) {
     inputRef.current.style.height = inputRef.current.scrollHeight + 'px';
   };
   useEffect(function () {
-    calHeight();
+    if (editable) {
+      calHeight();
+    }
   }, []);
   var childNode = initialValue;
   if (editable) {
@@ -707,7 +724,7 @@ var EditableCell = function EditableCell(_ref5) {
   }
   return React.createElement(
     'td',
-    Object.assign({ style: { cursor: 'pointer' } }, restProps),
+    Object.assign({ style: editable ? { cursor: 'pointer' } : {} }, restProps),
     ' ',
     childNode
   );

@@ -6,6 +6,11 @@ let majors = JSON.parse(document.currentScript.getAttribute('data-majors'))
 let dataRequired = JSON.parse(document.currentScript.getAttribute('data-required'))
 let dataScoring = JSON.parse(document.currentScript.getAttribute('data-scoring'))
 let dataSelectedMajors = JSON.parse(document.currentScript.getAttribute('data-selected-majors'))
+let mode = document.currentScript.getAttribute('data-mode')
+const MODE = {
+  CREATE: 'create',
+  EDIT: 'edit'
+}
 const Form = () => {
   return (
     <div>
@@ -179,8 +184,8 @@ const ScoringCriteria = ({ initialTopics = [] }) => {
       )}
       {(useComponentWeightType) && (
         <small className="form-text text-muted">
-          สำหรับเกณฑ์รอบ Admission 2 ให้เลือกแค่องค์ประกอบเดียว 
-          (ตอนนี้ในระบบอาจเลือกได้หลายเกณฑ์ แต่รบกวนเลือกแค่อันเดียวก่อน) 
+          สำหรับเกณฑ์รอบ Admission 2 ให้เลือกแค่องค์ประกอบเดียว
+          (ตอนนี้ในระบบอาจเลือกได้หลายเกณฑ์ แต่รบกวนเลือกแค่อันเดียวก่อน)
           ถ้ามีการรับหลายรูปแบบให้สร้างเงื่อนไขการรับเพิ่มเติม &nbsp;
           ถ้าต้องการแก้เกณฑ์ที่เลือกแล้วโดยการเลือกใหม่ ให้ลบข้อความทิ้งจะมีตัวเลือกขึ้นมาแสดงเหมือนเดิม
         </small>
@@ -244,6 +249,7 @@ const PrimaryTopic = ({ topic, removeTopic, number, updateTopic, secondaryTopics
         </td>
         <EditableCell
           name={`required_${number}_title`}
+          // editable={mode === MODE.CREATE}
           initialValue={topic.title}
           focusOnMount={true}
           suffix={
@@ -257,10 +263,12 @@ const PrimaryTopic = ({ topic, removeTopic, number, updateTopic, secondaryTopics
         />
         <EditableCell
           name={`required_${number}_value`}
+          // editable={mode === MODE.CREATE}
           initialValue={topic.value}
         />
         <EditableCell
           name={`required_${number}_unit`}
+          // editable={mode === MODE.CREATE}
           initialValue={topic.unit || ''}
           tags={unitTags}
         />
@@ -275,6 +283,7 @@ const PrimaryTopic = ({ topic, removeTopic, number, updateTopic, secondaryTopics
             <td></td>
             <EditableCell
               name={`required_${snumber}_title`}
+              // editable={mode === MODE.CREATE}
               initialValue={topic.title}
               focusOnMount={true}
               prefix={<span>{snumber}&nbsp;&nbsp;</span>}
@@ -283,10 +292,12 @@ const PrimaryTopic = ({ topic, removeTopic, number, updateTopic, secondaryTopics
             />
             <EditableCell
               name={`required_${snumber}_value`}
+              // editable={mode === MODE.CREATE}
               initialValue={topic.value}
             />
             <EditableCell
               name={`required_${snumber}_unit`}
+              // editable={mode === MODE.CREATE}
               initialValue={topic.unit}
               tags={unitTags}
             />
@@ -327,6 +338,7 @@ const PrimaryScoringTopic = ({ topic, removeTopic, number, updateTopic, maxScore
         </td>
         <EditableCell
           name={`scoring_${number}_title`}
+          // editable={mode === MODE.CREATE}
           initialValue={topic.title}
           focusOnMount={true}
           suffix={
@@ -340,6 +352,7 @@ const PrimaryScoringTopic = ({ topic, removeTopic, number, updateTopic, maxScore
         />
         <EditableCell
           name={`scoring_${number}_value`}
+          // editable={mode === MODE.CREATE}
           initialValue={topic.value}
           onSave={(v) => { updateTopic(topic.id, { value: parseInt(v) }) }}
           inputType="number"
@@ -357,6 +370,7 @@ const PrimaryScoringTopic = ({ topic, removeTopic, number, updateTopic, maxScore
             <td></td>
             <EditableCell
               name={`scoring_${snumber}_title`}
+              // editable={mode === MODE.CREATE}
               initialValue={topic.title}
               focusOnMount={true}
               prefix={<span>{number}.{idx + 1}&nbsp;&nbsp;</span>}
@@ -365,6 +379,7 @@ const PrimaryScoringTopic = ({ topic, removeTopic, number, updateTopic, maxScore
             />
             <EditableCell
               name={`scoring_${snumber}_value`}
+              // editable={mode === MODE.CREATE}
               initialValue={topic.value}
               onSave={(v) => { updateSecondaryTopic(topic.id, { value: parseInt(v) }) }}
               inputType="number"
@@ -422,6 +437,8 @@ const EditableCell = ({
           $(inputRef.current).autocomplete("search");
         }
       })
+    } else {
+
     }
   }, [editable])
 
@@ -443,7 +460,7 @@ const EditableCell = ({
     inputRef.current.style.height = ""
     inputRef.current.style.height = inputRef.current.scrollHeight + 'px'
   }
-  useEffect(() => { calHeight() }, [])
+  useEffect(() => { if (editable) { calHeight() } }, [])
   let childNode = initialValue
   if (editable) {
     childNode =
@@ -461,7 +478,7 @@ const EditableCell = ({
         </div>
       )
   }
-  return <td style={{ cursor: 'pointer' }} {...restProps}> {childNode}</td >;
+  return <td style={editable ? { cursor: 'pointer' } : {}} {...restProps}> {childNode}</td >;
 }
 const SelectRelation = ({ name, relations, className, initialValue }) => {
   return (<select name={name} id={name} className={className} defaultValue={initialValue || null}>
