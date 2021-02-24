@@ -49,7 +49,8 @@ def index(request):
         faculties = [user.profile.faculty]
         can_confirm = user.profile.major_number == 0
 
-    admission_rounds = AdmissionRound.objects.all()
+    admission_rounds = [r for r in AdmissionRound.objects.all()
+                        if r.subround_number != 2]
     
     for f in faculties:
         f.majors = load_faculty_major_statistics(f, admission_rounds)

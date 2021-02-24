@@ -63,8 +63,8 @@ def can_user_adjust_major(user, major):
         return False
 
     return (profile.faculty == major.faculty and
-            (profile.major_number == 0 or
-             profile.major_number == int(major.full_code)))
+            (profile.adjustment_major_number == '0' or
+             profile.adjustment_major_number == major.full_code))
 
 def can_user_confirm_major_adjustment(user, major):
     if is_super_admin(user):
@@ -76,4 +76,4 @@ def can_user_confirm_major_adjustment(user, major):
         return False
 
     return (profile.faculty == major.faculty and
-            (profile.major_number == 0))
+            (profile.adjustment_major_number == '0'))

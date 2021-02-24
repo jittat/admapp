@@ -24,9 +24,8 @@ def main():
             title = items[3]
             
             faculty_title = items[2]
-            if ' ' in faculty_title:
-                faculty_title = ' '.join(faculty_title.split()[1:])
 
+            print(faculty_title)
             faculty = Faculty.objects.get(title=faculty_title)
 
             old_adj_majors = AdjustmentMajor.objects.filter(full_code=full_code).all()
@@ -38,8 +37,8 @@ def main():
             adj_major.full_code = full_code
             adj_major.title = title
             adj_major.faculty = faculty
-            adj_major.major_code = full_code[:-1]
-            adj_major.study_type_code = full_code[-1]
+            adj_major.major_code = full_code
+            adj_major.study_type_code = items[4]
             adj_major.save()
 
             print(adj_major, faculty, adj_major.major_code, adj_major.study_type_code)

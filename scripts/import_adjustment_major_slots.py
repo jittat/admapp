@@ -20,7 +20,7 @@ def main():
                 continue
 
             full_major_project_code = items[0].strip()
-            major_full_code = full_major_project_code[-4:]
+            major_full_code = items[6].strip()
             project_title = items[1].strip()
             round_number = int(items[4])
 
@@ -43,7 +43,7 @@ def main():
 
             slot.adjustment_major = adj_major
             slot.faculty = adj_major.faculty
-            slot.admission_round = AdmissionRound.objects.get(number=round_number)
+            slot.admission_round = AdmissionRound.objects.get(pk=round_number)
             slot.admission_round_number = round_number
             slot.major_full_code = major_full_code
             slot.cupt_code = full_major_project_code

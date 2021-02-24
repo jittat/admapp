@@ -44,11 +44,8 @@ def main():
             profile.is_admission_admin = False
             profile.is_number_adjustment_admin = True
             
-            profile.major_number = int(items[4])
+            profile.adjustment_major_number = items[4].strip()
             faculty_title = items[5]
-            if ' ' in items[5]:
-                faculty_title = ' '.join(items[5].split()[1:])
-
             profile.faculty = Faculty.objects.get(title=faculty_title)
             
             profile.save()

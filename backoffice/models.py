@@ -41,6 +41,9 @@ class Profile(models.Model):
                                                      default=False)
     major_number = models.IntegerField(default=ANY_MAJOR,
                                        verbose_name='หมายเลขสาขา (กรณีที่ดูแลโครงการเดียว)')
+    adjustment_major_number = models.CharField(max_length=20,
+                                               blank=True)
+
 
     def __str__(self):
         if self.faculty:
@@ -247,10 +250,10 @@ class ApplicantMajorScore(models.Model):
         ]
     
 class AdjustmentMajor(models.Model):
-    full_code = models.CharField(max_length=10,
+    full_code = models.CharField(max_length=20,
                                  unique=True)
 
-    major_code = models.CharField(max_length=5)
+    major_code = models.CharField(max_length=20)
     study_type_code = models.CharField(max_length=3)
     
     title = models.CharField(max_length=200)
@@ -273,7 +276,7 @@ class AdjustmentMajorSlot(models.Model):
 
     admission_round_number = models.IntegerField()
 
-    major_full_code = models.CharField(max_length=10)
+    major_full_code = models.CharField(max_length=20)
     cupt_code = models.CharField(max_length=30,
                                  blank=True)
     
