@@ -47,7 +47,7 @@ def index(request):
         can_confirm = True
     else:
         faculties = [user.profile.faculty]
-        can_confirm = user.profile.major_number == 0
+        can_confirm = user.profile.adjustment_major_number == '0'
 
     admission_rounds = [r for r in AdmissionRound.objects.all()
                         if r.subround_number != 2]
