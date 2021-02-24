@@ -24,6 +24,8 @@ from criteria.models import CurriculumMajor, AdmissionCriteria, ScoreCriteria, C
 from criteria.models import COMPONENT_WEIGHT_TYPE_CHOICES
 
 ONLY_ALLOW_ADMIN_EDIT = True
+CRITERIA_DATA_EDITABLE = True
+
 
 def is_number(string):
     try:
@@ -31,6 +33,7 @@ def is_number(string):
         return True
     except ValueError:
         return False
+
 
 def get_all_curriculum_majors(project, faculty=None):
     if not faculty:
@@ -43,6 +46,7 @@ def get_all_curriculum_majors(project, faculty=None):
 
     return majors
 
+
 def get_user_faculty_choices(user):
     if (not user.profile.is_admission_admin) and (not user.profile.is_campus_admin):
         return []
@@ -51,6 +55,7 @@ def get_user_faculty_choices(user):
             return Faculty.objects.filter(campus_id=user.profile.campus_id)
         else:
             return Faculty.objects.all()
+
 
 def extract_user_faculty(request, user):
     faculty_choices = get_user_faculty_choices(user)
@@ -71,15 +76,19 @@ def extract_user_faculty(request, user):
 
     return faculty, faculty_choices
 
+
 def sort_admission_criteria_rows(admission_criteria_rows):
     lst = []
     for criteria in admission_criteria_rows:
         first_criteria = criteria['criterias'][0]
-        key = '-'.join([mc.curriculum_major.cupt_code.program_code + mc.curriculum_major.cupt_code.major_code for mc in criteria['majors']])
+        key = '-'.join([mc.curriculum_major.cupt_code.program_code +
+                        mc.curriculum_major.cupt_code.major_code for mc in criteria['majors']])
         total_slots = sum([mc.slots for mc in criteria['majors']])
-        lst.append((first_criteria.faculty_id, key, -total_slots, first_criteria.id, criteria))
+        lst.append((first_criteria.faculty_id, key, -
+                    total_slots, first_criteria.id, criteria))
 
     return [item[4] for item in sorted(lst)]
+
 
 def combine_criteria_rows(rows):
     major_slots = {}
@@ -95,7 +104,7 @@ def combine_criteria_rows(rows):
 
     combined_rows = []
     deleted_major_ids = set()
-            
+
     for major_id in major_slots:
         slots = major_slots[major_id]
         if len(slots) > 1:
@@ -108,7 +117,7 @@ def combine_criteria_rows(rows):
                     'criteria_count': len(slots),
                 })
 
-                for _,mc,_ in slots:
+                for _, mc, _ in slots:
                     deleted_major_ids.add(mc.id)
 
     output_rows = []
@@ -129,14 +138,18 @@ def combine_criteria_rows(rows):
             })
 
     return output_rows + combined_rows
-        
+
+
 def prepare_admission_criteria(admission_criterias, curriculum_majors, combine_majors=False):
     curriculum_majors_with_criterias = []
     for criteria in admission_criterias:
         criteria.cache_score_criteria_children()
-        criteria.curriculum_major_admission_criterias = criteria.curriculummajoradmissioncriteria_set.select_related('curriculum_major').all()
-        criteria.curriculum_major_admission_criteria_count = len(criteria.curriculum_major_admission_criterias)
-        criteria.curriculum_majors = [mj.curriculum_major for mj in criteria.curriculum_major_admission_criterias]
+        criteria.curriculum_major_admission_criterias = criteria.curriculummajoradmissioncriteria_set.select_related(
+            'curriculum_major').all()
+        criteria.curriculum_major_admission_criteria_count = len(
+            criteria.curriculum_major_admission_criterias)
+        criteria.curriculum_majors = [
+            mj.curriculum_major for mj in criteria.curriculum_major_admission_criterias]
         curriculum_majors_with_criterias += criteria.curriculum_majors
 
     curriculum_majors_with_criteria_ids = set([m.id for m
@@ -151,9 +164,11 @@ def prepare_admission_criteria(admission_criterias, curriculum_majors, combine_m
                                 'criteria_count': len([c])} for c in admission_criterias]
 
     if combine_majors:
-        admission_criteria_rows = combine_criteria_rows(admission_criteria_rows)
+        admission_criteria_rows = combine_criteria_rows(
+            admission_criteria_rows)
 
     return sort_admission_criteria_rows(admission_criteria_rows), free_curriculum_majors
+
 
 @user_login_required
 def project_index(request, project_id, round_id):
@@ -173,8 +188,9 @@ def project_index(request, project_id, round_id):
     notice = request.session.pop('notice', None)
 
     curriculum_majors = get_all_curriculum_majors(project, faculty)
-    admission_criteria_rows, free_curriculum_majors = prepare_admission_criteria(admission_criterias, curriculum_majors)
-    
+    admission_criteria_rows, free_curriculum_majors = prepare_admission_criteria(
+        admission_criterias, curriculum_majors)
+
     return render(request,
                   'criteria/index.html',
                   {'project': project,
@@ -199,15 +215,16 @@ def project_report(request, project_id, round_id):
         return redirect(reverse('backoffice:index'))
 
     faculties = Faculty.objects.all()
-    
+
     admission_criterias = (AdmissionCriteria
                            .objects
                            .filter(admission_project_id=project_id,
                                    is_deleted=False)
                            .order_by('faculty_id'))
-    
+
     curriculum_majors = get_all_curriculum_majors(project)
-    admission_criteria_rows, free_curriculum_majors = prepare_admission_criteria(admission_criterias, curriculum_majors, True)
+    admission_criteria_rows, free_curriculum_majors = prepare_admission_criteria(
+        admission_criterias, curriculum_majors, True)
 
     return render(request,
                   'criteria/report_index.html',
@@ -254,17 +271,19 @@ def upsert_admission_criteria(post_request, project=None, faculty=None, admissio
 
     if (len(selected_major_dict) == 0) and (len(score_criteria_dict) == 0):
         raise Http404("Error ")
-            
-    with transaction.atomic():
 
+    with transaction.atomic():
         if admission_criteria is None:
+            if not CRITERIA_DATA_EDITABLE:
+                raise Http404("Error ")
+
             version = 1
             admission_criteria = AdmissionCriteria(
                 admission_project=project,
                 version=version,
                 faculty=faculty)
             admission_criteria.save()
-        else:
+        elif CRITERIA_DATA_EDITABLE:
             old_admission_criteria = admission_criteria
             version = old_admission_criteria.version + 1
 
@@ -279,43 +298,44 @@ def upsert_admission_criteria(post_request, project=None, faculty=None, admissio
             old_admission_criteria.is_deleted = True
             old_admission_criteria.save()
 
-        scoring_criterias = [ScoreCriteria(
-            admission_criteria=admission_criteria,
-            version=version,
-            primary_order=s["primary_order"],
-            secondary_order=s["secondary_order"],
-            criteria_type=s["criteria_type"],
-            score_type="OTHER",
-            value=s["value"] if isinstance(s["value"], Decimal) else None,
-            unit=(s["unit"] if "unit" in s else ""),
-            description=s["title"] if "title" in s else None,
-            relation=s["relation"] if "relation" in s else None,
-        ) for _, s in score_criteria_dict.items()]
+        if CRITERIA_DATA_EDITABLE:
+            scoring_criterias = [ScoreCriteria(
+                admission_criteria=admission_criteria,
+                version=version,
+                primary_order=s["primary_order"],
+                secondary_order=s["secondary_order"],
+                criteria_type=s["criteria_type"],
+                score_type="OTHER",
+                value=s["value"] if isinstance(s["value"], Decimal) else None,
+                unit=(s["unit"] if "unit" in s else ""),
+                description=s["title"] if "title" in s else None,
+                relation=s["relation"] if "relation" in s else None,
+            ) for _, s in score_criteria_dict.items()]
 
-        primary_scoring_criterias = sorted(
-            [s for s in scoring_criterias if s.secondary_order == 0], key=lambda s: s.primary_order)
+            primary_scoring_criterias = sorted(
+                [s for s in scoring_criterias if s.secondary_order == 0], key=lambda s: s.primary_order)
 
-        secondary_scoring_criterias = [
-            s for s in scoring_criterias if s.secondary_order != 0]
-
-        ScoreCriteria.objects.bulk_create(
-            primary_scoring_criterias)
-
-        with transaction.atomic():
-            primary_scoring_criterias = ScoreCriteria.objects.filter(
-                admission_criteria=admission_criteria)
-            primary_scoring_criteria_map = dict()
-
-            for p in primary_scoring_criterias:
-                primary_scoring_criteria_map["%s_%s" % (
-                    p.criteria_type, p.primary_order)] = p
-
-            for s in secondary_scoring_criterias:
-                s.parent = primary_scoring_criteria_map["%s_%s" % (
-                    s.criteria_type, s.primary_order)]
+            secondary_scoring_criterias = [
+                s for s in scoring_criterias if s.secondary_order != 0]
 
             ScoreCriteria.objects.bulk_create(
-                secondary_scoring_criterias)
+                primary_scoring_criterias)
+
+            with transaction.atomic():
+                primary_scoring_criterias = ScoreCriteria.objects.filter(
+                    admission_criteria=admission_criteria)
+                primary_scoring_criteria_map = dict()
+
+                for p in primary_scoring_criterias:
+                    primary_scoring_criteria_map["%s_%s" % (
+                        p.criteria_type, p.primary_order)] = p
+
+                for s in secondary_scoring_criterias:
+                    s.parent = primary_scoring_criteria_map["%s_%s" % (
+                        s.criteria_type, s.primary_order)]
+
+                ScoreCriteria.objects.bulk_create(
+                    secondary_scoring_criterias)
 
         major_criterias = [CurriculumMajorAdmissionCriteria(
             admission_criteria=admission_criteria,
@@ -327,7 +347,9 @@ def upsert_admission_criteria(post_request, project=None, faculty=None, admissio
 
         if user:
             admission_criteria.created_by = user.username
+
         admission_criteria.save_curriculum_majors(major_criterias)
+
 
 @user_login_required
 def create(request, project_id, round_id):
@@ -345,14 +367,15 @@ def create(request, project_id, round_id):
     if request.method == 'POST':
         if ONLY_ALLOW_ADMIN_EDIT and (not user.is_super_admin):
             return HttpResponseForbidden()
-        
+
         upsert_admission_criteria(
             request.POST, project=project, faculty=faculty,
             user=user)
 
         request.session['notice'] = "สร้างเกณฑ์ใหม่ สำเร็จ"
 
-        faculty_url_query = '' if faculty_choices == [] else '?faculty_id=' + str(faculty.id)
+        faculty_url_query = '' if faculty_choices == [
+        ] else '?faculty_id=' + str(faculty.id)
 
         return redirect(reverse('backoffice:criteria:project-index', args=[project_id, round_id]) + faculty_url_query, is_complete=True)
 
@@ -397,7 +420,8 @@ def create(request, project_id, round_id):
         ]
 
     uses_component_weights = (project.id == 28)
-    component_weight_type_choices = CurriculumMajor.get_component_weight_type_choices_unique(majors)
+    component_weight_type_choices = CurriculumMajor.get_component_weight_type_choices_unique(
+        majors)
 
     return render(request,
                   'criteria/create.html',
@@ -407,7 +431,7 @@ def create(request, project_id, round_id):
                    'majors': json.dumps([dict({"id": m.id, "title": ("%s (%s) %s") % (m.cupt_code.title, m.cupt_code.program_type, m.cupt_code.major_title)}) for m in sorted(majors, key=(lambda m: (m.cupt_code.program_code, m.cupt_code.major_title)))]),
                    'uses_component_weights': uses_component_weights,
                    'component_weight_type_choices': component_weight_type_choices,
-                   
+
                    'data_required': json.dumps(data_required),
                    'data_scoring': json.dumps(data_scoring),
                    'data_selected_majors': json.dumps(data_selected_majors)
@@ -438,14 +462,15 @@ def edit(request, project_id, round_id, criteria_id):
     if request.method == 'POST':
         if ONLY_ALLOW_ADMIN_EDIT and (not user.is_super_admin):
             return HttpResponseForbidden()
-        
+
         upsert_admission_criteria(
             request.POST, admission_criteria=admission_criteria,
             user=user)
 
         request.session['notice'] = "แก้ไขเกณฑ์ สำเร็จ"
 
-        faculty_url_query = '' if faculty_choices == [] else '?faculty_id=' + str(faculty.id)
+        faculty_url_query = '' if faculty_choices == [
+        ] else '?faculty_id=' + str(faculty.id)
 
         return redirect(reverse('backoffice:criteria:project-index', args=[project_id, round_id]) + faculty_url_query, is_complete=True)
 
@@ -482,7 +507,8 @@ def edit(request, project_id, round_id, criteria_id):
     ]
 
     uses_component_weights = (project.id == 28)
-    component_weight_type_choices = CurriculumMajor.get_component_weight_type_choices_unique(majors)
+    component_weight_type_choices = CurriculumMajor.get_component_weight_type_choices_unique(
+        majors)
 
     return render(request,
                   'criteria/edit.html',
@@ -493,7 +519,7 @@ def edit(request, project_id, round_id, criteria_id):
 
                    'uses_component_weights': uses_component_weights,
                    'component_weight_type_choices': component_weight_type_choices,
-                   
+
                    'data_required': json.dumps(data_required),
                    'data_scoring': json.dumps(data_scoring),
                    'data_selected_majors': json.dumps(data_selected_majors)
@@ -521,7 +547,8 @@ def delete(request, project_id, round_id, criteria_id):
 
         request.session['notice'] = "ลบเกณฑ์ สำเร็จ"
 
-    faculty_url_query = '' if faculty_choices == [] else '?faculty_id=' + str(faculty.id)
+    faculty_url_query = '' if faculty_choices == [
+    ] else '?faculty_id=' + str(faculty.id)
 
     return redirect(reverse('backoffice:criteria:project-index', args=[project_id, round_id]) + faculty_url_query)
 
@@ -547,7 +574,8 @@ def select_curriculum_majors(request, project_id, round_id, code_id=0, value='no
     for major in major_choices:
         major.is_selected = major.id in selected_curriculum_majors
         if major.is_selected:
-            major.can_be_deleted = not selected_curriculum_majors[major.id].is_with_some_admission_criteria()
+            major.can_be_deleted = not selected_curriculum_majors[major.id].is_with_some_admission_criteria(
+            )
 
     if request.method == 'POST':
         major_cupt_codes = [m for m in major_choices if m.id == int(code_id)]
@@ -635,4 +663,3 @@ def list_curriculum_majors(request):
                    'major_table': major_table,
                    'round_data': list(zip(admission_rounds, major_table, project_lists)),
                    })
-
