@@ -16,7 +16,9 @@ def main():
     with open(filename) as csvfile:
         reader = csv.reader(csvfile, delimiter=',')
         for items in reader:
-            cupt_id = items[2].strip()
+            if len(items) == 0:
+                continue
+            cupt_id = items[0].strip()
             if cupt_id not in confirmed_count:
                 confirmed_count[cupt_id] = 0
             confirmed_count[cupt_id] += 1
