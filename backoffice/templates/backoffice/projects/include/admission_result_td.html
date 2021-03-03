@@ -29,7 +29,7 @@
             <span class="badge badge-success">ยืนยัน</span>
           {% else %}
             {% if applicant.admission_results.0.has_confirmed == False %}
-              <span class="badge badge-success">สละสิทธิ์</span>
+              <span class="badge badge-danger">สละสิทธิ์</span>
             {% endif %}
           {% endif %}
         {% endif %}
