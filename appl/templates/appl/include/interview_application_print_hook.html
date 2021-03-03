@@ -3,7 +3,7 @@
   <h4>พิมพ์ใบสมัครเพื่อสัมภาษณ์</h4>
   <a class="btn btn-success btn-sm" target="_blank" href="{% url 'appl:common-print' %}">พิมพ์ใบสมัคร</a><br />
 {% endif %}
-{% if admission_round.id == 2 %}
+{% if false and admission_round.id == 2 %}
   {% if active_application.admission_project.id != 11 %} <!-- ไม่ใช่กีฬา -->
     {% if active_application.admission_project.id != 5 %} <!-- ไม่ใช่สาธิต -->
       <h4>พิมพ์ใบสมัครเพื่อสัมภาษณ์</h4>
