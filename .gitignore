@@ -1,12 +1,16 @@
 *~
 *.pyc
+
+/scripts/*.csv
 settings_local.py
 /data/*
 /media/*
 db.sqlite3
-.DS_Store
+
 ENV
 *.mo
 main/static/react/node_modules/*
 
 .vscode
+.python-version
+.DS_Store
