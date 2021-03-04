@@ -33,6 +33,8 @@ urlpatterns = [
     url(r'^search/$', views.search, name='search'),
     url(r'^search/(\d+)/$', views.search, name='search-project'),
 
+    url(r'^appinfo/$', views.show_project_application_info, name='show_project_application_info'),
+
     url(r'^projects/(\d+)/(\d+)/$', projects.index, name='projects-index'),
     url(r'^projects/(\d+)/(\d+)/list/$',
         projects.list_applicants, name='projects-list'),

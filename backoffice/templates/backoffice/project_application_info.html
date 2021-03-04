@@ -1,0 +1,51 @@
+{% extends 'backoffice/base.html' %}
+{% block content %}
+<div class="row">
+  <div class="col-md-12">
+    <div class="row">
+      <div class="col-auto mr-auto">
+        <h2>
+          ข้อมูลโครงการรับสมัคร
+        </h2>
+      </div>
+    </div>
+    <table class="table table-striped table-sm table-bordered">
+      <thead>
+        <tr>
+	  <th></th>
+          <th>โครงการ</th>
+	  <th>ข้อมูล</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for project in admission_projects %}
+          <tr>
+	    <td>{{ project.id }}</td>
+	    <td>{{ project }} ({{ project.cupt_code }})</td>
+	    <td>
+	      <div class="mb-2">
+		<b>ข้อมูลแจ้งก่อนสมัคร:</b><br>
+		{{ project.applying_confirmation_warning|safe }}
+	      </div>
+	      <hr>
+	      <div class="mb-2">
+		<b>ข้อมูลแจ้งตอนต้นที่มีการสมัคร:</b><br>
+		{{ project.descriptions|safe }}
+	      </div>
+	      <hr>
+	      <div>
+		<b>เอกสารอัพโหลด:</b><br>
+		<ul>
+		  {% for doc in project.projectuploadeddocument_set.all %}
+		    <li>{{ doc }}</li>
+		  {% endfor %}
+		</ul>
+	      </div>
+	    </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
