@@ -176,7 +176,7 @@ PROJECT_SUPPLEMENTS = {
                                 'supplements.views.forms.nat_sport.process_sport_history_form',
                                 'supplements/backoffice/nat_sport/sport_history.html'),
     ],
-    'โควตานักกีฬาดีเด่นฯ': [
+    'นักกีฬาดีเด่นฯ': [
         ProjectSupplementConfig('gen_sport_type',
                                 'ประเภทกีฬาและระดับ',
                                 True,
@@ -194,7 +194,7 @@ PROJECT_SUPPLEMENTS = {
                                 'supplements.views.forms.gen_sport.process_sport_history_form',
                                 'supplements/backoffice/gen_sport/sport_history.html'),
     ],
-    'โควตาศิลปวัฒนธรรม': [
+    'ศิลปวัฒนธรรม': [
         ProjectSupplementConfig('cultural_type',
                                 'ประเภทศิลปวัฒนธรรม',
                                 True,
