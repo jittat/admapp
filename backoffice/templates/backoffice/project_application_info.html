@@ -37,7 +37,12 @@
 		<b>เอกสารอัพโหลด:</b><br>
 		<ul>
 		  {% for doc in project.projectuploadeddocument_set.all %}
-		    <li>{{ doc }}</li>
+		    <li>
+		      {% if doc.is_required %}
+			<b>{{ doc }} *</b>
+		      {% else %}
+			{{ doc }}
+		      {% endif %}</li>
 		  {% endfor %}
 		</ul>
 	      </div>
