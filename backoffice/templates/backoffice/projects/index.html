@@ -114,14 +114,14 @@
               </td>
             {% endfor %}
             {% if applicant_info_viewable %}
-              <td>
+              <td class="d-none">
                 {% if user_major_number == any_major or user_major_number == major.number %}
                   <a class="btn btn-sm btn-outline-secondary" href="{% url 'backoffice:projects-list-applicants-for-acceptance-calls' project.id admission_round.id major.number %}">กรอกผลสัมภาษณ์</a>
                 {% endif %}
               </td>
               <td>
                 {% if user_major_number == any_major or user_major_number == major.number %}
-                  <a target="_blank" class="btn btn-sm btn-outline-secondary" href="{% url 'backoffice:projects-show-applicant' project.id admission_round.id major.number 1 %}">พิจารณาข้อมูลเรียกสัมภาษณ์</a>
+                  <a target="_blank" class="btn btn-sm btn-outline-secondary" href="{% url 'backoffice:projects-show-applicant' project.id admission_round.id major.number 1 %}">ตรวจสอบเกณฑ์</a>
                   {% if major.has_any_applications and applicant_score_viewable %}
                     <a target="_blank" class="d-noe btn btn-sm btn-outline-secondary" href="{% url 'backoffice:projects-show-scores' project.id admission_round.id major.number %}">พิจารณาเรียกสัมภาษณ์</a>
                   {% endif %}
