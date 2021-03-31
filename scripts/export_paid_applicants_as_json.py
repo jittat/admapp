@@ -53,6 +53,9 @@ def extract_education(applicant):
                                     'education_plan': 'study_plan',
                                     'gpa': 'gpa',
                                     'school_title': 'school_name',
+                                    'sci_credit': 'sci_credit',
+                                    'math_credit': 'math_credit',
+                                    'lang_credit': 'lang_credit',
                                     '$province': 'school_province'})
     data['study_plan'] = EDUPLAN_MAP[data['study_plan']]
     return data
