@@ -4,46 +4,15 @@ bootstrap()
 import sys
 import csv
 import json
+import yaml
 from datetime import datetime
 
 from appl.models import AdmissionProject, AdmissionRound, Faculty
-from criteria.models import AdmissionCriteria, COMPONENT_WEIGHT_TYPE_CHOICES
+from criteria.models import AdmissionCriteria
 
+SCORE_TYPE_TAG_FILENAME = 'score_type_tags.yaml'
 
 FIELDS = [
-    'program_id',
-    'major_id',
-    'project_id',
-    'project_name_th',
-    'project_name_en',
-    'type',
-    'component_weight',
-    'component_pat',
-    'receive_student_number',
-    'gender_male_number',
-    'gender_female_number',
-    'receive_add_limit',
-    'join_id',
-    'only_formal',
-    'receive_student_number_formal ',
-    'only_international',
-    'receive_student_number_international ',
-    'only_vocational',
-    'receive_student_number_vocational',
-    'only_non_formal',
-    'receive_student_number_nonformal ',
-    'min_height_male',
-    'min_height_female',
-    'min_weight_male',
-    'min_weight_female',
-    'max_weight_male',
-    'max_weight_female',
-    'min_hwr_male',
-    'min_hwr_female',
-    'min_bmi_male',
-    'min_bmi_female',
-    'max_bmi_male',
-    'max_bmi_female',
     'min_r4_total_score',
     'min_gpax',
     'min_credit_gpa21',
@@ -126,141 +95,7 @@ FIELDS = [
     'min_cefr  ',
     'min_ged_score',
     'min_gpa22_23',
-    'description',
-    'condition',
-    'interview_location',
-    'interview_date',
-    'interview_time',
-    'link',
 ]
-
-SCORE_TYPE_TAGS = [
-    #{ "score_type": "GPAX_5_SEMESTER", "description": "ผลการเรียนเฉลี่ยสะสม (GPAX) 5 ภาคเรียน", "unit": "" },
-    { "score_type": "GPAX", "description": "ผลการเรียนเฉลี่ยสะสม (GPAX)", "unit": "" },
-    { "score_type": "STUDY_AT_12", "description": "เป็นผู้ที่กำลังศึกษาอยู่ชั้นมัธยมศึกษาปีที่ 6 หรือเทียบเท่า", "unit": "" },
-    { "score_type": "GRAD_OR_STUDY_AT_12", "description": "กำลังศึกษาหรือสำเร็จศึกษาชั้นมัธยมศึกษาปีที่ 6 หรือเทียบเท่า", "unit": "" },
-    { "score_type": "UNIT_MATH", "description": "เรียนรายวิชาในกลุ่มสาระการเรียนรู้คณิตศาสตร์", "unit": "" },
-    { "score_type": "UNIT_FOREIGN", "description": "เรียนรายวิชาในกลุ่มสาระการเรียนรู้ภาษาต่างประเทศ", "unit": "" },
-    { "score_type": "UNIT_SCI", "description": "เรียนรายวิชาในกลุ่มสาระการเรียนรู้วิทยาศาสตร์", "unit": "" },
-    { "score_type": "ONET", "description": "O-NET (5 กลุ่มสาระวิชา)", "unit": "คะแนน" },
-    { "score_type": "ONET_THA", "description": "O-NET (01) ภาษาไทย", "unit": "คะแนน" },
-    { "score_type": "ONET_SOC", "description": "O-NET (02) สังคมศึกษา", "unit": "คะแนน" },
-    { "score_type": "ONET_ENG", "description": "O-NET (03) ภาษาอังกฤษ", "unit": "คะแนน" },
-    { "score_type": "ONET_MAT", "description": "O-NET (04) คณิตศาสตร์", "unit": "คะแนน" },
-    { "score_type": "ONET_SCI", "description": "O-NET (05) วิทยาศาสตร์", "unit": "คะแนน" },
-    { "score_type": "GAT", "description": "GAT", "unit": "คะแนน" },
-    { "score_type": "GAT_1", "description": "GAT ส่วน 1", "unit": "คะแนน" },
-    { "score_type": "GAT_2", "description": "GAT ส่วน 2", "unit": "คะแนน" },
-    { "score_type": "PAT_1", "description": "PAT 1", "unit": "คะแนน" },
-    { "score_type": "PAT_2", "description": "PAT 2", "unit": "คะแนน" },
-    { "score_type": "PAT_3", "description": "PAT 3", "unit": "คะแนน" },
-    { "score_type": "PAT_4", "description": "PAT 4", "unit": "คะแนน" },
-    { "score_type": "PAT_5", "description": "PAT 5", "unit": "คะแนน" },
-    { "score_type": "PAT_6", "description": "PAT 6", "unit": "คะแนน" },
-    #{ "score_type": "PAT_7_1", "description": "PAT 7", "unit": "คะแนน" },
-    { "score_type": "PAT_7_1", "description": "PAT 7.1", "unit": "คะแนน" },
-    { "score_type": "PAT_7_2", "description": "PAT 7.2", "unit": "คะแนน" },
-    { "score_type": "PAT_7_3", "description": "PAT 7.3", "unit": "คะแนน" },
-    { "score_type": "PAT_7_4", "description": "PAT 7.4", "unit": "คะแนน" },
-    { "score_type": "PAT_7_5", "description": "PAT 7.5", "unit": "คะแนน" },
-    { "score_type": "PAT_7_6", "description": "PAT 7.6", "unit": "คะแนน" },
-    { "score_type": "PAT_7_7", "description": "PAT 7.7", "unit": "คะแนน" },
-    { "score_type": "TOEFL_PBT_ITP", "description": "TOEFL PBT/ITP", "unit": "คะแนน" },
-    { "score_type": "TOEFL_CBT", "description": "TOEFL CBT", "unit": "คะแนน" },
-    { "score_type": "TOEFL_IBT", "description": "TOEFL IBT", "unit": "คะแนน" },
-    { "score_type": "IELTS", "description": "IELTS", "unit": "คะแนน" },
-    { "score_type": "OOPT", "description": "OOPT", "unit": "คะแนน" },
-    { "score_type": "KU_EPT", "description": "KU-EPT", "unit": "คะแนน" },
-    { "score_type": "9SUB", "description": "วิชาสามัญ 9 วิชา", "unit": "คะแนน" },
-    { "score_type": "UDAT_09", "description": "วิชาสามัญ ภาษาไทย (09)", "unit": "คะแนน" },
-    { "score_type": "UDAT_19", "description": "วิชาสามัญ สังคมศึกษา (19)", "unit": "คะแนน" },
-    { "score_type": "UDAT_29", "description": "วิชาสามัญ ภาษาอังกฤษ (29)", "unit": "คะแนน" },
-    { "score_type": "UDAT_39", "description": "วิชาสามัญ คณิตศาสตร์ 1 (39)", "unit": "คะแนน" },
-    { "score_type": "UDAT_49", "description": "วิชาสามัญ ฟิสิกส์ (49)", "unit": "คะแนน" },
-    { "score_type": "UDAT_59", "description": "วิชาสามัญ เคมี (59)", "unit": "คะแนน" },
-    { "score_type": "UDAT_69", "description": "วิชาสามัญ ชีววิทยา (69)", "unit": "คะแนน" },
-    { "score_type": "UDAT_89", "description": "วิชาสามัญ คณิตศาสตร์ 2 (89)", "unit": "คะแนน" },
-    { "score_type": "UDAT_99", "description": "วิชาสามัญ วิทยาศาสตร์ทั่วไป (99)", "unit": "คะแนน" },
-
-    # HACK
-    { "score_type": "GPAX", "description": "ผลการเรียนเฉลี่ยสะสม (GPAX) 6 ภาคเรียน", "unit": "" },
-    { "score_type": "GPAX", "description": "ผลการเรียนเฉลี่ยสะสม (GPAX) ไม่ต่ำกว่า", "unit": "" },
-    { "score_type": "ONET_ENG", "description": "O-NET 03 ภาษาอังกฤษ", "unit": "คะแนน" },
-    { "score_type": "ONET_ENG", "description": "O-NET (03)", "unit": "คะแนน" },
-    { "score_type": "ONET_ENG", "description": "O-NET (03) ภาษาอังกฤษ ไม่ต่ำกว่า", "unit": "คะแนน" },
-    { "score_type": "ONET_MAT", "description": "O-NET (04) วิชาคณิตศาสตร์", "unit": "คะแนน" },
-    { "score_type": "GAT", "description": "GAT85", "unit": "คะแนน" },
-    { "score_type": "GAT", "description": "GAT ไม่ตำ่กว่า", "unit": "คะแนน" },
-    { "score_type": "GAT", "description": "GAT (85): วิชาความถนัดทั่วไป", "unit": "คะแนน" },
-    { "score_type": "PAT_1", "description": "PAT I ความถนัดทางคณิตศาสตร์", "unit": "คะแนน" },
-    { "score_type": "PAT_1", "description": "PAT1 (71): วิชาความถนัดทางคณิตศาสตร์", "unit": "คะแนน" },
-    { "score_type": "PAT_2", "description": "PAT2 (72): วิชาความถนัดทางวิทยาศาสตร์", "unit": "คะแนน" },
-    { "score_type": "PAT_5", "description": "PAT 5 ไม่ต่ำกว่า", "unit": "คะแนน" },
-    { "score_type": "UNIT_MATH", "description": "กลุ่มสาระการเรียนรู้คณิตศาสตร์", "unit": "" },
-    { "score_type": "UNIT_MATH", "description": "เรียนรายวิชาในกลุ่มสาระการเรียนรู้คณิตศาสตร์ (แผนการเรียนวิทยาศาสตร์-คณิตศาสตร์)", "unit": "" },
-    { "score_type": "UNIT_MATH", "description": "เรียนรายวิชาในกลุ่มสาระการเรียนรู้คณิตศาสตร์ (แผนการเรียนศิลป์คำนวณ)", "unit": "" },
-    { "score_type": "UNIT_MATH", "description": "เรียนรายวิชาในกลุ่มสาระการเรียนรู้คณิตศาสตร์ ไม่น้อยกว่า", "unit": "" },
-    { "score_type": "UNIT_MATH", "description": "เรียนรายวิชาในกลุ่มสาระการเรียนรู้คณิตศาสตร์ ต้องเรียนรายวิชาพื้นฐานและรายวิชาเพิ่มเติม รวมกัน", "unit": "" },
-    { "score_type": "UNIT_MATH", "description": "เรียนรายวิชาในกลุ่มสาระการเรียนรู้คณิตศาสตร์ (แผนการเรียนศิลป์คำนวณ) ไม่ต่ำกว่า 12.00", "unit": "" },
-    { "score_type": "UNIT_MATH", "description": "เรียนรายวิชาในกลุ่มสาระการเรียนรู้คณิตศาสตร์ ต้องเรียนรายวิชาพื้นฐานและรายวิชาเพิ่มเติมรวมกัน", "unit": "" },
-    { "score_type": "UNIT_MATH", "description": "เรียนรายวิชาในกลุ่มสาระการเรียนรู้คณิตศาสตร์ ต้องเรียนรายวิชาพิ้นฐานและรายวิชาเพิ่มเติม รวมกัน", "unit": "" },
-    { "score_type": "UNIT_MATH", "description": "เรียนรายวิชาในกลุ่มสาระการเรียนรู้คณิตศาสตร์ ไม่น้อยกว่า", "unit": "" },
-    { "score_type": "UNIT_MATH", "description": "หน่วยกิจกลุ่มสาระคณิตศาสตร์", "unit": "" },
-    { "score_type": "UNIT_MATH", "description": "หน่วยกิตกลุ่มสาระคณิตศาสตร์", "unit": "" },
-
-    { "score_type": "UNIT_FOREIGN", "description": "กลุ่มสาระการเรียนรู้ภาษาต่างประเทศ", "unit": "" },
-    { "score_type": "UNIT_FOREIGN", "description": "เรียนรายวิชาในกลุ่มสาระการเรียนรู้ภาษาต่างประเทศ (แผนการเรียนวิทยาศาสตร์-คณิตศาสตร์)", "unit": "" },
-    { "score_type": "UNIT_FOREIGN", "description": "เรียนรายวิชาในกลุ่มสาระการเรียนรู้ภาษาต่างประเทศ (ภาษาอังกฤษ)", "unit": "" },
-    { "score_type": "UNIT_FOREIGN", "description": "หน่วยกิจกลุ่มสาระภาษาต่างประเทศ", "unit": "" },
-    { "score_type": "UNIT_FOREIGN", "description": "หน่วยกิตกลุ่มสาระภาษาต่างประเทศ", "unit": "" },
-
-    { "score_type": "UNIT_SCI", "description": "กลุ่มสาระการเรียนรู้วิทยาศาสตร์", "unit": "" },
-    { "score_type": "UNIT_SCI", "description": "เรียนรายวิชาในกลุ่มสาระการเรียนรู้วิทยาศาสตร์ (แผนการเรียนวิทยาศาสตร์-คณิตศาสตร์)", "unit": "" },
-    { "score_type": "UNIT_SCI", "description": "เรียนรายวิชาในกลุ่มสาระการเรียนรู้วิทยาศาสตร์ (แผนการเรียนศิลป์คำนวณ)", "unit": "" },
-    { "score_type": "UNIT_SCI", "description": "เรียนรายวิชาในกลุ่มสาระการเรียนรู้วิทยาศาสตร์ ไม่น้อยกว่า", "unit": "" },
-    { "score_type": "UNIT_SCI", "description": "เรียนรายวิชาในกลุ่มสาระการเรียนรู้วิทยาศาสตร์ ต้องเรียนรายวิชาพื้นฐานและรายวิชาเพิ่มเติม รวมกัน", "unit": "" },
-    { "score_type": "UNIT_SCI", "description": "เรียนรายวิชาในกลุ่มสาระการเรียนรู้วิทยาศาสตร์ ต้องเรียนรายวิชาพื้นฐานและรายวิชาเพิ่มเติมรวมกัน", "unit": "" },
-    { "score_type": "UNIT_SCI", "description": "เรียนรายวิชาในกลุ่มสาระการเรียนรู้วิทยาศาสตร์ ต้องเรียนวิชาพื้นฐานและรายวิชาเพิ่มเติม รวมกัน", "unit": "" },
-    { "score_type": "UNIT_SCI", "description": "เรียนรายวิชาในกลุ่มสาระการเรียนรู้วิทยาศาสตร์ ไม่น้อยกว่า", "unit": "" },
-    { "score_type": "UNIT_SCI", "description": "หน่วยกิตกลุ่มสาระวิทยาศาสตร์", "unit": "" },
-    
-    { "score_type": "GAT_2", "description": "GAT (ตอน 2 ภาษาอังกฤษ)", "unit": "คะแนน" },
-    { "score_type": "GAT_2", "description": "GAT ตอน 2", "unit": "คะแนน" },
-    { "score_type": "GAT_2", "description": "GAT ตอน2", "unit": "คะแนน" },
-    { "score_type": "GAT_2", "description": "GAT General (English)", "unit": "คะแนน" },
-
-    { "score_type": "GPAX", "description": "ผลการเรียนเฉลี่ยสะสม (GPAX) 5 ภาคเรียน", "unit": "" },
-    { "score_type": "UDAT_09", "description": "วิชา 09", "unit": "คะแนน" },
-    { "score_type": "UDAT_19", "description": "วิชา 19", "unit": "คะแนน" },
-    { "score_type": "UDAT_29", "description": "วิชา 29", "unit": "คะแนน" },
-    { "score_type": "UDAT_29", "description": "29", "unit": "คะแนน" },
-    { "score_type": "UDAT_39", "description": "วิชา 39", "unit": "คะแนน" },
-    { "score_type": "UDAT_49", "description": "วิชา 49", "unit": "คะแนน" },
-    { "score_type": "UDAT_59", "description": "วิชา 59", "unit": "คะแนน" },
-    { "score_type": "UDAT_69", "description": "วิชา 69", "unit": "คะแนน" },
-    { "score_type": "UDAT_89", "description": "วิชา 89", "unit": "คะแนน" },
-    { "score_type": "UDAT_99", "description": "วิชา 99", "unit": "คะแนน" },
-
-
-    # HACK ad1
-    { "score_type": 'CW701', 'description': '7 (รูปแบบที่ 1): **** ยังไม่ได้เลือก PAT **** กลุ่ม 7 ครุศาสตร์ ศึกษาศาสตร์ พลศึกษา สุขศึกษา (รูปแบบที่ 1)' },
-    { "score_type": 'CW701', 'description': '7 (รูปแบบที่ 1) กลุ่ม 7 ครุศาสตร์ ศึกษาศาสตร์ พลศึกษา สุขศึกษา (รูปแบบที่ 1)' },
-    { "score_type": 'CW140', 'description': '1.4: กลุ่ม 1 วิทยาศาสตร์สุขภาพ - สัตวแพทย์ศาสตร์' },
-    { "score_type": 'CW110', 'description': '1.1: กลุ่ม 1 วิทยาศาสตร์สุขภาพ - สัตวแพทย์ศาสตร์ สหเวชศาสตร์ สาธารณสุขศาสตร์ เทคนิคการแพทย์ พยาบาลศาสตร์ วิทยาศาสตร์การกีฬา' },
-
-    { "score_type": 'MIN_GPA21', 'description': 'ผลการเรียนเฉลี่ยรวมของกลุ่มสาระการเรียนรู้ภาษาไทย'},
-    { "score_type": 'MIN_GPA22', 'description': 'คะแนนเฉลี่ยกลุ่มสาระคณิตศาสตร์'},
-    { "score_type": 'MIN_GPA22', 'description': 'มีคะแนนเฉลี่ยกลุ่มสาระคณิตศาสตร์'},
-    { "score_type": 'MIN_GPA22', 'description': 'ผลการเรียนกลุ่มสาระการเรียนรู้คณิตศาสตร์'},
-    { "score_type": 'MIN_GPA23', 'description': 'คะแนนเฉลี่ยกลุ่มสาระวิทยาศาสตร์'},
-    { "score_type": 'MIN_GPA23', 'description': 'มีคะแนนเฉลี่ยกลุ่มสาระวิทยาศาสตร์'},
-    { "score_type": 'MIN_GPA23', 'description': 'ผลการเรียนกลุ่มสาระการเรียนรู้วิทยาศาสตร์'},
-    { "score_type": 'MIN_GPA28', 'description': 'มีคะแนนเฉลี่ยกลุ่มสาระภาษาต่างประเทศ'},
-    { "score_type": 'MIN_GPA28', 'description': 'ผลการเรียนเฉลี่ยรวมของกลุ่มสาระการเรียนรู้ภาษาต่างประเทศ'},
-]
-
-for t,d in COMPONENT_WEIGHT_TYPE_CHOICES:
-    SCORE_TYPE_TAGS.append({"score_type": t, "description": d})
 
 COMPONENT_WEIGHT_OPTIONS = [
     ('CW110','1.1',0),
@@ -307,9 +142,34 @@ COMPONENT_WEIGHT_OPTIONS = [
     ('CW92277','9.2.2','PAT7.7'),
 ]
 
-
 COMPONENT_WEIGHT_MAP = { c[0]:(c[1],c[2]) for c in COMPONENT_WEIGHT_OPTIONS }
 
+def find_score_type_from_str(st):
+    st = st.strip()
+    st_no_space = st.replace(" ","")
+    st_norm_space = ' '.join(st.split())
+    if st_no_space in SCORE_TYPE_REVERSE_MAP:
+        return SCORE_TYPE_REVERSE_MAP[st_no_space]
+    elif st_norm_space in SCORE_TYPE_REVERSE_MAP:
+        return SCORE_TYPE_REVERSE_MAP[st_norm_space]
+    else:
+        return 'OTHER'
+
+def load_score_type_tags(filename):
+    raw_tags = yaml.load(open(filename).read())
+    output_tags = []
+    for r in raw_tags:
+        if 'description' in r:
+            output_tags.append(r)
+        elif 'descriptions' in r:
+            for desc in r['descriptions']:
+                new_tag = r.copy()
+                del new_tag['descriptions']
+                new_tag['description'] = desc
+                output_tags.append(new_tag)
+    return output_tags
+
+SCORE_TYPE_TAGS = load_score_type_tags(SCORE_TYPE_TAG_FILENAME)
 SCORE_TYPE_REVERSE_MAP = dict([
     (t['description'].strip(), t['score_type'].strip())
     for t in SCORE_TYPE_TAGS
@@ -362,10 +222,12 @@ SCORE_TYPE_FIELD_MAP = {
 def reverse_score_type(score_criteria):
     if score_criteria.score_type != 'OTHER':
         return score_criteria.score_type
-    elif score_criteria.description.strip() in SCORE_TYPE_REVERSE_MAP:
-        return SCORE_TYPE_REVERSE_MAP[score_criteria.description.strip()]
     else:
-        return 'OTHER'
+        score_type = find_score_type_from_str(score_criteria.description.strip())
+        if score_type != 'OTHER':
+            return score_type
+        else:
+            return 'OTHER'
 
 all_missing_descriptions = []
     
