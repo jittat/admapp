@@ -144,21 +144,24 @@ COMPONENT_WEIGHT_OPTIONS = [
 
 COMPONENT_WEIGHT_MAP = { c[0]:(c[1],c[2]) for c in COMPONENT_WEIGHT_OPTIONS }
 
-def find_score_type_from_str(st):
+SCORE_TYPE_REVERSE_MAP = {}
+PROJECT_SCORE_TYPE_REVERSE_MAP = {}
+
+def find_score_type_from_str(st, reverse_map):
     st = st.strip()
     st_no_space = st.replace(" ","")
     st_norm_space = ' '.join(st.split())
-    if st_no_space in SCORE_TYPE_REVERSE_MAP:
-        return SCORE_TYPE_REVERSE_MAP[st_no_space]
-    elif st_norm_space in SCORE_TYPE_REVERSE_MAP:
-        return SCORE_TYPE_REVERSE_MAP[st_norm_space]
+    if st_no_space in reverse_map:
+        return reverse_map[st_no_space]
+    elif st_norm_space in reverse_map:
+        return reverse_map[st_norm_space]
     else:
         return 'OTHER'
 
+    
 def load_score_type_tags(filename):
-    raw_tags = yaml.load(open(filename).read())
-    output_tags = []
-    for r in raw_tags:
+
+    def add_score_tags(output_tags, r):
         if 'description' in r:
             output_tags.append(r)
         elif 'descriptions' in r:
@@ -167,13 +170,35 @@ def load_score_type_tags(filename):
                 del new_tag['descriptions']
                 new_tag['description'] = desc
                 output_tags.append(new_tag)
-    return output_tags
 
-SCORE_TYPE_TAGS = load_score_type_tags(SCORE_TYPE_TAG_FILENAME)
-SCORE_TYPE_REVERSE_MAP = dict([
-    (t['description'].strip(), t['score_type'].strip())
-    for t in SCORE_TYPE_TAGS
-])
+    def build_map(tags):
+        return dict([
+            (t['description'].strip(), t['score_type'].strip())
+            for t in tags
+        ])
+
+                
+    global SCORE_TYPE_REVERSE_MAP
+    global PROJECT_SCORE_TYPE_REVERSE_MAP
+    
+    raw_tags = yaml.load(open(filename).read())
+    output_tags = []
+    project_tags = {}
+    
+    for r in raw_tags:
+        if 'project_id' in r:
+            if r['project_id'] not in project_tags:
+                project_tags[r['project_id']] = []
+            for rr in r['score_tags']:
+                add_score_tags(project_tags[r['project_id']], rr)
+        else:
+            add_score_tags(output_tags, r)
+
+    SCORE_TYPE_REVERSE_MAP = build_map(output_tags)
+    for k in project_tags:
+        PROJECT_SCORE_TYPE_REVERSE_MAP[k] = build_map(project_tags[k])
+
+load_score_type_tags(SCORE_TYPE_TAG_FILENAME)
 
 SCORE_TYPE_FIELD_MAP = {
     "GPAX_5_SEMESTER": 'ERROR',
@@ -219,11 +244,17 @@ SCORE_TYPE_FIELD_MAP = {
     "MIN_GPA28": 'min_gpa28',
 }
 
-def reverse_score_type(score_criteria):
+def reverse_score_type(score_criteria, curriculum_major):
     if score_criteria.score_type != 'OTHER':
         return score_criteria.score_type
     else:
-        score_type = find_score_type_from_str(score_criteria.description.strip())
+        description = score_criteria.description.strip()
+        if curriculum_major.admission_project_id in PROJECT_SCORE_TYPE_REVERSE_MAP:
+            score_type = find_score_type_from_str(description, PROJECT_SCORE_TYPE_REVERSE_MAP[curriculum_major.admission_project_id])
+            if score_type != 'OTHER':
+                return score_type
+        
+        score_type = find_score_type_from_str(score_criteria.description.strip(), SCORE_TYPE_REVERSE_MAP)
         if score_type != 'OTHER':
             return score_type
         else:
@@ -244,7 +275,7 @@ def min_score_vector_from_criterias(score_criterias, curriculum_major):
     for c in score_criterias:
         score_type = c.score_type
         if score_type == 'OTHER':
-            score_type = reverse_score_type(c)
+            score_type = reverse_score_type(c, curriculum_major)
         if c.value != None and c.value > 0:
             if score_type not in SCORE_TYPE_FIELD_MAP:
                 print(f'Error missing {score_type} {c} "{c.description.strip()}"')
@@ -345,7 +376,7 @@ def update_component_weight(row, admission_criteria, curriculum_major):
     for c in score_criterias:
         score_type = c.score_type
         if score_type == 'OTHER':
-            score_type = reverse_score_type(c)
+            score_type = reverse_score_type(c, curriculum_major)
 
         if score_type in COMPONENT_WEIGHT_MAP:
             cw, cpat = COMPONENT_WEIGHT_MAP[score_type]
@@ -362,9 +393,9 @@ def update_component_weight(row, admission_criteria, curriculum_major):
     if is_error or (not is_assigned):
         print("----------------", curriculum_major.cupt_code)
 
-def fix_score_type(c):
+def fix_score_type(c, curriculum_major):
     if c.score_type == 'OTHER':
-        c.score_type = reverse_score_type(c)
+        c.score_type = reverse_score_type(c, curriculum_major)
         
 def score_vector_from_criterias(admission_criteria, curriculum_major):
     is_error = False
@@ -406,7 +437,7 @@ def score_vector_from_criterias(admission_criteria, curriculum_major):
 
     for c in score_criterias:
         if type(c[2]) != list:
-            fix_score_type(c[2])
+            fix_score_type(c[2], curriculum_major)
         else:
             for cc in c[2][1:]:
                 fix_score_type(cc)

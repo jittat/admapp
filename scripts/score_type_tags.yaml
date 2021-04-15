@@ -294,3 +294,9 @@
   score_type: UDAT_89
 - description: วิชา99
   score_type: UDAT_99
+- project_id: 13
+  score_tags:
+    - score_type: IGNORE
+      descriptions:
+      - เคยเข้าร่วมแข่งขันทางคณิตศาสตร์หรือสาขาวิชาที่เกี่ยวข้องในระดับภูมิภาคระดับชาติหรือนานาชาติ
+      - ประวัติผลงานตามความสามารถ
