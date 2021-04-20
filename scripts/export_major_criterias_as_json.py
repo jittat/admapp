@@ -5,10 +5,13 @@ import sys
 import csv
 import json
 import yaml
+import copy
 from datetime import datetime
 
 from appl.models import AdmissionProject, AdmissionRound, Faculty
 from criteria.models import AdmissionCriteria
+
+error_report_file = sys.stderr
 
 SCORE_TYPE_TAG_FILENAME = 'score_type_tags.yaml'
 
@@ -244,6 +247,10 @@ SCORE_TYPE_FIELD_MAP = {
     "MIN_GPA28": 'min_gpa28',
 }
 
+def print_error(*args, **kwargs):
+    kwargs['file'] = sys.stderr
+    print(*args, **kwargs)
+
 def reverse_score_type(score_criteria, curriculum_major):
     if score_criteria.score_type != 'OTHER':
         return score_criteria.score_type
@@ -278,22 +285,22 @@ def min_score_vector_from_criterias(score_criterias, curriculum_major):
             score_type = reverse_score_type(c, curriculum_major)
         if c.value != None and c.value > 0:
             if score_type not in SCORE_TYPE_FIELD_MAP:
-                print(f'Error missing {score_type} {c} "{c.description.strip()}"')
+                print_error(f'Error missing {score_type} {c} "{c.description.strip()}"')
                 all_missing_descriptions.append(c.description)
                 is_error = True
             elif SCORE_TYPE_FIELD_MAP[score_type] == 'ERROR':
-                #print('Found:', score_type, c)
-                print('Error gpax5', c)
+                #print_error('Found:', score_type, c)
+                print_error('Error gpax5', c)
                 is_error = True
             else:
                 value_vectors[SCORE_TYPE_FIELD_MAP[score_type]] = float(c.value)
         else:
             if score_type == 'OTHER':
                 is_error = True
-                print(f'OTHER - None: Error missing {score_type} {c} "{c.description.strip()}" [{c.value}]')
+                print_error(f'OTHER - None: Error missing {score_type} {c} "{c.description.strip()}" [{c.value}]')
 
     if is_error:
-        print('=============', curriculum_major.faculty, '==========', curriculum_major.cupt_code)
+        print_error('=============', curriculum_major.faculty, '==========', curriculum_major.cupt_code)
                 
     return value_vectors
 
@@ -314,9 +321,9 @@ def min_score_vectors(admission_criteria, curriculum_major):
                     for child in c.childs.all():
                         or_criterias.append(child)
                 if (or_count > 1) or (c.relation != 'OR'):
-                    print('Error type (or too many OR):', c.relation)
+                    print_error('Error type (or too many OR):', c.relation)
                     for child in c.childs.all():
-                        print(f"    - {child}")
+                        print_error(f"    - {child}")
                     is_error = True
             else:
                 for child in c.childs.all():
@@ -328,11 +335,11 @@ def min_score_vectors(admission_criteria, curriculum_major):
         value_vectors = min_score_vector_from_criterias(score_criterias, curriculum_major)
     
         if is_error:
-            print('=============', curriculum_major.faculty, '==========', curriculum_major.cupt_code)
+            print_error('=============', curriculum_major.faculty, '==========', curriculum_major.cupt_code)
                 
         return [value_vectors]
     elif or_count == 1:
-        print('OR found:', or_criterias)
+        print_error('OR found:', or_criterias)
         output = []
         for or_criteria in or_criterias:
             this_score_criterias = [c for c in score_criterias] + [or_criteria]
@@ -342,7 +349,7 @@ def min_score_vectors(admission_criteria, curriculum_major):
             output.append(value_vectors)
             
         if is_error:
-            print('=============', curriculum_major.faculty, '==========', curriculum_major.cupt_code)
+            print_error('=============', curriculum_major.faculty, '==========', curriculum_major.cupt_code)
 
         return output
 
@@ -350,7 +357,7 @@ def min_score_vectors(admission_criteria, curriculum_major):
         value_vectors = min_score_vector_from_criterias(score_criterias, curriculum_major)
     
         if is_error:
-            print('TOO MANY ORs =============', curriculum_major.faculty, '==========', curriculum_major.cupt_code)
+            print_error('TOO MANY ORs =============', curriculum_major.faculty, '==========', curriculum_major.cupt_code)
                 
         return [value_vectors]
 
@@ -362,7 +369,7 @@ def update_component_weight(row, admission_criteria, curriculum_major):
     
     for c in admission_criteria.get_all_scoring_score_criteria():
         if c.has_children():
-            print('Error type:', c.relation)
+            print_error('Error type:', c.relation)
             for child in c.childs.all():
                 print(f"    - {child}")
                 is_error = True
@@ -370,7 +377,7 @@ def update_component_weight(row, admission_criteria, curriculum_major):
             score_criterias.append(c)        
 
     if len(score_criterias) != 1:
-        print('Too many', len(score_criterias))
+        print_error('Too many', len(score_criterias))
         is_error = True
         
     for c in score_criterias:
@@ -384,14 +391,14 @@ def update_component_weight(row, admission_criteria, curriculum_major):
             row['component_pat'] = cpat
             is_assigned = True
         else:
-            print('Unknown scoring', c)
+            print_error('Unknown scoring', c)
             is_error = True
 
     if not is_assigned:
-        print('ERROR not assigned')
+        print_error('ERROR not assigned')
         
     if is_error or (not is_assigned):
-        print("----------------", curriculum_major.cupt_code)
+        print_error("----------------", curriculum_major.cupt_code)
 
 def fix_score_type(c, curriculum_major):
     if c.score_type == 'OTHER':
@@ -400,7 +407,7 @@ def fix_score_type(c, curriculum_major):
 def score_vector_from_criterias(admission_criteria, curriculum_major):
     is_error = False
     
-    print(f"-------------- {curriculum_major.cupt_code} --------------")
+    print_error(f"-------------- {curriculum_major.cupt_code} --------------")
     score_criterias = []
 
     main_total = 0
@@ -426,7 +433,7 @@ def score_vector_from_criterias(admission_criteria, curriculum_major):
                     ['MAX'] + [child for child in c.childs.all()]))
 
             else:
-                print('Error type:', c.relation)
+                print_error('Error type:', c.relation)
                 for child in c.childs.all():
                     print(f"    - {child}")
                 is_error = True
@@ -442,6 +449,8 @@ def score_vector_from_criterias(admission_criteria, curriculum_major):
             for cc in c[2][1:]:
                 fix_score_type(cc)
 
+    print_scoring = False
+                
     results = []
     for s in score_criterias:
         percent = s[0][0]
@@ -449,25 +458,86 @@ def score_vector_from_criterias(admission_criteria, curriculum_major):
             continue
 
         if type(s[2]) != list:
-            print("%.2f" % percent,
-                  s[2].score_type,
-                  s)
+            if print_scoring:
+                print_error("%.2f" % percent,
+                      s[2].score_type,
+                      s)
             if s[2].score_type != 'OTHER':
                 results.append((s[2].score_type, percent))
             else:
                 results.append((s[2].description, percent))
         else:
-            print("%.2f" % percent,
-                  s[2][0],
-                  [sss.score_type for sss in s[2][1:]],
-                  s)
+            if print_scoring:
+                print_error("%.2f" % percent,
+                      s[2][0],
+                      [sss.score_type for sss in s[2][1:]],
+                      s)
             results.append(('MAX(' + ','.join([sss.score_type for sss in s[2][1:]]) + ')', percent))
 
     if is_error:
-        print('=============', curriculum_major.faculty, '==========', curriculum_major.cupt_code)
+        print_error('=============', curriculum_major.faculty, '==========', curriculum_major.cupt_code)
 
     return results
-        
+
+def export_curriculum_major_criterias(admission_project):
+    faculties = Faculty.objects.all()
+    
+    admission_criterias = (AdmissionCriteria
+                           .objects
+                           .filter(admission_project_id=admission_project.id,
+                                   is_deleted=False)
+                           .order_by('faculty_id'))
+
+    curriculum_major_results = {}
+
+    for admission_criteria in admission_criterias:
+        curriculum_major_criterias = admission_criteria.curriculummajoradmissioncriteria_set.all()
+
+        if len(curriculum_major_criterias) == 0:
+            continue
+            
+        curriculum_major = curriculum_major_criterias[0].curriculum_major
+
+        min_scores_vecs = min_score_vectors(admission_criteria, curriculum_major)
+        if len(min_scores_vecs) > 1:
+            print_error('ERROR two rows', curriculum_major)
+        min_scores = min_scores_vecs[0]
+
+        non_zero_min_scores = { k:min_scores[k] for k in min_scores if min_scores[k] > 0 }
+
+        if admission_criteria.additional_condition != '':
+            non_zero_min_scores['additional_condition'] = admission_criteria.additional_condition
+            print_error(" > ", curriculum_major, "---->", admission_criteria.additional_condition)
+
+        scoring_scores = score_vector_from_criterias(admission_criteria, curriculum_major)
+
+        for mc in curriculum_major_criterias:
+            curriculum_major = mc.curriculum_major
+            major_cupt_code = curriculum_major.cupt_code
+
+            row = {
+                'required_score_criteria': non_zero_min_scores,
+                'scoring_score_criteria': scoring_scores,
+                'faculty': curriculum_major.faculty.title,
+                'title': major_cupt_code.display_title(),
+                'slot':  mc.slots,
+                'faculty_id': curriculum_major.faculty.id,
+                'program_type_code':major_cupt_code.program_type_code,
+                'program_code':major_cupt_code.program_code,
+                'major_code':major_cupt_code.major_code,
+            }
+
+            if major_cupt_code.get_program_major_code() in curriculum_major_results:
+                print_error('>>>>>>>>>  ERROR too many criterias for', major_cupt_code, major_cupt_code.get_program_major_code())
+                
+            curriculum_major_results[major_cupt_code.get_program_major_code()] = row
+
+    return curriculum_major_results
+
+def get_program_major_code_from_major(major):
+    items = major.get_detail_items()
+    return tuple(items[-2:])
+
 def main():
     project_id = sys.argv[1]
     project_ids = [project_id]
@@ -477,54 +547,18 @@ def main():
     for project_id in project_ids:
         admission_project = AdmissionProject.objects.get(pk=project_id)
 
-        faculties = Faculty.objects.all()
-    
-        admission_criterias = (AdmissionCriteria
-                               .objects
-                               .filter(admission_project_id=project_id,
-                                       is_deleted=False)
-                               .order_by('faculty_id'))
+        exported_curriculum_major_criterias = export_curriculum_major_criterias(admission_project)
 
         project_rows = []
-
-        for admission_criteria in admission_criterias:
-            curriculum_major_criterias = admission_criteria.curriculummajoradmissioncriteria_set.all()
-
-            if len(curriculum_major_criterias) == 0:
-                continue
-            
-            curriculum_major = curriculum_major_criterias[0].curriculum_major
-
-            min_scores_vecs = min_score_vectors(admission_criteria, curriculum_major)
-            if len(min_scores_vecs) > 1:
-                print('ERROR two rows', curriculum_major)
-            min_scores = min_scores_vecs[0]
-
-            non_zero_min_scores = { k:min_scores[k] for k in min_scores if min_scores[k] > 0 }
-
-            if admission_criteria.additional_condition != '':
-                non_zero_min_scores['additional_condition'] = admission_criteria.additional_condition
-                print(" > ", curriculum_major, "---->", admission_criteria.additional_condition)
-
-            scoring_scores = score_vector_from_criterias(admission_criteria, curriculum_major)
-
-            for mc in curriculum_major_criterias:
-                curriculum_major = mc.curriculum_major
-                major_cupt_code = curriculum_major.cupt_code
-                
-                row = {
-                    'required_score_criteria': non_zero_min_scores,
-                    'scoring_score_criteria': scoring_scores,
-                    'faculty': curriculum_major.faculty.title,
-                    'title': major_cupt_code.display_title(),
-                    'slot':  mc.slots,
-                    'faculty_id': curriculum_major.faculty.id,
-                    'program_type_code':major_cupt_code.program_type_code,
-                    'program_code':major_cupt_code.program_code,
-                    'major_code':major_cupt_code.major_code,
-                }
-                
-                project_rows.append(row)
+        
+        for major in admission_project.major_set.all():
+            program_major_code = get_program_major_code_from_major(major)
+            if program_major_code in exported_curriculum_major_criterias:
+                res = copy.deepcopy(exported_curriculum_major_criterias[program_major_code])
+                res['major_number'] = major.number
+                res['admission_project_id'] = admission_project.id
+                res['admission_project'] = admission_project.title
+                project_rows.append(res)
 
         all_rows += project_rows
 

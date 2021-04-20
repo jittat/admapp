@@ -231,6 +231,10 @@ class MajorCuptCode(models.Model):
         else:
             return f'{self.title}{type_code_map[self.program_type_code]}'
 
+    def get_program_major_code(self):
+        return (self.program_code, self.major_code)
+
+    
 class CurriculumMajor(models.Model):
     admission_project = models.ForeignKey(AdmissionProject,
                                           on_delete=models.CASCADE)
