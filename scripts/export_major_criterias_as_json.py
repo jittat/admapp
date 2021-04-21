@@ -284,6 +284,8 @@ def min_score_vector_from_criterias(score_criterias, curriculum_major):
         if score_type == 'OTHER':
             score_type = reverse_score_type(c, curriculum_major)
         if c.value != None and c.value > 0:
+            if score_type == 'IGNORE':
+                continue
             if score_type not in SCORE_TYPE_FIELD_MAP:
                 print_error(f'Error missing {score_type} {c} "{c.description.strip()}"')
                 all_missing_descriptions.append(c.description)
@@ -410,25 +412,49 @@ def score_vector_from_criterias(admission_criteria, curriculum_major):
     print_error(f"-------------- {curriculum_major.cupt_code} --------------")
     score_criterias = []
 
-    main_total = 0
+    child_values = []
     for c in admission_criteria.get_all_scoring_score_criteria():
         if c.value == 0:
             if 'สัมภา' not in c.description:
                 c.value = 1
-        main_total += int(c.value)
+        if c.has_children():
+            if c.relation == 'SUM':
+                child_total = sum([child.value for child in c.childs.all()])
+            elif c.relation == 'MAX':
+                child_total = 1
+            if child_total == 0:
+                # print('*** CHILD ERROR *** total = 0', curriculum_major)
+                child_total = 1
+            child_values.append(child_total)
+            c.child_total_values = child_total
+        else:
+            child_values.append(1)
+            c.child_total_values = 1
+
+    total_weight_scale = 1
+    for v in child_values:
+        total_weight_scale *= v
+
+    main_total = 0
     for c in admission_criteria.get_all_scoring_score_criteria():
+        main_total += total_weight_scale * c.value
+    
+    for c in admission_criteria.get_all_scoring_score_criteria():
+        # print(total_weight_scale)
+        # print("div:", c.child_total_values, c)
+        this_weight_scale = total_weight_scale // c.child_total_values
         if c.has_children():
             if c.relation == 'SUM':
                 total = sum([child.value for child in c.childs.all()])
                 for child in c.childs.all():
                     score_criterias.append((
-                        (int(child.value * c.value),
-                         int(total * main_total)),
+                        (int(child.value) * int(c.value) * this_weight_scale,
+                         main_total),
                         (c.value, child.value, total),
                         child))
             elif c.relation == 'MAX':
                 score_criterias.append((
-                    (int(c.value), main_total),
+                    (int(c.value) * this_weight_scale, main_total),
                     (c.value,1,1),
                     ['MAX'] + [child for child in c.childs.all()]))
 
@@ -438,7 +464,7 @@ def score_vector_from_criterias(admission_criteria, curriculum_major):
                     print(f"    - {child}")
                 is_error = True
         else:
-            score_criterias.append(((int(c.value), main_total),
+            score_criterias.append(((int(c.value) * this_weight_scale, main_total),
                                     (c.value,1,1),
                                     c))
 
@@ -463,16 +489,16 @@ def score_vector_from_criterias(admission_criteria, curriculum_major):
                       s[2].score_type,
                       s)
             if s[2].score_type != 'OTHER':
-                results.append((s[2].score_type, percent))
+                results.append((s[2].score_type, int(percent)))
             else:
-                results.append((s[2].description, percent))
+                results.append((s[2].description, int(percent)))
         else:
             if print_scoring:
                 print_error("%.2f" % percent,
                       s[2][0],
                       [sss.score_type for sss in s[2][1:]],
                       s)
-            results.append(('MAX(' + ','.join([sss.score_type for sss in s[2][1:]]) + ')', percent))
+            results.append(('MAX(' + ','.join([sss.score_type for sss in s[2][1:]]) + ')', int(percent)))
 
     if is_error:
         print_error('=============', curriculum_major.faculty, '==========', curriculum_major.cupt_code)
@@ -500,7 +526,14 @@ def export_curriculum_major_criterias(admission_project):
 
         min_scores_vecs = min_score_vectors(admission_criteria, curriculum_major)
         if len(min_scores_vecs) > 1:
-            print_error('ERROR two rows', curriculum_major)
+            if min_scores_vecs[0] == min_scores_vecs[1]:
+                print_error('ERROR two rows', curriculum_major, len(min_scores_vecs))
+                print_error('BUT they are the same... OK!')
+            else:
+                print_error('**** ERROR two rows', curriculum_major, len(min_scores_vecs))
+                print_error(min_scores_vecs[0])
+                print_error(min_scores_vecs[1])
+            
         min_scores = min_scores_vecs[0]
 
         non_zero_min_scores = { k:min_scores[k] for k in min_scores if min_scores[k] > 0 }
