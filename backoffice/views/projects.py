@@ -290,11 +290,21 @@ def load_major_applicants(project,
     return sorted_applicants(applicants, with_interview_call_results)
 
 
-def load_major_applicant_with_major_stats(project, admission_round, major, num, with_interview_call_results=False):
+def load_major_applicant_with_major_stats(project, admission_round, major, num,
+                                          with_interview_call_results=False,
+                                          national_id=None):
     sorted_applicants = load_major_applicants_no_cache(project, admission_round, major, with_interview_call_results)
     stat = {'total': len(sorted_applicants),
             'paid': len([a for a in sorted_applicants if a.has_paid]),}
 
+    if (num < 0):
+        if national_id != None:
+            for a,num in zip(sorted_applicants, range(len(sorted_applicants))):
+                if a.national_id == national_id:
+                    a.real_rank = num
+                    return a, stat
+        return None, stat
+    
     if len(sorted_applicants) > num:
         return sorted_applicants[num], stat
     else:
@@ -587,8 +597,12 @@ def show_applicant(request, project_id, round_id, major_number, rank):
     major = Major.get_by_project_number(project, major_number)
 
     real_rank = int(rank) - 1
+    national_id = None
     if real_rank < 0:
-        return redirect(reverse('backoffice:projects-show-applicant',args=[project_id, round_id, major_number, 1]))
+        if request.GET.get('natid','') == '':
+            return redirect(reverse('backoffice:projects-show-applicant',args=[project_id, round_id, major_number, 1]))
+        else:
+            national_id = request.GET.get('natid','')
 
     shows_for_interview = project_round.accepted_for_interview_result_frozen
 
@@ -596,8 +610,12 @@ def show_applicant(request, project_id, round_id, major_number, rank):
                                                                   admission_round,
                                                                   major,
                                                                   real_rank,
-                                                                  shows_for_interview)
-
+                                                                  shows_for_interview,
+                                                                  national_id=national_id)
+    if national_id:
+        real_rank = applicant.real_rank
+        rank = real_rank + 1
+        
     if not applicant:
         if real_rank != 0:
             return redirect(reverse('backoffice:projects-show-applicant',args=[project_id, round_id, major_number, 1]))
