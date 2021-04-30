@@ -83,7 +83,8 @@
           <td class="udat-even udat-scores" style="display: none;">{{ applicant.get_all_exam_scores.udat.u49|score }}</td>
           <td class="udat-odd udat-scores" style="display: none;">{{ applicant.get_all_exam_scores.udat.u59|score }}</td>
           <td class="udat-even udat-scores" style="display: none;">{{ applicant.get_all_exam_scores.udat.u69|score }}</td>
-
+	  <td class="udat-odd udat-scores" style="display: none;">{{ applicant.get_all_exam_scores.udat.u89|score }}</td>
+	  
           {% comment %}
           {% include "backoffice/projects/include/score_table/onet_cells.html" %}
           {% include "backoffice/projects/include/score_table/gatpat_cells.html" %}
