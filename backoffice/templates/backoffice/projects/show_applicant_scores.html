@@ -18,7 +18,7 @@
         <a id="conflict_toggle_id" class="btn btn-sm btn-outline-secondary" href="#">แสดงรายการสาขาที่รับผู้สมัครพร้อมกัน <i class="fa fa-caret-down"></i></a>
       {% endif %}
       <span id="data_load_notice_id"></span>
-      {% if accepted_for_interview_result_frozen %}
+      {% if individual_call_only %}
         ในการระบุการรับผู้สมัคร ขณะนี้ให้ใช้หน้าพิจารณาผู้สมัครรายคน <a class="btn btn-outline-secondary btn-sm" href="{% url 'backoffice:projects-show-applicant' project.id admission_round.id major.number 1 %}">พิจารณาผลการคัดเลือก</a>
       {% endif %}
       <div id="selection_criteria_table_id" style="display: none;">

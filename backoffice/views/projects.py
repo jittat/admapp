@@ -1076,17 +1076,21 @@ def sort_applicants_by_calculated_scores(applicants, criteria_check_required):
     return passed_applicants + not_passed_applicants
 
 
-def update_interview_call_status(applicants, decision):
+def update_interview_call_status(applicants, decision, is_individual_only=False):
     for a in applicants:
         if not decision:
             a.is_called_for_interview = False
         elif not a.is_interview_callable:
             a.is_called_for_interview = False
         else:
-            a.is_called_for_interview = a.admission_result.calculated_score > (decision.interview_call_min_score - MajorInterviewCallDecision.FLOAT_DELTA)
-
+            if not is_individual_only:
+                a.is_called_for_interview = a.admission_result.calculated_score > (decision.interview_call_min_score - MajorInterviewCallDecision.FLOAT_DELTA)
             if a.admission_result.is_accepted_for_interview:
                 a.is_called_for_interview = True
+            elif a.admission_result.is_accepted_for_interview == False:
+                a.is_called_for_interview = False
+            elif is_individual_only:
+                a.is_called_for_interview = None
 
             
 @user_login_required
@@ -1145,7 +1149,7 @@ def show_scores(request, project_id, round_id, major_number):
         call_decision = MajorInterviewCallDecision.get_for(major, admission_round)
         if individual_call_only and not call_decision:
             call_decision = MajorInterviewCallDecision(interview_call_min_score=100000)
-        update_interview_call_status(applicants, call_decision)
+        update_interview_call_status(applicants, call_decision, individual_call_only)
 
         interview_call_count = len([a for a in applicants if a.is_called_for_interview])
 
