@@ -888,7 +888,8 @@ class AdmissionResult(models.Model):
             return ''
 
     def scoring_criteria_passed(self):
-        return self.calculated_score >= 0
+        if self.is_criteria_passed != False:
+            return self.calculated_score >= 0
 
     def is_interview_callable(self):
         return self.scoring_criteria_passed()
