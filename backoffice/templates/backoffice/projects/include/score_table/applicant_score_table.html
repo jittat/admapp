@@ -69,6 +69,8 @@
           
           <td class="gatpat-odd">{{ applicant.get_all_exam_scores.gatpat_rounds|round_array }}</td>
           <td class="gatpat-even">{{ applicant.get_all_exam_scores.gatpat_array.gat|score_array }}</td>
+          <td class="gatpat-odd onet-extra" style="display: none;">{{ applicant.get_all_exam_scores.gatpat_array.gat_1|score_array }}</td>
+          <td class="gatpat-even onet-extra" style="display: none;">{{ applicant.get_all_exam_scores.gatpat_array.gat_2|score_array }}</td>
           <td class="gatpat-odd">{{ applicant.get_all_exam_scores.gatpat_array.pat1|score_array }}</td>
           <td class="gatpat-even">{{ applicant.get_all_exam_scores.gatpat_array.pat2|score_array }}</td>
           <td class="gatpat-odd">{{ applicant.get_all_exam_scores.gatpat_array.pat3|score_array }}</td>
