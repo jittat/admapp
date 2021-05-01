@@ -1146,6 +1146,8 @@ def show_scores(request, project_id, round_id, major_number):
 
     if project.id in [23]:
         show_udat_scores = True
+    elif project.id == 11:
+        show_udat_scores = (major.number in [12])
     elif project.id == 12:
         show_udat_scores = (major.number in [11, 22, 23])
     elif project.id == 13:
