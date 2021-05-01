@@ -27,7 +27,7 @@ DESCRIPTION_CHOICES = {
 def main():
     filename = sys.argv[1]
     counter = 0
-    admission_round = AdmissionRound.objects.get(pk=5)
+    admission_round = AdmissionRound.objects.get(pk=2)
     
     with open(filename) as csvfile:
         reader = csv.reader(csvfile, delimiter=',')
