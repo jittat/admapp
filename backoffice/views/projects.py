@@ -159,7 +159,7 @@ def sorted_applicants(applicants, with_interview_call_results=False):
     else:
         sorted_applicant_ids = [x[6] for x in sorted([(applicant.major_number,
                                                        ({True: 0, False: 1}[applicant.has_paid]),
-                                                       ({True: 0, False: 1}[applicant.is_accepted_for_interview]),
+                                                       ({True: 0, False: 1, None: 1}[applicant.is_accepted_for_interview]),
                                                        locale.strxfrm(applicant.first_name),
                                                        locale.strxfrm(applicant.last_name),
                                                        applicant.national_id,
