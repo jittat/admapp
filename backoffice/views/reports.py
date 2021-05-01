@@ -230,7 +230,7 @@ def write_registration_sheet(sheet, project, applicants, major, cell_format):
     sheet.set_landscape()
     sheet.write(0,0,'ใบลงชื่อผู้มีสิทธิ์สอบสัมภาษณ์ โครงการ' +
                 project.title +
-                ' มหาวิทยาลัยเกษตรศาสตร์ ปีการศึกษา 2564 (TCAS รอบที่ 1)')
+                ' มหาวิทยาลัยเกษตรศาสตร์ ปีการศึกษา 2564 (TCAS รอบที่ 2)')
     set_column_widths(sheet,[4,15,8,12,22,5,5,10,10,12,12])
     write_registration_table_header(sheet, cell_format)
     write_applicant_rows(sheet, 2, applicants, major, cell_format)
@@ -269,7 +269,7 @@ def write_interview_result_sheet(sheet, project, applicants, major, cell_format)
     sheet.set_landscape()
     sheet.write(0,0,'ใบลงชื่อผู้มีสิทธิ์สอบสัมภาษณ์ โครงการ' +
                 project.title +
-                ' มหาวิทยาลัยเกษตรศาสตร์ ปีการศึกษา 2564 (TCAS รอบที่ 1)')
+                ' มหาวิทยาลัยเกษตรศาสตร์ ปีการศึกษา 2564 (TCAS รอบที่ 2)')
     set_column_widths(sheet,[4,8,12,22,5,10,12,15,10,25])
     write_result_table_header(sheet, cell_format)
     write_applicant_rows(sheet, 3, applicants, major, cell_format, False)
@@ -378,27 +378,33 @@ def download_applicants_interview_sheet(request, project_id, round_id, major_num
 
 
 def major_with_udat(major):
-    if major.admission_project_id == 13:
-        return major.number in [11, 21, 41]
-    elif major.admission_project_id == 14:
-        return major.number in [6, 30, 33]
-    elif major.admission_project_id == 15:
-        return major.number == 4
-    elif major.admission_project_id == 37:
-        return True
-    elif major.admission_project_id == 32:
-        return major.number in [15,19,70]
+    MAJORS = {
+        11: [12],
+        12: [11, 22, 23],
+        13: [3, 5, 6, 63],
+        14: [2,3],
+        16: [13,14],
+        23: [1],
+        25: [2],
+    }
+    if major.admission_project_id in MAJORS:
+        return major.number in MAJORS[major.admission_project_id]
     else:
         return False
 
 def major_with_full_onet(major):
-    if major.admission_project_id == 32:
-        return major.number in [
-            33,34,35,36,37,39,40,41,42,43,44,45,46,
-            52,53,56,57,58,59,60,61,62,71,
-        ]
+    MAJORS = {
+        12: [51],
+        13: [61],
+        14: [53],
+        16: [58, 83],
+    }
+    if major.admission_project_id in MAJORS:
+        return major.number in MAJORS[major.admission_project_id]
     else:
         return False
+
+
 
 def write_score_report_header(sheet, major, cell_format):
     items = [

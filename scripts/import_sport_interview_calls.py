@@ -10,7 +10,7 @@ from appl.models import AdmissionProject, AdmissionResult, AdmissionRound, Proje
 
 def main():
     result_filename = sys.argv[1]
-    project_id = 11
+    project_id = 17
     round_id = 2
 
     admission_project = AdmissionProject.objects.get(pk=project_id)
