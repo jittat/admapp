@@ -15,6 +15,12 @@
                 {% if result.has_interview_rank %}
                   ({% trans 'สัมภาษณ์ลำดับที่' %} {{ result.interview_rank }})
                 {% endif %}
+
+		{% if result.major.faculty_id == 7 %}
+		  <div class="alert alert-warning">
+		    <span class="badge badge-danger">ทีมงานขออภัย</span> ขณะนี้ในประกาศรายละเอียดการสัมภาษณ์คณะศึกษาศาสตร์มีปัญหา ทำให้ไม่สามารถกด QR Code ได้ ทางทีมงานกำลังแก้ไข ผู้ผ่านการคัดเลือกกรุณากลับมาตรวจสอบอีกครั้งเร็ว ๆ นี้
+		  </div>
+		{% endif %}
               </li>
             {% endif %}
           {% endfor %}
