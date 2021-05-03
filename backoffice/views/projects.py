@@ -1153,7 +1153,7 @@ def show_scores(request, project_id, round_id, major_number):
     elif project.id == 13:
         show_udat_scores = (major.number in [3, 5, 6])
     elif project.id == 14:
-        show_udat_scores = (major.number in [2, 3])
+        show_udat_scores = (major.number in [2, 3, 45])
     elif project.id == 16:
         show_udat_scores = (major.number in [13, 14])
     elif project.id == 25:
