@@ -473,7 +473,7 @@ def score_vector_from_criterias(admission_criteria, curriculum_major):
             fix_score_type(c[2], curriculum_major)
         else:
             for cc in c[2][1:]:
-                fix_score_type(cc)
+                fix_score_type(cc, curriculum_major)
 
     print_scoring = False
                 
@@ -573,6 +573,11 @@ def get_program_major_code_from_major(major):
 
 def main():
     project_id = sys.argv[1]
+
+    dump_without_majors = False
+    if len(sys.argv) > 2:
+        dump_without_majors = sys.argv[2] == '--dump-all'
+    
     project_ids = [project_id]
 
     all_rows = []
@@ -583,7 +588,11 @@ def main():
         exported_curriculum_major_criterias = export_curriculum_major_criterias(admission_project)
 
         project_rows = []
-        
+
+        if dump_without_majors:
+            all_rows += exported_curriculum_major_criterias.values()
+            continue
+            
         for major in admission_project.major_set.all():
             program_major_code = get_program_major_code_from_major(major)
             if program_major_code in exported_curriculum_major_criterias:

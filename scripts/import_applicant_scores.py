@@ -38,7 +38,7 @@ def main():
             application = all_applications[nat_id]
             results = application.admissionresult_set.all()
             if len(results) > 1:
-                print('ERROR too many results', nat_id)
+                print('ERROR too many results', nat_id, len(results))
                 continue
 
             if len(results) == 1:

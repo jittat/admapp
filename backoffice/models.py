@@ -280,7 +280,7 @@ class AdjustmentMajorSlot(models.Model):
     cupt_code = models.CharField(max_length=30,
                                  blank=True)
     
-    admission_project_title = models.CharField(max_length=100)
+    admission_project_title = models.CharField(max_length=200)
 
     original_slots = models.IntegerField()
     current_slots = models.IntegerField()

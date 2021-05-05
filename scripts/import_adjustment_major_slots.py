@@ -36,7 +36,7 @@ def main():
             old_slots = AdjustmentMajorSlot.objects.filter(adjustment_major=adj_major).all()
             slot = None
             for s in old_slots:
-                if s.admission_project_title == project_title:
+                if s.cupt_code == full_major_project_code:
                     slot = s
             if not slot:
                 slot = AdjustmentMajorSlot()
