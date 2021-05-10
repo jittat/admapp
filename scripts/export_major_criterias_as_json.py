@@ -549,6 +549,7 @@ def export_curriculum_major_criterias(admission_project):
             major_cupt_code = curriculum_major.cupt_code
 
             row = {
+                'criteria_key': f'{major_cupt_code.program_code}-{major_cupt_code.major_code}-{mc.id}',
                 'required_score_criteria': non_zero_min_scores,
                 'scoring_score_criteria': scoring_scores,
                 'faculty': curriculum_major.faculty.title,
@@ -562,8 +563,11 @@ def export_curriculum_major_criterias(admission_project):
 
             if major_cupt_code.get_program_major_code() in curriculum_major_results:
                 print_error('>>>>>>>>>  ERROR too many criterias for', major_cupt_code, major_cupt_code.get_program_major_code())
-                
-            curriculum_major_results[major_cupt_code.get_program_major_code()] = row
+
+            if major_cupt_code.get_program_major_code() not in curriculum_major_results:
+                curriculum_major_results[major_cupt_code.get_program_major_code()] = []
+
+            curriculum_major_results[major_cupt_code.get_program_major_code()].append(row)
 
     return curriculum_major_results
 
@@ -590,7 +594,10 @@ def main():
         project_rows = []
 
         if dump_without_majors:
-            all_rows += exported_curriculum_major_criterias.values()
+            for k in exported_curriculum_major_criterias:
+                for r in exported_curriculum_major_criterias[k]:
+                    all_rows.append(r)
+
             continue
             
         for major in admission_project.major_set.all():
