@@ -15,6 +15,7 @@ def main():
     confirmed_count = {}
     with open(filename) as csvfile:
         reader = csv.reader(csvfile, delimiter=',')
+        next(reader)
         for items in reader:
             if len(items) == 0:
                 continue
@@ -24,6 +25,7 @@ def main():
             confirmed_count[cupt_id] += 1
 
     for cupt_id in confirmed_count.keys():
+        print(cupt_id)
         slot = AdjustmentMajorSlot.objects.get(cupt_code=cupt_id)
         slot.confirmed_slots = confirmed_count[cupt_id]
         slot.save()

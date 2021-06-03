@@ -52,7 +52,7 @@ def main():
 
     counter = 0
     for a in applicants:
-        old_apps = Applicant.objects.filter(national_id=a['natid']).all()
+        old_apps = Applicant.objects.filter(national_id='x' + a['natid']).all()
         if (len(old_apps) != 0) and check_dup:
             print('ERROR dup', a['natid'])
             continue
@@ -69,6 +69,7 @@ def main():
         app.email = random_email()
         app.random_password()
 
+        print(app)
         app.save()
 
         if app.project_applications.count() != 0:
