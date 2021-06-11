@@ -74,8 +74,15 @@ def main():
     is_slots_combined = False
     is_admission_2 = False
     is_no_add_limits = False
-         
+
+    campuses = None
+    
     while project_ids[0].startswith('--'):
+        if project_ids[0].startswith('--campus'):
+            campuses = [int(x) for x in (project_ids[0].split('=')[1]).split(',')]
+            del project_ids[0]
+            continue
+        
         print(f'Option unknown: {project_ids[0]}')
         del project_ids[0]
     
@@ -100,6 +107,9 @@ def main():
             for mc in curriculum_major_admission_criterias:
                 curriculum_major = mc.curriculum_major
 
+                if (campuses != None) and (curriculum_major.faculty.campus_id not in campuses):
+                    continue
+                
                 row_criteria = admission_criteria
                 row = gen_row(curriculum_major, mc.slots, row_criteria, admission_project)
                 project_rows.append(row)

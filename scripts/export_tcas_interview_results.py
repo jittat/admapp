@@ -19,13 +19,13 @@ def main():
                                              admission_round=admission_round).all()
 
     for res in results:
-        if res.is_accepted_for_interview and res.is_tcas_confirmed:
+        if res.is_accepted_for_interview: # and res.is_tcas_confirmed:
             if res.is_interview_absent:
-                r = '3'
+                r = '2'
             elif res.is_accepted:
                 r = '1'
             elif res.is_accepted == False:
-                r = '2'
+                r = '4'
             else:
                 r = 'XXXXX'
             items = [res.applicant.national_id,

@@ -603,7 +603,14 @@ def main():
         for major in admission_project.major_set.all():
             program_major_code = get_program_major_code_from_major(major)
             if program_major_code in exported_curriculum_major_criterias:
-                res = copy.deepcopy(exported_curriculum_major_criterias[program_major_code])
+                res_list = copy.deepcopy(exported_curriculum_major_criterias[program_major_code])
+                if len(res_list) == 1:
+                    res = res_list[0]
+                    #print(res)
+                else:
+                    print_error('==========ERROR=========')
+                    print_error(res_list)
+                    res = res_list[0]
                 res['major_number'] = major.number
                 res['admission_project_id'] = admission_project.id
                 res['admission_project'] = admission_project.title
