@@ -671,8 +671,9 @@ def show_applicant(request, project_id, round_id, major_number, rank):
     if not project_round.criteria_check_required:
         is_criteria_passed = True
 
-    if admission_result and (admission_result.calculated_score < 0):
-        is_criteria_passed = False
+    if project_round.applicant_score_viewable:
+        if admission_result and (admission_result.calculated_score < 0):
+            is_criteria_passed = False
         
     major_accepted_for_interview_count = AdmissionResult.accepted_for_interview_count(admission_round,
                                                                                       major)
@@ -1158,6 +1159,8 @@ def show_scores(request, project_id, round_id, major_number):
         show_udat_scores = (major.number in [13, 14])
     elif project.id == 25:
         show_udat_scores = (major.number in [2])
+    elif project.id == 31:
+        show_udat_scores = (major.number in [25,26])
 
     applicant_score_viewable = project_round.applicant_score_viewable
     individual_call_only = (not project_round.only_bulk_interview_acceptance) or (major.is_forced_individual_interview_call)
