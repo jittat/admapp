@@ -386,6 +386,7 @@ def major_with_udat(major):
         16: [13,14],
         23: [1],
         25: [2],
+        31: [25, 26],
     }
     if major.admission_project_id in MAJORS:
         return major.number in MAJORS[major.admission_project_id]
@@ -398,6 +399,7 @@ def major_with_full_onet(major):
         13: [61],
         14: [53],
         16: [58, 83],
+        31: [8, 21, 24],
     }
     if major.admission_project_id in MAJORS:
         return major.number in MAJORS[major.admission_project_id]
