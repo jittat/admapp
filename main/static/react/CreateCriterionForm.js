@@ -491,6 +491,8 @@ var PrimaryTopic = function PrimaryTopic(_ref3) {
   );
 };
 var PrimaryScoringTopic = function PrimaryScoringTopic(_ref4) {
+  var _React$createElement2;
+
   var topic = _ref4.topic,
       removeTopic = _ref4.removeTopic,
       number = _ref4.number,
@@ -563,6 +565,7 @@ var PrimaryScoringTopic = function PrimaryScoringTopic(_ref4) {
         inputType: 'number',
         inputProps: { required: true }
       }),
+      React.createElement('input', (_React$createElement2 = { type: 'text' }, _defineProperty(_React$createElement2, 'type', 'hidden'), _defineProperty(_React$createElement2, 'name', 'scoring_' + number + '_type'), _defineProperty(_React$createElement2, 'required', true), _React$createElement2)),
       React.createElement(
         'td',
         null,
@@ -586,6 +589,8 @@ var PrimaryScoringTopic = function PrimaryScoringTopic(_ref4) {
       )
     ),
     secondaryTopics.map(function (topic, idx) {
+      var _React$createElement3;
+
       var snumber = number + '.' + (idx + 1);
       return React.createElement(
         'tr',
@@ -617,6 +622,7 @@ var PrimaryScoringTopic = function PrimaryScoringTopic(_ref4) {
           inputType: 'number',
           inputProps: { required: true }
         }),
+        React.createElement('input', (_React$createElement3 = { type: 'text' }, _defineProperty(_React$createElement3, 'type', 'hidden'), _defineProperty(_React$createElement3, 'name', 'scoring_' + snumber + '_type'), _defineProperty(_React$createElement3, 'required', true), _React$createElement3)),
         React.createElement(
           'td',
           null,
@@ -673,6 +679,14 @@ var EditableCell = function EditableCell(_ref5) {
               var unitEl = $('[name="' + unitName + '"]')[0];
               if (unitEl) {
                 unitEl.value = o.unit;
+              }
+
+              temp = name.split('_');
+              temp[temp.length - 1] = 'type';
+              var scoringName = temp.join('_');
+              var scoringEl = $('[name="' + scoringName + '"]')[0];
+              if (scoringEl) {
+                scoringEl.value = o.score_type;
               }
             }
           };

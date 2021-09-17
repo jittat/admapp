@@ -358,6 +358,8 @@ const PrimaryScoringTopic = ({ topic, removeTopic, number, updateTopic, maxScore
           inputType="number"
           inputProps={{ required: true }}
         />
+        <input type="text"  type="hidden" name={`scoring_${number}_type`} required />
+
         <td><strong>{(topic.value / maxScore * 100).toLocaleString()}%</strong></td>
         <td>
           <button className="btn btn-secondary btn-sm" onClick={() => removeTopic(topic)}>-</button>
@@ -385,6 +387,8 @@ const PrimaryScoringTopic = ({ topic, removeTopic, number, updateTopic, maxScore
               inputType="number"
               inputProps={{ required: true }}
             />
+            <input type="text"  type="hidden" name={`scoring_${snumber}_type`} required />
+
             <td>{(topic.value / primaryMaxScore * 100).toLocaleString()}%</td>
             <td>
               <button className="btn btn-secondary btn-sm" onClick={() => removeSecondaryTopic(topic)}>-</button>
@@ -425,6 +429,15 @@ const EditableCell = ({
               const unitEl = $(`[name="${unitName}"]`)[0]
               if (unitEl) {
                 unitEl.value = o.unit
+              }
+
+
+              temp = name.split('_')
+              temp[temp.length - 1] = 'type'
+              const scoringName = temp.join('_')
+              const scoringEl = $(`[name="${scoringName}"]`)[0]
+              if (scoringEl) {
+                scoringEl.value = o.score_type
               }
             }
           })),

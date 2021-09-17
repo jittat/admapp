@@ -16,3 +16,7 @@
     ./manage.py migrate --run-syncdb
     ./manage.py loaddata campuses faculties admission_projects_and_rounds majors
 ```
+## วิธีรัน pipenv
+```
+    pipenv shell
+```
