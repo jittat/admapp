@@ -370,6 +370,8 @@ var ScoringCriteria = function ScoringCriteria(_ref2) {
   );
 };
 var PrimaryTopic = function PrimaryTopic(_ref3) {
+  var _React$createElement2;
+
   var topic = _ref3.topic,
       removeTopic = _ref3.removeTopic,
       number = _ref3.number,
@@ -432,6 +434,7 @@ var PrimaryTopic = function PrimaryTopic(_ref3) {
         , initialValue: topic.unit || '',
         tags: unitTags
       }),
+      React.createElement('input', (_React$createElement2 = { type: 'text' }, _defineProperty(_React$createElement2, 'type', 'hidden'), _defineProperty(_React$createElement2, 'name', 'required_' + number + '_type'), _defineProperty(_React$createElement2, 'required', true), _React$createElement2)),
       React.createElement(
         'td',
         null,
@@ -445,6 +448,8 @@ var PrimaryTopic = function PrimaryTopic(_ref3) {
       )
     ),
     secondaryTopics.map(function (topic, idx) {
+      var _React$createElement3;
+
       var snumber = number + '.' + (idx + 1);
       return React.createElement(
         'tr',
@@ -475,6 +480,7 @@ var PrimaryTopic = function PrimaryTopic(_ref3) {
           , initialValue: topic.unit,
           tags: unitTags
         }),
+        React.createElement('input', (_React$createElement3 = { type: 'text' }, _defineProperty(_React$createElement3, 'type', 'hidden'), _defineProperty(_React$createElement3, 'name', 'required_' + snumber + '_type'), _defineProperty(_React$createElement3, 'required', true), _React$createElement3)),
         React.createElement(
           'td',
           null,
@@ -491,7 +497,7 @@ var PrimaryTopic = function PrimaryTopic(_ref3) {
   );
 };
 var PrimaryScoringTopic = function PrimaryScoringTopic(_ref4) {
-  var _React$createElement2;
+  var _React$createElement4;
 
   var topic = _ref4.topic,
       removeTopic = _ref4.removeTopic,
@@ -565,7 +571,7 @@ var PrimaryScoringTopic = function PrimaryScoringTopic(_ref4) {
         inputType: 'number',
         inputProps: { required: true }
       }),
-      React.createElement('input', (_React$createElement2 = { type: 'text' }, _defineProperty(_React$createElement2, 'type', 'hidden'), _defineProperty(_React$createElement2, 'name', 'scoring_' + number + '_type'), _defineProperty(_React$createElement2, 'required', true), _React$createElement2)),
+      React.createElement('input', (_React$createElement4 = { type: 'text' }, _defineProperty(_React$createElement4, 'type', 'hidden'), _defineProperty(_React$createElement4, 'name', 'scoring_' + number + '_type'), _defineProperty(_React$createElement4, 'required', true), _React$createElement4)),
       React.createElement(
         'td',
         null,
@@ -589,7 +595,7 @@ var PrimaryScoringTopic = function PrimaryScoringTopic(_ref4) {
       )
     ),
     secondaryTopics.map(function (topic, idx) {
-      var _React$createElement3;
+      var _React$createElement5;
 
       var snumber = number + '.' + (idx + 1);
       return React.createElement(
@@ -622,7 +628,7 @@ var PrimaryScoringTopic = function PrimaryScoringTopic(_ref4) {
           inputType: 'number',
           inputProps: { required: true }
         }),
-        React.createElement('input', (_React$createElement3 = { type: 'text' }, _defineProperty(_React$createElement3, 'type', 'hidden'), _defineProperty(_React$createElement3, 'name', 'scoring_' + snumber + '_type'), _defineProperty(_React$createElement3, 'required', true), _React$createElement3)),
+        React.createElement('input', (_React$createElement5 = { type: 'text' }, _defineProperty(_React$createElement5, 'type', 'hidden'), _defineProperty(_React$createElement5, 'name', 'scoring_' + snumber + '_type'), _defineProperty(_React$createElement5, 'required', true), _React$createElement5)),
         React.createElement(
           'td',
           null,
@@ -681,12 +687,13 @@ var EditableCell = function EditableCell(_ref5) {
                 unitEl.value = o.unit;
               }
 
+              // set type
               temp = name.split('_');
               temp[temp.length - 1] = 'type';
-              var scoringName = temp.join('_');
-              var scoringEl = $('[name="' + scoringName + '"]')[0];
-              if (scoringEl) {
-                scoringEl.value = o.score_type;
+              var elName = temp.join('_');
+              var el = $('[name="' + elName + '"]')[0];
+              if (el) {
+                el.value = o.score_type;
               }
             }
           };
@@ -712,6 +719,27 @@ var EditableCell = function EditableCell(_ref5) {
   var save = function save(e) {
     try {
       onSave && onSave(inputRef.current.value);
+
+      // clear type and unit if input is not intial from select
+      var temp = name.split('_');
+      if (temp[temp.length - 1] === 'title') {
+        temp[temp.length - 1] = 'type';
+        var elName = temp.join('_');
+        var tag = tags.find(function (o) {
+          return o.description === inputRef.current.value;
+        });
+        if (tag) {
+          var el = $('[name="' + elName + '"]')[0];
+          if (el) {
+            el.value = tag.score_type;
+          }
+        } else {
+          var _el = $('[name="' + elName + '"]')[0];
+          if (_el) {
+            _el.value = 'OTHER';
+          }
+        }
+      }
     } catch (errInfo) {
       console.log('Save failed:', errInfo);
     }

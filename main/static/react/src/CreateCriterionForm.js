@@ -15,7 +15,7 @@ const Form = () => {
   return (
     <div>
       <SelectMajors />
-      { (!hideRequiredSection) && (
+      {(!hideRequiredSection) && (
         <RequiredCriteria initialTopics={dataRequired || []} />
       )}
       <ScoringCriteria initialTopics={dataScoring || []} />
@@ -272,6 +272,8 @@ const PrimaryTopic = ({ topic, removeTopic, number, updateTopic, secondaryTopics
           initialValue={topic.unit || ''}
           tags={unitTags}
         />
+        <input type="text" type="hidden" name={`required_${number}_type`} required />
+
         <td>
           <button className="btn btn-secondary btn-sm" onClick={() => removeTopic(topic)}>-</button>
         </td>
@@ -301,6 +303,8 @@ const PrimaryTopic = ({ topic, removeTopic, number, updateTopic, secondaryTopics
               initialValue={topic.unit}
               tags={unitTags}
             />
+            <input type="text" type="hidden" name={`required_${snumber}_type`} required />
+
             <td>
               <button className="btn btn-secondary btn-sm" onClick={() => removeSecondaryTopic(topic)}>-</button>
             </td>
@@ -358,7 +362,7 @@ const PrimaryScoringTopic = ({ topic, removeTopic, number, updateTopic, maxScore
           inputType="number"
           inputProps={{ required: true }}
         />
-        <input type="text"  type="hidden" name={`scoring_${number}_type`} required />
+        <input type="text" type="hidden" name={`scoring_${number}_type`} required />
 
         <td><strong>{(topic.value / maxScore * 100).toLocaleString()}%</strong></td>
         <td>
@@ -387,7 +391,7 @@ const PrimaryScoringTopic = ({ topic, removeTopic, number, updateTopic, maxScore
               inputType="number"
               inputProps={{ required: true }}
             />
-            <input type="text"  type="hidden" name={`scoring_${snumber}_type`} required />
+            <input type="text" type="hidden" name={`scoring_${snumber}_type`} required />
 
             <td>{(topic.value / primaryMaxScore * 100).toLocaleString()}%</td>
             <td>
@@ -431,13 +435,13 @@ const EditableCell = ({
                 unitEl.value = o.unit
               }
 
-
+              // set type
               temp = name.split('_')
               temp[temp.length - 1] = 'type'
-              const scoringName = temp.join('_')
-              const scoringEl = $(`[name="${scoringName}"]`)[0]
-              if (scoringEl) {
-                scoringEl.value = o.score_type
+              const elName = temp.join('_')
+              const el = $(`[name="${elName}"]`)[0]
+              if (el) {
+                el.value = o.score_type
               }
             }
           })),
@@ -464,6 +468,26 @@ const EditableCell = ({
   const save = e => {
     try {
       onSave && onSave(inputRef.current.value)
+
+      // clear type and unit if input is not intial from select
+      let temp = name.split('_')
+      if (temp[temp.length - 1] === 'title') {
+        temp[temp.length - 1] = 'type'
+        const elName = temp.join('_')
+        const tag = tags.find(o => o.description === inputRef.current.value)
+        if (tag) {
+          const el = $(`[name="${elName}"]`)[0]
+          if (el) {
+            el.value = tag.score_type
+          }
+        } else {
+          const el = $(`[name="${elName}"]`)[0]
+          if (el) {
+            el.value = 'OTHER'
+          }
+        }
+
+      }
     } catch (errInfo) {
       console.log('Save failed:', errInfo);
     }
