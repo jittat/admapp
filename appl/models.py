@@ -842,21 +842,27 @@ class AdmissionResult(models.Model):
                               on_delete=models.CASCADE)
     major_rank = models.IntegerField(default=1)
 
-    is_criteria_passed = models.NullBooleanField(default=None)
+    is_criteria_passed = models.BooleanField(default=None,
+                                             null=True)
     updated_criteria_passed_at = models.DateTimeField(null=True)
     
-    is_accepted_for_interview = models.NullBooleanField(default=None)
+    is_accepted_for_interview = models.BooleanField(default=None,
+                                                    null=True)
     updated_accepted_for_interview_at = models.DateTimeField(null=True)
     interview_rank = models.IntegerField(default=0)
 
     is_tcas_result = models.BooleanField(default=False)
     tcas_acceptance_round_number = models.IntegerField(blank=True,
                                                        null=True)
-    is_tcas_confirmed = models.NullBooleanField(default=None)
-    is_tcas_canceled = models.NullBooleanField(default=None)
+    is_tcas_confirmed = models.BooleanField(default=None,
+                                            null=True)
+    is_tcas_canceled = models.BooleanField(default=None,
+                                           null=True)
 
-    is_interview_absent = models.NullBooleanField(default=None)
-    is_accepted = models.NullBooleanField(default=None)
+    is_interview_absent = models.BooleanField(default=None,
+                                              null=True)
+    is_accepted = models.BooleanField(default=None,
+                                      null=True)
     updated_accepted_at = models.DateTimeField(null=True)
 
     clearing_house_code = models.CharField(max_length=10,
@@ -865,7 +871,8 @@ class AdmissionResult(models.Model):
 
     calculated_score = models.FloatField(default=0)
     
-    has_confirmed = models.NullBooleanField(default=None)
+    has_confirmed = models.BooleanField(default=None,
+                                        null=True)
     
     class Meta:
         indexes = [
