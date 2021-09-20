@@ -11,6 +11,9 @@ ENV
 *.mo
 main/static/react/node_modules/*
 
+/scripts/notebooks/private*
+/scripts/notebooks/.ipynb_checkpoints
+
 .vscode
 .python-version
 .DS_Store
