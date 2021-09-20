@@ -198,12 +198,12 @@ REST_FRAMEWORK = {
 
 # Admission App Configs
 
-ADMISSION_YEAR = 2564
-ADMISSION_TITLE = "โครงการรับสมัครนักเรียนเข้าศึกษาในมหาวิทยาลัยเกษตรศาสตร์ ปีการศึกษา 2564"
-ADMISSION_SHORT_TITLE = "KU-TCAS'64"
+ADMISSION_YEAR = 2565
+ADMISSION_TITLE = "โครงการรับสมัครนักเรียนเข้าศึกษาในมหาวิทยาลัยเกษตรศาสตร์ ปีการศึกษา 2565"
+ADMISSION_SHORT_TITLE = "KU-TCAS'65"
 
-WEB_BRANDING = "KU-TCAS'64"
-WEB_TITLE = "KU-TCAS'64"
+WEB_BRANDING = "KU-TCAS'65"
+WEB_TITLE = "KU-TCAS'65"
 
 VERIFY_NATIONAL_ID = True
 FAKE_LOGIN = False
