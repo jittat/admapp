@@ -23,7 +23,7 @@ from backoffice.decorators import user_login_required
 from criteria.models import CurriculumMajor, AdmissionCriteria, ScoreCriteria, CurriculumMajorAdmissionCriteria, MajorCuptCode
 from criteria.models import COMPONENT_WEIGHT_TYPE_CHOICES
 
-ONLY_ALLOW_ADMIN_EDIT = True
+ONLY_ALLOW_ADMIN_EDIT = False
 
 def is_number(string):
     try:

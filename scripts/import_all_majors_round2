@@ -1,7 +1,7 @@
 #!/bin/bash
 declare -A PRJ
 
-BASEDIR=~/Dropbox/adm64/project-majors
+BASEDIR=~/data/project-majors/r2
 
 PRJ=( [11]=kus [12]=seed [13]=diamonds [14]=pirun [15]=thaiinter [16]=provinces [17]=sport [18]=culture [21]=irr [22]=south [23]=forest [25]=scimou [26]=sciex [50]=inter2 )
 
@@ -10,4 +10,5 @@ for num in "${!PRJ[@]}"; do
     python import_majors.py $num $BASEDIR/$num-${PRJ[$num]}.csv
 done
 
+python round2_update_additional_fees.py
 
