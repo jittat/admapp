@@ -2,6 +2,7 @@
 *.pyc
 
 /scripts/*.csv
+/scripts/data
 settings_local.py
 /data/*
 /media/*

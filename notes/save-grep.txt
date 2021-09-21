@@ -1,0 +1,862 @@
+appl/admin.py-
+appl/admin.py-def make_available(modeladmin, request, queryset):
+appl/admin.py-    for project in queryset:
+appl/admin.py-        project.is_available = True
+appl/admin.py:        project.save()
+--
+appl/admin.py-        
+appl/admin.py-def make_visible(modeladmin, request, queryset):
+appl/admin.py-    for project in queryset:
+appl/admin.py-        project.is_visible_in_backoffice = True
+appl/admin.py:        project.save()
+--
+appl/admin.py-        
+appl/admin.py-def make_project_round_started(modeladmin, request, queryset):
+appl/admin.py-    for project in queryset:
+appl/admin.py-        project.is_started = True
+appl/admin.py:        project.save()
+--
+appl/admin.py-        
+appl/admin.py-def make_project_round_stopped(modeladmin, request, queryset):
+appl/admin.py-    for project in queryset:
+appl/admin.py-        project.is_started = False
+appl/admin.py:        project.save()
+--
+appl/qrpayment.py-    qr.add_data(code)
+appl/qrpayment.py-    qr.make(fit=True)
+appl/qrpayment.py-
+appl/qrpayment.py-    img = qr.make_image(fill_color="black", back_color="white")
+appl/qrpayment.py:    img.save(open(filename + '-base.png','wb'))
+--
+appl/qrpayment.py-    logo_filename = finders.find('appl/payment/img/QR_Logo-03.png')
+appl/qrpayment.py-    logo = Image.open(logo_filename).resize((80,60))
+appl/qrpayment.py-    qr_in.paste(logo, box=(qr_in.width // 2 - 40, qr_in.height // 2 - 30), mask=logo)
+appl/qrpayment.py-
+appl/qrpayment.py:    qr_in.save(filename + '.png')
+--
+appl/qrpayment.py-
+appl/qrpayment.py-        im = Image.open(BytesIO(base64.b64decode(img_base64)))
+appl/qrpayment.py-        im = im.resize((390,390))
+appl/qrpayment.py-        im = im.crop((30,30,360,360))
+appl/qrpayment.py:        im.save(filename + '.png', 'PNG')
+--
+backoffice/models.py-
+backoffice/models.py-@receiver(post_save, sender=User)
+backoffice/models.py-def save_user_profile(sender, instance, **kwargs):
+backoffice/models.py-    try:
+backoffice/models.py:        instance.profile.save()
+--
+criteria/models.py-                         'program_type_code': major_cupt_code.program_type_code,
+criteria/models.py-                         'major_code': major_cupt_code.major_code})
+criteria/models.py-
+criteria/models.py-        self.curriculum_majors_json = json.dumps(data)
+criteria/models.py:        self.save()
+--
+qrconfirmations/views.py-                      verification_number=ref2,
+qrconfirmations/views.py-                      national_id=national_id,
+qrconfirmations/views.py-                      amount=amount,
+qrconfirmations/views.py-                      paid_at=paid_at)
+qrconfirmations/views.py:    payment.save()
+--
+qrconfirmations/views.py-            confirmation.status = 0
+qrconfirmations/views.py-        else:
+qrconfirmations/views.py-            confirmation.status = 500
+qrconfirmations/views.py-
+qrconfirmations/views.py:        confirmation.save()
+--
+qrconfirmations/views.py-            confirmation.status = 0
+qrconfirmations/views.py-        else:
+qrconfirmations/views.py-            confirmation.status = 500
+qrconfirmations/views.py-
+qrconfirmations/views.py:        confirmation.save()
+--
+regis/models.py-        application = ProjectApplication(applicant=self,
+regis/models.py-                                         admission_project=admission_project,
+regis/models.py-                                         admission_round=admission_round)
+regis/models.py-        application.applied_at = datetime.now()
+regis/models.py:        application.save()
+regis/models.py-        application.verification_number = application.get_verification_number()
+regis/models.py:        application.save()
+--
+regis/models.py-
+regis/models.py-    def has_registered_with_passport(self):
+regis/models.py-        return self.national_id.startswith('999')
+regis/models.py-    
+regis/models.py:    def generate_random_national_id_and_save(self):
+--
+regis/models.py-                fake_national_id = fake_national_id[:-1] + str(checkdigit)
+regis/models.py-
+regis/models.py-                self.national_id = fake_national_id
+regis/models.py-                try:
+regis/models.py:                    self.save()
+--
+regis/models.py-    @staticmethod
+regis/models.py-    def create_for(applicant):
+regis/models.py-        try:
+regis/models.py-            item = CuptRequestQueueItem(applicant=applicant)
+regis/models.py:            item.save()
+--
+regis/models.py-                log.request_ip = request.META['REMOTE_ADDR']
+regis/models.py-            elif 'HTTP_X_FORWARDED_FOR' in request.META:
+regis/models.py-                log.request_ip = request.META['HTTP_X_FORWARDED_FOR']
+regis/models.py-
+regis/models.py:        log.save()
+--
+regis/tests.py-    def register_test_applicant_with_passport_number(client):
+regis/tests.py-        RegistrationTestCase.register_test_applicant(client)
+regis/tests.py-        a = Applicant.objects.get(national_id=RegistrationTestCase.TEST_NATID)
+regis/tests.py-        a.passport_number = RegistrationTestCase.TEST_PASSPORT_NUMBER;
+regis/tests.py:        a.save()
+--
+regis/views.py-                          email=form.cleaned_data['email'])
+regis/views.py-    applicant.set_password(form.cleaned_data['password'])
+regis/views.py-    try:
+regis/views.py-        if form.cleaned_data['has_national_id'] == '1':
+regis/views.py:            applicant.save()
+regis/views.py-            return applicant
+regis/views.py-        else:
+regis/views.py:            result = applicant.generate_random_national_id_and_save()
+--
+regis/views.py-            if (not applicant) or (applicant.email.upper() != email.strip().upper()):
+regis/views.py-                error_message = _('ไม่พบข้อมูลผู้สมัครที่ระบุหรืออีเมลที่ระบุไม่ถูกต้อง')
+regis/views.py-            else:
+regis/views.py-                new_password = applicant.random_password()
+regis/views.py:                applicant.save()
+--
+scripts/bulk_cancel.py-                continue
+scripts/bulk_cancel.py-
+scripts/bulk_cancel.py-            application = all_applications[nat_id]
+scripts/bulk_cancel.py-            application.is_canceled = True
+scripts/bulk_cancel.py:            application.save()
+--
+scripts/bulk_cancel_round.py-
+scripts/bulk_cancel_round.py-            application = all_applications[nat_id]
+scripts/bulk_cancel_round.py-
+scripts/bulk_cancel_round.py-            application.is_canceled = True
+scripts/bulk_cancel_round.py:            application.save()
+--
+scripts/cache_cross_major_results.py-                other_scores.append(results[mm].admission_result.calculated_score)
+scripts/cache_cross_major_results.py-
+scripts/cache_cross_major_results.py-            result.other_major_scores = ','.join([('%5f' % sc) for sc in other_scores])
+scripts/cache_cross_major_results.py-
+scripts/cache_cross_major_results.py:            result.save()
+--
+scripts/cache_major_results.py-
+scripts/cache_major_results.py-            major_result.other_major_numbers = ','.join([str(mm.number) for mm in majors
+scripts/cache_major_results.py-                                                         if mm.id != m.id])
+scripts/cache_major_results.py-            
+scripts/cache_major_results.py:            major_result.save()
+--
+scripts/cache_major_results.py-                ascore.applicant = a
+scripts/cache_major_results.py-                ascore.major = m
+scripts/cache_major_results.py-                ascore.admission_project = project
+scripts/cache_major_results.py-                ascore.exam_score = ex
+scripts/cache_major_results.py:                ascore.save()
+--
+scripts/check_adjustment_major_slot_join.py-        new_title = combine_titles(slots)
+scripts/check_adjustment_major_slot_join.py-        slot = slots[0]
+scripts/check_adjustment_major_slot_join.py-
+scripts/check_adjustment_major_slot_join.py-        slot.admission_project_title = new_title
+scripts/check_adjustment_major_slot_join.py:        slot.save()
+--
+scripts/check_cupt.py-            cupt_confirmation.national_id = applicant.national_id
+scripts/check_cupt.py-            cupt_confirmation.passport_number = applicant.passport_number
+scripts/check_cupt.py-            cupt_confirmation.updated_at = datetime.now()
+scripts/check_cupt.py-            cupt_confirmation.has_confirmed = has_confirmed
+scripts/check_cupt.py:            cupt_confirmation.save()
+--
+scripts/dev_mock_curriculum_major.py-    for ap in admission_projects:
+scripts/dev_mock_curriculum_major.py-        for cc in major_cupt_codes:
+scripts/dev_mock_curriculum_major.py-            curriculum_major = CurriculumMajor(
+scripts/dev_mock_curriculum_major.py-                admission_project=ap, cupt_code=cc, faculty=cc.faculty)
+scripts/dev_mock_curriculum_major.py:            curriculum_major.save()
+--
+scripts/fix_qrerror.py-
+scripts/fix_qrerror.py-            if payment:
+scripts/fix_qrerror.py-                confirmation.payment = payment
+scripts/fix_qrerror.py-                confirmation.status = 100
+scripts/fix_qrerror.py:                confirmation.save()
+--
+scripts/gpa_update.py-            applicant = application.applicant
+scripts/gpa_update.py-            edu = applicant.educationalprofile
+scripts/gpa_update.py-            if edu.gpa != float(items[1]):
+scripts/gpa_update.py-                edu.gpa = float(items[1])
+scripts/gpa_update.py:                edu.save()
+--
+scripts/import_acceptance_no_interview.py-            result.is_accepted = True
+scripts/import_acceptance_no_interview.py-            result.updated_accepted_at = datetime.now()
+scripts/import_acceptance_no_interview.py-            #result.clearing_house_code = items[3]
+scripts/import_acceptance_no_interview.py-            #result.clearing_house_code_number = int(items[4])
+scripts/import_acceptance_no_interview.py:            result.save()
+--
+scripts/import_acceptance.py-                result.is_interview_absent = True
+scripts/import_acceptance.py-            result.updated_accepted_at = datetime.now()
+scripts/import_acceptance.py-            #result.clearing_house_code = items[3]
+scripts/import_acceptance.py-            #result.clearing_house_code_number = int(items[4])
+scripts/import_acceptance.py:            result.save()
+--
+scripts/import_acceptance_w_code_no_interview.py-            result.is_accepted = True
+scripts/import_acceptance_w_code_no_interview.py-            result.updated_accepted_at = datetime.now()
+scripts/import_acceptance_w_code_no_interview.py-            result.clearing_house_code = items[3]
+scripts/import_acceptance_w_code_no_interview.py-            result.clearing_house_code_number = int(items[4])
+scripts/import_acceptance_w_code_no_interview.py:            result.save()
+--
+scripts/import_acceptance_w_code.py-            result.is_accepted = True
+scripts/import_acceptance_w_code.py-            result.updated_accepted_at = datetime.now()
+scripts/import_acceptance_w_code.py-            result.clearing_house_code = items[3]
+scripts/import_acceptance_w_code.py-            result.clearing_house_code_number = int(items[4])
+scripts/import_acceptance_w_code.py:            result.save()
+--
+scripts/import_adjustment_major_confirmed_slots.py-    for cupt_id in confirmed_count.keys():
+scripts/import_adjustment_major_confirmed_slots.py-        print(cupt_id)
+scripts/import_adjustment_major_confirmed_slots.py-        slot = AdjustmentMajorSlot.objects.get(cupt_code=cupt_id)
+scripts/import_adjustment_major_confirmed_slots.py-        slot.confirmed_slots = confirmed_count[cupt_id]
+scripts/import_adjustment_major_confirmed_slots.py:        slot.save()
+--
+scripts/import_adjustment_major_slots.py-                slot.original_slots = 0
+scripts/import_adjustment_major_slots.py-                
+scripts/import_adjustment_major_slots.py-            slot.current_slots = slot.original_slots
+scripts/import_adjustment_major_slots.py-            
+scripts/import_adjustment_major_slots.py:            slot.save()
+--
+scripts/import_adjustment_majors.py-            adj_major.title = title
+scripts/import_adjustment_majors.py-            adj_major.faculty = faculty
+scripts/import_adjustment_majors.py-            adj_major.major_code = full_code
+scripts/import_adjustment_majors.py-            adj_major.study_type_code = items[4]
+scripts/import_adjustment_majors.py:            adj_major.save()
+--
+scripts/import_apapps.py-                pass
+scripts/import_apapps.py-
+scripts/import_apapps.py-            app = AdvancedPlacementApplicant(national_id=nat_id,
+scripts/import_apapps.py-                                             student_id=items[2])
+scripts/import_apapps.py:            app.save()
+--
+scripts/import_apapps.py-            res = AdvancedPlacementResult(ap_applicant=app,
+scripts/import_apapps.py-                                          subject_id=items[0],
+scripts/import_apapps.py-                                          section_id=items[1],
+scripts/import_apapps.py-                                          grade=items[3])
+scripts/import_apapps.py:            res.save()
+--
+scripts/import_applicant_scores.py-                                         major_rank=1,
+scripts/import_applicant_scores.py-                                         major=majors[0])
+scripts/import_applicant_scores.py-
+scripts/import_applicant_scores.py-            result.calculated_score = float(items[2])
+scripts/import_applicant_scores.py:            result.save()
+--
+scripts/import_backoffice_adjustment_users.py-                user = User.objects.create_user(username, email, password)
+scripts/import_backoffice_adjustment_users.py-
+scripts/import_backoffice_adjustment_users.py-            user.first_name = items[1].strip()
+scripts/import_backoffice_adjustment_users.py-            user.last_name = items[2].strip()
+scripts/import_backoffice_adjustment_users.py:            user.save()
+--
+scripts/import_backoffice_adjustment_users.py-            profile.adjustment_major_number = items[4].strip()
+scripts/import_backoffice_adjustment_users.py-            faculty_title = items[5]
+scripts/import_backoffice_adjustment_users.py-            profile.faculty = Faculty.objects.get(title=faculty_title)
+scripts/import_backoffice_adjustment_users.py-            
+scripts/import_backoffice_adjustment_users.py:            profile.save()
+--
+scripts/import_backoffice_users.py-                user = User.objects.create_user(username, email, password)
+scripts/import_backoffice_users.py-
+scripts/import_backoffice_users.py-            user.first_name = items[1].strip()
+scripts/import_backoffice_users.py-            user.last_name = items[2].strip()
+scripts/import_backoffice_users.py:            user.save()
+--
+scripts/import_backoffice_users.py-
+scripts/import_backoffice_users.py-            if len(items) >= 7:
+scripts/import_backoffice_users.py-                profile.major_number = int(items[6])
+scripts/import_backoffice_users.py-            
+scripts/import_backoffice_users.py:            profile.save()
+--
+scripts/import_campuses.py-
+scripts/import_campuses.py-            campus = Campus(id=campus_id,
+scripts/import_campuses.py-                            title=title,
+scripts/import_campuses.py-                            short_title=short_title)
+scripts/import_campuses.py:            campus.save()
+--
+scripts/import_clearing_results_all_projects.py-            continue
+scripts/import_clearing_results_all_projects.py-        
+scripts/import_clearing_results_all_projects.py-        applicant = application.applicant
+scripts/import_clearing_results_all_projects.py-        applicant.confirmed_application = application
+scripts/import_clearing_results_all_projects.py:        applicant.save()
+scripts/import_clearing_results_all_projects.py-
+scripts/import_clearing_results_all_projects.py-        result.has_confirmed = True
+scripts/import_clearing_results_all_projects.py:        result.save()
+--
+scripts/import_clearing_results.py-
+scripts/import_clearing_results.py-        application = accepted_applications[number]
+scripts/import_clearing_results.py-        applicant = application.applicant
+scripts/import_clearing_results.py-        applicant.confirmed_application = application
+scripts/import_clearing_results.py:        applicant.save()
+--
+scripts/import_clearing_results.py-            print('ERROR result')
+scripts/import_clearing_results.py-            continue
+scripts/import_clearing_results.py-        result = results[0]
+scripts/import_clearing_results.py-        result.has_confirmed = True
+scripts/import_clearing_results.py:        result.save()
+--
+scripts/import_confirmation_results.py-
+scripts/import_confirmation_results.py-        if decision == '1':
+scripts/import_confirmation_results.py-            admission_result.is_tcas_confirmed = True
+scripts/import_confirmation_results.py-            if not is_fake:
+scripts/import_confirmation_results.py:                admission_result.save()
+scripts/import_confirmation_results.py-        else:
+scripts/import_confirmation_results.py-            admission_result.is_tcas_confirmed = False
+scripts/import_confirmation_results.py-            if not is_fake:
+scripts/import_confirmation_results.py:                admission_result.save()
+--
+scripts/import_confirmation_results_tcas63.py-
+scripts/import_confirmation_results_tcas63.py-            if decision == '1':
+scripts/import_confirmation_results_tcas63.py-                admission_result.has_confirmed = True
+scripts/import_confirmation_results_tcas63.py-                if not is_fake:
+scripts/import_confirmation_results_tcas63.py:                    admission_result.save()
+scripts/import_confirmation_results_tcas63.py-                    applicant.confirmed_application = application
+scripts/import_confirmation_results_tcas63.py:                    applicant.save()
+scripts/import_confirmation_results_tcas63.py-            else:
+scripts/import_confirmation_results_tcas63.py-                admission_result.has_confirmed = False
+scripts/import_confirmation_results_tcas63.py-                if not is_fake:
+scripts/import_confirmation_results_tcas63.py:                    admission_result.save()
+--
+scripts/import_confirmation_results_tcas64.py-
+scripts/import_confirmation_results_tcas64.py-            if decision == '3':
+scripts/import_confirmation_results_tcas64.py-                admission_result.has_confirmed = True
+scripts/import_confirmation_results_tcas64.py-                if not is_fake:
+scripts/import_confirmation_results_tcas64.py:                    admission_result.save()
+scripts/import_confirmation_results_tcas64.py-                    applicant.confirmed_application = application
+scripts/import_confirmation_results_tcas64.py:                    applicant.save()
+scripts/import_confirmation_results_tcas64.py-            else:
+scripts/import_confirmation_results_tcas64.py-                admission_result.has_confirmed = False
+scripts/import_confirmation_results_tcas64.py-                if not is_fake:
+scripts/import_confirmation_results_tcas64.py:                    admission_result.save()
+scripts/import_confirmation_results_tcas64.py-                    try:
+scripts/import_confirmation_results_tcas64.py-                        if applicant.confirmed_application != None:
+scripts/import_confirmation_results_tcas64.py-                            applicant.confirmed_application = None
+scripts/import_confirmation_results_tcas64.py:                            applicant.save()
+--
+scripts/import_criteria_major_cupt_code.py-                                                    major_code=major_code,
+scripts/import_criteria_major_cupt_code.py-                                                    title=title,
+scripts/import_criteria_major_cupt_code.py-                                                    major_title=major_title,
+scripts/import_criteria_major_cupt_code.py-                                                    faculty=faculty)
+scripts/import_criteria_major_cupt_code.py:                major_cupt_code.save()
+--
+scripts/import_culture_interview_calls.py-                    found = True
+scripts/import_culture_interview_calls.py-                    result.is_accepted_for_interview = True
+scripts/import_culture_interview_calls.py-                    
+scripts/import_culture_interview_calls.py-                result.updated_accepted_for_interview_at = datetime.now()
+scripts/import_culture_interview_calls.py:                result.save()
+--
+scripts/import_exam_scores.py-                           exam_type=exam_type)
+scripts/import_exam_scores.py-            sc.exam_round = items[4]
+scripts/import_exam_scores.py-            sc.exam_list = exam_list
+scripts/import_exam_scores.py-            sc.score_list = ','.join(items[5:])
+scripts/import_exam_scores.py:            sc.save()
+--
+scripts/import_faculties.py-            campus_id = int(items[2])
+scripts/import_faculties.py-            campus = Campus.objects.get(pk=campus_id)
+scripts/import_faculties.py-
+scripts/import_faculties.py-            faculty = Faculty(title=title, campus=campus)
+scripts/import_faculties.py:            faculty.save()
+--
+scripts/import_faculty_codes.py-
+scripts/import_faculty_codes.py-            faculty = Faculty.objects.get(pk=id)
+scripts/import_faculty_codes.py-            faculty.ku_code = ku_code
+scripts/import_faculty_codes.py-            faculty.cupt_code =cupt_code
+scripts/import_faculty_codes.py:            faculty.save()
+--
+scripts/import_interview_calls_ap62.py-                else:
+scripts/import_interview_calls_ap62.py-                    result.is_accepted_for_interview = False
+scripts/import_interview_calls_ap62.py-                    
+scripts/import_interview_calls_ap62.py-                result.updated_accepted_for_interview_at = datetime.now()
+scripts/import_interview_calls_ap62.py:                result.save()
+--
+scripts/import_interview_calls_ap63.py-                else:
+scripts/import_interview_calls_ap63.py-                    result.is_accepted_for_interview = False
+scripts/import_interview_calls_ap63.py-                    
+scripts/import_interview_calls_ap63.py-                result.updated_accepted_for_interview_at = datetime.now()
+scripts/import_interview_calls_ap63.py:                result.save()
+--
+scripts/import_interview_calls_ap64.py-                else:
+scripts/import_interview_calls_ap64.py-                    result.is_accepted_for_interview = False
+scripts/import_interview_calls_ap64.py-                    
+scripts/import_interview_calls_ap64.py-                result.updated_accepted_for_interview_at = datetime.now()
+scripts/import_interview_calls_ap64.py:                result.save()
+--
+scripts/import_interview_calls_culture.py-                else:
+scripts/import_interview_calls_culture.py-                    result.is_accepted_for_interview = False
+scripts/import_interview_calls_culture.py-                    
+scripts/import_interview_calls_culture.py-                result.updated_accepted_for_interview_at = datetime.now()
+scripts/import_interview_calls_culture.py:                result.save()
+--
+scripts/import_interview_calls_culture.py-                                                         admission_project=admission_project).all()
+scripts/import_interview_calls_culture.py-            for res in old_results:
+scripts/import_interview_calls_culture.py-                if res.is_accepted_for_interview:
+scripts/import_interview_calls_culture.py-                    res.is_accepted_for_interview = False
+scripts/import_interview_calls_culture.py:                    res.save()
+--
+scripts/import_interview_calls.py-                    if majors[i].number != int(result_nums[i]):
+scripts/import_interview_calls.py-                        print('ERROR - number')
+scripts/import_interview_calls.py-                    
+scripts/import_interview_calls.py-                result.updated_accepted_for_interview_at = datetime.now()
+scripts/import_interview_calls.py:                result.save()
+--
+scripts/import_interview_descriptions_63.py-                desc.descriptions = items[8].strip()
+scripts/import_interview_descriptions_63.py-                if desc.descriptions == '':
+scripts/import_interview_descriptions_63.py-                    desc.descriptions = items[6].strip()
+scripts/import_interview_descriptions_63.py-                
+scripts/import_interview_descriptions_63.py:            desc.save()
+--
+scripts/import_interview_descriptions_64.py-                if desc.descriptions == '':
+scripts/import_interview_descriptions_64.py-                    desc.descriptions = items[6].strip()
+scripts/import_interview_descriptions_64.py-
+scripts/import_interview_descriptions_64.py-            print(desc.descriptions)
+scripts/import_interview_descriptions_64.py:            desc.save()
+--
+scripts/import_interview_descriptions.py-            else:
+scripts/import_interview_descriptions.py-                desc = MajorInterviewDescription(major=major,
+scripts/import_interview_descriptions.py-                                                 admission_round=admission_round)
+scripts/import_interview_descriptions.py-            desc.descriptions = items[7]
+scripts/import_interview_descriptions.py:            desc.save()
+--
+scripts/import_interview_rank.py-            results = AdmissionResult.find_by_application(application)
+scripts/import_interview_rank.py-            for r in results:
+scripts/import_interview_rank.py-                if r.is_accepted_for_interview:
+scripts/import_interview_rank.py-                    r.interview_rank = rank
+scripts/import_interview_rank.py:                    r.save()
+--
+scripts/import_major_codes.py-                                      number=major_number)
+scripts/import_major_codes.py-            major.cupt_code = cupt_code
+scripts/import_major_codes.py-            major.cupt_study_type_code = cupt_study_type_code
+scripts/import_major_codes.py-            major.cupt_full_code = cupt_full_code
+scripts/import_major_codes.py:            major.save()
+--
+scripts/import_major_cupt_component_types.py-                continue
+scripts/import_major_cupt_component_types.py-
+scripts/import_major_cupt_component_types.py-            mcode = mcodes[0]
+scripts/import_major_cupt_component_types.py-            mcode.component_weight_type = items[2].strip()
+scripts/import_major_cupt_component_types.py:            mcode.save()
+--
+scripts/import_majors.py-        lines = [l for l in reader]
+scripts/import_majors.py-
+scripts/import_majors.py-        project.general_conditions = lines[0][0]
+scripts/import_majors.py-        project.column_descriptions = lines[1][0]
+scripts/import_majors.py:        project.save()
+--
+scripts/import_majors.py-                          slots=slots,
+scripts/import_majors.py-                          slots_comments=slots_comments,
+scripts/import_majors.py-                          detail_items_csv=csv_output.getvalue())
+scripts/import_majors.py-
+scripts/import_majors.py:            major.save()
+--
+scripts/import_project_details.py-
+scripts/import_project_details.py-            project_round.applying_start_time = extract_datetime(start_date, start_time)
+scripts/import_project_details.py-            project_round.applying_deadline = extract_datetime(end_date, end_time)
+scripts/import_project_details.py-            project_round.payment_deadline = extract_datetime(last_payment_date,'00:00:00').date()
+scripts/import_project_details.py:            project_round.save()
+scripts/import_project_details.py-            
+scripts/import_project_details.py-            if warning != '':
+scripts/import_project_details.py-                project.applying_confirmation_warning = warning
+scripts/import_project_details.py:                project.save()
+scripts/import_project_details.py-
+scripts/import_project_details.py-            if descriptions != '':
+scripts/import_project_details.py-                project.descriptions = descriptions
+scripts/import_project_details.py:                project.save()
+--
+scripts/import_projects.py-            if items[4] != '':
+scripts/import_projects.py-                campus = Campus.objects.get(pk=items[4])
+scripts/import_projects.py-                project.campus = campus
+scripts/import_projects.py-
+scripts/import_projects.py:            project.save()
+--
+scripts/import_projects.py-                project_round = AdmissionProjectRound()
+scripts/import_projects.py-                project_round.admission_project = project
+scripts/import_projects.py-                project_round.admission_round = AdmissionRound.objects.get(pk=project_round_ids[r])
+scripts/import_projects.py-                project_round.admission_dates = round_dates[r]
+scripts/import_projects.py:                project_round.save()
+--
+scripts/import_project_uploaded_documents.py-            document.is_required = (items[11].strip() == '1')
+scripts/import_project_uploaded_documents.py-            document.is_detail_required = (items[12].strip() == '1')
+scripts/import_project_uploaded_documents.py-            document.can_have_multiple_files = (items[13].strip() == '1')
+scripts/import_project_uploaded_documents.py-        
+scripts/import_project_uploaded_documents.py:            document.save()
+--
+scripts/import_provinces.py-                pass
+scripts/import_provinces.py-
+scripts/import_provinces.py-            province = Province(id=pid,
+scripts/import_provinces.py-                                title=items[1])
+scripts/import_provinces.py:            province.save()
+--
+scripts/import_schools.py-            
+scripts/import_schools.py-                school = School(title=title,
+scripts/import_schools.py-                                code=code,
+scripts/import_schools.py-                                province=province)
+scripts/import_schools.py:                school.save()
+--
+scripts/import_sport_interview_calls.py-                    found = True
+scripts/import_sport_interview_calls.py-                    result.is_accepted_for_interview = True
+scripts/import_sport_interview_calls.py-                    
+scripts/import_sport_interview_calls.py-                result.updated_accepted_for_interview_at = datetime.now()
+scripts/import_sport_interview_calls.py:                result.save()
+--
+scripts/import_tcas3_applicant_gpa.py-        education.gpa = a['gpa']
+scripts/import_tcas3_applicant_gpa.py-        education.education_level = 1
+scripts/import_tcas3_applicant_gpa.py-        education.education_plan = 5
+scripts/import_tcas3_applicant_gpa.py-        education.province_id = 1
+scripts/import_tcas3_applicant_gpa.py:        education.save()
+--
+scripts/import_tcas3_applicant_scores.py-            result.major_rank=1
+scripts/import_tcas3_applicant_scores.py-            result.major=major
+scripts/import_tcas3_applicant_scores.py-            result.calculated_score = score
+scripts/import_tcas3_applicant_scores.py-            result.is_accepted_for_interview = True
+scripts/import_tcas3_applicant_scores.py:            result.save()
+--
+scripts/import_tcas3_applicant_scores.py-
+scripts/import_tcas3_applicant_scores.py-            if len(major_results) != 0:
+scripts/import_tcas3_applicant_scores.py-                major_result = major_results[0]
+scripts/import_tcas3_applicant_scores.py-                major_result.admission_result = result
+scripts/import_tcas3_applicant_scores.py:                major_result.save()
+--
+scripts/import_tcas3_applicants.py-        app.email = random_email()
+scripts/import_tcas3_applicants.py-        app.random_password()
+scripts/import_tcas3_applicants.py-
+scripts/import_tcas3_applicants.py-        print(app)
+scripts/import_tcas3_applicants.py:        app.save()
+--
+scripts/import_tcas3_applicants.py-        application.admission_project = project
+scripts/import_tcas3_applicants.py-        application.admission_round = admission_round
+scripts/import_tcas3_applicants.py-        application.applied_at = now
+scripts/import_tcas3_applicants.py-        
+scripts/import_tcas3_applicants.py:        application.save()
+--
+scripts/import_tcas3_applicants.py-        major_selection.admission_round = admission_round
+scripts/import_tcas3_applicants.py-        major_selection.set_majors([majors[num]
+scripts/import_tcas3_applicants.py-                                    for num
+scripts/import_tcas3_applicants.py-                                    in a['majors']])
+scripts/import_tcas3_applicants.py:        major_selection.save()
+--
+scripts/import_tcas3_applicants.py-        education.gpa = a['gpa']
+scripts/import_tcas3_applicants.py-        education.education_level = 1
+scripts/import_tcas3_applicants.py-        education.education_plan = 5
+scripts/import_tcas3_applicants.py-        education.province_id = 1
+scripts/import_tcas3_applicants.py:        education.save()
+--
+scripts/import_tcas3_interview_calls.py-                    found = True
+scripts/import_tcas3_interview_calls.py-                    result.is_accepted_for_interview = True
+scripts/import_tcas3_interview_calls.py-                    
+scripts/import_tcas3_interview_calls.py-                result.updated_accepted_for_interview_at = datetime.now()
+scripts/import_tcas3_interview_calls.py:                result.save()
+--
+scripts/import_tcas5_applicant_scores.py-                                         major_rank=1,
+scripts/import_tcas5_applicant_scores.py-                                         major=majors[0])
+scripts/import_tcas5_applicant_scores.py-
+scripts/import_tcas5_applicant_scores.py-            result.calculated_score = float(items[2])
+scripts/import_tcas5_applicant_scores.py:            result.save()
+--
+scripts/import_topschools.py-                old_topschool.delete()
+scripts/import_topschools.py-            except ObjectDoesNotExist:
+scripts/import_topschools.py-                pass
+scripts/import_topschools.py-            topschool = TopSchool(school=school)
+scripts/import_topschools.py:            topschool.save()
+--
+scripts/round2_update_additional_fees.py-                print('ERROR wrong title', m, title, major.title)
+scripts/round2_update_additional_fees.py-                continue
+scripts/round2_update_additional_fees.py-            
+scripts/round2_update_additional_fees.py-            major.additional_fee_per_major = fee
+scripts/round2_update_additional_fees.py:            major.save()
+--
+scripts/save_verification_numbers.py-    counter = 0
+scripts/save_verification_numbers.py-    
+scripts/save_verification_numbers.py-    for a in applications:
+scripts/save_verification_numbers.py-        a.verfication_number = a.get_verification_number()
+scripts/save_verification_numbers.py:        a.save()
+--
+scripts/seed_admission_rounds.py-                           subround_number=rraw[2],
+scripts/seed_admission_rounds.py-                           rank=rraw[3],
+scripts/seed_admission_rounds.py-                           admission_dates=rraw[4],
+scripts/seed_admission_rounds.py-                           short_descriptions=rraw[5])
+scripts/seed_admission_rounds.py:        r.save()
+--
+scripts/set_interview_call_defaults.py-        call_decision.interview_call_count = len([s for s in scores[number]
+scripts/set_interview_call_defaults.py-                                                  if s < - min_score + MajorInterviewCallDecision.FLOAT_DELTA])
+scripts/set_interview_call_defaults.py-        from datetime import datetime
+scripts/set_interview_call_defaults.py-        call_decision.updated_at = datetime.now()
+scripts/set_interview_call_defaults.py:        call_decision.save()
+--
+scripts/set_interview_call_defaults_tcas625.py-        call_decision.interview_call_count = len([s for s in scores[number]
+scripts/set_interview_call_defaults_tcas625.py-                                                  if s < - min_score + MajorInterviewCallDecision.FLOAT_DELTA])
+scripts/set_interview_call_defaults_tcas625.py-        from datetime import datetime
+scripts/set_interview_call_defaults_tcas625.py-        call_decision.updated_at = datetime.now()
+scripts/set_interview_call_defaults_tcas625.py:        call_decision.save()
+--
+scripts/set_interview_call_tcas_round2.py-                result.tcas_acceptance_round_number = 2
+scripts/set_interview_call_tcas_round2.py-            else:
+scripts/set_interview_call_tcas_round2.py-                result.is_tcas_canceled = True
+scripts/set_interview_call_tcas_round2.py-                
+scripts/set_interview_call_tcas_round2.py:            result.save()
+--
+scripts/set_interview_call_zero.py-        call_decision.interview_call_min_score = 0
+scripts/set_interview_call_zero.py-
+scripts/set_interview_call_zero.py-        from datetime import datetime
+scripts/set_interview_call_zero.py-        call_decision.updated_at = datetime.now()
+scripts/set_interview_call_zero.py:        call_decision.save()
+--
+scripts/set_tcas_results.py-    for r in results:
+scripts/set_tcas_results.py-        r.is_tcas_result = True
+scripts/set_tcas_results.py-        if r.is_accepted_for_interview:
+scripts/set_tcas_results.py-            r.tcas_acceptance_round_number = 1
+scripts/set_tcas_results.py:        r.save()
+--
+scripts/sync_interview_results.py-        if a.is_called_for_interview:
+scripts/sync_interview_results.py-            res = a.admission_result
+scripts/sync_interview_results.py-            res.is_accepted_for_interview = True
+scripts/sync_interview_results.py-            res.updated_accepted_for_interview_at = datetime.now()
+scripts/sync_interview_results.py:            res.save()
+--
+scripts/sync_interview_results.py-                if res == None:
+scripts/sync_interview_results.py-                    continue
+scripts/sync_interview_results.py-                res.is_accepted_for_interview = False
+scripts/sync_interview_results.py-                res.updated_accepted_for_interview_at = datetime.now()
+scripts/sync_interview_results.py:                res.save()
+--
+scripts/update_admission_criteria_additional_info.py-            id = items[0]
+scripts/update_admission_criteria_additional_info.py-            c = AdmissionCriteria.objects.get(pk=id)
+scripts/update_admission_criteria_additional_info.py-            c.additional_description = items[1].strip()
+scripts/update_admission_criteria_additional_info.py-            c.additional_condition = items[2].strip()
+scripts/update_admission_criteria_additional_info.py:            c.save()
+--
+scripts/update_applicant_additional_data.py-            continue
+scripts/update_applicant_additional_data.py-        
+scripts/update_applicant_additional_data.py-        a = Applicant.objects.get(national_id=items[0])
+scripts/update_applicant_additional_data.py-        a.additional_data = items[1]
+scripts/update_applicant_additional_data.py:        a.save()
+--
+scripts/update_applicant_gpa.py-        a = Applicant.objects.get(national_id=items[0])
+scripts/update_applicant_gpa.py-        edu = a.educationalprofile
+scripts/update_applicant_gpa.py-        old_gpa = edu.gpa
+scripts/update_applicant_gpa.py-        edu.gpa = gpa
+scripts/update_applicant_gpa.py:        edu.save()
+--
+scripts/update_confirmed_applications.py-
+scripts/update_confirmed_applications.py-        applicant.confirmed_application = application
+scripts/update_confirmed_applications.py-
+scripts/update_confirmed_applications.py-        if not is_fake:
+scripts/update_confirmed_applications.py:            applicant.save()
+--
+scripts/update_interview_acceptance.py-            res.is_interview_absent = False
+scripts/update_interview_acceptance.py-            applicant = res.applicant
+scripts/update_interview_acceptance.py-
+scripts/update_interview_acceptance.py-            LogItem.create('auto accept', applicant=applicant)
+scripts/update_interview_acceptance.py:            res.save()
+--
+scripts/update_major_cupt_tcas64.py-        update = MAJOR_UPDATES[program_code]
+scripts/update_major_cupt_tcas64.py-        for c in codes:
+scripts/update_major_cupt_tcas64.py-            c.program_code = update['new_program_code']
+scripts/update_major_cupt_tcas64.py-            c.title = update['new_title']
+scripts/update_major_cupt_tcas64.py:            c.save()
+--
+scripts/update_major_cupt_tcas64.py-        for m in majors:
+scripts/update_major_cupt_tcas64.py-            m.detail_items_csv = m.detail_items_csv.replace(program_code,
+scripts/update_major_cupt_tcas64.py-                                                            update['new_program_code'])
+scripts/update_major_cupt_tcas64.py-            m.title = update['new_title']
+scripts/update_major_cupt_tcas64.py:            m.save()
+--
+scripts/update_major_slots.py-                continue
+scripts/update_major_slots.py-
+scripts/update_major_slots.py-            major = majors[0]
+scripts/update_major_slots.py-            major.slots = int(items[6])
+scripts/update_major_slots.py:            major.save()
+--
+scripts/update_project_criteria_passed.py-            
+scripts/update_project_criteria_passed.py-            result = results[0]
+scripts/update_project_criteria_passed.py-            result.is_criteria_passed = True
+scripts/update_project_criteria_passed.py-            result.updated_criteria_passed_at = datetime.now()
+scripts/update_project_criteria_passed.py:            result.save()
+--
+scripts/update_projects.py-            if items[4] != '':
+scripts/update_projects.py-                campus = Campus.objects.get(pk=items[4])
+scripts/update_projects.py-                project.campus = campus
+scripts/update_projects.py-
+scripts/update_projects.py:            project.save()
+--
+scripts/update_tcas_applicants.py-            a.national_id = 'T' + items[1]
+scripts/update_tcas_applicants.py-            a.prefix = items[2].strip()
+scripts/update_tcas_applicants.py-            a.first_name = items[3].strip()
+scripts/update_tcas_applicants.py-            a.last_name = items[4].strip()
+scripts/update_tcas_applicants.py:            a.save()
+--
+appl/barcodes/__init__.py-                   nat_id + '\x0d' +
+appl/barcodes/__init__.py-                   verification_code + '\x0d'
+appl/barcodes/__init__.py-                   + amount)
+appl/barcodes/__init__.py-    c = barcode.get('code128', barcode_str, writer)
+appl/barcodes/__init__.py:    c.save(filename)
+--
+appl/views/general_forms.py-
+appl/views/general_forms.py-    if request.method == 'POST':
+appl/views/general_forms.py-        form = PersonalProfileForm(request.POST, instance=profile)
+appl/views/general_forms.py-        if form.is_valid():
+appl/views/general_forms.py:            new_personal_profile = form.save(commit=False)
+appl/views/general_forms.py-            new_personal_profile.applicant = applicant
+appl/views/general_forms.py:            new_personal_profile.save()
+--
+appl/views/general_forms.py-
+appl/views/general_forms.py-    if request.method == 'POST':
+appl/views/general_forms.py-        form = EducationForm(request.POST, instance=profile)
+appl/views/general_forms.py-        if form.is_valid():
+appl/views/general_forms.py:            new_educational_profile = form.save(commit=False)
+--
+appl/views/general_forms.py-                new_educational_profile.school_code = school.code
+appl/views/general_forms.py-            else:
+appl/views/general_forms.py-                new_educational_profile.school_code = ''
+appl/views/general_forms.py-
+appl/views/general_forms.py:            new_educational_profile.save()
+--
+appl/views/__init__.py-        return redirect(reverse('appl:index'))
+appl/views/__init__.py-
+appl/views/__init__.py-    active_application.is_canceled = True
+appl/views/__init__.py-    active_application.cancelled_at = datetime.now()
+appl/views/__init__.py:    active_application.save()
+--
+appl/views/__init__.py-        return redirect(reverse('appl:index'))
+appl/views/__init__.py-
+appl/views/__init__.py-    active_application.is_canceled = True
+appl/views/__init__.py-    active_application.cancelled_at = datetime.now()
+appl/views/__init__.py:    active_application.save()
+--
+appl/views/major_selection.py-    major_selection.applicant = applicant
+appl/views/major_selection.py-    major_selection.project_application = application
+appl/views/major_selection.py-    major_selection.admission_project = application.admission_project
+appl/views/major_selection.py-    major_selection.admission_round = application.admission_round
+appl/views/major_selection.py:    major_selection.save()
+--
+appl/views/upload.py-            for odoc in old_uploaded_documents:
+appl/views/upload.py-                odoc.uploaded_file.delete()
+appl/views/upload.py-                odoc.delete()
+appl/views/upload.py-
+appl/views/upload.py:        uploaded_document = form.save(commit=False)
+--
+appl/views/upload.py-
+appl/views/upload.py-        error = False
+appl/views/upload.py-        result_code = 'OK'
+appl/views/upload.py-        try:
+appl/views/upload.py:            uploaded_document.save()
+--
+backoffice/views/adjustment.py-        if not validation_error:
+backoffice/views/adjustment.py-            for s in updated_slots:
+backoffice/views/adjustment.py-                if save_and_confirm:
+backoffice/views/adjustment.py-                    s.is_confirmed_by_faculty = True
+backoffice/views/adjustment.py:                s.save()
+--
+backoffice/views/__init__.py-        return HttpResponseForbidden()
+backoffice/views/__init__.py-
+backoffice/views/__init__.py-    applicant = get_object_or_404(Applicant, national_id=national_id)
+backoffice/views/__init__.py-    new_password = applicant.random_password()
+backoffice/views/__init__.py:    applicant.save()
+--
+backoffice/views/__init__.py-
+backoffice/views/__init__.py-        if applicant.email != old_email:
+backoffice/views/__init__.py-            new_password = applicant.random_password()
+backoffice/views/__init__.py-        
+backoffice/views/__init__.py:        applicant.save()
+--
+backoffice/views/payments.py-            else:
+backoffice/views/payments.py-                duplicated_counter += 1
+backoffice/views/payments.py-
+backoffice/views/payments.py-        if not is_duplicated:
+backoffice/views/payments.py:            payment.save()
+--
+backoffice/views/payments.py-    if application:
+backoffice/views/payments.py-        payment.applicant = application.applicant
+backoffice/views/payments.py-        payment.has_payment_error = True
+backoffice/views/payments.py-        payment.updated_at = datetime.now()
+backoffice/views/payments.py:        payment.save()
+--
+backoffice/views/projects.py-        check_mark_group = application.check_mark_group
+backoffice/views/projects.py-    else:
+backoffice/views/projects.py-        check_mark_group = CheckMarkGroup(applicant=applicant,
+backoffice/views/projects.py-                                          project_application=application)
+backoffice/views/projects.py:        check_mark_group.save()
+--
+backoffice/views/projects.py-        check_mark_group = application.check_mark_group
+backoffice/views/projects.py-    else:
+backoffice/views/projects.py-        check_mark_group = CheckMarkGroup(applicant=applicant,
+backoffice/views/projects.py-                                          project_application=application)
+backoffice/views/projects.py:        check_mark_group.save()
+--
+backoffice/views/projects.py-    if check_mark_group.is_checked(number):
+backoffice/views/projects.py-        check_mark_group.set_uncheck(number)
+backoffice/views/projects.py-    else:
+backoffice/views/projects.py-        check_mark_group.set_check(number)
+backoffice/views/projects.py:    check_mark_group.save()
+--
+backoffice/views/projects.py-    else:
+backoffice/views/projects.py-        admission_result.is_accepted_for_interview = False
+backoffice/views/projects.py-
+backoffice/views/projects.py-    admission_result.updated_accepted_for_interview_at = datetime.now()
+backoffice/views/projects.py:    admission_result.save()
+--
+backoffice/views/projects.py-    else:
+backoffice/views/projects.py-        admission_result.is_accepted = False
+backoffice/views/projects.py-
+backoffice/views/projects.py-    admission_result.updated_accepted_at = datetime.now()
+backoffice/views/projects.py:    admission_result.save()
+--
+backoffice/views/projects.py-    else:
+backoffice/views/projects.py-        admission_result.is_criteria_passed = False
+backoffice/views/projects.py-
+backoffice/views/projects.py-    admission_result.updated_criteria_passed_at = datetime.now()
+backoffice/views/projects.py:    admission_result.save()
+--
+backoffice/views/projects.py-        comment.is_shared_in_major = True
+backoffice/views/projects.py-        comment.major = major
+backoffice/views/projects.py-
+backoffice/views/projects.py-    if comment.body.strip() != '':
+backoffice/views/projects.py:        comment.save()
+--
+backoffice/views/projects.py-    application = request.application
+backoffice/views/projects.py-
+backoffice/views/projects.py-    comment = get_object_or_404(JudgeComment, pk=comment_id)
+backoffice/views/projects.py-    comment.is_deleted = True
+backoffice/views/projects.py:    comment.save()
+--
+backoffice/views/projects.py-    call_decision.interview_call_count = len([a for a in applicants if a.is_called_for_interview])
+backoffice/views/projects.py-
+backoffice/views/projects.py-    from datetime import datetime
+backoffice/views/projects.py-    call_decision.updated_at = datetime.now()
+backoffice/views/projects.py:    call_decision.save()
+--
+backoffice/views/projects.py-        admission_result.is_accepted = None
+backoffice/views/projects.py-        admission_result.is_interview_absent = True
+backoffice/views/projects.py-        if is_tcas_auto_confirmation:
+backoffice/views/projects.py-            admission_result.has_confirmed = False
+backoffice/views/projects.py:    admission_result.save()
+--
+criteria/views/criterion.py-            admission_criteria = AdmissionCriteria(
+criteria/views/criterion.py-                admission_project=project,
+criteria/views/criterion.py-                version=version,
+criteria/views/criterion.py-                faculty=faculty)
+criteria/views/criterion.py:            admission_criteria.save()
+--
+criteria/views/criterion.py-                faculty=admission_criteria.faculty,
+criteria/views/criterion.py-                additional_description=old_admission_criteria.additional_description,
+criteria/views/criterion.py-                additional_condition=old_admission_criteria.additional_condition,
+criteria/views/criterion.py-                version=version)
+criteria/views/criterion.py:            admission_criteria.save()
+criteria/views/criterion.py-
+criteria/views/criterion.py-            old_admission_criteria.is_deleted = True
+criteria/views/criterion.py:            old_admission_criteria.save()
+--
+criteria/views/criterion.py-        return redirect(reverse('backoffice:criteria:project-index', args=[project_id, round_id]))
+criteria/views/criterion.py-
+criteria/views/criterion.py-    if request.method == 'POST':
+criteria/views/criterion.py-        admission_criteria.is_deleted = True
+criteria/views/criterion.py:        admission_criteria.save()
+--
+criteria/views/criterion.py-        if value == 'select':
+criteria/views/criterion.py-            curriculum_major = CurriculumMajor(admission_project=project,
+criteria/views/criterion.py-                                               cupt_code=major_cupt_code,
+criteria/views/criterion.py-                                               faculty=faculty)
+criteria/views/criterion.py:            curriculum_major.save()
+--
+supplements/views/__init__.py-                instance = ProjectSupplement(applicant=applicant,
+supplements/views/__init__.py-                                                 admission_project=admission_project,
+supplements/views/__init__.py-                                                 name=config.name)
+supplements/views/__init__.py-            instance.set_data(new_data[config.name])
+supplements/views/__init__.py:            instance.save()
