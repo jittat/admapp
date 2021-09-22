@@ -5,3 +5,13 @@ Steps to initialize
 
 ./manage.py loaddata appl/fixtures/campuses.json 
 ./manage.py loaddata appl/fixtures/faculties.json
+./manage.py loaddata appl/fixtures/provinces.json 
+
+2. Manually update admission round & import
+
+3. Import admission projects (data from regis.)
+
+Criterias
+=========
+
+1. Import criteria_major_cupt_codes (from excel file from regis.)

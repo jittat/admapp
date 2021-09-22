@@ -5,6 +5,7 @@ verify_ssl = true
 
 [dev-packages]
 flake8 = "*"
+jupyter = "*"
 
 [packages]
 django-crispy-forms = "*"
@@ -31,6 +32,7 @@ markdown = "*"
 django-filter = "*"
 xlrd = "*"
 boto3 = "*"
+openpyxl = "*"
 
 [requires]
 python_version = "3.8"
