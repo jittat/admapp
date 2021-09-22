@@ -1,0 +1,7 @@
+Steps to initialize
+===================
+
+1. Import campuses & faculties from fixtures
+
+./manage.py loaddata appl/fixtures/campuses.json 
+./manage.py loaddata appl/fixtures/faculties.json

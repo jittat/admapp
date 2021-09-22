@@ -3,7 +3,7 @@
  "model": "appl.faculty",
  "pk": 1,
  "fields": {
-  "title": "\u0e27\u0e34\u0e17\u0e22\u0e32\u0e25\u0e31\u0e22\u0e1a\u0e39\u0e23\u0e13\u0e32\u0e01\u0e32\u0e23\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c",
+  "title": "วิทยาลัยบูรณาการศาสตร์",
   "campus": 1,
   "ku_code": "",
   "cupt_code": ""
@@ -13,7 +13,7 @@
  "model": "appl.faculty",
  "pk": 2,
  "fields": {
-  "title": "\u0e04\u0e13\u0e30\u0e40\u0e01\u0e29\u0e15\u0e23",
+  "title": "คณะเกษตร",
   "campus": 1,
   "ku_code": "",
   "cupt_code": ""
@@ -23,7 +23,7 @@
  "model": "appl.faculty",
  "pk": 3,
  "fields": {
-  "title": "\u0e04\u0e13\u0e30\u0e1b\u0e23\u0e30\u0e21\u0e07",
+  "title": "คณะประมง",
   "campus": 1,
   "ku_code": "",
   "cupt_code": ""
@@ -33,7 +33,7 @@
  "model": "appl.faculty",
  "pk": 4,
  "fields": {
-  "title": "\u0e04\u0e13\u0e30\u0e27\u0e19\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c",
+  "title": "คณะวนศาสตร์",
   "campus": 1,
   "ku_code": "",
   "cupt_code": ""
@@ -43,7 +43,7 @@
  "model": "appl.faculty",
  "pk": 5,
  "fields": {
-  "title": "\u0e04\u0e13\u0e30\u0e27\u0e34\u0e17\u0e22\u0e32\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c",
+  "title": "คณะวิทยาศาสตร์",
   "campus": 1,
   "ku_code": "",
   "cupt_code": ""
@@ -53,7 +53,7 @@
  "model": "appl.faculty",
  "pk": 6,
  "fields": {
-  "title": "\u0e04\u0e13\u0e30\u0e27\u0e34\u0e28\u0e27\u0e01\u0e23\u0e23\u0e21\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c",
+  "title": "คณะวิศวกรรมศาสตร์",
   "campus": 1,
   "ku_code": "",
   "cupt_code": ""
@@ -63,7 +63,7 @@
  "model": "appl.faculty",
  "pk": 7,
  "fields": {
-  "title": "\u0e04\u0e13\u0e30\u0e28\u0e36\u0e01\u0e29\u0e32\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c",
+  "title": "คณะศึกษาศาสตร์",
   "campus": 1,
   "ku_code": "",
   "cupt_code": ""
@@ -73,7 +73,7 @@
  "model": "appl.faculty",
  "pk": 8,
  "fields": {
-  "title": "\u0e04\u0e13\u0e30\u0e40\u0e28\u0e23\u0e29\u0e10\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c",
+  "title": "คณะเศรษฐศาสตร์",
   "campus": 1,
   "ku_code": "",
   "cupt_code": ""
@@ -83,7 +83,7 @@
  "model": "appl.faculty",
  "pk": 9,
  "fields": {
-  "title": "\u0e04\u0e13\u0e30\u0e2a\u0e31\u0e07\u0e04\u0e21\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c",
+  "title": "คณะสังคมศาสตร์",
   "campus": 1,
   "ku_code": "",
   "cupt_code": ""
@@ -93,7 +93,7 @@
  "model": "appl.faculty",
  "pk": 10,
  "fields": {
-  "title": "\u0e04\u0e13\u0e30\u0e2a\u0e31\u0e15\u0e27\u0e41\u0e1e\u0e17\u0e22\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c",
+  "title": "คณะสัตวแพทยศาสตร์",
   "campus": 1,
   "ku_code": "",
   "cupt_code": ""
@@ -103,7 +103,7 @@
  "model": "appl.faculty",
  "pk": 11,
  "fields": {
-  "title": "\u0e04\u0e13\u0e30\u0e2d\u0e38\u0e15\u0e2a\u0e32\u0e2b\u0e01\u0e23\u0e23\u0e21\u0e40\u0e01\u0e29\u0e15\u0e23",
+  "title": "คณะอุตสาหกรรมเกษตร",
   "campus": 1,
   "ku_code": "",
   "cupt_code": ""
@@ -113,7 +113,7 @@
  "model": "appl.faculty",
  "pk": 12,
  "fields": {
-  "title": "\u0e04\u0e13\u0e30\u0e21\u0e19\u0e38\u0e29\u0e22\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c",
+  "title": "คณะมนุษยศาสตร์",
   "campus": 1,
   "ku_code": "",
   "cupt_code": ""
@@ -123,7 +123,7 @@
  "model": "appl.faculty",
  "pk": 13,
  "fields": {
-  "title": "\u0e04\u0e13\u0e30\u0e1a\u0e23\u0e34\u0e2b\u0e32\u0e23\u0e18\u0e38\u0e23\u0e01\u0e34\u0e08",
+  "title": "คณะบริหารธุรกิจ",
   "campus": 1,
   "ku_code": "",
   "cupt_code": ""
@@ -133,7 +133,7 @@
  "model": "appl.faculty",
  "pk": 14,
  "fields": {
-  "title": "\u0e04\u0e13\u0e30\u0e40\u0e17\u0e04\u0e19\u0e34\u0e04\u0e01\u0e32\u0e23\u0e2a\u0e31\u0e15\u0e27\u0e41\u0e1e\u0e17\u0e22\u0e4c",
+  "title": "คณะเทคนิคการสัตวแพทย์",
   "campus": 1,
   "ku_code": "",
   "cupt_code": ""
@@ -143,7 +143,7 @@
  "model": "appl.faculty",
  "pk": 15,
  "fields": {
-  "title": "\u0e04\u0e13\u0e30\u0e2a\u0e34\u0e48\u0e07\u0e41\u0e27\u0e14\u0e25\u0e49\u0e2d\u0e21",
+  "title": "คณะสิ่งแวดล้อม",
   "campus": 1,
   "ku_code": "",
   "cupt_code": ""
@@ -153,7 +153,7 @@
  "model": "appl.faculty",
  "pk": 16,
  "fields": {
-  "title": "\u0e04\u0e13\u0e30\u0e40\u0e01\u0e29\u0e15\u0e23 \u0e01\u0e33\u0e41\u0e1e\u0e07\u0e41\u0e2a\u0e19",
+  "title": "คณะเกษตร กำแพงแสน",
   "campus": 2,
   "ku_code": "",
   "cupt_code": ""
@@ -163,7 +163,7 @@
  "model": "appl.faculty",
  "pk": 17,
  "fields": {
-  "title": "\u0e04\u0e13\u0e30\u0e27\u0e34\u0e28\u0e27\u0e01\u0e23\u0e23\u0e21\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c \u0e01\u0e33\u0e41\u0e1e\u0e07\u0e41\u0e2a\u0e19",
+  "title": "คณะวิศวกรรมศาสตร์ กำแพงแสน",
   "campus": 2,
   "ku_code": "",
   "cupt_code": ""
@@ -173,7 +173,7 @@
  "model": "appl.faculty",
  "pk": 18,
  "fields": {
-  "title": "\u0e04\u0e13\u0e30\u0e28\u0e34\u0e25\u0e1b\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c\u0e41\u0e25\u0e30\u0e27\u0e34\u0e17\u0e22\u0e32\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c",
+  "title": "คณะศิลปศาสตร์และวิทยาศาสตร์",
   "campus": 2,
   "ku_code": "",
   "cupt_code": ""
@@ -183,7 +183,7 @@
  "model": "appl.faculty",
  "pk": 19,
  "fields": {
-  "title": "\u0e04\u0e13\u0e30\u0e28\u0e36\u0e01\u0e29\u0e32\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c\u0e41\u0e25\u0e30\u0e1e\u0e31\u0e12\u0e19\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c",
+  "title": "คณะศึกษาศาสตร์และพัฒนศาสตร์",
   "campus": 2,
   "ku_code": "",
   "cupt_code": ""
@@ -193,7 +193,7 @@
  "model": "appl.faculty",
  "pk": 20,
  "fields": {
-  "title": "\u0e04\u0e13\u0e30\u0e27\u0e34\u0e17\u0e22\u0e32\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c\u0e01\u0e32\u0e23\u0e01\u0e35\u0e2c\u0e32",
+  "title": "คณะวิทยาศาสตร์การกีฬา",
   "campus": 2,
   "ku_code": "",
   "cupt_code": ""
@@ -203,7 +203,7 @@
  "model": "appl.faculty",
  "pk": 21,
  "fields": {
-  "title": "\u0e04\u0e13\u0e30\u0e27\u0e34\u0e17\u0e22\u0e32\u0e01\u0e32\u0e23\u0e08\u0e31\u0e14\u0e01\u0e32\u0e23",
+  "title": "คณะวิทยาการจัดการ",
   "campus": 3,
   "ku_code": "",
   "cupt_code": ""
@@ -213,7 +213,7 @@
  "model": "appl.faculty",
  "pk": 22,
  "fields": {
-  "title": "\u0e04\u0e13\u0e30\u0e27\u0e34\u0e28\u0e27\u0e01\u0e23\u0e23\u0e21\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c\u0e28\u0e23\u0e35\u0e23\u0e32\u0e0a\u0e32",
+  "title": "คณะวิศวกรรมศาสตร์ศรีราชา",
   "campus": 3,
   "ku_code": "",
   "cupt_code": ""
@@ -223,7 +223,7 @@
  "model": "appl.faculty",
  "pk": 23,
  "fields": {
-  "title": "\u0e04\u0e13\u0e30\u0e27\u0e34\u0e17\u0e22\u0e32\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c \u0e28\u0e23\u0e35\u0e23\u0e32\u0e0a\u0e32",
+  "title": "คณะวิทยาศาสตร์ ศรีราชา",
   "campus": 3,
   "ku_code": "",
   "cupt_code": ""
@@ -233,7 +233,7 @@
  "model": "appl.faculty",
  "pk": 24,
  "fields": {
-  "title": "\u0e04\u0e13\u0e30\u0e40\u0e28\u0e23\u0e29\u0e10\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c \u0e28\u0e23\u0e35\u0e23\u0e32\u0e0a\u0e32",
+  "title": "คณะเศรษฐศาสตร์ ศรีราชา",
   "campus": 3,
   "ku_code": "",
   "cupt_code": ""
@@ -243,7 +243,7 @@
  "model": "appl.faculty",
  "pk": 25,
  "fields": {
-  "title": "\u0e04\u0e13\u0e30\u0e1e\u0e32\u0e13\u0e34\u0e0a\u0e22\u0e19\u0e32\u0e27\u0e35\u0e19\u0e32\u0e19\u0e32\u0e0a\u0e32\u0e15\u0e34",
+  "title": "คณะพาณิชยนาวีนานาชาติ",
   "campus": 3,
   "ku_code": "",
   "cupt_code": ""
@@ -253,7 +253,7 @@
  "model": "appl.faculty",
  "pk": 26,
  "fields": {
-  "title": "\u0e04\u0e13\u0e30\u0e17\u0e23\u0e31\u0e1e\u0e22\u0e32\u0e01\u0e23\u0e18\u0e23\u0e23\u0e21\u0e0a\u0e32\u0e15\u0e34\u0e41\u0e25\u0e30\u0e2d\u0e38\u0e15\u0e2a\u0e32\u0e2b\u0e01\u0e23\u0e23\u0e21\u0e40\u0e01\u0e29\u0e15\u0e23",
+  "title": "คณะทรัพยากรธรรมชาติและอุตสาหกรรมเกษตร",
   "campus": 4,
   "ku_code": "",
   "cupt_code": ""
@@ -263,7 +263,7 @@
  "model": "appl.faculty",
  "pk": 27,
  "fields": {
-  "title": "\u0e04\u0e13\u0e30\u0e27\u0e34\u0e17\u0e22\u0e32\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c\u0e41\u0e25\u0e30\u0e27\u0e34\u0e28\u0e27\u0e01\u0e23\u0e23\u0e21\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c",
+  "title": "คณะวิทยาศาสตร์และวิศวกรรมศาสตร์",
   "campus": 4,
   "ku_code": "",
   "cupt_code": ""
@@ -273,7 +273,7 @@
  "model": "appl.faculty",
  "pk": 28,
  "fields": {
-  "title": "\u0e04\u0e13\u0e30\u0e28\u0e34\u0e25\u0e1b\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c\u0e41\u0e25\u0e30\u0e27\u0e34\u0e17\u0e22\u0e32\u0e01\u0e32\u0e23\u0e08\u0e31\u0e14\u0e01\u0e32\u0e23",
+  "title": "คณะศิลปศาสตร์และวิทยาการจัดการ",
   "campus": 4,
   "ku_code": "",
   "cupt_code": ""
@@ -283,7 +283,7 @@
  "model": "appl.faculty",
  "pk": 29,
  "fields": {
-  "title": "\u0e04\u0e13\u0e30\u0e2a\u0e32\u0e18\u0e32\u0e23\u0e13\u0e2a\u0e38\u0e02\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c",
+  "title": "คณะสาธารณสุขศาสตร์",
   "campus": 4,
   "ku_code": "",
   "cupt_code": ""
@@ -293,7 +293,7 @@
  "model": "appl.faculty",
  "pk": 30,
  "fields": {
-  "title": "\u0e42\u0e04\u0e23\u0e07\u0e01\u0e32\u0e23\u0e08\u0e31\u0e14\u0e15\u0e31\u0e49\u0e07\u0e27\u0e34\u0e17\u0e22\u0e32\u0e40\u0e02\u0e15\u0e2a\u0e38\u0e1e\u0e23\u0e23\u0e13\u0e1a\u0e38\u0e23\u0e35",
+  "title": "โครงการจัดตั้งวิทยาเขตสุพรรณบุรี",
   "campus": 5,
   "ku_code": "",
   "cupt_code": ""
@@ -303,7 +303,7 @@
  "model": "appl.faculty",
  "pk": 31,
  "fields": {
-  "title": "\u0e04\u0e13\u0e30\u0e2a\u0e16\u0e32\u0e1b\u0e31\u0e15\u0e22\u0e01\u0e23\u0e23\u0e21\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c",
+  "title": "คณะสถาปัตยกรรมศาสตร์",
   "campus": 1,
   "ku_code": "",
   "cupt_code": ""
@@ -313,8 +313,28 @@
  "model": "appl.faculty",
  "pk": 32,
  "fields": {
-  "title": "\u0e27\u0e34\u0e17\u0e22\u0e32\u0e25\u0e31\u0e22\u0e01\u0e32\u0e23\u0e0a\u0e25\u0e1b\u0e23\u0e30\u0e17\u0e32\u0e19",
+  "title": "วิทยาลัยการชลประทาน",
   "campus": 1,
+  "ku_code": "",
+  "cupt_code": ""
+ }
+},
+{
+ "model": "appl.faculty",
+ "pk": 33,
+ "fields": {
+  "title": "คณะประมง กำแพงแสน",
+  "campus": 2,
+  "ku_code": "",
+  "cupt_code": ""
+ }
+},
+{
+ "model": "appl.faculty",
+ "pk": 34,
+ "fields": {
+  "title": "คณะสิ่งแวดล้อม กำแพงแสน",
+  "campus": 2,
   "ku_code": "",
   "cupt_code": ""
  }
