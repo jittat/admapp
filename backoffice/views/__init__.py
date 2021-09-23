@@ -279,30 +279,3 @@ def login_as_applicant(request, national_id, login_key):
                 
     return redirect(reverse('appl:index'))
 
-
-@user_login_required
-def show_project_application_info(request):
-    user = request.user
-    profile = Profile.get_profile_for(user)
-
-    is_admission_admin = False
-    is_application_admin = False
-    faculty = None
-    admission_projects = []
-    stats = {}
-    
-    if profile:
-        faculty = profile.faculty
-        is_admission_admin = profile.is_admission_admin
-
-    if not user.is_super_admin:
-        redirect(reverse('backoffice:index'))
-
-    admission_projects = AdmissionProject.objects.filter(is_available=True).all()
-
-    return render(request,
-                  'backoffice/project_application_info.html',
-                  { 'admission_projects': admission_projects,
-                  })
-
-

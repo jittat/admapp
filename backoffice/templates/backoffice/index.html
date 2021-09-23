@@ -8,9 +8,11 @@
 
   {% if is_application_admin %}
     <div class="row">
-      <div class="col-md-12 mb10 bborder-a0">
+      <div class="col-md-12 mb10 pb-1 bborder-a0">
         {% include "backoffice/include/all_applicant_summary.html" %}
-	พิจารณา: <a class="btn btn-sm btn-success" target="_blank" href="{% url "backoffice:show_project_application_info" %}">ข้อมูลโครงการสมัคร</a>
+	พิจารณา:
+	<a class="btn btn-sm btn-outline-secondary" target="_blank" href="{% url "backoffice:show_project_options" %}">ตั้งค่าโครงการรับ</a>
+	<a class="btn btn-sm btn-outline-secondary" target="_blank" href="{% url "backoffice:show_project_application_info" %}">ข้อมูลโครงการที่แสดงต่อผู้สมัคร</a>
       </div>
     </div>
   {% endif %}

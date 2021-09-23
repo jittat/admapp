@@ -7,7 +7,7 @@ from backoffice.views import projects
 from backoffice.views import users
 from backoffice.views import reports
 from backoffice.views import adjustment
-from backoffice.views import criterion
+from backoffice.views import projectoptions
 
 app_name = 'backoffice'
 
@@ -33,8 +33,14 @@ urlpatterns = [
     url(r'^search/$', views.search, name='search'),
     url(r'^search/(\d+)/$', views.search, name='search-project'),
 
-    url(r'^appinfo/$', views.show_project_application_info, name='show_project_application_info'),
 
+    url(r'^appinfo/$', projectoptions.show_project_application_info,
+        name='show_project_application_info'),
+    url(r'^options/$', projectoptions.show_project_options,
+        name='show_project_options'),
+    url(r'^options/(\d+)/(.+)/(\d+)/$', projectoptions.update_project_options,
+        name='update_project_options'),
+    
     url(r'^projects/(\d+)/(\d+)/$', projects.index, name='projects-index'),
     url(r'^projects/(\d+)/(\d+)/list/$',
         projects.list_applicants, name='projects-list'),
@@ -106,5 +112,6 @@ urlpatterns = [
     path('adjustment/<major_full_code>/',
          adjustment.major_index,
          name='adjustment-major'),
+    
     url(r'^criteria/', include('criteria.urls')),
 ]

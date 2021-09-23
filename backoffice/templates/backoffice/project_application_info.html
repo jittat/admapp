@@ -5,8 +5,9 @@
     <div class="row">
       <div class="col-auto mr-auto">
         <h2>
-          ข้อมูลโครงการรับสมัคร
+          ข้อมูลโครงการรับสมัครที่แจ้งกับผู้สมัคร
         </h2>
+	<p><small>แสดงเฉพาะโครงการที่เปิดให้ผู้สมัครเห็น</small></p>
       </div>
     </div>
     <table class="table table-striped table-sm table-bordered">
@@ -48,6 +49,12 @@
 	      </div>
 	    </td>
           </tr>
+	{% empty %}
+	  <tr>
+	    <td colspan="100">
+	      ไม่มีโครงการที่แสดงกับผู้สมัคร
+	    </td>
+	  </tr>
         {% endfor %}
       </tbody>
     </table>

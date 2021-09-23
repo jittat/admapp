@@ -144,6 +144,25 @@ class AdmissionProject(models.Model):
 
     cupt_code = models.CharField(max_length=10, blank=True)
 
+    # basic admission criteria (student types / school types)
+
+    SCHOOL_TYPE_CHOICES = [
+        (1, 'ไม่ระบุเงื่อนไข (รับทุกรูปแบบ)'),
+        (2, 'รับเฉพาะ รร.หลักสูตรแกนกลาง'),
+        (3, 'รับเฉพาะ รร.หลักสูตรนานาชาติ'),
+        (4, 'รับเฉพาะ รร.หลักสูตรอาชีวะ'),
+        (5, 'รับเฉพาะ รร.หลักสูตรตามอัธยาศัย (กศน.)'),
+    ]
+
+    STUDENT_TYPE_CHOICES = [
+        (1, 'รับเฉพาะนักเรียนม. 6 ในปีนี้'),
+        (2, 'รับม. 6 และผู้จบการศึกษา'),
+    ]
+
+    admission_student_type = models.IntegerField(default=1,
+                                                 choices=STUDENT_TYPE_CHOICES)
+    admission_school_type = models.IntegerField(default=1,
+                                                choices=SCHOOL_TYPE_CHOICES)
     
     def __str__(self):
         return self.title
