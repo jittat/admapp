@@ -338,5 +338,15 @@
   "ku_code": "",
   "cupt_code": ""
  }
+},
+{
+ "model": "appl.faculty",
+ "pk": 35,
+ "fields": {
+  "title": "คณะสัตวแพทยศาสตร์ กำแพงแสน",
+  "campus": 2,
+  "ku_code": "",
+  "cupt_code": ""
+ }
 }
 ]
