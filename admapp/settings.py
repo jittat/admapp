@@ -246,6 +246,9 @@ QR_CONFIG = {
 KU_QR_SERVICE_URL = ''
 KU_QR_CALLBACK_URL = ''
 
+# Setting fro Criteria App
+CRITERIA_ENABLE_CUSTOM_OPTION = False
+
 # Manipulate Settings with Local Settings
 
 try:

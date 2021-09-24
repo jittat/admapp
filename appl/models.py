@@ -163,6 +163,8 @@ class AdmissionProject(models.Model):
                                                  choices=STUDENT_TYPE_CHOICES)
     admission_school_type = models.IntegerField(default=1,
                                                 choices=SCHOOL_TYPE_CHOICES)
+
+    is_custom_score_criteria_allowed = models.BooleanField(default=True)
     
     def __str__(self):
         return self.title
