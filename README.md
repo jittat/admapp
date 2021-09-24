@@ -16,7 +16,13 @@
     ./manage.py migrate --run-syncdb
     ./manage.py loaddata campuses faculties admission_projects_and_rounds majors
 ```
-## วิธีรัน pipenv
+## ใช้ pipenv
+สร้าง env และ install dependencies สำหรับทำครั้งแรก
+```
+    pipenv --python 3.8
+    pipenv install --dev
+```
+สำหรับเปิด shell เพื่อเข้าไปรันคำสั่ง manage.py ต่างๆ
 ```
     pipenv shell
 ```
