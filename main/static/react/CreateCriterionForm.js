@@ -17,6 +17,7 @@ var dataRequired = JSON.parse(document.currentScript.getAttribute('data-required
 var dataScoring = JSON.parse(document.currentScript.getAttribute('data-scoring'));
 var dataSelectedMajors = JSON.parse(document.currentScript.getAttribute('data-selected-majors'));
 var mode = document.currentScript.getAttribute('data-mode');
+var canFreeText = document.currentScript.getAttribute('data-canFreeText') === 'true';
 var MODE = {
   CREATE: 'create',
   EDIT: 'edit'
@@ -148,6 +149,8 @@ var RequiredCriteria = function RequiredCriteria(_ref) {
       topics = _useState4[0],
       setTopics = _useState4[1];
 
+  var canFreeText = canFreeText; //from global variable
+
   var addNewTopic = function addNewTopic(e) {
     e.preventDefault();
     var newTopic = topics.slice();
@@ -220,7 +223,8 @@ var RequiredCriteria = function RequiredCriteria(_ref) {
             secondaryTopics: topic.children,
             setSecondaryTopics: function setSecondaryTopics(newSecondaryTopics) {
               return _setSecondaryTopics(topic.id, newSecondaryTopics);
-            }
+            },
+            canFreeText: canFreeText
           });
         }),
         React.createElement(
@@ -370,7 +374,7 @@ var ScoringCriteria = function ScoringCriteria(_ref2) {
   );
 };
 var PrimaryTopic = function PrimaryTopic(_ref3) {
-  var _React$createElement2;
+  var _React$createElement3;
 
   var topic = _ref3.topic,
       removeTopic = _ref3.removeTopic,
@@ -393,6 +397,16 @@ var PrimaryTopic = function PrimaryTopic(_ref3) {
     newSecondaryTopics.splice(index, 1);
     setSecondaryTopics(newSecondaryTopics);
   };
+  var suffix = React.createElement(
+    'div',
+    { className: 'd-flex ml-2' },
+    secondaryTopics.length > 0 && React.createElement(SelectRelation, { name: 'required_' + number + '_relation', relations: relationRequired, className: 'ml-2', initialValue: topic.relation || 'AND' }),
+    React.createElement(
+      'button',
+      { className: 'btn btn-primary btn-sm ml-2', onClick: addNewTopic },
+      '+'
+    )
+  );
 
   return React.createElement(
     React.Fragment,
@@ -405,24 +419,30 @@ var PrimaryTopic = function PrimaryTopic(_ref3) {
         null,
         number
       ),
-      React.createElement(EditableCell, {
+      canFreeText ? React.createElement(EditableCell, _defineProperty({
         name: 'required_' + number + '_title'
         // editable={mode === MODE.CREATE}
         , initialValue: topic.title,
         focusOnMount: true,
-        suffix: React.createElement(
-          'div',
-          { className: 'd-flex ml-2' },
-          secondaryTopics.length > 0 && React.createElement(SelectRelation, { name: 'required_' + number + '_relation', relations: relationRequired, className: 'ml-2', initialValue: topic.relation || 'AND' }),
-          React.createElement(
-            'button',
-            { className: 'btn btn-primary btn-sm ml-2', onClick: addNewTopic },
-            '+'
-          )
-        ),
+        suffix: suffix,
         inputProps: { required: true },
         tags: requiredTags
-      }),
+      }, 'name', 'required_' + number + '_title')) : React.createElement(
+        'div',
+        { className: 'd-flex align-items-baseline' },
+        React.createElement(SelectMenu, {
+          name: 'required_' + number + '_title',
+          initialValue: topic.title,
+          inputProps: { required: true },
+          choices: requiredTags.map(function (tag) {
+            return Object.assign({
+              value: tag.description,
+              label: tag.description
+            }, tag);
+          })
+        }),
+        suffix
+      ),
       React.createElement(EditableCell, {
         name: 'required_' + number + '_value'
         // editable={mode === MODE.CREATE}
@@ -432,9 +452,10 @@ var PrimaryTopic = function PrimaryTopic(_ref3) {
         name: 'required_' + number + '_unit'
         // editable={mode === MODE.CREATE}
         , initialValue: topic.unit || '',
-        tags: unitTags
+        tags: unitTags,
+        disabled: !canFreeText
       }),
-      React.createElement('input', (_React$createElement2 = { type: 'text' }, _defineProperty(_React$createElement2, 'type', 'hidden'), _defineProperty(_React$createElement2, 'name', 'required_' + number + '_type'), _defineProperty(_React$createElement2, 'required', true), _React$createElement2)),
+      React.createElement('input', (_React$createElement3 = { type: 'text' }, _defineProperty(_React$createElement3, 'type', 'hidden'), _defineProperty(_React$createElement3, 'name', 'required_' + number + '_type'), _defineProperty(_React$createElement3, 'required', true), _React$createElement3)),
       React.createElement(
         'td',
         null,
@@ -448,14 +469,14 @@ var PrimaryTopic = function PrimaryTopic(_ref3) {
       )
     ),
     secondaryTopics.map(function (topic, idx) {
-      var _React$createElement3;
+      var _React$createElement4;
 
       var snumber = number + '.' + (idx + 1);
       return React.createElement(
         'tr',
         { key: topic.id },
         React.createElement('td', null),
-        React.createElement(EditableCell, {
+        canFreeText ? React.createElement(EditableCell, {
           name: 'required_' + snumber + '_title'
           // editable={mode === MODE.CREATE}
           , initialValue: topic.title,
@@ -468,7 +489,27 @@ var PrimaryTopic = function PrimaryTopic(_ref3) {
           ),
           inputProps: { required: true },
           tags: requiredTags
-        }),
+        }) : React.createElement(
+          'div',
+          { className: 'd-flex align-items-baseline' },
+          React.createElement(
+            'span',
+            null,
+            snumber,
+            '\xA0\xA0'
+          ),
+          React.createElement(SelectMenu, {
+            name: 'required_' + snumber + '_title',
+            initialValue: topic.title,
+            inputProps: { required: true },
+            choices: requiredTags.map(function (tag) {
+              return Object.assign({
+                value: tag.description,
+                label: tag.description
+              }, tag);
+            })
+          })
+        ),
         React.createElement(EditableCell, {
           name: 'required_' + snumber + '_value'
           // editable={mode === MODE.CREATE}
@@ -477,10 +518,12 @@ var PrimaryTopic = function PrimaryTopic(_ref3) {
         React.createElement(EditableCell, {
           name: 'required_' + snumber + '_unit'
           // editable={mode === MODE.CREATE}
-          , initialValue: topic.unit,
+          // TODO: disabled not working, I need to disable unit changing when can't freetext
+          , disabled: !canFreeText,
+          initialValue: topic.unit,
           tags: unitTags
         }),
-        React.createElement('input', (_React$createElement3 = { type: 'text' }, _defineProperty(_React$createElement3, 'type', 'hidden'), _defineProperty(_React$createElement3, 'name', 'required_' + snumber + '_type'), _defineProperty(_React$createElement3, 'required', true), _React$createElement3)),
+        React.createElement('input', (_React$createElement4 = { type: 'text' }, _defineProperty(_React$createElement4, 'type', 'hidden'), _defineProperty(_React$createElement4, 'name', 'required_' + snumber + '_type'), _defineProperty(_React$createElement4, 'required', true), _React$createElement4)),
         React.createElement(
           'td',
           null,
@@ -497,7 +540,7 @@ var PrimaryTopic = function PrimaryTopic(_ref3) {
   );
 };
 var PrimaryScoringTopic = function PrimaryScoringTopic(_ref4) {
-  var _React$createElement4;
+  var _React$createElement5;
 
   var topic = _ref4.topic,
       removeTopic = _ref4.removeTopic,
@@ -571,7 +614,7 @@ var PrimaryScoringTopic = function PrimaryScoringTopic(_ref4) {
         inputType: 'number',
         inputProps: { required: true }
       }),
-      React.createElement('input', (_React$createElement4 = { type: 'text' }, _defineProperty(_React$createElement4, 'type', 'hidden'), _defineProperty(_React$createElement4, 'name', 'scoring_' + number + '_type'), _defineProperty(_React$createElement4, 'required', true), _React$createElement4)),
+      React.createElement('input', (_React$createElement5 = { type: 'text' }, _defineProperty(_React$createElement5, 'type', 'hidden'), _defineProperty(_React$createElement5, 'name', 'scoring_' + number + '_type'), _defineProperty(_React$createElement5, 'required', true), _React$createElement5)),
       React.createElement(
         'td',
         null,
@@ -595,7 +638,7 @@ var PrimaryScoringTopic = function PrimaryScoringTopic(_ref4) {
       )
     ),
     secondaryTopics.map(function (topic, idx) {
-      var _React$createElement5;
+      var _React$createElement6;
 
       var snumber = number + '.' + (idx + 1);
       return React.createElement(
@@ -628,7 +671,7 @@ var PrimaryScoringTopic = function PrimaryScoringTopic(_ref4) {
           inputType: 'number',
           inputProps: { required: true }
         }),
-        React.createElement('input', (_React$createElement5 = { type: 'text' }, _defineProperty(_React$createElement5, 'type', 'hidden'), _defineProperty(_React$createElement5, 'name', 'scoring_' + snumber + '_type'), _defineProperty(_React$createElement5, 'required', true), _React$createElement5)),
+        React.createElement('input', (_React$createElement6 = { type: 'text' }, _defineProperty(_React$createElement6, 'type', 'hidden'), _defineProperty(_React$createElement6, 'name', 'scoring_' + snumber + '_type'), _defineProperty(_React$createElement6, 'required', true), _React$createElement6)),
         React.createElement(
           'td',
           null,
@@ -665,12 +708,15 @@ var EditableCell = function EditableCell(_ref5) {
       inputProps = _ref5.inputProps,
       _ref5$tags = _ref5.tags,
       tags = _ref5$tags === undefined ? [] : _ref5$tags,
-      restProps = _objectWithoutProperties(_ref5, ['initialValue', 'editable', 'focusOnMount', 'children', 'onSave', 'prefix', 'suffix', 'inputType', 'name', 'inputProps', 'tags']);
+      disabled = _ref5.disabled,
+      restProps = _objectWithoutProperties(_ref5, ['initialValue', 'editable', 'focusOnMount', 'children', 'onSave', 'prefix', 'suffix', 'inputType', 'name', 'inputProps', 'tags', 'disabled']);
 
   var inputRef = useRef();
   useEffect(function () {
     if (editable) {
       $(inputRef.current).autocomplete({
+        // TODO: Disabled not working
+        disabled: true,
         source: typeof tags[0] === 'string' ? tags :
         // for required and scoring tags
         // TODO: refactor this
@@ -786,6 +832,63 @@ var SelectRelation = function SelectRelation(_ref6) {
       '\u0E40\u0E25\u0E37\u0E2D\u0E01\u0E04\u0E27\u0E32\u0E21\u0E2A\u0E31\u0E21\u0E1E\u0E31\u0E19\u0E18\u0E4C'
     ),
     relations.map(function (r) {
+      return React.createElement(
+        'option',
+        { value: r.value, key: r.value },
+        r.label
+      );
+    })
+  );
+};
+
+var SelectMenu = function SelectMenu(_ref7) {
+  var name = _ref7.name,
+      choices = _ref7.choices,
+      className = _ref7.className,
+      initialValue = _ref7.initialValue,
+      inputProps = _ref7.inputProps;
+
+  var inputRef = useRef();
+  useEffect(function () {
+    $(inputRef.current).selectmenu({
+      select: function select(event, ui) {
+        console.log(event, ui);
+        var name = event.target.name;
+        var o = choices.find(function (choice) {
+          return choice.value === ui.item.value;
+        });
+        console.log('choices:', choices);
+        console.log('ui.item.value:', ui.item.value);
+        console.log('o:', o);
+        if (!o) return;
+        var temp = name.split('_');
+        temp[temp.length - 1] = 'unit';
+        var unitName = temp.join('_');
+        var unitEl = $('[name="' + unitName + '"]')[0];
+        if (unitEl) {
+          unitEl.value = o.unit;
+        }
+
+        //   // set type
+        temp = name.split('_');
+        temp[temp.length - 1] = 'type';
+        var elName = temp.join('_');
+        var el = $('[name="' + elName + '"]')[0];
+        if (el) {
+          el.value = o.score_type;
+        }
+      }
+    }).selectmenu("menuWidget").addClass("overflow");
+  }, []);
+  return React.createElement(
+    'select',
+    Object.assign({ name: name, id: name, defaultValue: initialValue || null, ref: inputRef, rows: 1 }, inputProps),
+    React.createElement(
+      'option',
+      { disabled: true, selected: true, value: '' },
+      '\u0E01\u0E23\u0E38\u0E13\u0E32\u0E40\u0E25\u0E37\u0E2D\u0E01'
+    ),
+    choices.map(function (r) {
       return React.createElement(
         'option',
         { value: r.value, key: r.value },

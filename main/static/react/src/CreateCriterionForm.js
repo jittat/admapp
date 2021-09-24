@@ -7,6 +7,7 @@ let dataRequired = JSON.parse(document.currentScript.getAttribute('data-required
 let dataScoring = JSON.parse(document.currentScript.getAttribute('data-scoring'))
 let dataSelectedMajors = JSON.parse(document.currentScript.getAttribute('data-selected-majors'))
 let mode = document.currentScript.getAttribute('data-mode')
+let canFreeText = document.currentScript.getAttribute('data-canFreeText') === 'true'
 const MODE = {
   CREATE: 'create',
   EDIT: 'edit'
@@ -86,6 +87,7 @@ const SelectMajors = () => {
 }
 const RequiredCriteria = ({ initialTopics = [] }) => {
   const [topics, setTopics] = useState(initialTopics)
+  const canFreeText = canFreeText //from global variable
 
   const addNewTopic = (e) => {
     e.preventDefault()
@@ -130,6 +132,7 @@ const RequiredCriteria = ({ initialTopics = [] }) => {
               number={idx + 1}
               secondaryTopics={topic.children}
               setSecondaryTopics={(newSecondaryTopics) => setSecondaryTopics(topic.id, newSecondaryTopics)}
+              canFreeText={canFreeText}
             />
           )}
           <tr>
@@ -240,6 +243,10 @@ const PrimaryTopic = ({ topic, removeTopic, number, updateTopic, secondaryTopics
     newSecondaryTopics.splice(index, 1)
     setSecondaryTopics(newSecondaryTopics)
   }
+  const suffix = <div className="d-flex ml-2">
+    {secondaryTopics.length > 0 && <SelectRelation name={`required_${number}_relation`} relations={relationRequired} className="ml-2" initialValue={topic.relation || 'AND'} />}
+    <button className="btn btn-primary btn-sm ml-2" onClick={addNewTopic}>+</button>
+  </div>
 
   return (
     <React.Fragment>
@@ -247,20 +254,29 @@ const PrimaryTopic = ({ topic, removeTopic, number, updateTopic, secondaryTopics
         <td>
           {number}
         </td>
-        <EditableCell
+        {canFreeText ? <EditableCell
           name={`required_${number}_title`}
           // editable={mode === MODE.CREATE}
           initialValue={topic.title}
           focusOnMount={true}
-          suffix={
-            <div className="d-flex ml-2">
-              {secondaryTopics.length > 0 && <SelectRelation name={`required_${number}_relation`} relations={relationRequired} className="ml-2" initialValue={topic.relation || 'AND'} />}
-              <button className="btn btn-primary btn-sm ml-2" onClick={addNewTopic}>+</button>
-            </div>
-          }
+          suffix={suffix}
           inputProps={{ required: true }}
           tags={requiredTags}
-        />
+          name={`required_${number}_title`}
+        /> :
+          <div className="d-flex align-items-baseline">
+            <SelectMenu
+              name={`required_${number}_title`}
+              initialValue={topic.title}
+              inputProps={{ required: true }}
+              choices={requiredTags.map(tag => ({
+                value: tag.description,
+                label: tag.description,
+                ...tag
+              }))}
+            />
+            {suffix}
+          </div>}
         <EditableCell
           name={`required_${number}_value`}
           // editable={mode === MODE.CREATE}
@@ -271,6 +287,7 @@ const PrimaryTopic = ({ topic, removeTopic, number, updateTopic, secondaryTopics
           // editable={mode === MODE.CREATE}
           initialValue={topic.unit || ''}
           tags={unitTags}
+          disabled={!canFreeText}
         />
         <input type="text" type="hidden" name={`required_${number}_type`} required />
 
@@ -283,7 +300,7 @@ const PrimaryTopic = ({ topic, removeTopic, number, updateTopic, secondaryTopics
         return (
           <tr key={topic.id}>
             <td></td>
-            <EditableCell
+            {canFreeText ? <EditableCell
               name={`required_${snumber}_title`}
               // editable={mode === MODE.CREATE}
               initialValue={topic.title}
@@ -291,7 +308,20 @@ const PrimaryTopic = ({ topic, removeTopic, number, updateTopic, secondaryTopics
               prefix={<span>{snumber}&nbsp;&nbsp;</span>}
               inputProps={{ required: true }}
               tags={requiredTags}
-            />
+            /> :
+              <div className="d-flex align-items-baseline">
+                <span>{snumber}&nbsp;&nbsp;</span>
+                <SelectMenu
+                  name={`required_${snumber}_title`}
+                  initialValue={topic.title}
+                  inputProps={{ required: true }}
+                  choices={requiredTags.map(tag => ({
+                    value: tag.description,
+                    label: tag.description,
+                    ...tag
+                  }))}
+                />
+              </div>}
             <EditableCell
               name={`required_${snumber}_value`}
               // editable={mode === MODE.CREATE}
@@ -300,6 +330,8 @@ const PrimaryTopic = ({ topic, removeTopic, number, updateTopic, secondaryTopics
             <EditableCell
               name={`required_${snumber}_unit`}
               // editable={mode === MODE.CREATE}
+              // TODO: disabled not working, I need to disable unit changing when can't freetext
+              disabled={!canFreeText}
               initialValue={topic.unit}
               tags={unitTags}
             />
@@ -415,11 +447,14 @@ const EditableCell = ({
   name,
   inputProps,
   tags = [],
+  disabled,
   ...restProps }) => {
   const inputRef = useRef();
   useEffect(() => {
     if (editable) {
       $(inputRef.current).autocomplete({
+        // TODO: Disabled not working
+        disabled: true,
         source: typeof (tags[0]) === 'string' ? tags :
           // for required and scoring tags
           // TODO: refactor this
@@ -522,6 +557,47 @@ const SelectRelation = ({ name, relations, className, initialValue }) => {
     <option disabled>เลือกความสัมพันธ์</option>
     {relations.map(r => (<option value={r.value} key={r.value}>{r.label}</option>))}
   </select>)
+}
+
+const SelectMenu = ({ name, choices, className, initialValue, inputProps }) => {
+  const inputRef = useRef();
+  useEffect(() => {
+    $(inputRef.current).selectmenu({
+      select: ((event, ui) => {
+        console.log(event, ui)
+        const name = event.target.name
+        const o = choices.find(choice => choice.value === ui.item.value)
+        console.log('choices:', choices)
+        console.log('ui.item.value:', ui.item.value)
+        console.log('o:', o)
+        if (!o) return
+        let temp = name.split('_')
+        temp[temp.length - 1] = 'unit'
+        const unitName = temp.join('_')
+        const unitEl = $(`[name="${unitName}"]`)[0]
+        if (unitEl) {
+          unitEl.value = o.unit
+        }
+
+        //   // set type
+        temp = name.split('_')
+        temp[temp.length - 1] = 'type'
+        const elName = temp.join('_')
+        const el = $(`[name="${elName}"]`)[0]
+        if (el) {
+          el.value = o.score_type
+        }
+      }
+
+      )
+    }).selectmenu("menuWidget").addClass("overflow");
+  }, [])
+  return (
+    <select name={name} id={name} defaultValue={initialValue || null} ref={inputRef} rows={1} {...inputProps}>
+      <option disabled selected value="">กรุณาเลือก</option>
+      {choices.map(r => (<option value={r.value} key={r.value}>{r.label}</option>
+      ))}
+    </select>)
 }
 
 const domContainer = document.querySelector('#add-criterion-form');
