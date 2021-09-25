@@ -70,7 +70,7 @@ def index(request):
     if profile:
         faculty = profile.faculty
         is_admission_admin = profile.is_admission_admin
-        admission_projects = profile.admission_projects.filter(is_available=True).all()
+        admission_projects = profile.admission_projects.filter(Q(is_available=True) | Q(is_visible_in_backoffice=True)).all()
     if user.is_super_admin:
         is_admission_admin = True
         is_application_admin = True

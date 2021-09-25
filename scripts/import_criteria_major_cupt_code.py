@@ -29,7 +29,7 @@ CAMPUS_NAME_IDX = 0
 
 def normalize_faculty_name(faculty_name, campus_name):
     if campus_name == 'กำแพงแสน':
-        if faculty_name in ['คณะประมง', 'คณะสิ่งแวดล้อม']:
+        if faculty_name in ['คณะประมง', 'คณะสิ่งแวดล้อม', 'คณะสัตวแพทยศาสตร์']:
             return f'{faculty_name} {campus_name}'
     return faculty_name
         
