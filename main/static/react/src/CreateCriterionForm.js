@@ -75,7 +75,7 @@ const SelectMajors = () => {
             return (
               <tr key={`major-${major.id}`}>
                 <td scope="row">{label}
-                  <input type="text" value={major.id} type="hidden" name={`majors_${idx + 1}_id`} required />
+                  <input value={major.id} type="hidden" name={`majors_${idx + 1}_id`} required />
                 </td>
                 <td><input type="number" className="form-control" name={`majors_${idx + 1}_slot`} defaultValue={major.slot} required /></td>
                 <td><button htmltype="button" className="btn btn-secondary" onClick={() => toggleMajor(major)}>ลบ</button></td>
@@ -96,6 +96,13 @@ const RequiredCriteria = ({ initialTopics = [] }) => {
     newTopic.push({ id: Date.now(), title: '', unit: '', children: [] })
     console.log(newTopic)
     setTopics(newTopic)
+  }
+  const updateTopic = (topicId, value) => {
+    console.log(`Updating topic`, topicId, value)
+    const newTopics = topics.slice()
+    const index = newTopics.findIndex((t) => t.id === topicId)
+    newTopics[index] = { ...newTopics[index], ...value }
+    setTopics(newTopics)
   }
   const removeTopic = (topic) => {
     const newTopics = topics.slice()
@@ -130,6 +137,7 @@ const RequiredCriteria = ({ initialTopics = [] }) => {
               key={topic.id}
               topic={topic}
               removeTopic={removeTopic}
+              updateTopic={updateTopic}
               number={idx + 1}
               secondaryTopics={topic.children}
               setSecondaryTopics={(newSecondaryTopics) => setSecondaryTopics(topic.id, newSecondaryTopics)}
@@ -247,6 +255,14 @@ const PrimaryTopic = ({ topic, removeTopic, number, updateTopic, secondaryTopics
     newSecondaryTopics.splice(index, 1)
     setSecondaryTopics(newSecondaryTopics)
   }
+
+  const updateSecondaryTopic = (topicId, value) => {
+    const newSecondaryTopics = secondaryTopics.slice()
+    const index = newSecondaryTopics.findIndex((t) => t.id === topicId)
+    newSecondaryTopics[index] = { ...newSecondaryTopics[index], ...value }
+    setSecondaryTopics(newSecondaryTopics)
+  }
+
   const suffix = <div className="d-flex ml-2">
     {secondaryTopics.length > 0 && <SelectRelation name={`required_${number}_relation`} relations={relationRequired} className="ml-2" initialValue={topic.relation || 'AND'} />}
     <button className="btn btn-primary btn-sm ml-2" onClick={addNewTopic}>+</button>
@@ -266,6 +282,10 @@ const PrimaryTopic = ({ topic, removeTopic, number, updateTopic, secondaryTopics
           inputProps={{ required: true }}
           tags={requiredTags}
           name={`required_${number}_title`}
+          onSave={(v) => {
+            const tag = requiredTags.find(o => o.description === v)
+            updateTopic(topic.id, { ...topic, score_type: tag ? tag.score_type : 'OTHER', unit: tag ? tag.unit : '' })
+          }}
         /> :
           <td>
             <div className="d-flex align-items-baseline">
@@ -280,6 +300,11 @@ const PrimaryTopic = ({ topic, removeTopic, number, updateTopic, secondaryTopics
                   label: tag.description,
                   ...tag
                 }))}
+
+                onSave={(v) => {
+                  const tag = requiredTags.find(o => o.description === v)
+                  updateTopic(topic.id, { ...topic, score_type: tag ? tag.score_type : 'OTHER', unit: tag ? tag.unit : '' })
+                }}
               />
               {suffix}
             </div>
@@ -295,7 +320,7 @@ const PrimaryTopic = ({ topic, removeTopic, number, updateTopic, secondaryTopics
           initialValue={topic.unit || ''}
           tags={unitTags}
         />
-        <input type="text" type="hidden" name={`required_${number}_type`} value={topic.score_type || "OTHER"} required />
+        <input type="hidden" name={`required_${number}_type`} value={topic.score_type || "OTHER"} required />
 
         <td>
           <button className="btn btn-secondary btn-sm" onClick={() => removeTopic(topic)}>-</button>
@@ -303,6 +328,7 @@ const PrimaryTopic = ({ topic, removeTopic, number, updateTopic, secondaryTopics
       </tr>
       {secondaryTopics.map((topic, idx) => {
         const snumber = `${number}.${idx + 1}`
+        const prefix = <span>{snumber}&nbsp;&nbsp;</span>
         return (
           <tr key={topic.id}>
             <td></td>
@@ -311,13 +337,17 @@ const PrimaryTopic = ({ topic, removeTopic, number, updateTopic, secondaryTopics
               // editable={mode === MODE.CREATE}
               initialValue={topic.title}
               focusOnMount={true}
-              prefix={<span>{snumber}&nbsp;&nbsp;</span>}
+              prefix={prefix}
               inputProps={{ required: true }}
               tags={requiredTags}
+              onSave={(v) => {
+                const tag = requiredTags.find(o => o.description === v)
+                updateSecondaryTopic(topic.id, { ...topic, score_type: tag ? tag.score_type : 'OTHER', unit: tag ? tag.unit : '' })
+              }}
             /> :
               <td>
                 <div className="d-flex align-items-baseline">
-                  <span>{snumber}&nbsp;&nbsp;</span>
+                  {prefix}
                   <SelectMenu
                     name={`required_${snumber}_title`}
                     initialValue={topic.title}
@@ -326,7 +356,14 @@ const PrimaryTopic = ({ topic, removeTopic, number, updateTopic, secondaryTopics
                       value: tag.description,
                       label: tag.description,
                       ...tag
-                    }))}
+                    })
+                    )
+                    }
+
+                    onSave={(v) => {
+                      const tag = requiredTags.find(o => o.description === v)
+                      updateSecondaryTopic(topic.id, { ...topic, score_type: tag ? tag.score_type : 'OTHER', unit: tag ? tag.unit : '' })
+                    }}
                   />
                 </div>
               </td>}
@@ -341,7 +378,7 @@ const PrimaryTopic = ({ topic, removeTopic, number, updateTopic, secondaryTopics
               initialValue={topic.unit}
               tags={unitTags}
             />
-            <input type="text" type="hidden" name={`required_${snumber}_type`} value={topic.score_type || "OTHER"} required />
+            <input type="hidden" name={`required_${snumber}_type`} value={topic.score_type || "OTHER"} required />
 
             <td>
               <button className="btn btn-secondary btn-sm" onClick={() => removeSecondaryTopic(topic)}>-</button>
@@ -392,6 +429,10 @@ const PrimaryScoringTopic = ({ topic, removeTopic, number, updateTopic, maxScore
           }
           inputProps={{ required: true }}
           tags={scoringTags}
+          onSave={(v) => {
+            const tag = scoringTags.find(o => o.description === v)
+            updateTopic(topic.id, { ...topic, score_type: tag ? tag.score_type : 'OTHER' })
+          }}
         /> :
           <td>
             <div className="d-flex align-items-baseline">
@@ -406,6 +447,11 @@ const PrimaryScoringTopic = ({ topic, removeTopic, number, updateTopic, maxScore
                   label: tag.description,
                   ...tag
                 }))}
+
+                onSave={(v) => {
+                  const tag = scoringTags.find(o => o.description === v)
+                  updateTopic(topic.id, { ...topic, score_type: tag ? tag.score_type : 'OTHER' })
+                }}
               />
               {suffix}
             </div>
@@ -419,7 +465,7 @@ const PrimaryScoringTopic = ({ topic, removeTopic, number, updateTopic, maxScore
           inputType="number"
           inputProps={{ required: true }}
         />
-        <input type="text" type="hidden" name={`scoring_${number}_type`} value={topic.score_type || "OTHER"} required />
+        <input type="hidden" name={`scoring_${number}_type`} value={topic.score_type || "OTHER"} required />
 
         <td><strong>{(topic.value / maxScore * 100).toLocaleString()}%</strong></td>
         <td>
@@ -428,6 +474,7 @@ const PrimaryScoringTopic = ({ topic, removeTopic, number, updateTopic, maxScore
       </tr>
       {secondaryTopics.map((topic, idx) => {
         const snumber = `${number}.${idx + 1}`
+        const prefix = <span>{number}.{idx + 1}&nbsp;&nbsp;</span>
         return (
           <tr key={topic.id}>
             <td></td>
@@ -436,14 +483,19 @@ const PrimaryScoringTopic = ({ topic, removeTopic, number, updateTopic, maxScore
               // editable={mode === MODE.CREATE}
               initialValue={topic.title}
               focusOnMount={true}
-              prefix={<span>{number}.{idx + 1}&nbsp;&nbsp;</span>}
+              prefix={prefix}
               inputProps={{ required: true }}
               tags={scoringTags}
+
+              onSave={(v) => {
+                const tag = scoringTags.find(o => o.description === v)
+                updateSecondaryTopic(topic.id, { ...topic, score_type: tag ? tag.score_type : 'OTHER' })
+              }}
             /> :
 
               <td>
                 <div className="d-flex align-items-baseline">
-                  <span>{number}.{idx + 1}&nbsp;&nbsp;</span>
+                  {prefix}
                   <SelectMenu
                     name={`scoring_${snumber}_title`}
                     initialValue={topic.title}
@@ -455,6 +507,11 @@ const PrimaryScoringTopic = ({ topic, removeTopic, number, updateTopic, maxScore
                       label: tag.description,
                       ...tag
                     }))}
+
+                    onSave={(v) => {
+                      const tag = scoringTags.find(o => o.description === v)
+                      updateSecondaryTopic(topic.id, { ...topic, score_type: tag ? tag.score_type : 'OTHER' })
+                    }}
                   />
                 </div>
               </td>}
@@ -466,7 +523,7 @@ const PrimaryScoringTopic = ({ topic, removeTopic, number, updateTopic, maxScore
               inputType="number"
               inputProps={{ required: true }}
             />
-            <input type="text" type="hidden" name={`scoring_${snumber}_type`} value={topic.score_type || "OTHER"} required />
+            <input type="hidden" name={`scoring_${snumber}_type`} value={topic.score_type || "OTHER"} required />
 
             <td>{(topic.value / primaryMaxScore * 100).toLocaleString()}%</td>
             <td>
@@ -479,6 +536,7 @@ const PrimaryScoringTopic = ({ topic, removeTopic, number, updateTopic, maxScore
   )
 }
 const EditableCell = ({
+  value,
   initialValue,
   editable = true,
   focusOnMount = false,
@@ -511,17 +569,6 @@ const EditableCell = ({
               if (unitEl) {
                 unitEl.value = o.unit
               }
-
-              // set type
-              temp = name.split('_')
-              temp[temp.length - 1] = 'type'
-              const elName = temp.join('_')
-              const el = $(`[name="${elName}"]`)[0]
-              // console.log('name: ', name)
-              // console.log('o.type: ', o.score_type)
-              if (el) {
-                el.value = o.score_type
-              }
             }
           })),
         minLength: 0,
@@ -547,26 +594,6 @@ const EditableCell = ({
   const save = e => {
     try {
       onSave && onSave(inputRef.current.value)
-
-      // clear type and unit if input is not intial from select
-      let temp = name.split('_')
-      if (temp[temp.length - 1] === 'title') {
-        temp[temp.length - 1] = 'type'
-        const elName = temp.join('_')
-        const tag = tags.find(o => o.description === inputRef.current.value)
-        if (tag) {
-          const el = $(`[name="${elName}"]`)[0]
-          if (el) {
-            el.value = tag.score_type
-          }
-        } else {
-          const el = $(`[name="${elName}"]`)[0]
-          if (el) {
-            el.value = 'OTHER'
-          }
-        }
-
-      }
     } catch (errInfo) {
       console.log('Save failed:', errInfo);
     }
@@ -605,12 +632,14 @@ const SelectRelation = ({ name, relations, className, initialValue }) => {
   </select>)
 }
 
-const SelectMenu = ({ name, choices, className, initialValue, inputProps }) => {
+const SelectMenu = ({ name, choices, className, initialValue, inputProps, onSave }) => {
   const inputRef = useRef();
   useEffect(() => {
     $(inputRef.current).selectmenu({
       classes: { 'ui-selectmenu-button': 'flex-1' },
       select: ((event, ui) => {
+        onSave && onSave(inputRef.current.value)
+
         const name = event.target.name
         const o = choices.find(choice => choice.value === ui.item.value)
         // console.log('name: ', name)
@@ -623,15 +652,6 @@ const SelectMenu = ({ name, choices, className, initialValue, inputProps }) => {
         const unitEl = $(`[name="${unitName}"]`)[0]
         if (unitEl) {
           unitEl.value = o.unit
-        }
-
-        // set type
-        temp = name.split('_')
-        temp[temp.length - 1] = 'type'
-        const elName = temp.join('_')
-        const el = $(`[name="${elName}"]`)[0]
-        if (el) {
-          el.value = o.score_type
         }
       }
 

@@ -108,8 +108,6 @@ var SelectMajors = function SelectMajors() {
         'tbody',
         null,
         selectedMajors.map(function (major, idx) {
-          var _React$createElement;
-
           var label = major.title;
           return React.createElement(
             'tr',
@@ -118,7 +116,7 @@ var SelectMajors = function SelectMajors() {
               'td',
               { scope: 'row' },
               label,
-              React.createElement('input', (_React$createElement = { type: 'text', value: major.id }, _defineProperty(_React$createElement, 'type', 'hidden'), _defineProperty(_React$createElement, 'name', 'majors_' + (idx + 1) + '_id'), _defineProperty(_React$createElement, 'required', true), _React$createElement))
+              React.createElement('input', { value: major.id, type: 'hidden', name: 'majors_' + (idx + 1) + '_id', required: true })
             ),
             React.createElement(
               'td',
@@ -158,6 +156,15 @@ var RequiredCriteria = function RequiredCriteria(_ref) {
     newTopic.push({ id: Date.now(), title: '', unit: '', children: [] });
     console.log(newTopic);
     setTopics(newTopic);
+  };
+  var updateTopic = function updateTopic(topicId, value) {
+    console.log('Updating topic', topicId, value);
+    var newTopics = topics.slice();
+    var index = newTopics.findIndex(function (t) {
+      return t.id === topicId;
+    });
+    newTopics[index] = Object.assign({}, newTopics[index], value);
+    setTopics(newTopics);
   };
   var removeTopic = function removeTopic(topic) {
     var newTopics = topics.slice();
@@ -220,6 +227,7 @@ var RequiredCriteria = function RequiredCriteria(_ref) {
             key: topic.id,
             topic: topic,
             removeTopic: removeTopic,
+            updateTopic: updateTopic,
             number: idx + 1,
             secondaryTopics: topic.children,
             setSecondaryTopics: function setSecondaryTopics(newSecondaryTopics) {
@@ -378,7 +386,7 @@ var ScoringCriteria = function ScoringCriteria(_ref2) {
   );
 };
 var PrimaryTopic = function PrimaryTopic(_ref3) {
-  var _React$createElement3;
+  var _React$createElement;
 
   var topic = _ref3.topic,
       removeTopic = _ref3.removeTopic,
@@ -402,6 +410,16 @@ var PrimaryTopic = function PrimaryTopic(_ref3) {
     newSecondaryTopics.splice(index, 1);
     setSecondaryTopics(newSecondaryTopics);
   };
+
+  var updateSecondaryTopic = function updateSecondaryTopic(topicId, value) {
+    var newSecondaryTopics = secondaryTopics.slice();
+    var index = newSecondaryTopics.findIndex(function (t) {
+      return t.id === topicId;
+    });
+    newSecondaryTopics[index] = Object.assign({}, newSecondaryTopics[index], value);
+    setSecondaryTopics(newSecondaryTopics);
+  };
+
   var suffix = React.createElement(
     'div',
     { className: 'd-flex ml-2' },
@@ -423,7 +441,7 @@ var PrimaryTopic = function PrimaryTopic(_ref3) {
         null,
         number
       ),
-      isCustomScoreCriteriaAllowed ? React.createElement(EditableCell, _defineProperty({
+      isCustomScoreCriteriaAllowed ? React.createElement(EditableCell, (_React$createElement = {
         name: 'required_' + number + '_title'
         // editable={mode === MODE.CREATE}
         , initialValue: topic.title,
@@ -431,7 +449,12 @@ var PrimaryTopic = function PrimaryTopic(_ref3) {
         suffix: suffix,
         inputProps: { required: true },
         tags: requiredTags
-      }, 'name', 'required_' + number + '_title')) : React.createElement(
+      }, _defineProperty(_React$createElement, 'name', 'required_' + number + '_title'), _defineProperty(_React$createElement, 'onSave', function onSave(v) {
+        var tag = requiredTags.find(function (o) {
+          return o.description === v;
+        });
+        updateTopic(topic.id, Object.assign({}, topic, { score_type: tag ? tag.score_type : 'OTHER', unit: tag ? tag.unit : '' }));
+      }), _React$createElement)) : React.createElement(
         'td',
         null,
         React.createElement(
@@ -448,7 +471,14 @@ var PrimaryTopic = function PrimaryTopic(_ref3) {
                 value: tag.description,
                 label: tag.description
               }, tag);
-            })
+            }),
+
+            onSave: function onSave(v) {
+              var tag = requiredTags.find(function (o) {
+                return o.description === v;
+              });
+              updateTopic(topic.id, Object.assign({}, topic, { score_type: tag ? tag.score_type : 'OTHER', unit: tag ? tag.unit : '' }));
+            }
           }),
           suffix
         )
@@ -464,7 +494,7 @@ var PrimaryTopic = function PrimaryTopic(_ref3) {
         initialValue: topic.unit || '',
         tags: unitTags
       }),
-      React.createElement('input', (_React$createElement3 = { type: 'text' }, _defineProperty(_React$createElement3, 'type', 'hidden'), _defineProperty(_React$createElement3, 'name', 'required_' + number + '_type'), _defineProperty(_React$createElement3, 'value', topic.score_type || "OTHER"), _defineProperty(_React$createElement3, 'required', true), _React$createElement3)),
+      React.createElement('input', { type: 'hidden', name: 'required_' + number + '_type', value: topic.score_type || "OTHER", required: true }),
       React.createElement(
         'td',
         null,
@@ -478,9 +508,13 @@ var PrimaryTopic = function PrimaryTopic(_ref3) {
       )
     ),
     secondaryTopics.map(function (topic, idx) {
-      var _React$createElement4;
-
       var snumber = number + '.' + (idx + 1);
+      var prefix = React.createElement(
+        'span',
+        null,
+        snumber,
+        '\xA0\xA0'
+      );
       return React.createElement(
         'tr',
         { key: topic.id },
@@ -490,26 +524,22 @@ var PrimaryTopic = function PrimaryTopic(_ref3) {
           // editable={mode === MODE.CREATE}
           , initialValue: topic.title,
           focusOnMount: true,
-          prefix: React.createElement(
-            'span',
-            null,
-            snumber,
-            '\xA0\xA0'
-          ),
+          prefix: prefix,
           inputProps: { required: true },
-          tags: requiredTags
+          tags: requiredTags,
+          onSave: function onSave(v) {
+            var tag = requiredTags.find(function (o) {
+              return o.description === v;
+            });
+            updateSecondaryTopic(topic.id, Object.assign({}, topic, { score_type: tag ? tag.score_type : 'OTHER', unit: tag ? tag.unit : '' }));
+          }
         }) : React.createElement(
           'td',
           null,
           React.createElement(
             'div',
             { className: 'd-flex align-items-baseline' },
-            React.createElement(
-              'span',
-              null,
-              snumber,
-              '\xA0\xA0'
-            ),
+            prefix,
             React.createElement(SelectMenu, {
               name: 'required_' + snumber + '_title',
               initialValue: topic.title,
@@ -519,7 +549,14 @@ var PrimaryTopic = function PrimaryTopic(_ref3) {
                   value: tag.description,
                   label: tag.description
                 }, tag);
-              })
+              }),
+
+              onSave: function onSave(v) {
+                var tag = requiredTags.find(function (o) {
+                  return o.description === v;
+                });
+                updateSecondaryTopic(topic.id, Object.assign({}, topic, { score_type: tag ? tag.score_type : 'OTHER', unit: tag ? tag.unit : '' }));
+              }
             })
           )
         ),
@@ -534,7 +571,7 @@ var PrimaryTopic = function PrimaryTopic(_ref3) {
           initialValue: topic.unit,
           tags: unitTags
         }),
-        React.createElement('input', (_React$createElement4 = { type: 'text' }, _defineProperty(_React$createElement4, 'type', 'hidden'), _defineProperty(_React$createElement4, 'name', 'required_' + snumber + '_type'), _defineProperty(_React$createElement4, 'value', topic.score_type || "OTHER"), _defineProperty(_React$createElement4, 'required', true), _React$createElement4)),
+        React.createElement('input', { type: 'hidden', name: 'required_' + snumber + '_type', value: topic.score_type || "OTHER", required: true }),
         React.createElement(
           'td',
           null,
@@ -551,8 +588,6 @@ var PrimaryTopic = function PrimaryTopic(_ref3) {
   );
 };
 var PrimaryScoringTopic = function PrimaryScoringTopic(_ref4) {
-  var _React$createElement5;
-
   var topic = _ref4.topic,
       removeTopic = _ref4.removeTopic,
       number = _ref4.number,
@@ -615,7 +650,13 @@ var PrimaryScoringTopic = function PrimaryScoringTopic(_ref4) {
         focusOnMount: true,
         suffix: suffix,
         inputProps: { required: true },
-        tags: scoringTags
+        tags: scoringTags,
+        onSave: function onSave(v) {
+          var tag = scoringTags.find(function (o) {
+            return o.description === v;
+          });
+          updateTopic(topic.id, Object.assign({}, topic, { score_type: tag ? tag.score_type : 'OTHER' }));
+        }
       }) : React.createElement(
         'td',
         null,
@@ -633,7 +674,14 @@ var PrimaryScoringTopic = function PrimaryScoringTopic(_ref4) {
                 value: tag.description,
                 label: tag.description
               }, tag);
-            })
+            }),
+
+            onSave: function onSave(v) {
+              var tag = scoringTags.find(function (o) {
+                return o.description === v;
+              });
+              updateTopic(topic.id, Object.assign({}, topic, { score_type: tag ? tag.score_type : 'OTHER' }));
+            }
           }),
           suffix
         )
@@ -648,7 +696,7 @@ var PrimaryScoringTopic = function PrimaryScoringTopic(_ref4) {
         inputType: 'number',
         inputProps: { required: true }
       }),
-      React.createElement('input', (_React$createElement5 = { type: 'text' }, _defineProperty(_React$createElement5, 'type', 'hidden'), _defineProperty(_React$createElement5, 'name', 'scoring_' + number + '_type'), _defineProperty(_React$createElement5, 'value', topic.score_type || "OTHER"), _defineProperty(_React$createElement5, 'required', true), _React$createElement5)),
+      React.createElement('input', { type: 'hidden', name: 'scoring_' + number + '_type', value: topic.score_type || "OTHER", required: true }),
       React.createElement(
         'td',
         null,
@@ -672,9 +720,15 @@ var PrimaryScoringTopic = function PrimaryScoringTopic(_ref4) {
       )
     ),
     secondaryTopics.map(function (topic, idx) {
-      var _React$createElement6;
-
       var snumber = number + '.' + (idx + 1);
+      var prefix = React.createElement(
+        'span',
+        null,
+        number,
+        '.',
+        idx + 1,
+        '\xA0\xA0'
+      );
       return React.createElement(
         'tr',
         { key: topic.id },
@@ -684,30 +738,23 @@ var PrimaryScoringTopic = function PrimaryScoringTopic(_ref4) {
           // editable={mode === MODE.CREATE}
           , initialValue: topic.title,
           focusOnMount: true,
-          prefix: React.createElement(
-            'span',
-            null,
-            number,
-            '.',
-            idx + 1,
-            '\xA0\xA0'
-          ),
+          prefix: prefix,
           inputProps: { required: true },
-          tags: scoringTags
+          tags: scoringTags,
+
+          onSave: function onSave(v) {
+            var tag = scoringTags.find(function (o) {
+              return o.description === v;
+            });
+            updateSecondaryTopic(topic.id, Object.assign({}, topic, { score_type: tag ? tag.score_type : 'OTHER' }));
+          }
         }) : React.createElement(
           'td',
           null,
           React.createElement(
             'div',
             { className: 'd-flex align-items-baseline' },
-            React.createElement(
-              'span',
-              null,
-              number,
-              '.',
-              idx + 1,
-              '\xA0\xA0'
-            ),
+            prefix,
             React.createElement(SelectMenu, {
               name: 'scoring_' + snumber + '_title',
               initialValue: topic.title,
@@ -719,7 +766,14 @@ var PrimaryScoringTopic = function PrimaryScoringTopic(_ref4) {
                   value: tag.description,
                   label: tag.description
                 }, tag);
-              })
+              }),
+
+              onSave: function onSave(v) {
+                var tag = scoringTags.find(function (o) {
+                  return o.description === v;
+                });
+                updateSecondaryTopic(topic.id, Object.assign({}, topic, { score_type: tag ? tag.score_type : 'OTHER' }));
+              }
             })
           )
         ),
@@ -733,7 +787,7 @@ var PrimaryScoringTopic = function PrimaryScoringTopic(_ref4) {
           inputType: 'number',
           inputProps: { required: true }
         }),
-        React.createElement('input', (_React$createElement6 = { type: 'text' }, _defineProperty(_React$createElement6, 'type', 'hidden'), _defineProperty(_React$createElement6, 'name', 'scoring_' + snumber + '_type'), _defineProperty(_React$createElement6, 'value', topic.score_type || "OTHER"), _defineProperty(_React$createElement6, 'required', true), _React$createElement6)),
+        React.createElement('input', { type: 'hidden', name: 'scoring_' + snumber + '_type', value: topic.score_type || "OTHER", required: true }),
         React.createElement(
           'td',
           null,
@@ -756,7 +810,8 @@ var PrimaryScoringTopic = function PrimaryScoringTopic(_ref4) {
   );
 };
 var EditableCell = function EditableCell(_ref5) {
-  var initialValue = _ref5.initialValue,
+  var value = _ref5.value,
+      initialValue = _ref5.initialValue,
       _ref5$editable = _ref5.editable,
       editable = _ref5$editable === undefined ? true : _ref5$editable,
       _ref5$focusOnMount = _ref5.focusOnMount,
@@ -770,7 +825,7 @@ var EditableCell = function EditableCell(_ref5) {
       inputProps = _ref5.inputProps,
       _ref5$tags = _ref5.tags,
       tags = _ref5$tags === undefined ? [] : _ref5$tags,
-      restProps = _objectWithoutProperties(_ref5, ['initialValue', 'editable', 'focusOnMount', 'children', 'onSave', 'prefix', 'suffix', 'inputType', 'name', 'inputProps', 'tags']);
+      restProps = _objectWithoutProperties(_ref5, ['value', 'initialValue', 'editable', 'focusOnMount', 'children', 'onSave', 'prefix', 'suffix', 'inputType', 'name', 'inputProps', 'tags']);
 
   var inputRef = useRef();
   useEffect(function () {
@@ -792,17 +847,6 @@ var EditableCell = function EditableCell(_ref5) {
 
               if (unitEl) {
                 unitEl.value = o.unit;
-              }
-
-              // set type
-              temp = name.split('_');
-              temp[temp.length - 1] = 'type';
-              var elName = temp.join('_');
-              var el = $('[name="' + elName + '"]')[0];
-              // console.log('name: ', name)
-              // console.log('o.type: ', o.score_type)
-              if (el) {
-                el.value = o.score_type;
               }
             }
           };
@@ -828,27 +872,6 @@ var EditableCell = function EditableCell(_ref5) {
   var save = function save(e) {
     try {
       onSave && onSave(inputRef.current.value);
-
-      // clear type and unit if input is not intial from select
-      var temp = name.split('_');
-      if (temp[temp.length - 1] === 'title') {
-        temp[temp.length - 1] = 'type';
-        var elName = temp.join('_');
-        var tag = tags.find(function (o) {
-          return o.description === inputRef.current.value;
-        });
-        if (tag) {
-          var el = $('[name="' + elName + '"]')[0];
-          if (el) {
-            el.value = tag.score_type;
-          }
-        } else {
-          var _el = $('[name="' + elName + '"]')[0];
-          if (_el) {
-            _el.value = 'OTHER';
-          }
-        }
-      }
     } catch (errInfo) {
       console.log('Save failed:', errInfo);
     }
@@ -909,13 +932,16 @@ var SelectMenu = function SelectMenu(_ref7) {
       choices = _ref7.choices,
       className = _ref7.className,
       initialValue = _ref7.initialValue,
-      inputProps = _ref7.inputProps;
+      inputProps = _ref7.inputProps,
+      onSave = _ref7.onSave;
 
   var inputRef = useRef();
   useEffect(function () {
     $(inputRef.current).selectmenu({
       classes: { 'ui-selectmenu-button': 'flex-1' },
       select: function select(event, ui) {
+        onSave && onSave(inputRef.current.value);
+
         var name = event.target.name;
         var o = choices.find(function (choice) {
           return choice.value === ui.item.value;
@@ -930,15 +956,6 @@ var SelectMenu = function SelectMenu(_ref7) {
         var unitEl = $('[name="' + unitName + '"]')[0];
         if (unitEl) {
           unitEl.value = o.unit;
-        }
-
-        // set type
-        temp = name.split('_');
-        temp[temp.length - 1] = 'type';
-        var elName = temp.join('_');
-        var el = $('[name="' + elName + '"]')[0];
-        if (el) {
-          el.value = o.score_type;
         }
       }
     }).selectmenu("menuWidget").addClass("overflow");
