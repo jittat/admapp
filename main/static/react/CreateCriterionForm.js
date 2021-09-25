@@ -17,12 +17,14 @@ var dataRequired = JSON.parse(document.currentScript.getAttribute('data-required
 var dataScoring = JSON.parse(document.currentScript.getAttribute('data-scoring'));
 var dataSelectedMajors = JSON.parse(document.currentScript.getAttribute('data-selected-majors'));
 var mode = document.currentScript.getAttribute('data-mode');
-var canFreeText = document.currentScript.getAttribute('data-canFreeText') === 'true';
+var isCustomScoreCriteriaAllowed = document.currentScript.getAttribute('data-is_custom_score_criteria_allowed') === 'dTrue';
 var MODE = {
   CREATE: 'create',
   EDIT: 'edit'
 };
 var Form = function Form() {
+  // console.log(dataRequired)
+  // console.log(dataScoring)
   return React.createElement(
     'div',
     null,
@@ -149,7 +151,7 @@ var RequiredCriteria = function RequiredCriteria(_ref) {
       topics = _useState4[0],
       setTopics = _useState4[1];
 
-  var canFreeText = canFreeText; //from global variable
+  var isCustomScoreCriteriaAllowed = isCustomScoreCriteriaAllowed; //from global variable
 
   var addNewTopic = function addNewTopic(e) {
     e.preventDefault();
@@ -224,7 +226,7 @@ var RequiredCriteria = function RequiredCriteria(_ref) {
             setSecondaryTopics: function setSecondaryTopics(newSecondaryTopics) {
               return _setSecondaryTopics(topic.id, newSecondaryTopics);
             },
-            canFreeText: canFreeText
+            isCustomScoreCriteriaAllowed: isCustomScoreCriteriaAllowed
           });
         }),
         React.createElement(
@@ -252,6 +254,8 @@ var RequiredCriteria = function RequiredCriteria(_ref) {
 var ScoringCriteria = function ScoringCriteria(_ref2) {
   var _ref2$initialTopics = _ref2.initialTopics,
       initialTopics = _ref2$initialTopics === undefined ? [] : _ref2$initialTopics;
+
+  var isCustomScoreCriteriaAllowed = isCustomScoreCriteriaAllowed; //from global variable
 
   var _useState5 = useState(initialTopics),
       _useState6 = _slicedToArray(_useState5, 2),
@@ -349,7 +353,8 @@ var ScoringCriteria = function ScoringCriteria(_ref2) {
             setSecondaryTopics: function setSecondaryTopics(newSecondaryTopics) {
               return _setSecondaryTopics2(topic.id, newSecondaryTopics);
             },
-            key: topic.id
+            key: topic.id,
+            isCustomScoreCriteriaAllowed: isCustomScoreCriteriaAllowed
           });
         }),
         React.createElement(
@@ -381,7 +386,8 @@ var PrimaryTopic = function PrimaryTopic(_ref3) {
       number = _ref3.number,
       updateTopic = _ref3.updateTopic,
       secondaryTopics = _ref3.secondaryTopics,
-      setSecondaryTopics = _ref3.setSecondaryTopics;
+      setSecondaryTopics = _ref3.setSecondaryTopics,
+      isCustomScoreCriteriaAllowed = _ref3.isCustomScoreCriteriaAllowed;
 
   var addNewTopic = function addNewTopic(e) {
     e.preventDefault();
@@ -407,7 +413,6 @@ var PrimaryTopic = function PrimaryTopic(_ref3) {
       '+'
     )
   );
-
   return React.createElement(
     React.Fragment,
     null,
@@ -419,7 +424,7 @@ var PrimaryTopic = function PrimaryTopic(_ref3) {
         null,
         number
       ),
-      canFreeText ? React.createElement(EditableCell, _defineProperty({
+      isCustomScoreCriteriaAllowed ? React.createElement(EditableCell, _defineProperty({
         name: 'required_' + number + '_title'
         // editable={mode === MODE.CREATE}
         , initialValue: topic.title,
@@ -428,20 +433,26 @@ var PrimaryTopic = function PrimaryTopic(_ref3) {
         inputProps: { required: true },
         tags: requiredTags
       }, 'name', 'required_' + number + '_title')) : React.createElement(
-        'div',
-        { className: 'd-flex align-items-baseline' },
-        React.createElement(SelectMenu, {
-          name: 'required_' + number + '_title',
-          initialValue: topic.title,
-          inputProps: { required: true },
-          choices: requiredTags.map(function (tag) {
-            return Object.assign({
-              value: tag.description,
-              label: tag.description
-            }, tag);
-          })
-        }),
-        suffix
+        'td',
+        null,
+        React.createElement(
+          'div',
+          { className: 'd-flex align-items-baseline' },
+          React.createElement(SelectMenu, {
+            name: 'required_' + number + '_title',
+            initialValue: topic.title,
+            inputProps: {
+              required: true
+            },
+            choices: requiredTags.map(function (tag) {
+              return Object.assign({
+                value: tag.description,
+                label: tag.description
+              }, tag);
+            })
+          }),
+          suffix
+        )
       ),
       React.createElement(EditableCell, {
         name: 'required_' + number + '_value'
@@ -449,13 +460,12 @@ var PrimaryTopic = function PrimaryTopic(_ref3) {
         , initialValue: topic.value
       }),
       React.createElement(EditableCell, {
-        name: 'required_' + number + '_unit'
-        // editable={mode === MODE.CREATE}
-        , initialValue: topic.unit || '',
-        tags: unitTags,
-        disabled: !canFreeText
+        name: 'required_' + number + '_unit',
+        editable: isCustomScoreCriteriaAllowed,
+        initialValue: topic.unit || '',
+        tags: unitTags
       }),
-      React.createElement('input', (_React$createElement3 = { type: 'text' }, _defineProperty(_React$createElement3, 'type', 'hidden'), _defineProperty(_React$createElement3, 'name', 'required_' + number + '_type'), _defineProperty(_React$createElement3, 'required', true), _React$createElement3)),
+      React.createElement('input', (_React$createElement3 = { type: 'text' }, _defineProperty(_React$createElement3, 'type', 'hidden'), _defineProperty(_React$createElement3, 'name', 'required_' + number + '_type'), _defineProperty(_React$createElement3, 'value', topic.score_type || "OTHER"), _defineProperty(_React$createElement3, 'required', true), _React$createElement3)),
       React.createElement(
         'td',
         null,
@@ -476,7 +486,7 @@ var PrimaryTopic = function PrimaryTopic(_ref3) {
         'tr',
         { key: topic.id },
         React.createElement('td', null),
-        canFreeText ? React.createElement(EditableCell, {
+        isCustomScoreCriteriaAllowed ? React.createElement(EditableCell, {
           name: 'required_' + snumber + '_title'
           // editable={mode === MODE.CREATE}
           , initialValue: topic.title,
@@ -490,25 +500,29 @@ var PrimaryTopic = function PrimaryTopic(_ref3) {
           inputProps: { required: true },
           tags: requiredTags
         }) : React.createElement(
-          'div',
-          { className: 'd-flex align-items-baseline' },
+          'td',
+          null,
           React.createElement(
-            'span',
-            null,
-            snumber,
-            '\xA0\xA0'
-          ),
-          React.createElement(SelectMenu, {
-            name: 'required_' + snumber + '_title',
-            initialValue: topic.title,
-            inputProps: { required: true },
-            choices: requiredTags.map(function (tag) {
-              return Object.assign({
-                value: tag.description,
-                label: tag.description
-              }, tag);
+            'div',
+            { className: 'd-flex align-items-baseline' },
+            React.createElement(
+              'span',
+              null,
+              snumber,
+              '\xA0\xA0'
+            ),
+            React.createElement(SelectMenu, {
+              name: 'required_' + snumber + '_title',
+              initialValue: topic.title,
+              inputProps: { required: true },
+              choices: requiredTags.map(function (tag) {
+                return Object.assign({
+                  value: tag.description,
+                  label: tag.description
+                }, tag);
+              })
             })
-          })
+          )
         ),
         React.createElement(EditableCell, {
           name: 'required_' + snumber + '_value'
@@ -516,14 +530,12 @@ var PrimaryTopic = function PrimaryTopic(_ref3) {
           , initialValue: topic.value
         }),
         React.createElement(EditableCell, {
-          name: 'required_' + snumber + '_unit'
-          // editable={mode === MODE.CREATE}
-          // TODO: disabled not working, I need to disable unit changing when can't freetext
-          , disabled: !canFreeText,
+          name: 'required_' + snumber + '_unit',
+          editable: isCustomScoreCriteriaAllowed,
           initialValue: topic.unit,
           tags: unitTags
         }),
-        React.createElement('input', (_React$createElement4 = { type: 'text' }, _defineProperty(_React$createElement4, 'type', 'hidden'), _defineProperty(_React$createElement4, 'name', 'required_' + snumber + '_type'), _defineProperty(_React$createElement4, 'required', true), _React$createElement4)),
+        React.createElement('input', (_React$createElement4 = { type: 'text' }, _defineProperty(_React$createElement4, 'type', 'hidden'), _defineProperty(_React$createElement4, 'name', 'required_' + snumber + '_type'), _defineProperty(_React$createElement4, 'value', topic.score_type || "OTHER"), _defineProperty(_React$createElement4, 'required', true), _React$createElement4)),
         React.createElement(
           'td',
           null,
@@ -548,7 +560,8 @@ var PrimaryScoringTopic = function PrimaryScoringTopic(_ref4) {
       updateTopic = _ref4.updateTopic,
       maxScore = _ref4.maxScore,
       secondaryTopics = _ref4.secondaryTopics,
-      setSecondaryTopics = _ref4.setSecondaryTopics;
+      setSecondaryTopics = _ref4.setSecondaryTopics,
+      isCustomScoreCriteriaAllowed = _ref4.isCustomScoreCriteriaAllowed;
 
   var addNewTopic = function addNewTopic(e) {
     e.preventDefault();
@@ -575,6 +588,16 @@ var PrimaryScoringTopic = function PrimaryScoringTopic(_ref4) {
   var primaryMaxScore = secondaryTopics.reduce(function (a, b) {
     return a + b.value;
   }, 0);
+  var suffix = React.createElement(
+    'div',
+    { className: 'd-flex' },
+    secondaryTopics.length > 0 && React.createElement(SelectRelation, { name: 'scoring_' + number + '_relation', relations: relationScoring, className: 'ml-2', initialValue: topic.relation || 'SUM' }),
+    React.createElement(
+      'button',
+      { className: 'btn btn-primary btn-sm ml-2', onClick: addNewTopic },
+      '+'
+    )
+  );
   return React.createElement(
     React.Fragment,
     null,
@@ -586,24 +609,36 @@ var PrimaryScoringTopic = function PrimaryScoringTopic(_ref4) {
         null,
         number
       ),
-      React.createElement(EditableCell, {
+      isCustomScoreCriteriaAllowed ? React.createElement(EditableCell, {
         name: 'scoring_' + number + '_title'
         // editable={mode === MODE.CREATE}
         , initialValue: topic.title,
         focusOnMount: true,
-        suffix: React.createElement(
-          'div',
-          { className: 'd-flex' },
-          secondaryTopics.length > 0 && React.createElement(SelectRelation, { name: 'scoring_' + number + '_relation', relations: relationScoring, className: 'ml-2', initialValue: topic.relation || 'SUM' }),
-          React.createElement(
-            'button',
-            { className: 'btn btn-primary btn-sm ml-2', onClick: addNewTopic },
-            '+'
-          )
-        ),
+        suffix: suffix,
         inputProps: { required: true },
         tags: scoringTags
-      }),
+      }) : React.createElement(
+        'td',
+        null,
+        React.createElement(
+          'div',
+          { className: 'd-flex align-items-baseline' },
+          React.createElement(SelectMenu, {
+            name: 'scoring_' + number + '_title',
+            initialValue: topic.title,
+            inputProps: {
+              required: true
+            },
+            choices: scoringTags.map(function (tag) {
+              return Object.assign({
+                value: tag.description,
+                label: tag.description
+              }, tag);
+            })
+          }),
+          suffix
+        )
+      ),
       React.createElement(EditableCell, {
         name: 'scoring_' + number + '_value'
         // editable={mode === MODE.CREATE}
@@ -614,7 +649,7 @@ var PrimaryScoringTopic = function PrimaryScoringTopic(_ref4) {
         inputType: 'number',
         inputProps: { required: true }
       }),
-      React.createElement('input', (_React$createElement5 = { type: 'text' }, _defineProperty(_React$createElement5, 'type', 'hidden'), _defineProperty(_React$createElement5, 'name', 'scoring_' + number + '_type'), _defineProperty(_React$createElement5, 'required', true), _React$createElement5)),
+      React.createElement('input', (_React$createElement5 = { type: 'text' }, _defineProperty(_React$createElement5, 'type', 'hidden'), _defineProperty(_React$createElement5, 'name', 'scoring_' + number + '_type'), _defineProperty(_React$createElement5, 'value', topic.score_type || "OTHER"), _defineProperty(_React$createElement5, 'required', true), _React$createElement5)),
       React.createElement(
         'td',
         null,
@@ -645,7 +680,7 @@ var PrimaryScoringTopic = function PrimaryScoringTopic(_ref4) {
         'tr',
         { key: topic.id },
         React.createElement('td', null),
-        React.createElement(EditableCell, {
+        isCustomScoreCriteriaAllowed ? React.createElement(EditableCell, {
           name: 'scoring_' + snumber + '_title'
           // editable={mode === MODE.CREATE}
           , initialValue: topic.title,
@@ -660,7 +695,35 @@ var PrimaryScoringTopic = function PrimaryScoringTopic(_ref4) {
           ),
           inputProps: { required: true },
           tags: scoringTags
-        }),
+        }) : React.createElement(
+          'td',
+          null,
+          React.createElement(
+            'div',
+            { className: 'd-flex align-items-baseline' },
+            React.createElement(
+              'span',
+              null,
+              number,
+              '.',
+              idx + 1,
+              '\xA0\xA0'
+            ),
+            React.createElement(SelectMenu, {
+              name: 'scoring_' + snumber + '_title',
+              initialValue: topic.title,
+              inputProps: {
+                required: true
+              },
+              choices: scoringTags.map(function (tag) {
+                return Object.assign({
+                  value: tag.description,
+                  label: tag.description
+                }, tag);
+              })
+            })
+          )
+        ),
         React.createElement(EditableCell, {
           name: 'scoring_' + snumber + '_value'
           // editable={mode === MODE.CREATE}
@@ -671,7 +734,7 @@ var PrimaryScoringTopic = function PrimaryScoringTopic(_ref4) {
           inputType: 'number',
           inputProps: { required: true }
         }),
-        React.createElement('input', (_React$createElement6 = { type: 'text' }, _defineProperty(_React$createElement6, 'type', 'hidden'), _defineProperty(_React$createElement6, 'name', 'scoring_' + snumber + '_type'), _defineProperty(_React$createElement6, 'required', true), _React$createElement6)),
+        React.createElement('input', (_React$createElement6 = { type: 'text' }, _defineProperty(_React$createElement6, 'type', 'hidden'), _defineProperty(_React$createElement6, 'name', 'scoring_' + snumber + '_type'), _defineProperty(_React$createElement6, 'value', topic.score_type || "OTHER"), _defineProperty(_React$createElement6, 'required', true), _React$createElement6)),
         React.createElement(
           'td',
           null,
@@ -708,15 +771,12 @@ var EditableCell = function EditableCell(_ref5) {
       inputProps = _ref5.inputProps,
       _ref5$tags = _ref5.tags,
       tags = _ref5$tags === undefined ? [] : _ref5$tags,
-      disabled = _ref5.disabled,
-      restProps = _objectWithoutProperties(_ref5, ['initialValue', 'editable', 'focusOnMount', 'children', 'onSave', 'prefix', 'suffix', 'inputType', 'name', 'inputProps', 'tags', 'disabled']);
+      restProps = _objectWithoutProperties(_ref5, ['initialValue', 'editable', 'focusOnMount', 'children', 'onSave', 'prefix', 'suffix', 'inputType', 'name', 'inputProps', 'tags']);
 
   var inputRef = useRef();
   useEffect(function () {
     if (editable) {
       $(inputRef.current).autocomplete({
-        // TODO: Disabled not working
-        disabled: true,
         source: typeof tags[0] === 'string' ? tags :
         // for required and scoring tags
         // TODO: refactor this
@@ -725,10 +785,12 @@ var EditableCell = function EditableCell(_ref5) {
             label: o.description,
             value: o.description,
             onSelect: function onSelect() {
+
               var temp = name.split('_');
               temp[temp.length - 1] = 'unit';
               var unitName = temp.join('_');
               var unitEl = $('[name="' + unitName + '"]')[0];
+
               if (unitEl) {
                 unitEl.value = o.unit;
               }
@@ -738,6 +800,8 @@ var EditableCell = function EditableCell(_ref5) {
               temp[temp.length - 1] = 'type';
               var elName = temp.join('_');
               var el = $('[name="' + elName + '"]')[0];
+              // console.log('name: ', name)
+              // console.log('o.type: ', o.score_type)
               if (el) {
                 el.value = o.score_type;
               }
@@ -800,7 +864,7 @@ var EditableCell = function EditableCell(_ref5) {
       calHeight();
     }
   }, []);
-  var childNode = initialValue;
+  var childNode = React.createElement('input', Object.assign({ type: inputType, name: name, className: 'form-control d-inline-block', defaultValue: initialValue, tabIndex: -1, style: { pointerEvents: 'none' } }, inputProps));
   if (editable) {
     childNode = React.createElement(
       'div',
@@ -828,7 +892,7 @@ var SelectRelation = function SelectRelation(_ref6) {
     { name: name, id: name, className: className, defaultValue: initialValue || null },
     React.createElement(
       'option',
-      { disabled: true },
+      { disabled: true, selected: true, value: '' },
       '\u0E40\u0E25\u0E37\u0E2D\u0E01\u0E04\u0E27\u0E32\u0E21\u0E2A\u0E31\u0E21\u0E1E\u0E31\u0E19\u0E18\u0E4C'
     ),
     relations.map(function (r) {
@@ -851,16 +915,16 @@ var SelectMenu = function SelectMenu(_ref7) {
   var inputRef = useRef();
   useEffect(function () {
     $(inputRef.current).selectmenu({
+      classes: { 'ui-selectmenu-button': 'flex-1' },
       select: function select(event, ui) {
-        console.log(event, ui);
         var name = event.target.name;
         var o = choices.find(function (choice) {
           return choice.value === ui.item.value;
         });
-        console.log('choices:', choices);
-        console.log('ui.item.value:', ui.item.value);
-        console.log('o:', o);
+        // console.log('name: ', name)
+        // console.log('o: ', o)
         if (!o) return;
+
         var temp = name.split('_');
         temp[temp.length - 1] = 'unit';
         var unitName = temp.join('_');
@@ -869,7 +933,7 @@ var SelectMenu = function SelectMenu(_ref7) {
           unitEl.value = o.unit;
         }
 
-        //   // set type
+        // set type
         temp = name.split('_');
         temp[temp.length - 1] = 'type';
         var elName = temp.join('_');

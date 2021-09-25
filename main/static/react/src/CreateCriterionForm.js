@@ -7,12 +7,14 @@ let dataRequired = JSON.parse(document.currentScript.getAttribute('data-required
 let dataScoring = JSON.parse(document.currentScript.getAttribute('data-scoring'))
 let dataSelectedMajors = JSON.parse(document.currentScript.getAttribute('data-selected-majors'))
 let mode = document.currentScript.getAttribute('data-mode')
-let canFreeText = document.currentScript.getAttribute('data-canFreeText') === 'true'
+let isCustomScoreCriteriaAllowed = document.currentScript.getAttribute('data-is_custom_score_criteria_allowed') === 'dTrue'
 const MODE = {
   CREATE: 'create',
   EDIT: 'edit'
 }
 const Form = () => {
+  // console.log(dataRequired)
+  // console.log(dataScoring)
   return (
     <div>
       <SelectMajors />
@@ -87,7 +89,7 @@ const SelectMajors = () => {
 }
 const RequiredCriteria = ({ initialTopics = [] }) => {
   const [topics, setTopics] = useState(initialTopics)
-  const canFreeText = canFreeText //from global variable
+  const isCustomScoreCriteriaAllowed = isCustomScoreCriteriaAllowed //from global variable
 
   const addNewTopic = (e) => {
     e.preventDefault()
@@ -132,7 +134,7 @@ const RequiredCriteria = ({ initialTopics = [] }) => {
               number={idx + 1}
               secondaryTopics={topic.children}
               setSecondaryTopics={(newSecondaryTopics) => setSecondaryTopics(topic.id, newSecondaryTopics)}
-              canFreeText={canFreeText}
+              isCustomScoreCriteriaAllowed={isCustomScoreCriteriaAllowed}
             />
           )}
           <tr>
@@ -150,6 +152,8 @@ const RequiredCriteria = ({ initialTopics = [] }) => {
 }
 
 const ScoringCriteria = ({ initialTopics = [] }) => {
+  const isCustomScoreCriteriaAllowed = isCustomScoreCriteriaAllowed //from global variable
+
   const [topics, setTopics] = useState(initialTopics)
 
   const addNewTopic = (e) => {
@@ -215,6 +219,7 @@ const ScoringCriteria = ({ initialTopics = [] }) => {
               secondaryTopics={topic.children}
               setSecondaryTopics={(newSecondaryTopics) => setSecondaryTopics(topic.id, newSecondaryTopics)}
               key={topic.id}
+              isCustomScoreCriteriaAllowed={isCustomScoreCriteriaAllowed}
             />
           )}
           <tr>
@@ -230,7 +235,7 @@ const ScoringCriteria = ({ initialTopics = [] }) => {
       </table>
     </div>)
 }
-const PrimaryTopic = ({ topic, removeTopic, number, updateTopic, secondaryTopics, setSecondaryTopics }) => {
+const PrimaryTopic = ({ topic, removeTopic, number, updateTopic, secondaryTopics, setSecondaryTopics, isCustomScoreCriteriaAllowed }) => {
   const addNewTopic = (e) => {
     e.preventDefault()
     const newSecondaryTopics = secondaryTopics.slice()
@@ -247,14 +252,13 @@ const PrimaryTopic = ({ topic, removeTopic, number, updateTopic, secondaryTopics
     {secondaryTopics.length > 0 && <SelectRelation name={`required_${number}_relation`} relations={relationRequired} className="ml-2" initialValue={topic.relation || 'AND'} />}
     <button className="btn btn-primary btn-sm ml-2" onClick={addNewTopic}>+</button>
   </div>
-
   return (
     <React.Fragment>
       <tr>
         <td>
           {number}
         </td>
-        {canFreeText ? <EditableCell
+        {isCustomScoreCriteriaAllowed ? <EditableCell
           name={`required_${number}_title`}
           // editable={mode === MODE.CREATE}
           initialValue={topic.title}
@@ -264,19 +268,23 @@ const PrimaryTopic = ({ topic, removeTopic, number, updateTopic, secondaryTopics
           tags={requiredTags}
           name={`required_${number}_title`}
         /> :
-          <div className="d-flex align-items-baseline">
-            <SelectMenu
-              name={`required_${number}_title`}
-              initialValue={topic.title}
-              inputProps={{ required: true }}
-              choices={requiredTags.map(tag => ({
-                value: tag.description,
-                label: tag.description,
-                ...tag
-              }))}
-            />
-            {suffix}
-          </div>}
+          <td>
+            <div className="d-flex align-items-baseline">
+              <SelectMenu
+                name={`required_${number}_title`}
+                initialValue={topic.title}
+                inputProps={{
+                  required: true,
+                }}
+                choices={requiredTags.map(tag => ({
+                  value: tag.description,
+                  label: tag.description,
+                  ...tag
+                }))}
+              />
+              {suffix}
+            </div>
+          </td>}
         <EditableCell
           name={`required_${number}_value`}
           // editable={mode === MODE.CREATE}
@@ -284,12 +292,11 @@ const PrimaryTopic = ({ topic, removeTopic, number, updateTopic, secondaryTopics
         />
         <EditableCell
           name={`required_${number}_unit`}
-          // editable={mode === MODE.CREATE}
+          editable={isCustomScoreCriteriaAllowed}
           initialValue={topic.unit || ''}
           tags={unitTags}
-          disabled={!canFreeText}
         />
-        <input type="text" type="hidden" name={`required_${number}_type`} required />
+        <input type="text" type="hidden" name={`required_${number}_type`} value={topic.score_type || "OTHER"} required />
 
         <td>
           <button className="btn btn-secondary btn-sm" onClick={() => removeTopic(topic)}>-</button>
@@ -300,7 +307,7 @@ const PrimaryTopic = ({ topic, removeTopic, number, updateTopic, secondaryTopics
         return (
           <tr key={topic.id}>
             <td></td>
-            {canFreeText ? <EditableCell
+            {isCustomScoreCriteriaAllowed ? <EditableCell
               name={`required_${snumber}_title`}
               // editable={mode === MODE.CREATE}
               initialValue={topic.title}
@@ -309,19 +316,21 @@ const PrimaryTopic = ({ topic, removeTopic, number, updateTopic, secondaryTopics
               inputProps={{ required: true }}
               tags={requiredTags}
             /> :
-              <div className="d-flex align-items-baseline">
-                <span>{snumber}&nbsp;&nbsp;</span>
-                <SelectMenu
-                  name={`required_${snumber}_title`}
-                  initialValue={topic.title}
-                  inputProps={{ required: true }}
-                  choices={requiredTags.map(tag => ({
-                    value: tag.description,
-                    label: tag.description,
-                    ...tag
-                  }))}
-                />
-              </div>}
+              <td>
+                <div className="d-flex align-items-baseline">
+                  <span>{snumber}&nbsp;&nbsp;</span>
+                  <SelectMenu
+                    name={`required_${snumber}_title`}
+                    initialValue={topic.title}
+                    inputProps={{ required: true }}
+                    choices={requiredTags.map(tag => ({
+                      value: tag.description,
+                      label: tag.description,
+                      ...tag
+                    }))}
+                  />
+                </div>
+              </td>}
             <EditableCell
               name={`required_${snumber}_value`}
               // editable={mode === MODE.CREATE}
@@ -329,13 +338,11 @@ const PrimaryTopic = ({ topic, removeTopic, number, updateTopic, secondaryTopics
             />
             <EditableCell
               name={`required_${snumber}_unit`}
-              // editable={mode === MODE.CREATE}
-              // TODO: disabled not working, I need to disable unit changing when can't freetext
-              disabled={!canFreeText}
+              editable={isCustomScoreCriteriaAllowed}
               initialValue={topic.unit}
               tags={unitTags}
             />
-            <input type="text" type="hidden" name={`required_${snumber}_type`} required />
+            <input type="text" type="hidden" name={`required_${snumber}_type`} value={topic.score_type || "OTHER"} required />
 
             <td>
               <button className="btn btn-secondary btn-sm" onClick={() => removeSecondaryTopic(topic)}>-</button>
@@ -346,7 +353,7 @@ const PrimaryTopic = ({ topic, removeTopic, number, updateTopic, secondaryTopics
     </React.Fragment>
   )
 }
-const PrimaryScoringTopic = ({ topic, removeTopic, number, updateTopic, maxScore, secondaryTopics, setSecondaryTopics }) => {
+const PrimaryScoringTopic = ({ topic, removeTopic, number, updateTopic, maxScore, secondaryTopics, setSecondaryTopics, isCustomScoreCriteriaAllowed }) => {
   const addNewTopic = (e) => {
     e.preventDefault()
     const newSecondaryTopics = secondaryTopics.slice()
@@ -366,26 +373,45 @@ const PrimaryScoringTopic = ({ topic, removeTopic, number, updateTopic, maxScore
     setSecondaryTopics(newSecondaryTopics)
   }
   const primaryMaxScore = secondaryTopics.reduce((a, b) => a + b.value, 0)
+  const suffix = (
+    <div className="d-flex">
+      {secondaryTopics.length > 0 && <SelectRelation name={`scoring_${number}_relation`} relations={relationScoring} className="ml-2" initialValue={topic.relation || 'SUM'} />}
+      <button className="btn btn-primary btn-sm ml-2" onClick={addNewTopic}>+</button>
+    </div>)
   return (
     <React.Fragment>
       <tr>
         <td>
           {number}
         </td>
-        <EditableCell
+        {isCustomScoreCriteriaAllowed ? <EditableCell
           name={`scoring_${number}_title`}
           // editable={mode === MODE.CREATE}
           initialValue={topic.title}
           focusOnMount={true}
-          suffix={
-            <div className="d-flex">
-              {secondaryTopics.length > 0 && <SelectRelation name={`scoring_${number}_relation`} relations={relationScoring} className="ml-2" initialValue={topic.relation || 'SUM'} />}
-              <button className="btn btn-primary btn-sm ml-2" onClick={addNewTopic}>+</button>
-            </div>
+          suffix={suffix
           }
           inputProps={{ required: true }}
           tags={scoringTags}
-        />
+        /> :
+          <td>
+            <div className="d-flex align-items-baseline">
+              <SelectMenu
+                name={`scoring_${number}_title`}
+                initialValue={topic.title}
+                inputProps={{
+                  required: true,
+                }}
+                choices={scoringTags.map(tag => ({
+                  value: tag.description,
+                  label: tag.description,
+                  ...tag
+                }))}
+              />
+              {suffix}
+            </div>
+          </td>
+        }
         <EditableCell
           name={`scoring_${number}_value`}
           // editable={mode === MODE.CREATE}
@@ -394,7 +420,7 @@ const PrimaryScoringTopic = ({ topic, removeTopic, number, updateTopic, maxScore
           inputType="number"
           inputProps={{ required: true }}
         />
-        <input type="text" type="hidden" name={`scoring_${number}_type`} required />
+        <input type="text" type="hidden" name={`scoring_${number}_type`} value={topic.score_type || "OTHER"} required />
 
         <td><strong>{(topic.value / maxScore * 100).toLocaleString()}%</strong></td>
         <td>
@@ -406,7 +432,7 @@ const PrimaryScoringTopic = ({ topic, removeTopic, number, updateTopic, maxScore
         return (
           <tr key={topic.id}>
             <td></td>
-            <EditableCell
+            {isCustomScoreCriteriaAllowed ? <EditableCell
               name={`scoring_${snumber}_title`}
               // editable={mode === MODE.CREATE}
               initialValue={topic.title}
@@ -414,7 +440,25 @@ const PrimaryScoringTopic = ({ topic, removeTopic, number, updateTopic, maxScore
               prefix={<span>{number}.{idx + 1}&nbsp;&nbsp;</span>}
               inputProps={{ required: true }}
               tags={scoringTags}
-            />
+            /> :
+
+              <td>
+                <div className="d-flex align-items-baseline">
+                  <span>{number}.{idx + 1}&nbsp;&nbsp;</span>
+                  <SelectMenu
+                    name={`scoring_${snumber}_title`}
+                    initialValue={topic.title}
+                    inputProps={{
+                      required: true,
+                    }}
+                    choices={scoringTags.map(tag => ({
+                      value: tag.description,
+                      label: tag.description,
+                      ...tag
+                    }))}
+                  />
+                </div>
+              </td>}
             <EditableCell
               name={`scoring_${snumber}_value`}
               // editable={mode === MODE.CREATE}
@@ -423,7 +467,7 @@ const PrimaryScoringTopic = ({ topic, removeTopic, number, updateTopic, maxScore
               inputType="number"
               inputProps={{ required: true }}
             />
-            <input type="text" type="hidden" name={`scoring_${snumber}_type`} required />
+            <input type="text" type="hidden" name={`scoring_${snumber}_type`} value={topic.score_type || "OTHER"} required />
 
             <td>{(topic.value / primaryMaxScore * 100).toLocaleString()}%</td>
             <td>
@@ -447,14 +491,11 @@ const EditableCell = ({
   name,
   inputProps,
   tags = [],
-  disabled,
   ...restProps }) => {
   const inputRef = useRef();
   useEffect(() => {
     if (editable) {
       $(inputRef.current).autocomplete({
-        // TODO: Disabled not working
-        disabled: true,
         source: typeof (tags[0]) === 'string' ? tags :
           // for required and scoring tags
           // TODO: refactor this
@@ -462,10 +503,12 @@ const EditableCell = ({
             label: o.description,
             value: o.description,
             onSelect: () => {
+
               let temp = name.split('_')
               temp[temp.length - 1] = 'unit'
               const unitName = temp.join('_')
               const unitEl = $(`[name="${unitName}"]`)[0]
+
               if (unitEl) {
                 unitEl.value = o.unit
               }
@@ -475,6 +518,8 @@ const EditableCell = ({
               temp[temp.length - 1] = 'type'
               const elName = temp.join('_')
               const el = $(`[name="${elName}"]`)[0]
+              // console.log('name: ', name)
+              // console.log('o.type: ', o.score_type)
               if (el) {
                 el.value = o.score_type
               }
@@ -533,7 +578,9 @@ const EditableCell = ({
     inputRef.current.style.height = inputRef.current.scrollHeight + 'px'
   }
   useEffect(() => { if (editable) { calHeight() } }, [])
-  let childNode = initialValue
+  let childNode = (
+    <input type={inputType} name={name} className="form-control d-inline-block" defaultValue={initialValue} tabIndex={-1} style={{ pointerEvents: 'none' }} {...inputProps} />
+  )
   if (editable) {
     childNode =
       (
@@ -554,7 +601,7 @@ const EditableCell = ({
 }
 const SelectRelation = ({ name, relations, className, initialValue }) => {
   return (<select name={name} id={name} className={className} defaultValue={initialValue || null}>
-    <option disabled>เลือกความสัมพันธ์</option>
+    <option disabled selected value="">เลือกความสัมพันธ์</option>
     {relations.map(r => (<option value={r.value} key={r.value}>{r.label}</option>))}
   </select>)
 }
@@ -563,14 +610,14 @@ const SelectMenu = ({ name, choices, className, initialValue, inputProps }) => {
   const inputRef = useRef();
   useEffect(() => {
     $(inputRef.current).selectmenu({
+      classes: { 'ui-selectmenu-button': 'flex-1' },
       select: ((event, ui) => {
-        console.log(event, ui)
         const name = event.target.name
         const o = choices.find(choice => choice.value === ui.item.value)
-        console.log('choices:', choices)
-        console.log('ui.item.value:', ui.item.value)
-        console.log('o:', o)
+        // console.log('name: ', name)
+        // console.log('o: ', o)
         if (!o) return
+
         let temp = name.split('_')
         temp[temp.length - 1] = 'unit'
         const unitName = temp.join('_')
@@ -579,7 +626,7 @@ const SelectMenu = ({ name, choices, className, initialValue, inputProps }) => {
           unitEl.value = o.unit
         }
 
-        //   // set type
+        // set type
         temp = name.split('_')
         temp[temp.length - 1] = 'type'
         const elName = temp.join('_')
