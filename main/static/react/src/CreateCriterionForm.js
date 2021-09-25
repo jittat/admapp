@@ -119,7 +119,7 @@ const RequiredCriteria = ({ initialTopics = [] }) => {
   return (
     <div className="form-group" >
       <label htmlFor="majors">คุณสมบัติเฉพาะ</label>
-      <small className="form-text text-muted">คุณสมบัติและคะแนนขั้นต่ำ เช่น O-NET ภาษาอังกฤษ มากกว่า 16 คะแนน</small>
+      <small className="form-text text-muted">คุณสมบัติและคะแนนขั้นต่ำ เช่น ผลการเรียนเฉลี่ยสะสม ไม่น้อยกว่า 2.0</small>
       {/* TODO: add known criteria */}
       <table className="table table-bordered" style={{ tableLayout: 'fixed' }}>
         <thead>
