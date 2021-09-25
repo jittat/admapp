@@ -17,7 +17,7 @@ var dataRequired = JSON.parse(document.currentScript.getAttribute('data-required
 var dataScoring = JSON.parse(document.currentScript.getAttribute('data-scoring'));
 var dataSelectedMajors = JSON.parse(document.currentScript.getAttribute('data-selected-majors'));
 var mode = document.currentScript.getAttribute('data-mode');
-var isCustomScoreCriteriaAllowed = document.currentScript.getAttribute('data-is_custom_score_criteria_allowed') === 'dTrue';
+var _isCustomScoreCriteriaAllowed = document.currentScript.getAttribute('data-is_custom_score_criteria_allowed') === 'True';
 var MODE = {
   CREATE: 'create',
   EDIT: 'edit'
@@ -151,8 +151,7 @@ var RequiredCriteria = function RequiredCriteria(_ref) {
       topics = _useState4[0],
       setTopics = _useState4[1];
 
-  var isCustomScoreCriteriaAllowed = isCustomScoreCriteriaAllowed; //from global variable
-
+  var isCustomScoreCriteriaAllowed = _isCustomScoreCriteriaAllowed; //from global variable
   var addNewTopic = function addNewTopic(e) {
     e.preventDefault();
     var newTopic = topics.slice();
@@ -255,7 +254,7 @@ var ScoringCriteria = function ScoringCriteria(_ref2) {
   var _ref2$initialTopics = _ref2.initialTopics,
       initialTopics = _ref2$initialTopics === undefined ? [] : _ref2$initialTopics;
 
-  var isCustomScoreCriteriaAllowed = isCustomScoreCriteriaAllowed; //from global variable
+  var isCustomScoreCriteriaAllowed = _isCustomScoreCriteriaAllowed; //from global variable
 
   var _useState5 = useState(initialTopics),
       _useState6 = _slicedToArray(_useState5, 2),

@@ -7,7 +7,7 @@ let dataRequired = JSON.parse(document.currentScript.getAttribute('data-required
 let dataScoring = JSON.parse(document.currentScript.getAttribute('data-scoring'))
 let dataSelectedMajors = JSON.parse(document.currentScript.getAttribute('data-selected-majors'))
 let mode = document.currentScript.getAttribute('data-mode')
-let isCustomScoreCriteriaAllowed = document.currentScript.getAttribute('data-is_custom_score_criteria_allowed') === 'dTrue'
+let _isCustomScoreCriteriaAllowed = document.currentScript.getAttribute('data-is_custom_score_criteria_allowed') === 'True'
 const MODE = {
   CREATE: 'create',
   EDIT: 'edit'
@@ -89,8 +89,7 @@ const SelectMajors = () => {
 }
 const RequiredCriteria = ({ initialTopics = [] }) => {
   const [topics, setTopics] = useState(initialTopics)
-  const isCustomScoreCriteriaAllowed = isCustomScoreCriteriaAllowed //from global variable
-
+  const isCustomScoreCriteriaAllowed = _isCustomScoreCriteriaAllowed //from global variable
   const addNewTopic = (e) => {
     e.preventDefault()
     const newTopic = topics.slice()
@@ -152,7 +151,7 @@ const RequiredCriteria = ({ initialTopics = [] }) => {
 }
 
 const ScoringCriteria = ({ initialTopics = [] }) => {
-  const isCustomScoreCriteriaAllowed = isCustomScoreCriteriaAllowed //from global variable
+  const isCustomScoreCriteriaAllowed = _isCustomScoreCriteriaAllowed //from global variable
 
   const [topics, setTopics] = useState(initialTopics)
 
