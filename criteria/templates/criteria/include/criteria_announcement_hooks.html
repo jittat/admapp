@@ -1,6 +1,15 @@
+<div class="border-top border-bottom pb-1 pt-1">
+  <small>
+    เงื่อนไขผู้สมัคร: {{ project.get_admission_student_type_display }} &nbsp;|&nbsp;
+    เงื่อนไขประเภทโรงเรียน: {{ project.get_admission_school_type_display }} &nbsp;|&nbsp;
+    <span class="text-muted">ถ้าต้องการแก้ไขกรุณาแจ้งฝ่ายรับสมัคร</span>
+  </small>
+</div>
+
 {% if project.id == 28 %}
-  <div class="alert alert-info">
+  <div class="alert alert-info mt-1">
     <span class="badge badge-info">ประกาศ</span>
     ในการกรอกเกณฑ์การรับโครงการ Admission จะสามารถเลือกวิชาสอบและเกณฑ์ได้จากรายการเท่านั้น &nbsp;&nbsp; ในที่ประชุมกำหนดให้ในการคัดเลือก <b>ต้องใช้คะแนน GAT อย่างน้อย 30% และใช้ GPAX (6 ภาคการศึกษา) ไม่เกิน 20%</b> &nbsp; นอกจากนี้ ทางทปอ.ยังขอความร่วมมือไม่ใช้คะแนนสอบเกิน 4 วิชา และทางที่ประชุมขอความร่วมมือไม่กำหนดคะแนนขั้นต่ำ ถ้าสามารถทำได้
   </div>
 {% endif %}
+
