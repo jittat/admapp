@@ -6,9 +6,13 @@
     <h2>
       แก้ไขเกณฑ์ โครงการ{{ project.title }} ({{ admission_round }})
     </h2>
+
     {% if notice %}
-    <div class="alert alert-success">{{ notice }}</div>
+      <div class="alert alert-success">{{ notice }}</div>
     {% endif %}
+
+    {% include "criteria/include/criteria_announcement_hooks.html" %}
+
     <form method="post">
       {% csrf_token %}
       <div id="ie-error" class="text-danger"></div>
