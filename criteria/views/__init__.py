@@ -485,7 +485,8 @@ def edit(request, project_id, round_id, criteria_id):
         } for m in selected_majors
     ]
 
-    uses_component_weights = (project.id == 28)
+    # TODO: remove component weights (no more TCAS round 3 - Admission 2)
+    uses_component_weights = False
     component_weight_type_choices = CurriculumMajor.get_component_weight_type_choices_unique(majors)
 
     return render(request,
