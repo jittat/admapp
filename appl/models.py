@@ -132,6 +132,11 @@ class AdmissionProject(models.Model):
     is_available = models.BooleanField(default=False)
     is_visible_in_backoffice = models.BooleanField(default=False)
 
+    is_custom_score_criteria_allowed = models.BooleanField(default=True,
+                                                           verbose_name='อนุญาตให้ป้อนเงื่อนไขได้อย่างอิสระ')
+    is_criteria_edit_allowed = models.BooleanField(default=True,
+                                                   verbose_name='อนุญาตให้ผู้ดูแลโครงการแก้ไขเงื่อนไขการรับ')
+    
     max_num_selections = models.IntegerField(default=1,
                                              verbose_name='จำนวนสาขาที่เลือกได้')
 
@@ -165,8 +170,6 @@ class AdmissionProject(models.Model):
     admission_school_type = models.IntegerField(default=1,
                                                 choices=SCHOOL_TYPE_CHOICES)
 
-    is_custom_score_criteria_allowed = models.BooleanField(default=True)
-    
     def __str__(self):
         return self.title
 
