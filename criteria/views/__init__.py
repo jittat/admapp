@@ -250,6 +250,10 @@ def upsert_admission_criteria(post_request, project=None, faculty=None, admissio
                 value = Decimal(value)
             selected_major_dict[data_key][splitted_keys[2]] = value
 
+    additional_interview_condition = ''
+    if 'additional_interview_condition' in post_request:
+        additional_interview_condition = post_request['additional_interview_condition'].strip()
+
     if (len(selected_major_dict) == 0) and (len(score_criteria_dict) == 0):
         raise Http404("Error ")
             
@@ -258,6 +262,7 @@ def upsert_admission_criteria(post_request, project=None, faculty=None, admissio
         if admission_criteria is None:
             version = 1
             admission_criteria = AdmissionCriteria(
+                additional_interview_condition=additional_interview_condition,
                 admission_project=project,
                 version=version,
                 faculty=faculty)
@@ -271,6 +276,7 @@ def upsert_admission_criteria(post_request, project=None, faculty=None, admissio
                 faculty=admission_criteria.faculty,
                 additional_description=old_admission_criteria.additional_description,
                 additional_condition=old_admission_criteria.additional_condition,
+                additional_interview_condition=additional_interview_condition,
                 version=version)
             admission_criteria.save()
 
@@ -362,9 +368,13 @@ def create(request, project_id, round_id):
     duplicate_score_id = request.GET.get('duplicate_score_id', None)
     selected_major_id = request.GET.get('selected_major_id', None)
 
+    additional_interview_condition = ''
+    
     if duplicate_score_id is not None:
-        score_criterias = get_object_or_404(
-            AdmissionCriteria, pk=duplicate_score_id).scorecriteria_set.filter(secondary_order=0)
+        admission_criteria = get_object_or_404(AdmissionCriteria,
+                                               pk=duplicate_score_id)
+        score_criterias = admission_criteria.scorecriteria_set.filter(secondary_order=0)
+        additional_interview_condition = admission_criteria.additional_interview_condition
         data_criteria = [
             [{
                 "id": str(s.primary_order),
@@ -410,7 +420,9 @@ def create(request, project_id, round_id):
                    
                    'data_required': json.dumps(data_required),
                    'data_scoring': json.dumps(data_scoring),
-                   'data_selected_majors': json.dumps(data_selected_majors)
+                   'data_selected_majors': json.dumps(data_selected_majors),
+
+                   'additional_interview_condition': additional_interview_condition,
                    })
 
 
@@ -499,7 +511,9 @@ def edit(request, project_id, round_id, criteria_id):
                    
                    'data_required': json.dumps(data_required),
                    'data_scoring': json.dumps(data_scoring),
-                   'data_selected_majors': json.dumps(data_selected_majors)
+                   'data_selected_majors': json.dumps(data_selected_majors),
+
+                   'additional_interview_condition': admission_criteria.additional_interview_condition,
                    })
 
 
