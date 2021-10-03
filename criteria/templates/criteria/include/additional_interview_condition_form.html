@@ -1,0 +1,22 @@
+{% if not project.is_custom_score_criteria_allowed %}
+  <div class="form-group">
+    <label for="majors">
+      เงื่อนไขการสัมภาษณ์และเงื่อนไขการรับเพิ่มเติม
+      <button class="btn btn-outline-secondary btn-sm" id="additionalInterviewToggleId">ป้อนข้อมูล</button>
+    </label>
+    <div class="additional-interview-condition-form" style="display: none;">
+      <small class="form-text text-muted">
+	ในกรณีที่มีเงื่อนไขเพิ่มเติม เช่นเงื่อนไขการสัมภาษณ์หรือการตรวจสุขภาพ ใหัระบุที่นี่ ถ้าไม่มีไม่ต้องระบุ  ให้ป้อนเฉพาะในกรณีที่ไม่สามารถเลือกจากตัวเลือกด้านบนได้เท่านั้น
+      </small>
+      <textarea class="form-control" name="additional_interview_condition" rows="2"></textarea>
+    </div>
+  </div>
+  <script>
+   $(function(){
+     $("#additionalInterviewToggleId").click(function(){
+       $(".additional-interview-condition-form").slideDown();
+       return false;
+     });
+   });
+  </script>
+{% endif %}
