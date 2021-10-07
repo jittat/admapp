@@ -7,7 +7,7 @@ let dataRequired = JSON.parse(document.currentScript.getAttribute('data-required
 let dataScoring = JSON.parse(document.currentScript.getAttribute('data-scoring'))
 let dataSelectedMajors = JSON.parse(document.currentScript.getAttribute('data-selected-majors'))
 let mode = document.currentScript.getAttribute('data-mode')
-let _isCustomScoreCriteriaAllowed = document.currentScript.getAttribute('data-is_custom_score_criteria_allowed') === 'Trหue'
+let _isCustomScoreCriteriaAllowed = document.currentScript.getAttribute('data-is_custom_score_criteria_allowed') === 'True'
 const MODE = {
   CREATE: 'create',
   EDIT: 'edit'
@@ -95,7 +95,7 @@ const RequiredCriteria = ({ initialTopics = [] }) => {
   const addNewTopic = (e) => {
     e.preventDefault()
     const newTopic = topics.slice()
-    newTopic.push({ id: Date.now(), title: '', unit: '', children: [] })
+    newTopic.push({ id: (() => Date.now())(), title: '', unit: '', children: [] })
     console.log(newTopic)
     setTopics(newTopic)
   }
@@ -170,7 +170,7 @@ const ScoringCriteria = ({ initialTopics = [] }) => {
   const addNewTopic = (e) => {
     e.preventDefault()
     const newTopic = topics.slice()
-    newTopic.push({ id: Date.now(), title: '', value: 1, children: [] })
+    newTopic.push({ id: (() => Date.now())(), title: '', value: 1, children: [] })
     console.log(newTopic)
     setTopics(newTopic)
   }
@@ -250,7 +250,7 @@ const PrimaryTopic = ({ topic, removeTopic, number, updateTopic, secondaryTopics
   const addNewTopic = (e) => {
     e.preventDefault()
     const newSecondaryTopics = secondaryTopics.slice()
-    newSecondaryTopics.push({ id: Date.now(), title: '' })
+    newSecondaryTopics.push({ id: (() => Date.now())(), title: '' })
     setSecondaryTopics(newSecondaryTopics)
   }
   const removeSecondaryTopic = (topic) => {
@@ -397,7 +397,7 @@ const PrimaryScoringTopic = ({ topic, removeTopic, number, updateTopic, maxScore
   const addNewTopic = (e) => {
     e.preventDefault()
     const newSecondaryTopics = secondaryTopics.slice()
-    newSecondaryTopics.push({ id: Date.now(), title: '', value: 1 })
+    newSecondaryTopics.push({ id: (() => (() => Date.now())())(), title: '', value: 1 })
     setSecondaryTopics(newSecondaryTopics)
   }
   const removeSecondaryTopic = (topic) => {
@@ -662,7 +662,7 @@ const SelectMenu = ({ name, choices, className, initialValue, inputProps, onSave
   }, [])
   return (
     <select name={name} id={name} defaultValue={initialValue || null} ref={inputRef} rows={1} {...inputProps}>
-      <option disabled={inputProps.required} selected value="">กรุณาเลือก</option>
+      <option disabled={inputProps.required} selected value="" key="">{inputProps.required ? 'กรุณาเลือก' : ''}</option>
       {choices.map(r => (<option value={r.value} key={r.value}>{r.label}</option>
       ))}
     </select>)

@@ -17,7 +17,7 @@ var dataRequired = JSON.parse(document.currentScript.getAttribute('data-required
 var dataScoring = JSON.parse(document.currentScript.getAttribute('data-scoring'));
 var dataSelectedMajors = JSON.parse(document.currentScript.getAttribute('data-selected-majors'));
 var mode = document.currentScript.getAttribute('data-mode');
-var _isCustomScoreCriteriaAllowed = document.currentScript.getAttribute('data-is_custom_score_criteria_allowed') === 'Trหue';
+var _isCustomScoreCriteriaAllowed = document.currentScript.getAttribute('data-is_custom_score_criteria_allowed') === 'True';
 var MODE = {
   CREATE: 'create',
   EDIT: 'edit'
@@ -155,7 +155,9 @@ var RequiredCriteria = function RequiredCriteria(_ref) {
   var addNewTopic = function addNewTopic(e) {
     e.preventDefault();
     var newTopic = topics.slice();
-    newTopic.push({ id: Date.now(), title: '', unit: '', children: [] });
+    newTopic.push({ id: function () {
+        return Date.now();
+      }(), title: '', unit: '', children: [] });
     console.log(newTopic);
     setTopics(newTopic);
   };
@@ -276,7 +278,9 @@ var ScoringCriteria = function ScoringCriteria(_ref2) {
   var addNewTopic = function addNewTopic(e) {
     e.preventDefault();
     var newTopic = topics.slice();
-    newTopic.push({ id: Date.now(), title: '', value: 1, children: [] });
+    newTopic.push({ id: function () {
+        return Date.now();
+      }(), title: '', value: 1, children: [] });
     console.log(newTopic);
     setTopics(newTopic);
   };
@@ -403,7 +407,9 @@ var PrimaryTopic = function PrimaryTopic(_ref3) {
   var addNewTopic = function addNewTopic(e) {
     e.preventDefault();
     var newSecondaryTopics = secondaryTopics.slice();
-    newSecondaryTopics.push({ id: Date.now(), title: '' });
+    newSecondaryTopics.push({ id: function () {
+        return Date.now();
+      }(), title: '' });
     setSecondaryTopics(newSecondaryTopics);
   };
   var removeSecondaryTopic = function removeSecondaryTopic(topic) {
@@ -606,7 +612,11 @@ var PrimaryScoringTopic = function PrimaryScoringTopic(_ref4) {
   var addNewTopic = function addNewTopic(e) {
     e.preventDefault();
     var newSecondaryTopics = secondaryTopics.slice();
-    newSecondaryTopics.push({ id: Date.now(), title: '', value: 1 });
+    newSecondaryTopics.push({ id: function () {
+        return function () {
+          return Date.now();
+        }();
+      }(), title: '', value: 1 });
     setSecondaryTopics(newSecondaryTopics);
   };
   var removeSecondaryTopic = function removeSecondaryTopic(topic) {
@@ -973,8 +983,8 @@ var SelectMenu = function SelectMenu(_ref7) {
     Object.assign({ name: name, id: name, defaultValue: initialValue || null, ref: inputRef, rows: 1 }, inputProps),
     React.createElement(
       'option',
-      { disabled: inputProps.required, selected: true, value: '' },
-      '\u0E01\u0E23\u0E38\u0E13\u0E32\u0E40\u0E25\u0E37\u0E2D\u0E01'
+      { disabled: inputProps.required, selected: true, value: '', key: '' },
+      inputProps.required ? 'กรุณาเลือก' : ''
     ),
     choices.map(function (r) {
       return React.createElement(
