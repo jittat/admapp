@@ -7,11 +7,13 @@ let dataRequired = JSON.parse(document.currentScript.getAttribute('data-required
 let dataScoring = JSON.parse(document.currentScript.getAttribute('data-scoring'))
 let dataSelectedMajors = JSON.parse(document.currentScript.getAttribute('data-selected-majors'))
 let mode = document.currentScript.getAttribute('data-mode')
-let _isCustomScoreCriteriaAllowed = document.currentScript.getAttribute('data-is_custom_score_criteria_allowed') === 'True'
+let _isCustomScoreCriteriaAllowed = document.currentScript.getAttribute('data-is_custom_score_criteria_allowed') === 'Trหue'
 const MODE = {
   CREATE: 'create',
   EDIT: 'edit'
 }
+const RELATION_MAX = "MAX"
+
 const Form = () => {
   // console.log(dataRequired)
   // console.log(dataScoring)
@@ -102,6 +104,7 @@ const RequiredCriteria = ({ initialTopics = [] }) => {
     const newTopics = topics.slice()
     const index = newTopics.findIndex((t) => t.id === topicId)
     newTopics[index] = { ...newTopics[index], ...value }
+    console.log('eiei', newTopics[index])
     setTopics(newTopics)
   }
   const removeTopic = (topic) => {
@@ -114,6 +117,7 @@ const RequiredCriteria = ({ initialTopics = [] }) => {
     const newTopics = topics.slice()
     const index = newTopics.findIndex((t) => t.id === topicId)
     newTopics[index] = { ...newTopics[index], children: newSecondaryTopics }
+    console.log('new topic', newTopics[index])
     setTopics(newTopics)
   }
   return (
@@ -264,7 +268,7 @@ const PrimaryTopic = ({ topic, removeTopic, number, updateTopic, secondaryTopics
   }
 
   const suffix = <div className="d-flex ml-2">
-    {secondaryTopics.length > 0 && <SelectRelation name={`required_${number}_relation`} relations={relationRequired} className="ml-2" initialValue={topic.relation || 'AND'} />}
+    {secondaryTopics.length > 0 && <SelectRelation name={`required_${number}_relation`} relations={relationRequired} className="ml-2" value={topic.relation} onChange={(event) => { event.target.value !== topic.relation && updateTopic(topic.id, { relation: event.target.value }) }} />}
     <button className="btn btn-primary btn-sm ml-2" onClick={addNewTopic}>+</button>
   </div>
   return (
@@ -279,12 +283,12 @@ const PrimaryTopic = ({ topic, removeTopic, number, updateTopic, secondaryTopics
           initialValue={topic.title}
           focusOnMount={true}
           suffix={suffix}
-          inputProps={{ required: true }}
+          inputProps={{ required: false }}
           tags={requiredTags}
           name={`required_${number}_title`}
           onSave={(v) => {
             const tag = requiredTags.find(o => o.description === v)
-            updateTopic(topic.id, { ...topic, score_type: tag ? tag.score_type : 'OTHER', unit: tag ? tag.unit : '' })
+            updateTopic(topic.id, { score_type: tag ? tag.score_type : 'OTHER', unit: tag ? tag.unit : '' })
           }}
         /> :
           <td>
@@ -293,7 +297,7 @@ const PrimaryTopic = ({ topic, removeTopic, number, updateTopic, secondaryTopics
                 name={`required_${number}_title`}
                 initialValue={topic.title}
                 inputProps={{
-                  required: true,
+                  required: false,
                 }}
                 choices={requiredTags.map(tag => ({
                   value: tag.description,
@@ -303,7 +307,7 @@ const PrimaryTopic = ({ topic, removeTopic, number, updateTopic, secondaryTopics
 
                 onSave={(v) => {
                   const tag = requiredTags.find(o => o.description === v)
-                  updateTopic(topic.id, { ...topic, score_type: tag ? tag.score_type : 'OTHER', unit: tag ? tag.unit : '' })
+                  updateTopic(topic.id, { score_type: tag ? tag.score_type : 'OTHER', unit: tag ? tag.unit : '' })
                 }}
               />
               {suffix}
@@ -326,23 +330,23 @@ const PrimaryTopic = ({ topic, removeTopic, number, updateTopic, secondaryTopics
           <button className="btn btn-secondary btn-sm" onClick={() => removeTopic(topic)}>-</button>
         </td>
       </tr>
-      {secondaryTopics.map((topic, idx) => {
+      {secondaryTopics.map((secondaryTopic, idx) => {
         const snumber = `${number}.${idx + 1}`
         const prefix = <span>{snumber}&nbsp;&nbsp;</span>
         return (
-          <tr key={topic.id}>
+          <tr key={secondaryTopic.id}>
             <td></td>
             {isCustomScoreCriteriaAllowed ? <EditableCell
               name={`required_${snumber}_title`}
               // editable={mode === MODE.CREATE}
-              initialValue={topic.title}
+              initialValue={secondaryTopic.title}
               focusOnMount={true}
               prefix={prefix}
               inputProps={{ required: true }}
               tags={requiredTags}
               onSave={(v) => {
                 const tag = requiredTags.find(o => o.description === v)
-                updateSecondaryTopic(topic.id, { ...topic, score_type: tag ? tag.score_type : 'OTHER', unit: tag ? tag.unit : '' })
+                updateSecondaryTopic(secondaryTopic.id, { ...secondaryTopic, score_type: tag ? tag.score_type : 'OTHER', unit: tag ? tag.unit : '' })
               }}
             /> :
               <td>
@@ -350,7 +354,7 @@ const PrimaryTopic = ({ topic, removeTopic, number, updateTopic, secondaryTopics
                   {prefix}
                   <SelectMenu
                     name={`required_${snumber}_title`}
-                    initialValue={topic.title}
+                    initialValue={secondaryTopic.title}
                     inputProps={{ required: true }}
                     choices={requiredTags.map(tag => ({
                       value: tag.description,
@@ -362,7 +366,7 @@ const PrimaryTopic = ({ topic, removeTopic, number, updateTopic, secondaryTopics
 
                     onSave={(v) => {
                       const tag = requiredTags.find(o => o.description === v)
-                      updateSecondaryTopic(topic.id, { ...topic, score_type: tag ? tag.score_type : 'OTHER', unit: tag ? tag.unit : '' })
+                      updateSecondaryTopic(secondaryTopic.id, { ...secondaryTopic, score_type: tag ? tag.score_type : 'OTHER', unit: tag ? tag.unit : '' })
                     }}
                   />
                 </div>
@@ -370,18 +374,18 @@ const PrimaryTopic = ({ topic, removeTopic, number, updateTopic, secondaryTopics
             <EditableCell
               name={`required_${snumber}_value`}
               // editable={mode === MODE.CREATE}
-              initialValue={topic.value}
+              initialValue={secondaryTopic.value}
             />
             <EditableCell
               name={`required_${snumber}_unit`}
               editable={isCustomScoreCriteriaAllowed}
-              initialValue={topic.unit}
+              initialValue={secondaryTopic.unit}
               tags={unitTags}
             />
-            <input type="hidden" name={`required_${snumber}_type`} value={topic.score_type || "OTHER"} required />
+            <input type="hidden" name={`required_${snumber}_type`} value={secondaryTopic.score_type || "OTHER"} required />
 
             <td>
-              <button className="btn btn-secondary btn-sm" onClick={() => removeSecondaryTopic(topic)}>-</button>
+              <button className="btn btn-secondary btn-sm" onClick={() => removeSecondaryTopic(secondaryTopic)}>-</button>
             </td>
           </tr>
         )
@@ -411,7 +415,7 @@ const PrimaryScoringTopic = ({ topic, removeTopic, number, updateTopic, maxScore
   const primaryMaxScore = secondaryTopics.reduce((a, b) => a + b.value, 0)
   const suffix = (
     <div className="d-flex">
-      {secondaryTopics.length > 0 && <SelectRelation name={`scoring_${number}_relation`} relations={relationScoring} className="ml-2" initialValue={topic.relation || 'SUM'} />}
+      {secondaryTopics.length > 0 && <SelectRelation name={`scoring_${number}_relation`} relations={relationScoring} className="ml-2" value={topic.relation} onChange={(event) => { event.target.value !== topic.relation && updateTopic(topic.id, { relation: event.target.value }) }} />}
       <button className="btn btn-primary btn-sm ml-2" onClick={addNewTopic}>+</button>
     </div>)
   return (
@@ -425,13 +429,12 @@ const PrimaryScoringTopic = ({ topic, removeTopic, number, updateTopic, maxScore
           // editable={mode === MODE.CREATE}
           initialValue={topic.title}
           focusOnMount={true}
-          suffix={suffix
-          }
-          inputProps={{ required: true }}
+          suffix={suffix}
+          inputProps={{ required: false }}
           tags={scoringTags}
           onSave={(v) => {
             const tag = scoringTags.find(o => o.description === v)
-            updateTopic(topic.id, { ...topic, score_type: tag ? tag.score_type : 'OTHER' })
+            updateTopic(topic.id, { score_type: tag ? tag.score_type : 'OTHER' })
           }}
         /> :
           <td>
@@ -440,7 +443,7 @@ const PrimaryScoringTopic = ({ topic, removeTopic, number, updateTopic, maxScore
                 name={`scoring_${number}_title`}
                 initialValue={topic.title}
                 inputProps={{
-                  required: true,
+                  required: false,
                 }}
                 choices={scoringTags.map(tag => ({
                   value: tag.description,
@@ -450,7 +453,7 @@ const PrimaryScoringTopic = ({ topic, removeTopic, number, updateTopic, maxScore
 
                 onSave={(v) => {
                   const tag = scoringTags.find(o => o.description === v)
-                  updateTopic(topic.id, { ...topic, score_type: tag ? tag.score_type : 'OTHER' })
+                  updateTopic(topic.id, { score_type: tag ? tag.score_type : 'OTHER' })
                 }}
               />
               {suffix}
@@ -472,16 +475,16 @@ const PrimaryScoringTopic = ({ topic, removeTopic, number, updateTopic, maxScore
           <button className="btn btn-secondary btn-sm" onClick={() => removeTopic(topic)}>-</button>
         </td>
       </tr>
-      {secondaryTopics.map((topic, idx) => {
+      {secondaryTopics.map((secondaryTopic, idx) => {
         const snumber = `${number}.${idx + 1}`
         const prefix = <span>{number}.{idx + 1}&nbsp;&nbsp;</span>
         return (
-          <tr key={topic.id}>
+          <tr key={secondaryTopic.id}>
             <td></td>
             {isCustomScoreCriteriaAllowed ? <EditableCell
               name={`scoring_${snumber}_title`}
               // editable={mode === MODE.CREATE}
-              initialValue={topic.title}
+              initialValue={secondaryTopic.title}
               focusOnMount={true}
               prefix={prefix}
               inputProps={{ required: true }}
@@ -489,7 +492,7 @@ const PrimaryScoringTopic = ({ topic, removeTopic, number, updateTopic, maxScore
 
               onSave={(v) => {
                 const tag = scoringTags.find(o => o.description === v)
-                updateSecondaryTopic(topic.id, { ...topic, score_type: tag ? tag.score_type : 'OTHER' })
+                updateSecondaryTopic(secondaryTopic.id, { ...secondaryTopic, score_type: tag ? tag.score_type : 'OTHER' })
               }}
             /> :
 
@@ -498,7 +501,7 @@ const PrimaryScoringTopic = ({ topic, removeTopic, number, updateTopic, maxScore
                   {prefix}
                   <SelectMenu
                     name={`scoring_${snumber}_title`}
-                    initialValue={topic.title}
+                    initialValue={secondaryTopic.title}
                     inputProps={{
                       required: true,
                     }}
@@ -510,24 +513,24 @@ const PrimaryScoringTopic = ({ topic, removeTopic, number, updateTopic, maxScore
 
                     onSave={(v) => {
                       const tag = scoringTags.find(o => o.description === v)
-                      updateSecondaryTopic(topic.id, { ...topic, score_type: tag ? tag.score_type : 'OTHER' })
+                      updateSecondaryTopic(secondaryTopic.id, { ...secondaryTopic, score_type: tag ? tag.score_type : 'OTHER' })
                     }}
                   />
                 </div>
               </td>}
-            <EditableCell
+            {topic.relation === RELATION_MAX ? <td></td> : <EditableCell
               name={`scoring_${snumber}_value`}
               // editable={mode === MODE.CREATE}
-              initialValue={topic.value}
-              onSave={(v) => { updateSecondaryTopic(topic.id, { value: parseInt(v) }) }}
+              initialValue={secondaryTopic.value}
+              onSave={(v) => { updateSecondaryTopic(secondaryTopic.id, { value: parseInt(v) }) }}
               inputType="number"
               inputProps={{ required: true }}
-            />
-            <input type="hidden" name={`scoring_${snumber}_type`} value={topic.score_type || "OTHER"} required />
+            />}
+            <input type="hidden" name={`scoring_${snumber}_type`} value={secondaryTopic.score_type || "OTHER"} required />
 
-            <td>{(topic.value / primaryMaxScore * 100).toLocaleString()}%</td>
+            <td>{topic.relation !== RELATION_MAX && `${(secondaryTopic.value / primaryMaxScore * 100).toLocaleString()}%`}</td>
             <td>
-              <button className="btn btn-secondary btn-sm" onClick={() => removeSecondaryTopic(topic)}>-</button>
+              <button className="btn btn-secondary btn-sm" onClick={() => removeSecondaryTopic(secondaryTopic)}>-</button>
             </td>
           </tr>
         )
@@ -625,8 +628,8 @@ const EditableCell = ({
   }
   return <td style={editable ? { cursor: 'pointer' } : {}} {...restProps}> {childNode}</td >;
 }
-const SelectRelation = ({ name, relations, className, initialValue }) => {
-  return (<select name={name} id={name} className={className} defaultValue={initialValue || null}>
+const SelectRelation = ({ name, relations, className, value, onChange }) => {
+  return (<select name={name} id={name} className={className} value={value} onChange={onChange}>
     <option disabled selected value="">เลือกความสัมพันธ์</option>
     {relations.map(r => (<option value={r.value} key={r.value}>{r.label}</option>))}
   </select>)
@@ -654,13 +657,12 @@ const SelectMenu = ({ name, choices, className, initialValue, inputProps, onSave
           unitEl.value = o.unit
         }
       }
-
       )
     }).selectmenu("menuWidget").addClass("overflow");
   }, [])
   return (
     <select name={name} id={name} defaultValue={initialValue || null} ref={inputRef} rows={1} {...inputProps}>
-      <option disabled selected value="">กรุณาเลือก</option>
+      <option disabled={inputProps.required} selected value="">กรุณาเลือก</option>
       {choices.map(r => (<option value={r.value} key={r.value}>{r.label}</option>
       ))}
     </select>)

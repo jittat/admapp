@@ -17,11 +17,13 @@ var dataRequired = JSON.parse(document.currentScript.getAttribute('data-required
 var dataScoring = JSON.parse(document.currentScript.getAttribute('data-scoring'));
 var dataSelectedMajors = JSON.parse(document.currentScript.getAttribute('data-selected-majors'));
 var mode = document.currentScript.getAttribute('data-mode');
-var _isCustomScoreCriteriaAllowed = document.currentScript.getAttribute('data-is_custom_score_criteria_allowed') === 'True';
+var _isCustomScoreCriteriaAllowed = document.currentScript.getAttribute('data-is_custom_score_criteria_allowed') === 'Trหue';
 var MODE = {
   CREATE: 'create',
   EDIT: 'edit'
 };
+var RELATION_MAX = "MAX";
+
 var Form = function Form() {
   // console.log(dataRequired)
   // console.log(dataScoring)
@@ -164,6 +166,7 @@ var RequiredCriteria = function RequiredCriteria(_ref) {
       return t.id === topicId;
     });
     newTopics[index] = Object.assign({}, newTopics[index], value);
+    console.log('eiei', newTopics[index]);
     setTopics(newTopics);
   };
   var removeTopic = function removeTopic(topic) {
@@ -180,6 +183,7 @@ var RequiredCriteria = function RequiredCriteria(_ref) {
       return t.id === topicId;
     });
     newTopics[index] = Object.assign({}, newTopics[index], { children: newSecondaryTopics });
+    console.log('new topic', newTopics[index]);
     setTopics(newTopics);
   };
   return React.createElement(
@@ -423,7 +427,9 @@ var PrimaryTopic = function PrimaryTopic(_ref3) {
   var suffix = React.createElement(
     'div',
     { className: 'd-flex ml-2' },
-    secondaryTopics.length > 0 && React.createElement(SelectRelation, { name: 'required_' + number + '_relation', relations: relationRequired, className: 'ml-2', initialValue: topic.relation || 'AND' }),
+    secondaryTopics.length > 0 && React.createElement(SelectRelation, { name: 'required_' + number + '_relation', relations: relationRequired, className: 'ml-2', value: topic.relation, onChange: function onChange(event) {
+        event.target.value !== topic.relation && updateTopic(topic.id, { relation: event.target.value });
+      } }),
     React.createElement(
       'button',
       { className: 'btn btn-primary btn-sm ml-2', onClick: addNewTopic },
@@ -447,13 +453,13 @@ var PrimaryTopic = function PrimaryTopic(_ref3) {
         , initialValue: topic.title,
         focusOnMount: true,
         suffix: suffix,
-        inputProps: { required: true },
+        inputProps: { required: false },
         tags: requiredTags
       }, _defineProperty(_React$createElement, 'name', 'required_' + number + '_title'), _defineProperty(_React$createElement, 'onSave', function onSave(v) {
         var tag = requiredTags.find(function (o) {
           return o.description === v;
         });
-        updateTopic(topic.id, Object.assign({}, topic, { score_type: tag ? tag.score_type : 'OTHER', unit: tag ? tag.unit : '' }));
+        updateTopic(topic.id, { score_type: tag ? tag.score_type : 'OTHER', unit: tag ? tag.unit : '' });
       }), _React$createElement)) : React.createElement(
         'td',
         null,
@@ -464,7 +470,7 @@ var PrimaryTopic = function PrimaryTopic(_ref3) {
             name: 'required_' + number + '_title',
             initialValue: topic.title,
             inputProps: {
-              required: true
+              required: false
             },
             choices: requiredTags.map(function (tag) {
               return Object.assign({
@@ -477,7 +483,7 @@ var PrimaryTopic = function PrimaryTopic(_ref3) {
               var tag = requiredTags.find(function (o) {
                 return o.description === v;
               });
-              updateTopic(topic.id, Object.assign({}, topic, { score_type: tag ? tag.score_type : 'OTHER', unit: tag ? tag.unit : '' }));
+              updateTopic(topic.id, { score_type: tag ? tag.score_type : 'OTHER', unit: tag ? tag.unit : '' });
             }
           }),
           suffix
@@ -507,7 +513,7 @@ var PrimaryTopic = function PrimaryTopic(_ref3) {
         )
       )
     ),
-    secondaryTopics.map(function (topic, idx) {
+    secondaryTopics.map(function (secondaryTopic, idx) {
       var snumber = number + '.' + (idx + 1);
       var prefix = React.createElement(
         'span',
@@ -517,12 +523,12 @@ var PrimaryTopic = function PrimaryTopic(_ref3) {
       );
       return React.createElement(
         'tr',
-        { key: topic.id },
+        { key: secondaryTopic.id },
         React.createElement('td', null),
         isCustomScoreCriteriaAllowed ? React.createElement(EditableCell, {
           name: 'required_' + snumber + '_title'
           // editable={mode === MODE.CREATE}
-          , initialValue: topic.title,
+          , initialValue: secondaryTopic.title,
           focusOnMount: true,
           prefix: prefix,
           inputProps: { required: true },
@@ -531,7 +537,7 @@ var PrimaryTopic = function PrimaryTopic(_ref3) {
             var tag = requiredTags.find(function (o) {
               return o.description === v;
             });
-            updateSecondaryTopic(topic.id, Object.assign({}, topic, { score_type: tag ? tag.score_type : 'OTHER', unit: tag ? tag.unit : '' }));
+            updateSecondaryTopic(secondaryTopic.id, Object.assign({}, secondaryTopic, { score_type: tag ? tag.score_type : 'OTHER', unit: tag ? tag.unit : '' }));
           }
         }) : React.createElement(
           'td',
@@ -542,7 +548,7 @@ var PrimaryTopic = function PrimaryTopic(_ref3) {
             prefix,
             React.createElement(SelectMenu, {
               name: 'required_' + snumber + '_title',
-              initialValue: topic.title,
+              initialValue: secondaryTopic.title,
               inputProps: { required: true },
               choices: requiredTags.map(function (tag) {
                 return Object.assign({
@@ -555,7 +561,7 @@ var PrimaryTopic = function PrimaryTopic(_ref3) {
                 var tag = requiredTags.find(function (o) {
                   return o.description === v;
                 });
-                updateSecondaryTopic(topic.id, Object.assign({}, topic, { score_type: tag ? tag.score_type : 'OTHER', unit: tag ? tag.unit : '' }));
+                updateSecondaryTopic(secondaryTopic.id, Object.assign({}, secondaryTopic, { score_type: tag ? tag.score_type : 'OTHER', unit: tag ? tag.unit : '' }));
               }
             })
           )
@@ -563,22 +569,22 @@ var PrimaryTopic = function PrimaryTopic(_ref3) {
         React.createElement(EditableCell, {
           name: 'required_' + snumber + '_value'
           // editable={mode === MODE.CREATE}
-          , initialValue: topic.value
+          , initialValue: secondaryTopic.value
         }),
         React.createElement(EditableCell, {
           name: 'required_' + snumber + '_unit',
           editable: isCustomScoreCriteriaAllowed,
-          initialValue: topic.unit,
+          initialValue: secondaryTopic.unit,
           tags: unitTags
         }),
-        React.createElement('input', { type: 'hidden', name: 'required_' + snumber + '_type', value: topic.score_type || "OTHER", required: true }),
+        React.createElement('input', { type: 'hidden', name: 'required_' + snumber + '_type', value: secondaryTopic.score_type || "OTHER", required: true }),
         React.createElement(
           'td',
           null,
           React.createElement(
             'button',
             { className: 'btn btn-secondary btn-sm', onClick: function onClick() {
-                return removeSecondaryTopic(topic);
+                return removeSecondaryTopic(secondaryTopic);
               } },
             '-'
           )
@@ -625,7 +631,9 @@ var PrimaryScoringTopic = function PrimaryScoringTopic(_ref4) {
   var suffix = React.createElement(
     'div',
     { className: 'd-flex' },
-    secondaryTopics.length > 0 && React.createElement(SelectRelation, { name: 'scoring_' + number + '_relation', relations: relationScoring, className: 'ml-2', initialValue: topic.relation || 'SUM' }),
+    secondaryTopics.length > 0 && React.createElement(SelectRelation, { name: 'scoring_' + number + '_relation', relations: relationScoring, className: 'ml-2', value: topic.relation, onChange: function onChange(event) {
+        event.target.value !== topic.relation && updateTopic(topic.id, { relation: event.target.value });
+      } }),
     React.createElement(
       'button',
       { className: 'btn btn-primary btn-sm ml-2', onClick: addNewTopic },
@@ -649,13 +657,13 @@ var PrimaryScoringTopic = function PrimaryScoringTopic(_ref4) {
         , initialValue: topic.title,
         focusOnMount: true,
         suffix: suffix,
-        inputProps: { required: true },
+        inputProps: { required: false },
         tags: scoringTags,
         onSave: function onSave(v) {
           var tag = scoringTags.find(function (o) {
             return o.description === v;
           });
-          updateTopic(topic.id, Object.assign({}, topic, { score_type: tag ? tag.score_type : 'OTHER' }));
+          updateTopic(topic.id, { score_type: tag ? tag.score_type : 'OTHER' });
         }
       }) : React.createElement(
         'td',
@@ -667,7 +675,7 @@ var PrimaryScoringTopic = function PrimaryScoringTopic(_ref4) {
             name: 'scoring_' + number + '_title',
             initialValue: topic.title,
             inputProps: {
-              required: true
+              required: false
             },
             choices: scoringTags.map(function (tag) {
               return Object.assign({
@@ -680,7 +688,7 @@ var PrimaryScoringTopic = function PrimaryScoringTopic(_ref4) {
               var tag = scoringTags.find(function (o) {
                 return o.description === v;
               });
-              updateTopic(topic.id, Object.assign({}, topic, { score_type: tag ? tag.score_type : 'OTHER' }));
+              updateTopic(topic.id, { score_type: tag ? tag.score_type : 'OTHER' });
             }
           }),
           suffix
@@ -719,7 +727,7 @@ var PrimaryScoringTopic = function PrimaryScoringTopic(_ref4) {
         )
       )
     ),
-    secondaryTopics.map(function (topic, idx) {
+    secondaryTopics.map(function (secondaryTopic, idx) {
       var snumber = number + '.' + (idx + 1);
       var prefix = React.createElement(
         'span',
@@ -731,12 +739,12 @@ var PrimaryScoringTopic = function PrimaryScoringTopic(_ref4) {
       );
       return React.createElement(
         'tr',
-        { key: topic.id },
+        { key: secondaryTopic.id },
         React.createElement('td', null),
         isCustomScoreCriteriaAllowed ? React.createElement(EditableCell, {
           name: 'scoring_' + snumber + '_title'
           // editable={mode === MODE.CREATE}
-          , initialValue: topic.title,
+          , initialValue: secondaryTopic.title,
           focusOnMount: true,
           prefix: prefix,
           inputProps: { required: true },
@@ -746,7 +754,7 @@ var PrimaryScoringTopic = function PrimaryScoringTopic(_ref4) {
             var tag = scoringTags.find(function (o) {
               return o.description === v;
             });
-            updateSecondaryTopic(topic.id, Object.assign({}, topic, { score_type: tag ? tag.score_type : 'OTHER' }));
+            updateSecondaryTopic(secondaryTopic.id, Object.assign({}, secondaryTopic, { score_type: tag ? tag.score_type : 'OTHER' }));
           }
         }) : React.createElement(
           'td',
@@ -757,7 +765,7 @@ var PrimaryScoringTopic = function PrimaryScoringTopic(_ref4) {
             prefix,
             React.createElement(SelectMenu, {
               name: 'scoring_' + snumber + '_title',
-              initialValue: topic.title,
+              initialValue: secondaryTopic.title,
               inputProps: {
                 required: true
               },
@@ -772,27 +780,26 @@ var PrimaryScoringTopic = function PrimaryScoringTopic(_ref4) {
                 var tag = scoringTags.find(function (o) {
                   return o.description === v;
                 });
-                updateSecondaryTopic(topic.id, Object.assign({}, topic, { score_type: tag ? tag.score_type : 'OTHER' }));
+                updateSecondaryTopic(secondaryTopic.id, Object.assign({}, secondaryTopic, { score_type: tag ? tag.score_type : 'OTHER' }));
               }
             })
           )
         ),
-        React.createElement(EditableCell, {
+        topic.relation === RELATION_MAX ? React.createElement('td', null) : React.createElement(EditableCell, {
           name: 'scoring_' + snumber + '_value'
           // editable={mode === MODE.CREATE}
-          , initialValue: topic.value,
+          , initialValue: secondaryTopic.value,
           onSave: function onSave(v) {
-            updateSecondaryTopic(topic.id, { value: parseInt(v) });
+            updateSecondaryTopic(secondaryTopic.id, { value: parseInt(v) });
           },
           inputType: 'number',
           inputProps: { required: true }
         }),
-        React.createElement('input', { type: 'hidden', name: 'scoring_' + snumber + '_type', value: topic.score_type || "OTHER", required: true }),
+        React.createElement('input', { type: 'hidden', name: 'scoring_' + snumber + '_type', value: secondaryTopic.score_type || "OTHER", required: true }),
         React.createElement(
           'td',
           null,
-          (topic.value / primaryMaxScore * 100).toLocaleString(),
-          '%'
+          topic.relation !== RELATION_MAX && (secondaryTopic.value / primaryMaxScore * 100).toLocaleString() + '%'
         ),
         React.createElement(
           'td',
@@ -800,7 +807,7 @@ var PrimaryScoringTopic = function PrimaryScoringTopic(_ref4) {
           React.createElement(
             'button',
             { className: 'btn btn-secondary btn-sm', onClick: function onClick() {
-                return removeSecondaryTopic(topic);
+                return removeSecondaryTopic(secondaryTopic);
               } },
             '-'
           )
@@ -907,11 +914,12 @@ var SelectRelation = function SelectRelation(_ref6) {
   var name = _ref6.name,
       relations = _ref6.relations,
       className = _ref6.className,
-      initialValue = _ref6.initialValue;
+      value = _ref6.value,
+      onChange = _ref6.onChange;
 
   return React.createElement(
     'select',
-    { name: name, id: name, className: className, defaultValue: initialValue || null },
+    { name: name, id: name, className: className, value: value, onChange: onChange },
     React.createElement(
       'option',
       { disabled: true, selected: true, value: '' },
@@ -965,7 +973,7 @@ var SelectMenu = function SelectMenu(_ref7) {
     Object.assign({ name: name, id: name, defaultValue: initialValue || null, ref: inputRef, rows: 1 }, inputProps),
     React.createElement(
       'option',
-      { disabled: true, selected: true, value: '' },
+      { disabled: inputProps.required, selected: true, value: '' },
       '\u0E01\u0E23\u0E38\u0E13\u0E32\u0E40\u0E25\u0E37\u0E2D\u0E01'
     ),
     choices.map(function (r) {

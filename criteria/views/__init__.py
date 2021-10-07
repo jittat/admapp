@@ -289,7 +289,7 @@ def upsert_admission_criteria(post_request, project=None, faculty=None, admissio
             secondary_order=s["secondary_order"],
             criteria_type=s["criteria_type"],
             score_type=s["type"] if "type" in s else "OTHER",
-            value=s["value"] if isinstance(s["value"], Decimal) else None,
+            value=s["value"] if "value" in s and isinstance(s["value"], Decimal) else None,
             unit=(s["unit"] if "unit" in s else ""),
             description=s["title"] if "title" in s else None,
             relation=s["relation"] if "relation" in s else None,
