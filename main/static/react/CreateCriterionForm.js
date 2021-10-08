@@ -275,9 +275,14 @@ var ScoringCriteria = function ScoringCriteria(_ref2) {
       topics = _useState6[0],
       setTopics = _useState6[1];
 
+  var topicsRef = useRef(topics);
+  useEffect(function () {
+    topicsRef.current = topics;
+  }, [topics]);
+
   var addNewTopic = function addNewTopic(e) {
     e.preventDefault();
-    var newTopic = topics.slice();
+    var newTopic = topicsRef.current.slice();
     newTopic.push({ id: function () {
         return Date.now();
       }(), title: '', value: 1, children: [] });
@@ -285,7 +290,7 @@ var ScoringCriteria = function ScoringCriteria(_ref2) {
     setTopics(newTopic);
   };
   var removeTopic = function removeTopic(topic) {
-    var newTopics = topics.slice();
+    var newTopics = topicsRef.current.slice();
     var index = newTopics.findIndex(function (t) {
       return t.id === topic.id;
     });
@@ -294,7 +299,7 @@ var ScoringCriteria = function ScoringCriteria(_ref2) {
   };
   var updateTopic = function updateTopic(topicId, value) {
     console.log('Updating topic', topicId, value);
-    var newTopics = topics.slice();
+    var newTopics = topicsRef.current.slice();
     var index = newTopics.findIndex(function (t) {
       return t.id === topicId;
     });
@@ -302,7 +307,7 @@ var ScoringCriteria = function ScoringCriteria(_ref2) {
     setTopics(newTopics);
   };
   var _setSecondaryTopics2 = function _setSecondaryTopics2(topicId, newSecondaryTopics) {
-    var newTopics = topics.slice();
+    var newTopics = topicsRef.current.slice();
     var index = newTopics.findIndex(function (t) {
       return t.id === topicId;
     });
@@ -404,16 +409,21 @@ var PrimaryTopic = function PrimaryTopic(_ref3) {
       setSecondaryTopics = _ref3.setSecondaryTopics,
       isCustomScoreCriteriaAllowed = _ref3.isCustomScoreCriteriaAllowed;
 
+  var secondaryTopicsRef = useRef(secondaryTopics);
+  useEffect(function () {
+    secondaryTopicsRef.current = secondaryTopics;
+  }, [secondaryTopics]);
+
   var addNewTopic = function addNewTopic(e) {
     e.preventDefault();
-    var newSecondaryTopics = secondaryTopics.slice();
+    var newSecondaryTopics = secondaryTopicsRef.current.slice();
     newSecondaryTopics.push({ id: function () {
         return Date.now();
       }(), title: '' });
     setSecondaryTopics(newSecondaryTopics);
   };
   var removeSecondaryTopic = function removeSecondaryTopic(topic) {
-    var newSecondaryTopics = secondaryTopics.slice();
+    var newSecondaryTopics = secondaryTopicsRef.current.slice();
     var index = newSecondaryTopics.findIndex(function (t) {
       return t.id === topic.id;
     });
@@ -422,7 +432,7 @@ var PrimaryTopic = function PrimaryTopic(_ref3) {
   };
 
   var updateSecondaryTopic = function updateSecondaryTopic(topicId, value) {
-    var newSecondaryTopics = secondaryTopics.slice();
+    var newSecondaryTopics = secondaryTopicsRef.current.slice();
     var index = newSecondaryTopics.findIndex(function (t) {
       return t.id === topicId;
     });
@@ -609,9 +619,14 @@ var PrimaryScoringTopic = function PrimaryScoringTopic(_ref4) {
       setSecondaryTopics = _ref4.setSecondaryTopics,
       isCustomScoreCriteriaAllowed = _ref4.isCustomScoreCriteriaAllowed;
 
+  var secondaryTopicsRef = useRef(secondaryTopics);
+  useEffect(function () {
+    secondaryTopicsRef.current = secondaryTopics;
+  }, [secondaryTopics]);
+
   var addNewTopic = function addNewTopic(e) {
     e.preventDefault();
-    var newSecondaryTopics = secondaryTopics.slice();
+    var newSecondaryTopics = secondaryTopicsRef.current.slice();
     newSecondaryTopics.push({ id: function () {
         return function () {
           return Date.now();
@@ -620,7 +635,7 @@ var PrimaryScoringTopic = function PrimaryScoringTopic(_ref4) {
     setSecondaryTopics(newSecondaryTopics);
   };
   var removeSecondaryTopic = function removeSecondaryTopic(topic) {
-    var newSecondaryTopics = secondaryTopics.slice();
+    var newSecondaryTopics = secondaryTopicsRef.current.slice();
     var index = newSecondaryTopics.findIndex(function (t) {
       return t.id === topic.id;
     });
@@ -628,7 +643,7 @@ var PrimaryScoringTopic = function PrimaryScoringTopic(_ref4) {
     setSecondaryTopics(newSecondaryTopics);
   };
   var updateSecondaryTopic = function updateSecondaryTopic(topicId, value) {
-    var newSecondaryTopics = secondaryTopics.slice();
+    var newSecondaryTopics = secondaryTopicsRef.current.slice();
     var index = newSecondaryTopics.findIndex(function (t) {
       return t.id === topicId;
     });

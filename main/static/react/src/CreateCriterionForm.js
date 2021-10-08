@@ -166,29 +166,31 @@ const ScoringCriteria = ({ initialTopics = [] }) => {
   const isCustomScoreCriteriaAllowed = _isCustomScoreCriteriaAllowed //from global variable
 
   const [topics, setTopics] = useState(initialTopics)
+  const topicsRef = useRef(topics)
+  useEffect(() => { topicsRef.current = topics }, [topics])
 
   const addNewTopic = (e) => {
     e.preventDefault()
-    const newTopic = topics.slice()
+    const newTopic = topicsRef.current.slice()
     newTopic.push({ id: (() => Date.now())(), title: '', value: 1, children: [] })
     console.log(newTopic)
     setTopics(newTopic)
   }
   const removeTopic = (topic) => {
-    const newTopics = topics.slice()
+    const newTopics = topicsRef.current.slice()
     const index = newTopics.findIndex((t) => t.id === topic.id)
     newTopics.splice(index, 1)
     setTopics(newTopics)
   }
   const updateTopic = (topicId, value) => {
     console.log(`Updating topic`, topicId, value)
-    const newTopics = topics.slice()
+    const newTopics = topicsRef.current.slice()
     const index = newTopics.findIndex((t) => t.id === topicId)
     newTopics[index] = { ...newTopics[index], ...value }
     setTopics(newTopics)
   }
   const setSecondaryTopics = (topicId, newSecondaryTopics) => {
-    const newTopics = topics.slice()
+    const newTopics = topicsRef.current.slice()
     const index = newTopics.findIndex((t) => t.id === topicId)
     newTopics[index] = { ...newTopics[index], children: newSecondaryTopics }
     setTopics(newTopics)
@@ -247,25 +249,29 @@ const ScoringCriteria = ({ initialTopics = [] }) => {
     </div>)
 }
 const PrimaryTopic = ({ topic, removeTopic, number, updateTopic, secondaryTopics, setSecondaryTopics, isCustomScoreCriteriaAllowed }) => {
+  const secondaryTopicsRef = useRef(secondaryTopics)
+  useEffect(() => { secondaryTopicsRef.current = secondaryTopics }, [secondaryTopics])
+
   const addNewTopic = (e) => {
     e.preventDefault()
-    const newSecondaryTopics = secondaryTopics.slice()
+    const newSecondaryTopics = secondaryTopicsRef.current.slice()
     newSecondaryTopics.push({ id: (() => Date.now())(), title: '' })
     setSecondaryTopics(newSecondaryTopics)
   }
   const removeSecondaryTopic = (topic) => {
-    const newSecondaryTopics = secondaryTopics.slice()
+    const newSecondaryTopics = secondaryTopicsRef.current.slice()
     const index = newSecondaryTopics.findIndex((t) => t.id === topic.id)
     newSecondaryTopics.splice(index, 1)
     setSecondaryTopics(newSecondaryTopics)
   }
 
   const updateSecondaryTopic = (topicId, value) => {
-    const newSecondaryTopics = secondaryTopics.slice()
+    const newSecondaryTopics = secondaryTopicsRef.current.slice()
     const index = newSecondaryTopics.findIndex((t) => t.id === topicId)
     newSecondaryTopics[index] = { ...newSecondaryTopics[index], ...value }
     setSecondaryTopics(newSecondaryTopics)
   }
+
 
   const suffix = <div className="d-flex ml-2">
     {secondaryTopics.length > 0 && <SelectRelation name={`required_${number}_relation`} relations={relationRequired} className="ml-2" value={topic.relation} onChange={(event) => { event.target.value !== topic.relation && updateTopic(topic.id, { relation: event.target.value }) }} />}
@@ -394,20 +400,23 @@ const PrimaryTopic = ({ topic, removeTopic, number, updateTopic, secondaryTopics
   )
 }
 const PrimaryScoringTopic = ({ topic, removeTopic, number, updateTopic, maxScore, secondaryTopics, setSecondaryTopics, isCustomScoreCriteriaAllowed }) => {
+  const secondaryTopicsRef = useRef(secondaryTopics)
+  useEffect(() => { secondaryTopicsRef.current = secondaryTopics }, [secondaryTopics])
+
   const addNewTopic = (e) => {
     e.preventDefault()
-    const newSecondaryTopics = secondaryTopics.slice()
+    const newSecondaryTopics = secondaryTopicsRef.current.slice()
     newSecondaryTopics.push({ id: (() => (() => Date.now())())(), title: '', value: 1 })
     setSecondaryTopics(newSecondaryTopics)
   }
   const removeSecondaryTopic = (topic) => {
-    const newSecondaryTopics = secondaryTopics.slice()
+    const newSecondaryTopics = secondaryTopicsRef.current.slice()
     const index = newSecondaryTopics.findIndex((t) => t.id === topic.id)
     newSecondaryTopics.splice(index, 1)
     setSecondaryTopics(newSecondaryTopics)
   }
   const updateSecondaryTopic = (topicId, value) => {
-    const newSecondaryTopics = secondaryTopics.slice()
+    const newSecondaryTopics = secondaryTopicsRef.current.slice()
     const index = newSecondaryTopics.findIndex((t) => t.id === topicId)
     newSecondaryTopics[index] = { ...newSecondaryTopics[index], ...value }
     setSecondaryTopics(newSecondaryTopics)
