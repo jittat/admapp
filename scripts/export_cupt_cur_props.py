@@ -6,131 +6,160 @@ import csv
 from datetime import datetime
 
 from appl.models import AdmissionProject, AdmissionRound, Faculty
-from criteria.models import AdmissionCriteria, COMPONENT_WEIGHT_TYPE_CHOICES
+from criteria.models import AdmissionCriteria
 
-FIELDS = [
-    'program_id',
-    'major_id',
-    'project_id',
-    'project_name_th',
-    'project_name_en',
-    'type',
-    'component_weight',
-    'component_pat',
-    'receive_student_number',
-    'gender_male_number',
-    'gender_female_number',
-    'receive_add_limit',
-    'join_id',
-    'only_formal',
-    'receive_student_number_formal',
-    'only_international',
-    'receive_student_number_international',
-    'only_vocational',
-    'receive_student_number_vocational',
-    'only_non_formal',
-    'receive_student_number_nonformal',
-    'min_height_male',
-    'min_height_female',
-    'min_weight_male',
-    'min_weight_female',
-    'max_weight_male',
-    'max_weight_female',
-    'min_hwr_male',
-    'min_hwr_female',
-    'min_bmi_male',
-    'min_bmi_female',
-    'max_bmi_male',
-    'max_bmi_female',
-    'min_r4_total_score',
-    'min_gpax',
-    'min_credit_gpa21',
-    'min_credit_gpa22',
-    'min_credit_gpa23',
-    'min_credit_gpa24',
-    'min_credit_gpa25',
-    'min_credit_gpa26',
-    'min_credit_gpa27',
-    'min_credit_gpa28',
-    'min_gpa21',
-    'min_gpa22',
-    'min_gpa23',
-    'min_gpa24',
-    'min_gpa25',
-    'min_gpa26',
-    'min_gpa27',
-    'min_gpa28',
-    'min_onet',
-    'min_onet01',
-    'min_onet02',
-    'min_onet03',
-    'min_onet04',
-    'min_onet05',
-    'min_gat',
-    'min_gat1',
-    'min_gat2',
-    'min_pat1and2',
-    'min_pat1',
-    'min_pat2',
-    'min_pat3',
-    'min_pat4',
-    'min_pat5',
-    'min_pat6',
-    'min_pat7_1',
-    'min_pat7_2',
-    'min_pat7_3',
-    'min_pat7_4',
-    'min_pat7_5',
-    'min_pat7_6',
-    'min_pat7_7',
-    'min_9sub_09',
-    'min_9sub_19',
-    'min_9sub_29',
-    'min_9sub_39',
-    'min_9sub_49',
-    'min_9sub_59',
-    'min_9sub_69',
-    'min_9sub_89',
-    'min_9sub_99',
-    'min_vnet_51',
-    'min_vnet_511',
-    'min_vnet_512',
-    'min_vnet_513',
-    'min_vnet_514',
-    'min_bnet_393',
-    'min_bnet_394',
-    'min_inet_31',
-    'min_inet_33',
-    'min_inet_35',
-    'min_inet_38',
-    'min_nnet_421',
-    'min_nnet_422',
-    'min_nnet_423',
-    'min_nnet_424',
-    'min_nnet_425',
-    'min_toefl_ibt',
-    'min_toefl_pbt',
-    'min_toefl_cbt',
-    'min_toefl_ipt',
-    'min_ielts',
-    'min_toeic',
-    'min_cutep',
-    'min_tuget',
-    'min_kept',
-    'min_psutep',
-    'min_kuept',
-    'min_cmuetegs',
-    'min_sat',
-    'min_cefr',
-    'min_ged_score',
-    'min_gpa22_23',
-    'description',
-    'condition',
-    'interview_location',
-    'interview_date',
-    'interview_time',
-    'link',
-]
+FIELDS_STR = """
+program_id
+major_id
+project_id
+project_name_th
+project_name_en
+type
+receive_student_number
+gender_male_number
+gender_female_number
+receive_add_limit
+join_id
+only_formal
+only_international
+only_vocational
+only_non_formal
+only_ged
+min_priority
+min_age
+min_age_date
+max_age
+max_age_date
+min_height_male
+min_height_female
+min_weight_male
+min_weight_female
+max_weight_male
+max_weight_female
+min_bmi_male
+min_bmi_female
+max_bmi_male
+max_bmi_female
+min_gpax
+min_credit_gpa21
+min_credit_gpa22
+min_credit_gpa23
+min_credit_gpa24
+min_credit_gpa25
+min_credit_gpa26
+min_credit_gpa27
+min_credit_gpa28
+min_credit_gpa29
+min_gpa21
+min_gpa22
+min_gpa23
+min_gpa24
+min_gpa25
+min_gpa26
+min_gpa27
+min_gpa28
+min_gpa29
+min_gpa22_23
+min_credit_gpa22_23
+min_gpa22_23_28
+min_credit_gpa22_23_28
+grad_current
+gatpat_current
+min_gat
+min_gat1
+min_gat2
+min_pat1_pat2
+min_pat1
+min_pat2
+min_pat3
+min_pat4
+min_pat5
+min_pat6
+min_pat7
+min_pat7_1
+min_pat7_2
+min_pat7_3
+min_pat7_4
+min_pat7_5
+min_pat7_6
+min_pat7_7
+min_9sub_sum
+min_9sub_09
+min_9sub_19
+min_9sub_29
+min_9sub_39
+min_9sub_49
+min_9sub_59
+min_9sub_69
+min_9sub_89
+min_9sub_99
+min_vnet_51
+min_vnet_511
+min_vnet_512
+min_vnet_513
+min_vnet_514
+min_toefl_ibt
+min_toefl_pbt
+min_toefl_cbt
+min_toefl_itp
+min_ielts
+min_toeic
+min_cutep
+min_tuget
+min_kept
+min_psutep
+min_kuept
+min_cmuetegs
+min_swu_set
+min_det
+min_sat
+min_cefr
+min_ged_score
+description
+condition
+interview_location
+interview_date
+interview_time
+link
+min_cotmes_01
+min_cotmes_02
+min_cotmes_03
+min_mu001
+min_mu002
+min_mu003
+min_su001
+min_su002
+min_su003
+min_su004
+min_tu001
+min_tu002
+min_tu003
+min_tu004
+min_tu005
+min_tu061
+min_tu062
+min_tu071
+min_tu072
+min_tu081
+min_tu082
+min_tu091
+min_tu092
+min_gsat
+min_gsat_l
+min_gsat_m
+min_mu_elt
+min_netsat_math
+min_netsat_lang
+min_netsat_sci
+min_netsat_phy
+min_netsat_chem
+min_netsat_bio
+score_condition
+subject_names
+score_minimum
+"""
+
+FIELDS = FIELDS_STR.strip().split()
 
 SLOTS_FIELD_NAME = 'receive_student_number'
 
@@ -139,47 +168,51 @@ DEFAULT_VALUES = {
     'only_international': 1,
     'only_non_formal': 1,
     'only_vocational': 1,
+    'only_ged': 1,
     'condition': '',
     'interview_location': 'มหาวิทยาลัยเกษตรศาสตร์',
     'interview_date': '',
     'interview_time': '',
     'link': 'https://admission.ku.ac.th/',
+    'score_condition': 0,
+    'subject_names': 0,
+    'score_minimum': 0,
 }
 
 PROJECT_TYPES = {
-    'A0100': '1_2564',
-    'A0200': '1_2564',
-    'A0300': '1_2564',
-    'A0400': '1_2564',
-    'A0500': '1_2564',
-    'A0600': '1_2564',
-    'A0700': '1_2564',
-    'A0800': '1_2564',
-    'A0900': '1_2564',
-    'A1000': '1_2564',
-    'B1100': '2_2564',
-    'B1200': '2_2564',
-    'B1300': '2_2564',
-    'B1400': '2_2564',
-    'B1500': '2_2564',
-    'B1600': '2_2564',
-    'B1700': '2_2564',
-    'B1800': '2_2564',
-    'B1900': '2_2564',
-    'B2000': '2_2564',
-    'B2100': '2_2564',
-    'B2200': '2_2564',
-    'B2300': '2_2564',
-    'B2400': '2_2564',
-    'B2500': '2_2564',
-    'B2600': '2_2564',
-    'B0300': '2_2564',
-    'B3200': '2_2564',
-    'C2700': '31_2564',
-    'C2800': '32_2564',
-    'D2900': '4_2564',
-    'D3000': '4_2564',
-    'D3100': '4_2564',
+    'A0100': '1_2565',
+    'A0200': '1_2565',
+    'A0300': '1_2565',
+    'A0400': '1_2565',
+    'A0500': '1_2565',
+    'A0599': '1_2565',
+    'A0600': '1_2565',
+    'A0699': '1_2565',
+    'A0700': '1_2565',
+    'A0799': '1_2565',
+    'A0700': '1_2565',
+    'A0800': '1_2565',
+    'A0900': '1_2565',
+    'A1000': '1_2565',
+    'B1100': '2_2565',
+    'B1200': '2_2565',
+    'B1300': '2_2565',
+    'B1400': '2_2565',
+    'B1500': '2_2565',
+    'B1600': '2_2565',
+    'B1700': '2_2565',
+    'B1800': '2_2565',
+    'B1900': '2_2565',
+    'B2000': '2_2565',
+    'B2100': '2_2565',
+    'B2200': '2_2565',
+    'B2300': '2_2565',
+    'B2400': '2_2565',
+    'B2500': '2_2565',
+    'B2600': '2_2565',
+    'B2700': '2_2565',
+    'B2799': '2_2565',
+    'C2800': '3_2565',
 }
 
 SCORE_TYPE_TAGS = [
@@ -271,6 +304,10 @@ SCORE_TYPE_TAGS = [
     { "score_type": "UNIT_SCI", "description": "เรียนรายวิชาในกลุ่มสาระการเรียนรู้วิทยาศาสตร์ ต้องเรียนวิชาพื้นฐานและรายวิชาเพิ่มเติม รวมกัน", "unit": "" },
     { "score_type": "UNIT_SCI", "description": "เรียนรายวิชาในกลุ่มสาระการเรียนรู้วิทยาศาสตร์ ไม่น้อยกว่า", "unit": "" },
     { "score_type": "UNIT_SCI", "description": "หน่วยกิตกลุ่มสาระวิทยาศาสตร์", "unit": "" },
+
+    { "score_type": "GPAX_SCI", "description": "คะแนนเฉลี่ยรายวิชากลุ่มสาระการเรียนรู้วิทยาศาสตร์", "unit": "" },
+    { "score_type": "GPAX_MATH", "description": "คะแนนเฉลี่ยรายวิชากลุ่มสาระการเรียนรู้คณิตศาสตร์", "unit": "" },
+    { "score_type": "GPAX_FOREIGN", "description": "คะแนนเฉลี่ยรายวิชากลุ่มสาระการเรียนรู้ภาษาต่างประเทศ", "unit": "" },
     
     { "score_type": "GAT_2", "description": "GAT (ตอน 2 ภาษาอังกฤษ)", "unit": "คะแนน" },
     { "score_type": "GAT_2", "description": "GAT ตอน 2", "unit": "คะแนน" },
@@ -309,57 +346,6 @@ SCORE_TYPE_TAGS = [
     { "score_type": 'MIN_GPA28', 'description': 'ผลการเรียนเฉลี่ยรวมของกลุ่มสาระการเรียนรู้ภาษาต่างประเทศ'},
 ]
 
-for t,d in COMPONENT_WEIGHT_TYPE_CHOICES:
-    SCORE_TYPE_TAGS.append({"score_type": t, "description": d})
-
-COMPONENT_WEIGHT_OPTIONS = [
-    ('CW110','1.1',0),
-    ('CW120','1.2',0),
-    ('CW130','1.3',0),
-    ('CW140','1.4',0),
-    ('CW210','2.1',0),
-    ('CW220','2.2',0),
-    ('CW300','3',0),
-    ('CW400','4',0),
-    ('CW500','5',0),
-    ('CW610','6.1',0),
-    ('CW621','6.2.1',0),
-    ('CW62271','6.2.2','PAT7.1'),
-    ('CW62272','6.2.2','PAT7.2'),
-    ('CW62273','6.2.2','PAT7.3'),
-    ('CW62274','6.2.2','PAT7.4'),
-    ('CW62275','6.2.2','PAT7.5'),
-    ('CW62276','6.2.2','PAT7.6'),
-    ('CW62277','6.2.2','PAT7.7'),
-    ('CW701','7.1',0),
-    ('CW7021','7.2','PAT1'),
-    ('CW7022','7.2','PAT2'),
-    ('CW7023','7.2','PAT3'),
-    ('CW7024','7.2','PAT4'),
-    ('CW7026','7.2','PAT6'),
-    ('CW70271','7.2','PAT7.1'),
-    ('CW70272','7.2','PAT7.2'),
-    ('CW70273','7.2','PAT7.3'),
-    ('CW70274','7.2','PAT7.4'),
-    ('CW70275','7.2','PAT7.5'),
-    ('CW70276','7.2','PAT7.6'),
-    ('CW70277','7.2','PAT7.7'),
-    ('CW8004','8','PAT4'),
-    ('CW8006','8','PAT6'),
-    ('CW910','9.1',0),
-    ('CW921','9.2.1',0),
-    ('CW92271','9.2.2','PAT7.1'),
-    ('CW92272','9.2.2','PAT7.2'),
-    ('CW92273','9.2.2','PAT7.3'),
-    ('CW92274','9.2.2','PAT7.4'),
-    ('CW92275','9.2.2','PAT7.5'),
-    ('CW92276','9.2.2','PAT7.6'),
-    ('CW92277','9.2.2','PAT7.7'),
-]
-
-
-COMPONENT_WEIGHT_MAP = { c[0]:(c[1],c[2]) for c in COMPONENT_WEIGHT_OPTIONS }
-
 SCORE_TYPE_REVERSE_MAP = dict([
     (t['description'].strip(), t['score_type'].strip())
     for t in SCORE_TYPE_TAGS
@@ -371,6 +357,9 @@ SCORE_TYPE_FIELD_MAP = {
     "UNIT_MATH": 'min_credit_gpa22',
     "UNIT_FOREIGN": 'min_credit_gpa28',
     "UNIT_SCI": 'min_credit_gpa23',
+    "GPAX_MATH": 'min_gpa22',
+    "GPAX_FOREIGN": 'min_gpa28',
+    "GPAX_SCI": 'min_gpa23',
     "ONET": 'min_onet',
     "ONET_THA": 'min_onet01',
     "ONET_SOC": 'min_onet02',
@@ -407,9 +396,13 @@ SCORE_TYPE_FIELD_MAP = {
     "MIN_GPA22": 'min_gpa22',
     "MIN_GPA23": 'min_gpa23',
     "MIN_GPA28": 'min_gpa28',
+
+    "VNET": 'min_vnet_51',
+    "PAT_7": 'min_pat7',
 }
 
-ADD_LIMITS_CONFIG = """C3	10020222900201A		C2700
+ADD_LIMITS_CONFIG = ""
+OLD_ADD_LIMITS_CONFIG = """C3	10020222900201A		C2700
 C3	10020222902501A		C2700
 C10	10020222902501B		C2700
 C3	10020222900201A		C2800
@@ -453,6 +446,9 @@ ADD_LIMITS = dict({
     (i[3],i[1],i[2]): i[0] for i in [l.strip().split("\t") for l in ADD_LIMITS_CONFIG.split("\n")] if len(i) == 4
 })
 
+ADDITIONAL_FIELD_VALUES = {
+}
+
 def reverse_score_type(score_criteria):
     if score_criteria.score_type != 'OTHER':
         return score_criteria.score_type
@@ -462,7 +458,30 @@ def reverse_score_type(score_criteria):
         return 'OTHER'
 
 all_missing_descriptions = []
+
+def print_error_line(prefix, curriculum_major):
+    print(prefix, '^^ =============', curriculum_major.faculty, '==========', 
+          curriculum_major.cupt_code,
+          curriculum_major.admission_project.id,
+          curriculum_major.cupt_code.get_program_major_code())
+
     
+def normalize_score_type(c):
+    is_error = False
+    
+    score_type = c.score_type
+    if score_type == 'OTHER':
+        score_type = reverse_score_type(c)
+    if score_type not in SCORE_TYPE_FIELD_MAP:
+        print(f'Error missing {score_type} {c} "{c.description.strip()}"')
+        is_error = True
+    elif SCORE_TYPE_FIELD_MAP[score_type] == 'ERROR':
+        #print('Found:', score_type, c)
+        print('Error gpax5', c.score_type, score_type, c, c.description.strip())
+        is_error = True
+    return score_type, is_error
+
+
 def min_score_vector_from_criterias(score_criterias, curriculum_major):
     value_vectors = {}
     for f in FIELDS:
@@ -474,29 +493,41 @@ def min_score_vector_from_criterias(score_criterias, curriculum_major):
             
     is_error = False
     for c in score_criterias:
-        score_type = c.score_type
-        if score_type == 'OTHER':
-            score_type = reverse_score_type(c)
+        score_type, this_error = normalize_score_type(c)
+
         if c.value != None and c.value > 0:
-            if score_type not in SCORE_TYPE_FIELD_MAP:
-                print(f'Error missing {score_type} {c} "{c.description.strip()}"')
+            if not this_error:
+                value_vectors[SCORE_TYPE_FIELD_MAP[score_type]] = float(c.value)
+            else:
                 all_missing_descriptions.append(c.description)
                 is_error = True
-            elif SCORE_TYPE_FIELD_MAP[score_type] == 'ERROR':
-                #print('Found:', score_type, c)
-                print('Error gpax5', c)
-                is_error = True
-            else:
-                value_vectors[SCORE_TYPE_FIELD_MAP[score_type]] = float(c.value)
         else:
             if score_type == 'OTHER':
                 is_error = True
                 print(f'OTHER - None: Error missing {score_type} {c} "{c.description.strip()}"')
-
+                
     if is_error:
-        print('=============', curriculum_major.faculty, '==========', curriculum_major.cupt_code)
+        print_error_line('4', curriculum_major)
                 
     return value_vectors
+
+def build_or_conditions(or_criterias):
+    items = {}
+    items['score_condition'] = 1
+    names = []
+    scores = []
+    for c in or_criterias:
+        score_type, this_error = normalize_score_type(c)
+        if not this_error:
+            names.append(SCORE_TYPE_FIELD_MAP[score_type])
+            scores.append(float(c.value))
+        else:
+            print(f'OR error {score_type} {c} "{c.description.strip()}"')
+        
+    items['subject_names'] = ' '.join(names)
+    items['score_minimum'] = ' '.join([str(s) for s in scores])
+    print('OR built:', items)
+    return items
 
 def min_score_vectors(admission_criteria, curriculum_major):
     if not admission_criteria:
@@ -529,21 +560,22 @@ def min_score_vectors(admission_criteria, curriculum_major):
         value_vectors = min_score_vector_from_criterias(score_criterias, curriculum_major)
     
         if is_error:
-            print('=============', curriculum_major.faculty, '==========', curriculum_major.cupt_code)
-                
+            print_error_line('1', curriculum_major)
+
         return [value_vectors]
     elif or_count == 1:
-        print('OR found:', or_criterias)
+        print('OR found:', curriculum_major.cupt_code, curriculum_major.admission_project.id, curriculum_major.cupt_code.get_program_major_code(), ':', or_criterias)
         output = []
-        for or_criteria in or_criterias:
-            this_score_criterias = [c for c in score_criterias] + [or_criteria]
-            
-            value_vectors = min_score_vector_from_criterias(this_score_criterias, curriculum_major)
+        
+        value_vectors = min_score_vector_from_criterias([c for c in score_criterias], curriculum_major)
 
-            output.append(value_vectors)
+        or_conditions = build_or_conditions(or_criterias)
+        value_vectors.update(or_conditions)
+
+        output.append(value_vectors)
             
         if is_error:
-            print('=============', curriculum_major.faculty, '==========', curriculum_major.cupt_code)
+            print_error_line('2', curriculum_major)
 
         return output
 
@@ -551,7 +583,7 @@ def min_score_vectors(admission_criteria, curriculum_major):
         value_vectors = min_score_vector_from_criterias(score_criterias, curriculum_major)
     
         if is_error:
-            print('TOO MANY ORs =============', curriculum_major.faculty, '==========', curriculum_major.cupt_code)
+            print_error_line('3 TOO MANY ORs ', curriculum_major)
                 
         return [value_vectors]
 
@@ -596,18 +628,18 @@ def gen_rows(curriculum_major, slots, admission_criteria, admission_project):
             'project_name_en',
             'gender_male_number',
             'gender_female_number',
-            'component_weight',
-            'component_pat',
             'join_id',
-            'receive_student_number_formal',
-            'receive_student_number_international',
-            'receive_student_number_vocational',
-            'receive_student_number_nonformal',
         ]
         
         for f in ZERO_FIELDS:
-            items[f] = 0
+            if f not in items:
+                items[f] = 0
 
+        additional_field_value_key = (admission_project.id,) + curriculum_major.cupt_code.get_program_major_code()
+        if additional_field_value_key in ADDITIONAL_FIELD_VALUES:
+            for f in ADDITIONAL_FIELD_VALUES[additional_field_value_key]:
+                items[f] = ADDITIONAL_FIELD_VALUE_KEY[additional_field_value_key][f]
+            
         rows.append(items)
 
         first_row = False
@@ -747,11 +779,6 @@ def update_component_weight(row, admission_criteria, curriculum_major):
         if score_type == 'OTHER':
             score_type = reverse_score_type(c)
 
-        if score_type in COMPONENT_WEIGHT_MAP:
-            cw, cpat = COMPONENT_WEIGHT_MAP[score_type]
-            row['component_weight'] = cw
-            row['component_pat'] = cpat
-            is_assigned = True
         else:
             print('Unknown scoring', c)
             is_error = True
@@ -831,13 +858,19 @@ def main():
         if is_slots_combined:
             project_rows = combine_slots(project_rows)
         else:
-            mark_join_ids(project_rows, int(project_id)*100)
-            mark_multiline_majors(project_rows, row_criterias)
-
+            if len(project_rows) > 1:
+                non_zero_count = len([r for r in project_rows if r['receive_student_number'] > 0])
+                if non_zero_count == 1:
+                    print('+++++++++++++ combine rows ++++++++++++++++++')
+                    mark_join_ids(project_rows, int(project_id)*100)
+                    mark_multiline_majors(project_rows, row_criterias)
+                else:
+                    print('--------- OK no need to combine --------')
+            
         all_rows += project_rows
         
     for d in set(all_missing_descriptions):
-        print(d.strip())
+        print("--> ", d.strip())
 
     all_rows = sort_rows(all_rows)
     
