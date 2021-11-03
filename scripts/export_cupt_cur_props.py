@@ -730,6 +730,7 @@ def mark_join_ids(project_rows, join_id_base):
         key_slots[k].append(r['receive_student_number'])
 
         if len(key_slots[k]) > 1:
+            print(k)
             if ((len([s for s in key_slots[k] if s == 0]) > 0) and
                 (len([s for s in key_slots[k] if s > 0]) > 1)):
                 print('ERROR too many receive_student_number', r)
@@ -858,14 +859,8 @@ def main():
         if is_slots_combined:
             project_rows = combine_slots(project_rows)
         else:
-            if len(project_rows) > 1:
-                non_zero_count = len([r for r in project_rows if r['receive_student_number'] > 0])
-                if non_zero_count == 1:
-                    print('+++++++++++++ combine rows ++++++++++++++++++')
-                    mark_join_ids(project_rows, int(project_id)*100)
-                    mark_multiline_majors(project_rows, row_criterias)
-                else:
-                    print('--------- OK no need to combine --------')
+            mark_join_ids(project_rows, int(project_id)*100)
+            mark_multiline_majors(project_rows, row_criterias)
             
         all_rows += project_rows
         
