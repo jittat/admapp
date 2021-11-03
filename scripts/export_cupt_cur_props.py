@@ -804,6 +804,8 @@ def main():
     is_slots_combined = False
     is_admission_2 = False
     is_no_add_limits = False
+    inclusion_keywords = []
+    exclusion_keywords = []
          
     while project_ids[0].startswith('--'):
         if project_ids[0] == '--empty':
@@ -814,6 +816,14 @@ def main():
             is_admission_2 = True
         elif project_ids[0] == '--r12':
             is_no_add_limits = True
+        elif project_ids[0] == '--include':
+            inclusion_keywords = project_ids[1].split(',')
+            #print('Include:', inclusion_keywords)
+            del project_ids[0]
+        elif project_ids[0] == '--exclude':
+            exclusion_keywords = project_ids[1].split(',')
+            #print('Exclude:', exclusion_keywords)
+            del project_ids[0]
         else:
             print(f'Option unknown: {project_ids[0]}')
         del project_ids[0]
@@ -833,6 +843,12 @@ def main():
 
         project_rows = []
         row_criterias = []
+
+        if len(inclusion_keywords) != 0:
+            admission_criterias = [a for a in admission_criterias if a.required_score_criteria_includes(inclusion_keywords)]
+        if len(exclusion_keywords) != 0:
+            admission_criterias = [a for a in admission_criterias if a.required_score_criteria_exclude(exclusion_keywords)]
+        
         for admission_criteria in admission_criterias:
             curriculum_major_admission_criterias = admission_criteria.curriculummajoradmissioncriteria_set.select_related('curriculum_major').all()
 

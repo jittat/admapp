@@ -25,7 +25,7 @@ class AdmissionCriteria(models.Model):
             self.cached_score_criteria = self.scorecriteria_set.all()
         return [c for c in self.cached_score_criteria
                 if c.criteria_type==criteria_type and c.secondary_order==0]
-    
+
     def get_all_required_score_criteria(self):
         if getattr(self,'cached_required_score_criteria',None) == None:
             self.cached_required_score_criteria = list(self.get_all_score_criteria('required'))
@@ -36,6 +36,22 @@ class AdmissionCriteria(models.Model):
             self.cached_scoring_score_criteria = list(self.get_all_score_criteria('scoring'))
         return self.cached_scoring_score_criteria
 
+    def required_score_criteria_includes(self, conds):
+        criteria = self.get_all_required_score_criteria()
+        for c in criteria:
+            for cond in conds:
+                if cond in c.description:
+                    return True
+        return False
+    
+    def required_score_criteria_exclude(self, conds):
+        criteria = self.get_all_required_score_criteria()
+        for c in criteria:
+            for cond in conds:
+                if cond in c.description:
+                    return False
+        return True
+    
     def save_curriculum_majors(self, curriculum_major_admission_criterias=None):
         import json
         
