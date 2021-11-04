@@ -8,6 +8,8 @@ from datetime import datetime
 from appl.models import AdmissionProject, AdmissionRound, Faculty
 from criteria.models import AdmissionCriteria
 
+from export_major_criterias_as_json import score_vector_from_criterias
+
 FIELDS_STR = """
 program_id
 major_id
@@ -160,6 +162,112 @@ score_minimum
 """
 
 FIELDS = FIELDS_STR.strip().split()
+
+SCORING_FIELDS_STR = """
+cal_type
+cal_subject_name
+cal_score_sum
+t_score
+priority_score 
+min_total_score
+gpax
+gpa21
+gpa22
+gpa23
+gpa24
+gpa25
+gpa26
+gpa27
+gpa28
+gpa29
+gpa22_23
+gpa22_23_28
+gat
+gat1
+gat2
+pat1_pat2
+pat1
+pat2
+pat3
+pat4
+pat5
+pat6
+pat7
+pat7_1
+pat7_2
+pat7_3
+pat7_4
+pat7_5
+pat7_6
+pat7_7
+9sub_sum
+9sub_09
+9sub_19
+9sub_29
+9sub_39
+9sub_49
+9sub_59
+9sub_69
+9sub_89
+9sub_99
+vnet_51
+vnet_511
+vnet_512
+vnet_513
+vnet_514
+toefl_ibt
+toefl_pbt
+toefl_cbt
+toefl_ipt
+ielts
+toeic
+cutep
+tuget
+kept
+psutep
+kuept
+cmuetegs
+swu_set
+det
+mu_elt
+sat
+cefr
+ged_score
+cotmes_01
+cotmes_02
+cotmes_03
+mu001
+mu002
+mu003
+su001
+su002
+su003
+su004
+tu001
+tu002
+tu003
+tu004
+tu005
+tu061
+tu062
+tu071
+tu072
+tu081
+tu082
+tu091
+tu092
+netsat_math
+netsat_lang
+netsat_sci
+netsat_phy
+netsat_chem
+netsat_bio
+gsat
+gsat_l
+gsat_m
+"""
+
+SCORING_FIELDS = SCORING_FIELDS_STR.strip().split()
 
 SLOTS_FIELD_NAME = 'receive_student_number'
 
@@ -401,6 +509,37 @@ SCORE_TYPE_FIELD_MAP = {
     "PAT_7": 'min_pat7',
 }
 
+SCORING_EXAM_MAP = {
+    'GAT': 'gat',
+    'GAT_1': 'gat1',
+    'GAT_2': 'gat2',
+    'GPAX': 'gpax',
+    'PAT_7': 'pat7',
+    'PAT 7 (วิชาใดก็ได้)': 'pat7',
+    'PAT_1': 'pat1',
+    'PAT_2': 'pat2',
+    'PAT_3': 'pat3',
+    'PAT_4': 'pat4',
+    'PAT_5': 'pat5',
+    'PAT_7_1': 'pat7_1',
+    'PAT_7_2': 'pat7_2',
+    'PAT_7_3': 'pat7_3',
+    'PAT_7_4': 'pat7_4',
+    'PAT_7_5': 'pat7_5',
+    'PAT_7_6': 'pat7_6',
+    'PAT_7_7': 'pat7_7',
+    'UDAT_09': '9sub_09',
+    'UDAT_19': '9sub_19',
+    'UDAT_29': '9sub_29',
+    'UDAT_39': '9sub_39',
+    'UDAT_49': '9sub_49',
+    'UDAT_59': '9sub_59',
+    'UDAT_69': '9sub_69',
+    'UDAT_89': '9sub_89',
+    'UDAT_99': '9sub_99',
+    'VNET': 'vnet_51',
+}
+
 ADD_LIMITS_CONFIG = ""
 OLD_ADD_LIMITS_CONFIG = """C3	10020222900201A		C2700
 C3	10020222902501A		C2700
@@ -586,8 +725,6 @@ def min_score_vectors(admission_criteria, curriculum_major):
             print_error_line('3 TOO MANY ORs ', curriculum_major)
                 
         return [value_vectors]
-
-from export_major_criterias_as_json import score_vector_from_criterias
 
 def gen_rows(curriculum_major, slots, admission_criteria, admission_project, json_data=None):
     score_items_list = min_score_vectors(admission_criteria, curriculum_major)
@@ -859,6 +996,102 @@ def export_json(scoring_json_filename, json_data):
         f.write(json.dumps(data, indent=1))
 
 
+def export_scoring(scoring_filename, json_data):
+    F = [
+        'program_id',
+        'project_id',
+        'major_id',
+        'project_name_th',
+    ]
+    def filter_row_data(r):
+        return {
+            f: r[f]
+            for f in F
+        }
+
+    def gcds(ls):
+        i = 1
+        mn = min(ls)
+        for j in range(1,mn+1):
+            failed = False
+            for l in ls:
+                if (l % j) != 0:
+                    failed = True
+                    break
+            if not failed:
+                i = j
+        return i
+    
+    def normalize_percent(criterias):
+        g = gcds([c[1] for c in criterias])
+        total = sum([c[1] // g for c in criterias])
+        if total <= 100:
+            if 100 % total == 0:
+                f = 100 // total
+                return [(c[0], c[1] * f // g) for c in criterias]
+            else:
+                print('ERROR', g, total, criterias)
+                raise "can't translate"
+        else:
+            print('ERROR', criterias)
+            raise "can't translate"
+
+    def extract_max_exams(ex):
+        inside = ex[4:-1]
+        return inside.split(',')
+        
+    exam_set = set()
+        
+    rows = []
+    for data in json_data:
+        items = filter_row_data(data['row'])
+        items['type'] = '3_2565'
+
+        scoring_criterias = normalize_percent(data['scoring_criterias'])
+        print(data['row']['description'],
+              scoring_criterias)
+
+        #for ex,p in scoring_criterias:
+        #    exam_set.add(ex)
+        
+        for f in SCORING_FIELDS:
+            items[f] = 0
+
+            
+        max_count = 0
+        max_ex = ''
+        max_percent = 0
+        for ex,p in scoring_criterias:
+            if not ex.startswith('MAX'):
+                items[SCORING_EXAM_MAP[ex]] = p
+            else:
+                max_count += 1
+                max_ex = extract_max_exams(ex)
+                max_percent = p
+
+        if max_count > 1:
+            print('ERROR', scoring_criterias)
+            raise
+        elif max_count == 1:
+            items['cal_type'] = 1
+            items['cal_subject_name'] = '|'.join([SCORING_EXAM_MAP[ex] for ex in extract_max_exams(ex)])
+            items['cal_score_sum'] = max_percent
+            
+        rows.append(items)
+
+    #for ex in sorted(exam_set):
+    #    print(f"'{ex}': '',")
+        
+    fieldnames = ['type'] + F + SCORING_FIELDS
+
+    with open(scoring_filename, 'w', newline='') as csv_file:
+        writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+
+        writer.writeheader()
+        for r in rows:
+            writer.writerow(r)
+        
+
 def main():
     csv_filename = sys.argv[1]
     project_ids = sys.argv[2:]
@@ -873,6 +1106,7 @@ def main():
     post_processors = []
 
     scoring_json_filename = None
+    scoring_filename = None
     
     while project_ids[0].startswith('--'):
         if project_ids[0] == '--empty':
@@ -897,6 +1131,9 @@ def main():
             del project_ids[0]
         elif project_ids[0] == '--json':
             scoring_json_filename = project_ids[1]
+            del project_ids[0]
+        elif project_ids[0] == '--scoring':
+            scoring_filename = project_ids[1]
             del project_ids[0]
         else:
             print(f'Option unknown: {project_ids[0]}')
@@ -970,6 +1207,9 @@ def main():
 
     if scoring_json_filename:
         export_json(scoring_json_filename, json_data)
+
+    if scoring_filename:
+        export_scoring(scoring_filename, json_data)
 
 if __name__ == '__main__':
     main()
