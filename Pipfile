@@ -33,6 +33,7 @@ django-filter = "*"
 xlrd = "*"
 boto3 = "*"
 openpyxl = "*"
+pyyaml = "*"
 
 [requires]
 python_version = "3.8"

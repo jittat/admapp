@@ -587,8 +587,9 @@ def min_score_vectors(admission_criteria, curriculum_major):
                 
         return [value_vectors]
 
+from export_major_criterias_as_json import score_vector_from_criterias
 
-def gen_rows(curriculum_major, slots, admission_criteria, admission_project):
+def gen_rows(curriculum_major, slots, admission_criteria, admission_project, json_data=None):
     score_items_list = min_score_vectors(admission_criteria, curriculum_major)
 
     rows = []
@@ -641,6 +642,12 @@ def gen_rows(curriculum_major, slots, admission_criteria, admission_project):
                 items[f] = ADDITIONAL_FIELD_VALUE_KEY[additional_field_value_key][f]
             
         rows.append(items)
+
+        if json_data != None:
+            json_data.append({
+                'row': items,
+                'scoring_criterias': score_vector_from_criterias(admission_criteria, curriculum_major)
+            })
 
         first_row = False
 
@@ -795,7 +802,63 @@ def set_add_limits(row, admission_project):
     if k in ADD_LIMITS:
         #print('update add limits', k, ADD_LIMITS[k])
         row['receive_add_limit'] = ADD_LIMITS[k]
+
+def project_id_male_acceptance_update(r):
+    r['project_id'] = r['project_id'][:3] + '99'
+    r['project_name_th'] += '_รับเพศชาย'
+    return r
         
+POST_PROCESSORS = {
+    'male': project_id_male_acceptance_update,
+}
+
+def post_process(project_rows, post_processors):
+    if len(post_processors) != 0:
+        rows = []
+        for r in project_rows:
+            for f in post_processors:
+                r = f(r)
+            rows.append(r)
+        project_rows = rows
+    return project_rows
+
+    
+def filter_keywords(admission_criterias,
+                    inclusion_keywords,
+                    exclusion_keywords):
+    if len(inclusion_keywords) != 0:
+        admission_criterias = [a for a in admission_criterias if a.required_score_criteria_includes(inclusion_keywords)]
+    if len(exclusion_keywords) != 0:
+        admission_criterias = [a for a in admission_criterias if a.required_score_criteria_exclude(exclusion_keywords)]
+    return admission_criterias
+
+def export_json(scoring_json_filename, json_data):
+
+    def filter_row_data_for_json(r):
+        F = [
+            'program_id',
+            'project_id',
+            'major_id',
+            'description',
+        ]
+        return {
+            f: r[f]
+            for f in F
+        }
+
+    import json
+
+    data = []
+    for d in json_data:
+        data.append({
+            'row': filter_row_data_for_json(d['row']),
+            'scoring_criterias': d['scoring_criterias'],
+        })
+    
+    with open(scoring_json_filename,'w') as f:
+        f.write(json.dumps(data, indent=1))
+
+
 def main():
     csv_filename = sys.argv[1]
     project_ids = sys.argv[2:]
@@ -806,7 +869,11 @@ def main():
     is_no_add_limits = False
     inclusion_keywords = []
     exclusion_keywords = []
-         
+
+    post_processors = []
+
+    scoring_json_filename = None
+    
     while project_ids[0].startswith('--'):
         if project_ids[0] == '--empty':
             is_empty_criteria = True
@@ -824,12 +891,20 @@ def main():
             exclusion_keywords = project_ids[1].split(',')
             #print('Exclude:', exclusion_keywords)
             del project_ids[0]
+        elif project_ids[0] == '--postprocessing':
+            for f in project_ids[1].split(','):
+                post_processors.append(POST_PROCESSORS[f])
+            del project_ids[0]
+        elif project_ids[0] == '--json':
+            scoring_json_filename = project_ids[1]
+            del project_ids[0]
         else:
             print(f'Option unknown: {project_ids[0]}')
         del project_ids[0]
     
     all_rows = []
-
+    json_data = []
+    
     for project_id in project_ids:
         admission_project = AdmissionProject.objects.get(pk=project_id)
 
@@ -844,10 +919,9 @@ def main():
         project_rows = []
         row_criterias = []
 
-        if len(inclusion_keywords) != 0:
-            admission_criterias = [a for a in admission_criterias if a.required_score_criteria_includes(inclusion_keywords)]
-        if len(exclusion_keywords) != 0:
-            admission_criterias = [a for a in admission_criterias if a.required_score_criteria_exclude(exclusion_keywords)]
+        admission_criterias = filter_keywords(admission_criterias,
+                                              inclusion_keywords,
+                                              exclusion_keywords)
         
         for admission_criteria in admission_criterias:
             curriculum_major_admission_criterias = admission_criteria.curriculummajoradmissioncriteria_set.select_related('curriculum_major').all()
@@ -859,7 +933,7 @@ def main():
                 if is_empty_criteria:
                     row_criteria = None
                 
-                rows = gen_rows(curriculum_major, mc.slots, row_criteria, admission_project)
+                rows = gen_rows(curriculum_major, mc.slots, row_criteria, admission_project, json_data)
 
                 for row in rows:
                     set_add_limits(row, admission_project)
@@ -877,7 +951,9 @@ def main():
         else:
             mark_join_ids(project_rows, int(project_id)*100)
             mark_multiline_majors(project_rows, row_criterias)
-            
+
+        project_rows = post_process(project_rows, post_processors)
+
         all_rows += project_rows
         
     for d in set(all_missing_descriptions):
@@ -892,6 +968,8 @@ def main():
         for r in all_rows:
             writer.writerow(r)
 
+    if scoring_json_filename:
+        export_json(scoring_json_filename, json_data)
 
 if __name__ == '__main__':
     main()

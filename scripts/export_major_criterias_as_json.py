@@ -4,10 +4,11 @@ bootstrap()
 import sys
 import csv
 import json
-import yaml
 import copy
 from datetime import datetime
 
+import yaml
+    
 from appl.models import AdmissionProject, AdmissionRound, Faculty
 from criteria.models import AdmissionCriteria
 
@@ -184,7 +185,12 @@ def load_score_type_tags(filename):
     global SCORE_TYPE_REVERSE_MAP
     global PROJECT_SCORE_TYPE_REVERSE_MAP
     
-    raw_tags = yaml.load(open(filename).read())
+    try:
+        from yaml import CLoader as Loader, CDumper as Dumper
+    except ImportError:
+        from yaml import Loader, Dumper
+
+    raw_tags = yaml.load(open(filename).read(), Loader=Loader)
     output_tags = []
     project_tags = {}
     
@@ -475,8 +481,9 @@ def score_vector_from_criterias(admission_criteria, curriculum_major):
             for cc in c[2][1:]:
                 fix_score_type(cc, curriculum_major)
 
+
     print_scoring = False
-                
+
     results = []
     for s in score_criterias:
         percent = s[0][0]
