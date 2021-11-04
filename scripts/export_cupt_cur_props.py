@@ -323,6 +323,34 @@ PROJECT_TYPES = {
     'C2800': '3_2565',
 }
 
+ADDITIONAL_PROJECT_MAP = {
+    'C2851': 'ใช้คะแนน GAT/PAT',
+    'C2852': 'ใช้คะแนน 9 วิชาสามัญ',
+    'C2853': 'ใช้คะแนน GAT/PAT และ 9 วิชาสามัญ',
+    'C2854': 'ใช้คะแนน VNET',
+}
+
+MULTILINE_NOTE_MAP = {
+    4099: 'C2851',
+    4097: 'C2851',
+    4098: 'C2852',
+    4096: 'C2852',
+    
+    3763: 'C2851',
+    4067: 'C2852',
+
+    4190: 'C2853',
+    3658: 'C2854',
+
+    3857: 'C2851',
+    3856: 'C2853',
+
+    3843: 'C2851',
+    3849: 'C2851',
+    3844: 'C2852',
+    3848: 'C2852',
+}
+
 SCORE_TYPE_TAGS = [
     #{ "score_type": "GPAX_5_SEMESTER", "description": "ผลการเรียนเฉลี่ยสะสม (GPAX) 5 ภาคเรียน", "unit": "" },
     { "score_type": "GPAX", "description": "ผลการเรียนเฉลี่ยสะสม (GPAX)", "unit": "" },
@@ -747,6 +775,9 @@ def gen_rows(curriculum_major, slots, admission_criteria, admission_project, jso
         if admission_criteria and admission_criteria.additional_condition != '':
             items['condition'] = admission_criteria.additional_condition
 
+        if admission_criteria and admission_criteria.additional_interview_condition != '':
+            items['condition'] += admission_criteria.additional_interview_condition
+
         if first_row:
             items['receive_student_number'] = slots
         else:
@@ -840,6 +871,17 @@ def mark_multiline_majors(project_rows, row_criterias):
     for r,c in zip(project_rows, row_criterias):
         k = row_key(r)
         if key_counts[k] > 1:
+            if c.id in MULTILINE_NOTE_MAP:
+                project_id = MULTILINE_NOTE_MAP[c.id]
+                r['project_id'] = project_id
+                r['project_name_th'] += ' ' + ADDITIONAL_PROJECT_MAP[project_id]
+                r['description'] += f' ({ADDITIONAL_PROJECT_MAP[project_id]})'
+                if r['condition'] == '':
+                    r['condition'] = f'{ADDITIONAL_PROJECT_MAP[project_id]}'
+                else:
+                    r['condition'] += f' ({ADDITIONAL_PROJECT_MAP[project_id]})'
+                continue
+                
             if k not in project_id_counter:
                 project_id_counter[k] = 0
             else:
