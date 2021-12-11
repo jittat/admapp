@@ -39,6 +39,7 @@ SPORT_CHOICES = [
     'เพาะกาย',
     'ปีนหน้าผา',
     'ปันจักสีลัต',
+    'เรือใบ',
 ]
 
 class SportTypeForm(forms.Form):

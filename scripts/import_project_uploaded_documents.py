@@ -28,6 +28,10 @@ def main():
         for items in lines[1:]:
             if items[0].strip() == '':
                 continue
+
+            if items[0].strip().startswith('-'):
+                continue
+            
             document_key = items[3]
 
             old_documents = ProjectUploadedDocument.objects.filter(document_key=document_key).all()

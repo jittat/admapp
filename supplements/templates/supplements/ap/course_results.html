@@ -9,11 +9,13 @@
       </tr>
     </thead>
     {% for course in block_context.courses %}
-      <tr>
-        <td>{{ course.subject_id }}</td>
-        <td>{{ course.get_course_title_display }}</td>
-        <td>{{ course.grade }}</td>
-      </tr>
+      {% if course.grade != '-' %}
+	<tr>
+          <td>{{ course.subject_id }}</td>
+          <td>{{ course.get_course_title_display }}</td>
+          <td>{{ course.grade }}</td>
+	</tr>
+      {% endif %}
     {% endfor %}
   </table>
   <small class="text-muted d-none">ผลการเรียนของรุ่น 14/2 ยังไม่แสดงในตาราง</small>
