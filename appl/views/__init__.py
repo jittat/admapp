@@ -54,6 +54,17 @@ def load_supplement_blocks(request, applicant, admission_project, admission_roun
                                                              config))
     return supplement_blocks    
 
+DOCUMENT_CONDITIONS = {
+    1: (['ele-port','ele-link'],
+        'ยังไม่ได้อัพโหลดประวัติผลงานหรือลิงก์ผลงาน'),
+    3: (['inter-port','inter-link'],
+        'ยังไม่ได้อัพโหลดประวัติผลงานหรือลิงก์ผลงาน'),
+    8: (['dpst-port','dpst-link'],
+        'ยังไม่ได้อัพโหลดประวัติผลงานหรือลิงก์ผลงาน'),
+    9: (['posn-port','posn-link'],
+        'ยังไม่ได้อัพโหลดประวัติผลงานหรือลิงก์ผลงาน'),
+}
+
 def check_project_documents(applicant,
                             admission_project,
                             supplement_configs,
@@ -66,6 +77,18 @@ def check_project_documents(applicant,
             status = False
             errors.append('ยังไม่ได้อัพโหลด' + d.title)
 
+    if admission_project.id in DOCUMENT_CONDITIONS:
+        orkeys = DOCUMENT_CONDITIONS[admission_project.id][0]
+        msg = DOCUMENT_CONDITIONS[admission_project.id][1]
+
+        status = False
+        for d in project_uploaded_documents:
+            if (d.document_key in orkeys) and (len(d.applicant_uploaded_documents) > 0):
+                status = True
+
+        if not status:
+            errors.append(msg)
+        
     for c in supplement_configs:
         if callable(c.is_required):
             is_required = c.is_required(applicant,
