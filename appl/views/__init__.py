@@ -31,7 +31,19 @@ def prepare_uploaded_document_forms(applicant, project_uploaded_documents):
         d.form = upload_form_for(d)
         d.applicant_uploaded_documents = d.get_uploaded_documents_for_applicant(applicant)
 
-
+def prepare_old_uploaded_documents(applicant, project_uploaded_documents):
+    if not hasattr(applicant, 'olduploadeddocument_cache'):
+        applicant.olduploadeddocument_cache = {} 
+        for odoc in applicant.olduploadeddocument_set.all():
+            if odoc.project_uploaded_document_id not in applicant.olduploadeddocument_cache:
+                applicant.olduploadeddocument_cache[odoc.project_uploaded_document_id] = [odoc]
+            else:
+                applicant.olduploadeddocument_cache[odoc.project_uploaded_document_id].append(odoc)
+        
+    for d in project_uploaded_documents:
+        if d.id in applicant.olduploadeddocument_cache:
+            d.old_applicant_uploaded_documents = applicant.olduploadeddocument_cache[d.id]
+        
 def prepare_project_eligibility_and_detes(projects,
                                           admission_round,
                                           applicant):
@@ -81,13 +93,14 @@ def check_project_documents(applicant,
         orkeys = DOCUMENT_CONDITIONS[admission_project.id][0]
         msg = DOCUMENT_CONDITIONS[admission_project.id][1]
 
-        status = False
+        or_status = False
         for d in project_uploaded_documents:
             if (d.document_key in orkeys) and (len(d.applicant_uploaded_documents) > 0):
-                status = True
+                or_status = True
 
-        if not status:
+        if not or_status:
             errors.append(msg)
+            status = False
         
     for c in supplement_configs:
         if callable(c.is_required):
@@ -138,6 +151,10 @@ def index_with_active_application(request, active_application, admission_round=N
     prepare_uploaded_document_forms(applicant, common_uploaded_documents)
     prepare_uploaded_document_forms(applicant, project_uploaded_documents)
 
+    # messages for broken uploads
+    prepare_old_uploaded_documents(applicant, common_uploaded_documents)
+    prepare_old_uploaded_documents(applicant, project_uploaded_documents)
+
     major_selection = active_application.get_major_selection()
 
     supplement_configs = load_supplement_configs_with_instance(applicant,
@@ -161,6 +178,7 @@ def index_with_active_application(request, active_application, admission_round=N
                                                         admission_project,
                                                         supplement_configs,
                                                         list(common_uploaded_documents) + list(project_uploaded_documents))
+    print(documents_complete_status)
         
     admission_projects = []
     has_confirmed = False

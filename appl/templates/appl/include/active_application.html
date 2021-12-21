@@ -26,6 +26,15 @@
   {% endif %}
 {% endif %}
 
+{% if not documents_complete_status.status %}
+  {% if paid_amount > 0 %}
+    <div class="alert alert-warning app-incomplete-warnings">
+      <h2><span class="badge badge-danger">การสมัครยังไม่สมบูรณ์</span></h2>
+      <b>สาเหตุ:</b> เอกสารที่อัพโหลดยังไม่ครบถ้วน --- ทางทีมงานระบบรับสมัครต้องขออภัยถ้าผู้สมัครนำเข้าข้อมูลครบถ้วนแล้ว แต่เนื่องจากปัญหาระบบบันทึกข้อมูลของระบบเสียหายในวันที่ 20 ธ.ค. 64 ทางทีมงานต้องขอรบกวนให้ผู้สมัครอัพโหลดเอกสารอีกครั้ง ทีมงานต้องขออภัยอย่างที่สุดอีกครั้ง
+    </div>
+  {% endif %}
+{% endif %}
+
 {% if accepted_result_shown %}
   {% include 'appl/include/project_accepted_result.html' %}
 {% else %}
@@ -65,6 +74,7 @@
   </div>
   {% if project_uploaded_documents %}
     <div class="col-md-7">
+      {% include 'appl/include/old_document_upload_list.html' %}
       <h4>{% trans 'อัพโหลดเอกสาร' %}</h4>
       <div class="all-document-upload-forms">
         {% for project_uploaded_document in project_uploaded_documents %}

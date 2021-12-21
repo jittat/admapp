@@ -453,6 +453,23 @@ class UploadedDocument(models.Model):
             return False
 
         
+class OldUploadedDocument(models.Model):
+    applicant = models.ForeignKey(Applicant,
+                                  on_delete=models.CASCADE)
+    project_uploaded_document = models.ForeignKey(ProjectUploadedDocument,
+                                                  on_delete=models.CASCADE,
+                                                  related_name='old_uploaded_document_set')
+    rank = models.IntegerField()
+    detail = models.CharField(default='', blank=True, max_length=200)
+
+    uploaded_file = models.FileField(upload_to=applicant_document_path,
+                                     blank=True)
+    original_filename = models.CharField(max_length=200,
+                                         blank=True)
+    
+    document_url = models.URLField(blank=True)
+
+
 class Province(models.Model):
     title = models.CharField(max_length=30)
 
