@@ -34,8 +34,8 @@ def main():
             
     for id in app_ids:
         a = Applicant.objects.get(pk=id)
-        print(a.email)
-        send_mail_to_applicant(a, subject, body_template.format(fullname=a.first_name + ' ' + a.last_name))
+        print("{},{}".format(a.email, a.first_name + ' ' + a.last_name))
+        #send_mail_to_applicant(a, subject, body_template.format(fullname=a.first_name + ' ' + a.last_name))
 
         
 if __name__ == '__main__':
