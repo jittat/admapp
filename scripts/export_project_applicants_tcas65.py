@@ -62,29 +62,32 @@ def print_csv_line(applicant, application, personal_profile, app_date, cupt_majo
         'project_id': cupt_major['project_id'],
         'type': app_type,
         'citizen_id': '',
-        'gnumber': '',
-        'passport': '',
+        #'gnumber': '',
+        #'passport': '',
         'title': applicant.prefix,
         'first_name_th': applicant.first_name,
         'last_name_th': applicant.last_name,
         'first_name_en': personal_profile.first_name_english,
         'last_name_en': personal_profile.last_name_english,
         'priority': 0,
-        'application_id': application.get_number(),
-        'application_date': app_date,
-        'tcas_id': tcas_id,
+        #'application_id': application.get_number(),
+        #'application_date': app_date,
+        #'tcas_id': tcas_id,
         'ranking': ranking,
         'score': 0,
-        'interview_status': interview_status,
-        'interview_description': interview_description,
-        'status': 0,
+        #'interview_status': interview_status,
+        #'interview_description': interview_description,
+        #'status': 0,
+        'tcas_status': 0,
+        'applicant_status': 1,
+        'interview_reason': '',
     }
 
     if not applicant.has_registered_with_passport():
         data['citizen_id'] = applicant.national_id
         data['first_name_en'] = data['last_name_en'] = ''
     else:
-        data['passport'] = applicant.passport_number
+        data['citizen_id'] = applicant.passport_number
         data['first_name_th'] = data['last_name_th'] = ''
     
     print(','.join(['"'+str(data[h])+'"' for h in header]))
@@ -153,26 +156,26 @@ def main():
               'project_id',
               'type',
               'citizen_id',
-              'gnumber',
-              'passport',
+              #'gnumber',
+              #'passport',
               'title',
               'first_name_th',
               'last_name_th',
               'first_name_en',
               'last_name_en',
               'priority',
-              'application_id',
-              'application_date',
-              'tcas_id',
+              #'application_id',
+              #'application_date',
+              #'tcas_id',
               'ranking',
               'score',
-              'interview_status',
-              'interview_description',
-              'status',]
+              'tcas_status',
+              'applicant_status',
+              'interview_reason',]
 
     print(','.join(header))
     
-    app_type = '1_2564'
+    app_type = '1_2565'
     
     for app in project_applications:
         if app.has_paid():
