@@ -114,7 +114,7 @@
               </td>
             {% endfor %}
             {% if applicant_info_viewable %}
-              <td class="d-none">
+              <td class="xx-none">
                 {% if user_major_number == any_major or user_major_number == major.number %}
                   <a class="btn btn-sm btn-outline-secondary" href="{% url 'backoffice:projects-list-applicants-for-acceptance-calls' project.id admission_round.id major.number %}">กรอกผลสัมภาษณ์</a>
                 {% endif %}
