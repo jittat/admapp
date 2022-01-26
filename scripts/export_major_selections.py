@@ -18,9 +18,12 @@ def main():
 
     for app in project_applications:
         if app.has_paid():
-            items = [app.applicant.national_id]
-            items += app.major_selection.get_major_numbers()
-            print(','.join([str(x) for x in items]))
+            try:
+                items = [app.applicant.national_id]
+                items += app.major_selection.get_major_numbers()
+                print(','.join([str(x) for x in items]))
+            except:
+                pass
         
 
 if __name__ == '__main__':
