@@ -27,7 +27,7 @@ DESCRIPTION_CHOICES = {
 def main():
     filename = sys.argv[1]
     counter = 0
-    admission_round = AdmissionRound.objects.get(pk=2)
+    admission_round = AdmissionRound.objects.get(pk=1)
     
     with open(filename) as csvfile:
         reader = csv.reader(csvfile, delimiter=',')
@@ -38,8 +38,14 @@ def main():
 
             project_id = int(items[0])
             major_number = int(items[1])
-            major = Major.objects.filter(admission_project_id=project_id,
-                                         number=major_number)[0]
+            majors = Major.objects.filter(admission_project_id=project_id,
+                                         number=major_number)
+
+            if len(majors) == 0:
+                print('MAJOR NOT FOUND', major_number)
+                continue
+            
+            major = majors[0]
 
             old_descs = MajorInterviewDescription.objects.filter(major=major).all()
             if len(old_descs) > 0:
