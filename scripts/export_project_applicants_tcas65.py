@@ -51,7 +51,7 @@ def load_major_map(map_files):
     return major_map
 
 def print_csv_line(applicant, application, personal_profile, app_date, cupt_major,
-                   app_type, tcas_id, ranking, interview_status, interview_description,
+                   app_type, tcas_id, ranking, applicant_status, interview_description,
                    header):
     university_id = '002'
 
@@ -79,16 +79,16 @@ def print_csv_line(applicant, application, personal_profile, app_date, cupt_majo
         #'interview_description': interview_description,
         #'status': 0,
         'tcas_status': 0,
-        'applicant_status': 1,
-        'interview_reason': '',
+        'applicant_status': applicant_status,
+        'interview_reason': '0',
     }
 
     if not applicant.has_registered_with_passport():
         data['citizen_id'] = applicant.national_id
-        data['first_name_en'] = data['last_name_en'] = ''
+        #data['first_name_en'] = data['last_name_en'] = ''
     else:
         data['citizen_id'] = applicant.passport_number
-        data['first_name_th'] = data['last_name_th'] = ''
+        #data['first_name_th'] = data['last_name_th'] = ''
     
     print(','.join(['"'+str(data[h])+'"' for h in header]))
 
@@ -137,9 +137,9 @@ def main():
     if '--accepted' in sys.argv:
         only_accepted = True
 
-    with_interview_status = False
-    if '--interview_status' in sys.argv:
-        with_interview_status = True
+    with_applicant_status = False
+    if '--applicant_status' in sys.argv:
+        with_applicant_status = True
 
     project = AdmissionProject.objects.get(pk=project_id)
     admission_round = AdmissionRound.objects.get(pk=round_id)
@@ -228,20 +228,22 @@ def main():
                             'project_id': project.cupt_code,
                         })
 
-                interview_status = '0'
-                if with_interview_status:
+                applicant_status = '1'
+                if with_applicant_status:
                     if not result:
                         result = get_admission_result(app, project, admission_round, m)
 
                     if result and result.is_accepted:
-                        interview_status = '1'
+                        applicant_status = '2'
+                    else:
+                        applicant_status = '3'
                 
                 for cupt_major in cupt_majors:
                     print_csv_line(applicant, app, profile,
                                    app_date, cupt_major,
                                    app_type,
                                    '0','0',
-                                   interview_status,
+                                   applicant_status,
                                    '0',
                                    header)
 
