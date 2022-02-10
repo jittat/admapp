@@ -30,7 +30,7 @@ def main():
         slot.confirmed_slots = confirmed_count[cupt_id]
         slot.save()
 
-        print(slot)
+        print(confirmed_count[cupt_id], slot)
         
 
 if __name__ == '__main__':
