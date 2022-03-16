@@ -810,6 +810,7 @@ class MajorSelection(models.Model):
             pass
 
         self.majors = []
+
         if self.admission_project_id != None:
             for num in self.major_list.split(','):
                 if major_dict:
