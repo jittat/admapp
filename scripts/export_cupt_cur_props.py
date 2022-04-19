@@ -719,11 +719,14 @@ def min_score_vector_from_criterias(score_criterias, curriculum_major):
 
     if score_criterias == []:
         return value_vectors
-            
+
     is_error = False
     for c in score_criterias:
         score_type, this_error = normalize_score_type(c)
 
+        if curriculum_major.cupt_code.program_code == '10020104210403E':
+            print(">>>", score_type, this_error, c.value)
+            
         if c.value != None and c.value > 0:
             if not this_error:
                 value_vectors[SCORE_TYPE_FIELD_MAP[score_type]] = float(c.value)

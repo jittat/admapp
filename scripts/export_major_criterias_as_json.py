@@ -428,6 +428,9 @@ def score_vector_from_criterias(admission_criteria, curriculum_major):
                 child_total = sum([child.value for child in c.childs.all()])
             elif c.relation == 'MAX':
                 child_total = 1
+            else:
+                print_error('**** ERROR bad relation', curriculum_major, c.relation)
+                child_total = 0
             if child_total == 0:
                 # print('*** CHILD ERROR *** total = 0', curriculum_major)
                 child_total = 1
@@ -467,7 +470,7 @@ def score_vector_from_criterias(admission_criteria, curriculum_major):
             else:
                 print_error('Error type:', c.relation)
                 for child in c.childs.all():
-                    print(f"    - {child}")
+                    print_error(f"    - {child}")
                 is_error = True
         else:
             score_criterias.append(((int(c.value) * this_weight_scale, main_total),

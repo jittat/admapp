@@ -15,6 +15,9 @@ main/static/react/node_modules/*
 /scripts/notebooks/private*
 /scripts/notebooks/.ipynb_checkpoints
 
+/scripts/*.xlsx
+/scripts/*.csv
+
 .vscode
 .python-version
 .DS_Store
