@@ -44,6 +44,8 @@ def main():
             sc.exam_round = items[4]
             sc.exam_list = exam_list
             sc.score_list = ','.join(items[5:])
+            if sc.score_list.startswith(',,0,'):
+                continue
             sc.save()
 
             counter += 1
