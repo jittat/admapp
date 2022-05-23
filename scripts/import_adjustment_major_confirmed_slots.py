@@ -25,12 +25,19 @@ def main():
             confirmed_count[cupt_id] += 1
 
     for cupt_id in confirmed_count.keys():
-        print(cupt_id)
-        slot = AdjustmentMajorSlot.objects.get(cupt_code=cupt_id)
-        slot.confirmed_slots = confirmed_count[cupt_id]
-        slot.save()
+        #print(cupt_id)
+        try:
+            slot = AdjustmentMajorSlot.objects.get(cupt_code=cupt_id)
+        except:
+            slot = None
 
-        print(confirmed_count[cupt_id], slot)
+        if slot != None:
+            slot.confirmed_slots = confirmed_count[cupt_id]
+            slot.save()
+        else:
+            print('ERROR', cupt_id, confirmed_count[cupt_id])
+
+        #print(confirmed_count[cupt_id], slot)
         
 
 if __name__ == '__main__':
