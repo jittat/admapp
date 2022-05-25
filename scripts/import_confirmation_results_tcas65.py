@@ -16,7 +16,8 @@ from backoffice.views.projects import update_interview_call_status
 
 
 def main():
-    round_id = sys.argv[1]
+    round_id = int(sys.argv[1])
+    admission_round = AdmissionRound.objects.get(pk=round_id)
 
     result_filename = sys.argv[2]
 
@@ -45,14 +46,15 @@ def main():
                 applicant = None
                 
             if not applicant:
-                # print('Applicant not found', nat_id, passport, row['first_name_th'])
+                #print('Applicant not found', nat_id, passport, row['first_name_th'])
                 continue
             
             admission_results = AdmissionResult.objects.filter(applicant=applicant).all()
-            accepted_results = [res for res in admission_results if res.is_accepted]
+            accepted_results = [res for res in admission_results if res.is_accepted and res.admission_round_id == round_id]
 
             if len(accepted_results) != 1:
-                # print('ERROR accepted results', accepted_results)
+                if len(accepted_results) != 0:
+                    print('ERROR accepted results', accepted_results)
                 continue
 
             admission_result = accepted_results[0]
@@ -65,15 +67,16 @@ def main():
                     applicant.confirmed_application = application
                     applicant.save()
             else:
-                admission_result.has_confirmed = False
-                if not is_fake:
-                    admission_result.save()
-                    try:
-                        if applicant.confirmed_application != None:
-                            applicant.confirmed_application = None
-                            applicant.save()
-                    except:
-                        print('error clearing confirmed app')
+                pass
+                #admission_result.has_confirmed = False
+                #if not is_fake:
+                #    admission_result.save()
+                #    try:
+                #        if applicant.confirmed_application != None:
+                #            applicant.confirmed_application = None
+                #            applicant.save()
+                #    except:
+                #        print('error clearing confirmed app')
 
             counter += 1
             if decision == '3':
