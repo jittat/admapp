@@ -122,7 +122,7 @@
               <td class="xx-none">
                 {% if user_major_number == any_major or user_major_number == major.number %}
                   {% if major.has_any_applications and applicant_score_viewable %}
-                    <a target="_blank" class="d-none btn btn-sm btn-outline-secondary" href="{% url 'backoffice:projects-show-scores' project.id admission_round.id major.number %}">เรียกสัมภาษณ์</a>
+                    <a target="_blank" class="xx-none btn btn-sm btn-outline-secondary" href="{% url 'backoffice:projects-show-scores' project.id admission_round.id major.number %}">เรียกสัมภาษณ์</a>
                   {% endif %}
                   <a target="_blank" class="xx-none btn btn-sm btn-outline-secondary" href="{% url 'backoffice:projects-show-applicant' project.id admission_round.id major.number 1 %}">พิจารณาผู้สมัคร</a>
                 {% endif %}
