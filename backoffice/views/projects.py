@@ -1155,6 +1155,7 @@ def show_scores(request, project_id, round_id, major_number):
         22: [3],
         23: [1, 3],
         26: [1],
+        31: [25, 28, 29, 32, 33, 34, 35, 37, 40, 41, 44, 48],
     }
 
     if project.id in UDAT_USAGES:
