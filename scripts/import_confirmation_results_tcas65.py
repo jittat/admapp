@@ -60,7 +60,7 @@ def main():
             admission_result = accepted_results[0]
             application = admission_result.application
 
-            if decision == '3':
+            if (decision == '3') or (decision == 'ยืนยันสิทธิ์'):
                 admission_result.has_confirmed = True
                 if not is_fake:
                     admission_result.save()
@@ -79,7 +79,7 @@ def main():
                 #        print('error clearing confirmed app')
 
             counter += 1
-            if decision == '3':
+            if (decision == '3') or (decision == 'ยืนยันสิทธิ์'):
                 print(counter, decision, admission_result.has_confirmed, applicant)
             
             if counter % 1000 == 0:
