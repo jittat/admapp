@@ -82,11 +82,14 @@ def main():
                 values['major_title'] = ''
             
             program_code = values['program_code']
+
+            if not program_code.startswith('1002'):
+                print('PROGRAM CODE ERROR', program_code)
+                quit()
+
             major_code = values['major_code']
             old_codes = MajorCuptCode.objects.filter(program_code=program_code,
                                                      major_code=major_code).all()
-
-            print(faculty_name, values)
 
             if len(old_codes) != 0:
                 major_cupt_code = old_codes[0]
