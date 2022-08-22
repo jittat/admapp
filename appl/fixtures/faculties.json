@@ -348,5 +348,15 @@
   "ku_code": "",
   "cupt_code": ""
  }
+},
+{
+ "model": "appl.faculty",
+ "pk": 36,
+ "fields": {
+  "title": "คณะอุตสาหกรรมบริการ",
+  "campus": 2,
+  "ku_code": "",
+  "cupt_code": ""
+ }
 }
 ]
