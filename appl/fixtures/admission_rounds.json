@@ -1,62 +1,62 @@
 [
 {
- "model": "appl.admissionround",
- "pk": 1,
- "fields": {
-  "number": 1,
-  "subround_number": 0,
-  "rank": 1,
-  "short_descriptions": "Portfolio",
-  "admission_dates": "ธ.ค. 64 - ม.ค. 65",
-  "is_available": false,
-  "is_application_available": false,
-  "clearing_house_description": "",
-  "clearing_house_dates": ""
- }
+  "model": "appl.admissionround",
+  "pk": 1,
+  "fields": {
+    "number": 1,
+    "subround_number": 0,
+    "rank": 1,
+    "short_descriptions": "Portfolio",
+    "admission_dates": "ธ.ค. 65 - ม.ค. 66",
+    "is_available": false,
+    "is_application_available": false,
+    "clearing_house_description": "",
+    "clearing_house_dates": ""
+  }
 },
 {
- "model": "appl.admissionround",
- "pk": 2,
- "fields": {
-  "number": 2,
-  "subround_number": 0,
-  "rank": 2,
-  "short_descriptions": "Quota",
-  "admission_dates": "ก.พ. - มี.ค. 65",
-  "is_available": false,
-  "is_application_available": false,
-  "clearing_house_description": "",
-  "clearing_house_dates": ""
- }
+  "model": "appl.admissionround",
+  "pk": 2,
+  "fields": {
+    "number": 2,
+    "subround_number": 0,
+    "rank": 2,
+    "short_descriptions": "Quota",
+    "admission_dates": "ก.พ. - เม.ย. 66",
+    "is_available": false,
+    "is_application_available": false,
+    "clearing_house_description": "",
+    "clearing_house_dates": ""
+  }
 },
 {
- "model": "appl.admissionround",
- "pk": 3,
- "fields": {
-  "number": 3,
-  "subround_number": 0,
-  "rank": 3,
-  "short_descriptions": "Admission",
-  "admission_dates": "พ.ค. 65",
-  "is_available": false,
-  "is_application_available": false,
-  "clearing_house_description": "",
-  "clearing_house_dates": ""
- }
+  "model": "appl.admissionround",
+  "pk": 3,
+  "fields": {
+    "number": 3,
+    "subround_number": 0,
+    "rank": 3,
+    "short_descriptions": "Admission",
+    "admission_dates": "พ.ค. 66",
+    "is_available": false,
+    "is_application_available": false,
+    "clearing_house_description": "",
+    "clearing_house_dates": ""
+  }
 },
 {
- "model": "appl.admissionround",
- "pk": 4,
- "fields": {
-  "number": 4,
-  "subround_number": 0,
-  "rank": 4,
-  "short_descriptions": "Direct Admission",
-  "admission_dates": "ปลาย พ.ค. 65",
-  "is_available": false,
-  "is_application_available": false,
-  "clearing_house_description": "",
-  "clearing_house_dates": ""
- }
+  "model": "appl.admissionround",
+  "pk": 4,
+  "fields": {
+    "number": 4,
+    "subround_number": 0,
+    "rank": 4,
+    "short_descriptions": "Direct Admission",
+    "admission_dates": "ปลาย พ.ค. 66",
+    "is_available": false,
+    "is_application_available": false,
+    "clearing_house_description": "",
+    "clearing_house_dates": ""
+  }
 }
 ]
