@@ -3,6 +3,13 @@ from django.db import models
 from appl.models import AdmissionProject, AdmissionRound, ProjectApplication
 from appl.models import Major, Faculty
 
+student_curriculum_type_choices = {
+    1: ('formal','รร.หลักสูตรแกนกลาง'),
+    2: ('international','รร.หลักสูตรนานาชาติ'),
+    3: ('vocational','รร.หลักสูตรอาชีวะ'),
+    4: ('non_formal','รร.หลักสูตรตามอัธยาศัย (กศน.)'),
+    5: ('ged','รร.หลักสูตร GED'),
+}
 
 class AdmissionCriteria(models.Model):
     admission_project = models.ForeignKey(AdmissionProject,
@@ -17,6 +24,8 @@ class AdmissionCriteria(models.Model):
     additional_description = models.CharField(max_length=100, blank=True)
     additional_condition = models.CharField(max_length=500, blank=True)
     additional_interview_condition = models.TextField(blank=True)
+
+    accepted_student_curriculum_type_flags = models.CharField(max_length=10, blank=True)
     
     curriculum_majors_json = models.TextField(blank=True) 
 
@@ -255,5 +264,8 @@ class CurriculumMajorAdmissionCriteria(models.Model):
         CurriculumMajor, on_delete=models.CASCADE)
     admission_criteria = models.ForeignKey(
         AdmissionCriteria, on_delete=models.CASCADE)
+    
     slots = models.IntegerField()
+    add_limit = models.CharField(max_length=10, blank=True)
+
     version = models.IntegerField(default=1)
