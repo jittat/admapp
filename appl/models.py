@@ -134,6 +134,10 @@ class AdmissionProject(models.Model):
 
     is_custom_score_criteria_allowed = models.BooleanField(default=True,
                                                            verbose_name='อนุญาตให้ป้อนเงื่อนไขได้อย่างอิสระ')
+    is_custom_curriculum_type_allowed = models.BooleanField(default=False,
+                                                            verbose_name='อนุญาตให้แก้ไขประเภทหลักสูตรโรงเรียนได้')
+    is_custom_add_limit_criteria = models.BooleanField(default=False,
+                                                       verbose_name='ให้ระบุจำนวนรับเพิ่มในกรณีที่ผู้สมัครเกินและมีคะแนนเท่ากัน')
     is_criteria_edit_allowed = models.BooleanField(default=True,
                                                    verbose_name='อนุญาตให้ผู้ดูแลโครงการแก้ไขเงื่อนไขการรับ')
     
