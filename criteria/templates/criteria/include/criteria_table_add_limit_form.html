@@ -1,0 +1,20 @@
+<a href="#" class="badge badge-info add-limit-forms-toggle" data-mid="{{ majorcriteria.id }}"><i class="fa fa-pencil"></i> limit</a>
+<div class="add-limit-forms border rounded bg-white p-1" style="display:none;" id="add-limit-id-{{ majorcriteria.id }}">
+  <small>
+    รูปแบบการรับในกรณีที่ผู้ที่ได้คะแนนอันดับสุดท้ายเกินจำนวนรับ<br>
+    <select id="add-limit-select-id-{{ majorcriteria.id }}" class="add-limit-type-selects" data-mid="{{ majorcriteria.id }}">
+      <option {% if majorcriteria.add_limit_type_display == 'A' %}selected{% endif %} value="A">A - รับทั้งหมด</option>
+      <option {% if majorcriteria.add_limit_type_display == 'B' %}selected{% endif %} value="B">B - ไม่รับทั้งหมด</option>
+      <option {% if majorcriteria.add_limit_type_display == 'C' %}selected{% endif %} value="C">C - รับเพิ่มไม่เกินจำนวนที่ระบุ</option>
+    </select>
+    <input id="add-limit-num-id-{{ majorcriteria.id }}" {% if majorcriteria.add_limit_type_display != 'C' %}disabled{% endif %} data-orgnum="{{ majorcriteria.add_limit_num }}" type="text" size="2" value="{% if majorcriteria.add_limit_type_display == 'C' %}{{ majorcriteria.add_limit_num }}{% endif %}">
+    <button
+      data-mid="{{ majorcriteria.id }}"
+      data-url="{% url 'backoffice:criteria:update_add_limit' project.id admission_round.id majorcriteria.id %}"
+      class="add-limit-save-buttons btn btn-sm btn-success">จัดเก็บ</button>
+    <button
+      data-mid="{{ majorcriteria.id }}"
+      class="add-limit-cancel-buttons btn btn-sm btn-secondary">ยกเลิก</button>
+    <span id="add-limit-spinner-id-{{ majorcriteria.id }}" style="display:none;"><i class="fa fa-spinner fa-spin"></i></span>
+  </small>
+</div>

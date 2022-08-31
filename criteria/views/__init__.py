@@ -544,6 +544,36 @@ def delete(request, project_id, round_id, criteria_id):
 
 
 @user_login_required
+def update_add_limit(request, project_id, round_id, mid):
+    user = request.user
+    project = get_object_or_404(AdmissionProject, pk=project_id)
+    admission_round = get_object_or_404(AdmissionRound, pk=round_id)
+    project_round = project.get_project_round_for(admission_round)
+    curricum_major_admission_criteria = get_object_or_404(CurriculumMajorAdmissionCriteria, pk=mid)
+    admission_criteria = curricum_major_admission_criteria.admission_criteria
+
+    if not can_user_view_project(user, project):
+        return redirect(reverse('backoffice:criteria:project-index', args=[project_id, round_id]))
+
+    faculty, faculty_choices = extract_user_faculty(request, user)
+    if admission_criteria.admission_project.id != project_id or (not user.profile.is_admission_admin and faculty.id != admission_criteria.faculty.id):
+        return redirect(reverse('backoffice:criteria:project-index', args=[project_id, round_id]))
+
+    if request.method == 'POST':
+        add_limit = request.POST['value'].strip()
+        if ((add_limit in ['A','B']) or
+            (add_limit.startswith('C') and add_limit[1:].isdigit())):
+            curricum_major_admission_criteria.add_limit = add_limit
+            curricum_major_admission_criteria.save()
+        else:
+            return HttpResponseForbidden()
+    else:
+        return HttpResponseForbidden()
+
+    return HttpResponse(add_limit)
+
+
+@user_login_required
 def select_curriculum_majors(request, project_id, round_id, code_id=0, value='none'):
     user = request.user
     project = get_object_or_404(AdmissionProject, pk=project_id)
