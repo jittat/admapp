@@ -267,6 +267,7 @@ def upsert_admission_criteria(post_request, project=None, faculty=None, admissio
                 version=version,
                 faculty=faculty)
             admission_criteria.save()
+            old_admission_criteria = None
         else:
             old_admission_criteria = admission_criteria
             version = old_admission_criteria.version + 1
@@ -325,6 +326,16 @@ def upsert_admission_criteria(post_request, project=None, faculty=None, admissio
             curriculum_major_id=m['id'],
             slots=m['slot']
         ) for _, m in selected_major_dict.items()]
+
+        if old_admission_criteria != None:
+            old_major_criterias = CurriculumMajorAdmissionCriteria.objects.filter(admission_criteria=old_admission_criteria).all()
+            add_limits = {}
+            for m in old_major_criterias:
+                add_limits[m.curriculum_major_id] = m.add_limit
+            for m in major_criterias:
+                if m.curriculum_major_id in add_limits:
+                    m.add_limit = add_limits[m.curriculum_major_id]
+        
         CurriculumMajorAdmissionCriteria.objects.bulk_create(
             major_criterias)
 
