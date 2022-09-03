@@ -29,4 +29,6 @@ urlpatterns = [
 
     path('<int:project_id>/<int:round_id>/addlimit/<int:mid>/',
          views.update_add_limit, name='update_add_limit'),
+    path('<int:project_id>/<int:round_id>/currtype/<int:acid>/<int:ctypeid>/',
+         views.update_accepted_curriculum_type, name='update_accepted_curriculum_type'),
 ]

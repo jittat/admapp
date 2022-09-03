@@ -1,11 +1,20 @@
 <td rowspan="{{ major_count }}">
   <span class="criteria-ids" style="display: none;">#{{ admission_criteria.id }}<br></span>
+
+  {% if project.is_custom_curriculum_type_allowed %}
+    <div class="accepted-curriculum-type-form-holders" id="accepted_curriculum_type_form_holder_id_{{ admission_criteria.id }}">
+      {% include "criteria/include/curriculum_type_form.html" %}
+    </div>
+  {% endif %}
+  
   {% with scorecriterias=admission_criteria.get_all_required_score_criteria %}
     {% include "criteria/include/scorecriteria_list.html" %}
   {% endwith %}
+
   {% if admission_criteria.additional_description %}
     คำอธิบายหลักสูตรหลายเงื่อนไขเพิ่มเติม สำหรับผู้สมัคร: {{ admission_criteria.additional_description }}<br>
   {% endif %}
+
   {% if admission_criteria.additional_condition %}
     คำอธิบายเงื่อนไขเพิ่มเติม สำหรับผู้สมัคร: {{ admission_criteria.additional_condition }}<br>
   {% endif %}

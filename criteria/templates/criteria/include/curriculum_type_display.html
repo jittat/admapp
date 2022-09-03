@@ -1,0 +1,8 @@
+หลักสูตรผู้สมัครที่รับ:
+{% if admission_criteria.is_all_curriculum_types_accepted %}
+  <span class="badge badge-dark">รับทุกรูปแบบ</span>
+{% else %}
+  {% for cur in admission_criteria.get_accepted_student_curriculum_types %}
+    <span class="badge {{ cur.3 }}">{{ cur.2 }}</span>
+  {% endfor %}
+{% endif %}

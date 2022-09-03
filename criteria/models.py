@@ -3,15 +3,20 @@ from django.db import models
 from appl.models import AdmissionProject, AdmissionRound, ProjectApplication
 from appl.models import Major, Faculty
 
-student_curriculum_type_choices = {
-    1: ('formal','รร.หลักสูตรแกนกลาง'),
-    2: ('international','รร.หลักสูตรนานาชาติ'),
-    3: ('vocational','รร.หลักสูตรอาชีวะ'),
-    4: ('non_formal','รร.หลักสูตรตามอัธยาศัย (กศน.)'),
-    5: ('ged','รร.หลักสูตร GED'),
-}
 
 class AdmissionCriteria(models.Model):
+    INITIAL_CURR_TYPE_FLAG = '*'
+    DEFAULT_TYPE_FLAG = '1,2,3,4,5'
+
+    STUDENT_CURRICULUM_TYPE_CHOICES = {
+        1: ('formal','หลักสูตรแกนกลาง','แกนกลาง','badge-primary'),
+        2: ('international','หลักสูตรนานาชาติ','นานาชาติ','badge-secondary'),
+        3: ('vocational','หลักสูตรอาชีวะ','อาชีวะ','badge-success'),
+        4: ('non_formal','หลักสูตรตามอัธยาศัย (กศน.)','กศน.','badge-danger'),
+        5: ('ged','หลักสูตร GED','GED','badge-dark'),
+    }
+    STUDENT_CURRICULUM_TYPE_CHOICE_COUNT = 5
+    
     admission_project = models.ForeignKey(AdmissionProject,
                                           on_delete=models.CASCADE)
     faculty = models.ForeignKey(
@@ -25,7 +30,9 @@ class AdmissionCriteria(models.Model):
     additional_condition = models.CharField(max_length=500, blank=True)
     additional_interview_condition = models.TextField(blank=True)
 
-    accepted_student_curriculum_type_flags = models.CharField(max_length=10, blank=True)
+    accepted_student_curriculum_type_flags = models.CharField(max_length=10,
+                                                              default=INITIAL_CURR_TYPE_FLAG,
+                                                              blank=True)
     
     curriculum_majors_json = models.TextField(blank=True) 
 
@@ -92,6 +99,48 @@ class AdmissionCriteria(models.Model):
             for sc in lst:
                 sc.cache_children(all_score_criterias)
 
+    def get_accepted_student_curriculum_type_ids(self):
+        if self.accepted_student_curriculum_type_flags == AdmissionCriteria.INITIAL_CURR_TYPE_FLAG:
+            flags = AdmissionCriteria.DEFAULT_TYPE_FLAG
+        else:
+            flags = self.accepted_student_curriculum_type_flags
+
+        if flags == '':
+            return []
+        else:
+            return [int(x.strip()) for x in flags.split(',')]
+
+    def get_accepted_student_curriculum_types(self):
+        return [AdmissionCriteria.STUDENT_CURRICULUM_TYPE_CHOICES[i] for i in self.get_accepted_student_curriculum_type_ids()]
+
+    def get_curriculum_type_choices_with_acceptance(self):
+        accepted_types = self.get_accepted_student_curriculum_type_ids()
+        return [(k,k in accepted_types, v) for k,v in
+                AdmissionCriteria.STUDENT_CURRICULUM_TYPE_CHOICES.items()]
+    
+    def is_curriculum_type_accepted(self, curriculum_type):
+        if self.accepted_student_curriculum_type_flags == AdmissionCriteria.INITIAL_CURR_TYPE_FLAG:
+            flags = AdmissionCriteria.DEFAULT_TYPE_FLAG
+        else:
+            flags = self.accepted_student_curriculum_type_flags
+        return str(curriculum_type) in flags
+
+    def is_all_curriculum_types_accepted(self):
+        if self.accepted_student_curriculum_type_flags == AdmissionCriteria.INITIAL_CURR_TYPE_FLAG:
+            return True
+        else:
+            ts = self.accepted_student_curriculum_type_flags.split(',')
+            return len(ts) == AdmissionCriteria.STUDENT_CURRICULUM_TYPE_CHOICE_COUNT
+
+    def toggle_accepted_curriculum_type(self, cur_type):
+        accepted_types = self.get_accepted_student_curriculum_type_ids()
+        if cur_type in accepted_types:
+            accepted_types = [t for t in accepted_types if t != cur_type]
+        else:
+            accepted_types.append(cur_type)
+        self.accepted_student_curriculum_type_flags = ','.join([str(t) for t in sorted(accepted_types)])
+        
+                
 class ScoreCriteria(models.Model):
     admission_criteria = models.ForeignKey(AdmissionCriteria,
                                            on_delete=models.CASCADE)

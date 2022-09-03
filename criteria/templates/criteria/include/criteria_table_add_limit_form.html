@@ -1,4 +1,7 @@
-<a href="#" class="badge badge-info add-limit-forms-toggle" data-mid="{{ majorcriteria.id }}"><i class="fa fa-pencil"></i> limit</a>
+{% if is_edit_link_hidden %}
+{% else %}
+  <a href="#" class="badge badge-info add-limit-forms-toggle" data-mid="{{ majorcriteria.id }}"><i class="fa fa-pencil"></i> limit</a>
+{% endif %}
 <div class="add-limit-forms border rounded bg-white p-1" style="display:none;" id="add-limit-id-{{ majorcriteria.id }}">
   <small>
     รูปแบบการรับในกรณีที่ผู้ที่ได้คะแนนอันดับสุดท้ายเกินจำนวนรับ<br>

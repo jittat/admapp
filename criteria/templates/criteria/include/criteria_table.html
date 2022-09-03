@@ -203,6 +203,32 @@
      var mid = $(this).data('mid');
      $('#add-limit-id-'+mid).slideUp();
    });
+
+   $('.accepted-curriculum-type-form-holders').on('click',
+						  '.accepted-curriculum-type-toggles',
+						  function() {
+						    var acid = $(this).data('acid');
+						    var ctypeid = $(this).data('ctypeid');
+						    var url = $(this).attr('href');
+						    var formId = 'accepted_curriculum_type_form_holder_id_' + acid;
+						    
+						    $('#accepted_curriculum_type_spinner_id_' + acid).show();
+						    jQuery.post(url,
+								{ csrfmiddlewaretoken: '{{ csrf_token }}'},
+								function(data) {
+								  $('#' + formId).html(data);
+								  $('#accepted_curriculum_type_choices_id_' + acid).show();
+						    });
+						    return false;
+   });
+   
+   $('.accepted-curriculum-type-form-holders').on('click',
+						  '.accepted-curriculum-type-form-toggles',
+						  function() {
+						    var acid = $(this).data('acid');
+						    var formId = 'accepted_curriculum_type_choices_id_' + acid;
+						    $('#' + formId).slideToggle();
+   });
    
  });
 </script>

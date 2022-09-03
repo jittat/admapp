@@ -277,6 +277,7 @@ def upsert_admission_criteria(post_request, project=None, faculty=None, admissio
                 faculty=admission_criteria.faculty,
                 additional_description=old_admission_criteria.additional_description,
                 additional_condition=old_admission_criteria.additional_condition,
+                accepted_student_curriculum_type_flags=old_admission_criteria.accepted_student_curriculum_type_flags,
                 additional_interview_condition=additional_interview_condition,
                 version=version)
             admission_criteria.save()
@@ -582,6 +583,36 @@ def update_add_limit(request, project_id, round_id, mid):
         return HttpResponseForbidden()
 
     return HttpResponse(add_limit)
+
+
+@user_login_required
+def update_accepted_curriculum_type(request, project_id, round_id, acid, ctypeid):
+    user = request.user
+    project = get_object_or_404(AdmissionProject, pk=project_id)
+    admission_round = get_object_or_404(AdmissionRound, pk=round_id)
+    project_round = project.get_project_round_for(admission_round)
+    admission_criteria = get_object_or_404(AdmissionCriteria, pk=acid)
+    cur_type = int(ctypeid)
+
+    if not can_user_view_project(user, project):
+        return redirect(reverse('backoffice:criteria:project-index', args=[project_id, round_id]))
+
+    faculty, faculty_choices = extract_user_faculty(request, user)
+    if admission_criteria.admission_project.id != project_id or (not user.profile.is_admission_admin and faculty.id != admission_criteria.faculty.id):
+        return redirect(reverse('backoffice:criteria:project-index', args=[project_id, round_id]))
+
+    if request.method == 'POST':
+        admission_criteria.toggle_accepted_curriculum_type(cur_type)
+        admission_criteria.save()
+    else:
+        return HttpResponseForbidden()
+
+    return render(request,
+                  'criteria/include/curriculum_type_form.html',
+                  {'project': project,
+                   'admission_round': admission_round,
+                   'admission_criteria': admission_criteria,
+                   })
 
 
 @user_login_required
