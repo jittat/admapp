@@ -6,7 +6,7 @@ from django.forms import ModelForm
 from django.http import HttpResponse
 from django.urls import reverse
 
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.utils.text import format_lazy
 
 from crispy_forms.helper import FormHelper

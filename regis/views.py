@@ -10,7 +10,7 @@ from django.http import HttpResponse, HttpResponseForbidden
 from django.contrib.auth.password_validation import validate_password
 
 from django.conf import settings
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Submit, ButtonHolder, Row, Div

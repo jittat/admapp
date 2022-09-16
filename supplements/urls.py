@@ -1,8 +1,8 @@
-from django.conf.urls import url, include
+from django.urls import re_path, include
 
 from supplements import views
 
 app_name = 'supplements'
 urlpatterns = [
-    url(r'^projects/(\d+)/(\d+)/$', views.index, name='index'),
+    re_path(r'^projects/(\d+)/(\d+)/$', views.index, name='index'),
 ]
