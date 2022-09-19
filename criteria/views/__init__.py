@@ -680,9 +680,9 @@ def list_curriculum_majors(request):
     curriculum_majors = CurriculumMajor.objects.filter(faculty=faculty).all()
     if not user.profile.is_admission_admin:
         admission_projects = user.profile.admission_projects.filter(
-            is_available=True).all()
+            is_visible_in_backoffice=True).all()
     else:
-        admission_projects = AdmissionProject.objects.filter(is_available=True)
+        admission_projects = AdmissionProject.objects.filter(is_visible_in_backoffice=True)
 
     for p in admission_projects:
         p.adm_rounds = set([r.id for r in p.admission_rounds.all()])
