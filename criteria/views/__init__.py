@@ -725,3 +725,47 @@ def list_curriculum_majors(request):
                    'round_data': list(zip(admission_rounds, major_table, project_lists)),
                    })
 
+@user_login_required
+def report_num_slots(request, round_id):
+    user = request.user
+    if not user.profile.is_admission_admin:
+        return HttpResponseForbidden()
+
+    admission_round = get_object_or_404(AdmissionRound, pk=round_id)
+    admission_rounds = AdmissionRound.objects.all()
+
+    faculties = Faculty.objects.order_by('campus_id','id').all()
+    admission_projects = [p for p in
+                          AdmissionProject.objects.filter(is_visible_in_backoffice=True)
+                          if admission_round in p.admission_rounds.all()]
+
+    pmap = { p.id:r for p,r in zip(admission_projects, range(len(admission_projects))) }
+    fmap = { f.id:r for f,r in zip(faculties, range(len(faculties))) }
+    
+    slots = []
+    scount = 0
+    for f in faculties:
+        slots.append([0] * len(admission_projects))
+
+    cmap = {}
+    for c in AdmissionCriteria.objects.filter(is_deleted=False):
+        if c.admission_project_id in pmap:
+            cmap[c.id] = (fmap[c.faculty_id], pmap[c.admission_project_id])
+
+    for major_criteria in CurriculumMajorAdmissionCriteria.objects.all():
+        if major_criteria.admission_criteria_id in cmap:
+            f, p = cmap[major_criteria.admission_criteria_id]
+            slots[f][p] += major_criteria.slots
+    
+    return render(request,
+                  'criteria/report_num_slots.html',
+                  {'admission_round': admission_round,
+                   'admission_rounds': admission_rounds,
+                   'faculties': faculties,
+                   'admission_projects': admission_projects,
+                   'faculty_slots': zip(faculties, slots),
+                   })
+
+
+
+
