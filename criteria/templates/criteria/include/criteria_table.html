@@ -153,6 +153,7 @@
      var mid = $(this).data('mid');
      var formId = 'add-limit-id-' + mid;
      $('#'+formId).slideDown();
+     return false;
    });
 
    $(".add-limit-type-selects").change(function(){
@@ -197,11 +198,13 @@
 		   $('#add-limit-num-span-id-'+mid).text('('+data+')');
 		   $('#add-limit-id-'+mid).slideUp();
      });
+     return false;
    });
 
    $('.add-limit-cancel-buttons').click(function(){
      var mid = $(this).data('mid');
      $('#add-limit-id-'+mid).slideUp();
+     return false;
    });
 
    $('.accepted-curriculum-type-form-holders').on('click',
@@ -228,6 +231,7 @@
 						    var acid = $(this).data('acid');
 						    var formId = 'accepted_curriculum_type_choices_id_' + acid;
 						    $('#' + formId).slideToggle();
+						    return false;
    });
    
  });
