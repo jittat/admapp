@@ -213,7 +213,7 @@
  "model": "appl.faculty",
  "pk": 22,
  "fields": {
-  "title": "คณะวิศวกรรมศาสตร์ศรีราชา",
+  "title": "คณะวิศวกรรมศาสตร์ ศรีราชา",
   "campus": 3,
   "ku_code": "",
   "cupt_code": ""
