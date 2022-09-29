@@ -130,12 +130,17 @@ def combine_criteria_rows(rows):
         
 def prepare_admission_criteria(admission_criterias, curriculum_majors, combine_majors=False):
     curriculum_majors_with_criterias = []
+    #curriculum_major_criterias = { cm.id:[] for cm in curriculum_majors }
+    
     for criteria in admission_criterias:
         criteria.cache_score_criteria_children()
         criteria.curriculum_major_admission_criterias = criteria.curriculummajoradmissioncriteria_set.select_related('curriculum_major').all()
         criteria.curriculum_major_admission_criteria_count = len(criteria.curriculum_major_admission_criterias)
         criteria.curriculum_majors = [mj.curriculum_major for mj in criteria.curriculum_major_admission_criterias]
         curriculum_majors_with_criterias += criteria.curriculum_majors
+
+        #for cm in criteria.curriculum_majors:
+        #    curriculum_major_criterias[cm.id].append((cm,criteria))
 
     curriculum_majors_with_criteria_ids = set([m.id for m
                                                in curriculum_majors_with_criterias])
@@ -151,6 +156,11 @@ def prepare_admission_criteria(admission_criterias, curriculum_majors, combine_m
     if combine_majors:
         admission_criteria_rows = combine_criteria_rows(admission_criteria_rows)
 
+    #for row in admission_criteria_rows:
+    #    for cmc in row['majors']:
+    #        if (cmc.curriculum_major_id in curriculum_major_criterias) and (len(curriculum_major_criterias[cmc.curriculum_major_id]) > 1):
+    #            print(cmc.curriculum_major.cupt_code)
+        
     return sort_admission_criteria_rows(admission_criteria_rows), free_curriculum_majors
 
 @user_login_required

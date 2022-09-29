@@ -153,6 +153,9 @@ class AdmissionProject(models.Model):
 
     cupt_code = models.CharField(max_length=10, blank=True)
 
+    is_cupt_export_only_major_list = models.BooleanField(default=True,
+                                                         verbose_name='ส่งข้อมูลทปอ.เป็นรายการสาขาเท่านั้น')
+
     # basic admission criteria (student types / school types)
 
     SCHOOL_TYPE_CHOICES = [

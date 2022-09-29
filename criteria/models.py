@@ -338,3 +338,11 @@ class CurriculumMajorAdmissionCriteria(models.Model):
              return int(self.add_limit[1:])
         else:
             return 0
+
+class CuptExportConfig(models.Model):
+    admission_project = models.ForeignKey(AdmissionProject,
+                                          on_delete=models.CASCADE)
+    config_json = models.TextField(blank=True) 
+
+    def __str__(self):
+        return self.admission_project.title
