@@ -47,11 +47,26 @@ class AdmissionCriteria(models.Model):
             self.cached_required_score_criteria = list(self.get_all_score_criteria('required'))
         return self.cached_required_score_criteria
 
+    def get_all_required_score_criteria_as_str(self):
+        return self.criteria_as_str(self.get_all_required_score_criteria())
+    
     def get_all_scoring_score_criteria(self):
         if getattr(self,'cached_scoring_score_criteria',None) == None:
             self.cached_scoring_score_criteria = list(self.get_all_score_criteria('scoring'))
         return self.cached_scoring_score_criteria
 
+    def get_all_scoring_score_criteria_as_str(self):
+        return self.criteria_as_str(self.get_all_scoring_score_criteria())
+
+    def criteria_as_str(self,criteria):
+        items = []
+        for c in criteria:
+            items.append(str(c))
+            if c.has_children():
+                for child in c.childs.all():
+                    items.append('  - ' + str(child))
+        return '\n'.join(items)
+    
     def required_score_criteria_includes(self, conds):
         criteria = self.get_all_required_score_criteria()
         for c in criteria:

@@ -4,6 +4,14 @@
   <div class="col-md-12">
     <h2>Validate ข้อมูลโครงการ{{ project.title }} ({{ admission_round }})</h2>
 
+    {% if validation_messages %}
+      <div class="alert alert-warning">
+	{% for m in validation_messages %}
+	  - {{ m }}<br>
+	{% endfor %}
+      </div>
+    {% endif %}
+    
     <table class="table table-sm table-striped">
       <thead class="thead-light">
 	<tr>
@@ -36,7 +44,7 @@
 		  {% if r.validation_messages %}
 		    <ul>
 		      {% for m in r.validation_messages %}
-			<li>{{ m }}</li>
+			<li>{{ m|linebreaksbr }}</li>
 		      {% endfor %}
 		    </ul>
 		  {% endif %}

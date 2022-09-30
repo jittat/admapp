@@ -19,7 +19,7 @@ from appl.models import ProjectApplication, Payment, Major, AdmissionResult, Fac
 from backoffice.views.permissions import can_user_view_project, can_user_view_applicant_in_major, can_user_view_applicants_in_major
 from backoffice.decorators import user_login_required
 
-from criteria.models import CurriculumMajor, AdmissionCriteria, ScoreCriteria, CurriculumMajorAdmissionCriteria, MajorCuptCode
+from criteria.models import CurriculumMajor, AdmissionCriteria, ScoreCriteria, CurriculumMajorAdmissionCriteria, MajorCuptCode, CuptExportConfig
 
 from . import prepare_admission_criteria, get_all_curriculum_majors
 
@@ -42,7 +42,31 @@ def validate_project_ids(curriculum_major_rows, project_export_options):
     if len(curriculum_major_rows) > 1:
         for r in curriculum_major_rows:
             r['validation_messages'].append('Too many rows')
-            
+            r['validation_messages'].append(r['criteria'].get_all_required_score_criteria_as_str())
+            r['validation_messages'].append(r['criteria'].get_all_scoring_score_criteria_as_str())
+
+def load_export_config(project):
+    configs = CuptExportConfig.objects.filter(admission_project=project)
+
+    config = {}
+    for c in configs:
+        this_config = {}
+
+        if c.config_json.strip() == '':
+            continue
+        
+        import json
+        try:
+            this_config = json.loads(c.config_json)
+        except json.JSONDecodeError as err: 
+            this_config['errors'] = [err.msg]
+
+        for k in this_config:
+            if k in config:
+                config[k] += this_config[k]
+            else:
+                config[k] = this_config[k]
+    return config
 
 @user_login_required
 def project_validation(request, project_id, round_id):
@@ -51,8 +75,12 @@ def project_validation(request, project_id, round_id):
     admission_round = get_object_or_404(AdmissionRound, pk=round_id)
     project_round = project.get_project_round_for(admission_round)
 
-    project_export_options = {}
+    global_messages = []
     
+    project_export_options = load_export_config(project)
+    if 'errors' in project_export_options:
+        global_messages += ['JSON error: ' + e for e in project_export_options['errors']]
+
     if not user.profile.is_admission_admin:
         return redirect(reverse('backoffice:index'))
 
@@ -111,4 +139,5 @@ def project_validation(request, project_id, round_id):
                    'admission_round': admission_round,
                    'majors': majors,
                    'free_curriculum_majors': free_curriculum_majors,
+                   'validation_messages': global_messages,
                    })
