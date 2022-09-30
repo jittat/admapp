@@ -24,14 +24,22 @@ urlpatterns = [
     path('curriculum-majors/',
          views.list_curriculum_majors, name='list-curriculum-majors'),
 
-    path('num-report/<int:round_id>/',
-         views.report_num_slots, name='report-num-slots'),
-
     path('report/<int:project_id>/<int:round_id>/',
          views.project_report, name='project-report'),
 
     path('<int:project_id>/<int:round_id>/addlimit/<int:mid>/',
-         views.update_add_limit, name='update_add_limit'),
+         views.update_add_limit, name='update-add-limit'),
     path('<int:project_id>/<int:round_id>/currtype/<int:acid>/<int:ctypeid>/',
-         views.update_accepted_curriculum_type, name='update_accepted_curriculum_type'),
+         views.update_accepted_curriculum_type, name='update-accepted-curriculum-type'),
+
+    path('num-report/<int:round_id>/',
+         views.report_num_slots, name='report-num-slots'),
+
+]
+
+from .views import cuptexport
+
+urlpatterns += [
+    path('export/validate/<int:project_id>/<int:round_id>/',
+         cuptexport.project_validation, name='export-project-validate'),
 ]

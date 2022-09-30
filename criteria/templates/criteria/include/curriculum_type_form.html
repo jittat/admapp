@@ -12,9 +12,9 @@
     <div class="btn-group-vertical">
       {% for k,v,c in admission_criteria.get_curriculum_type_choices_with_acceptance %}
 	{% if v %}
-	  <a href="{% url 'backoffice:criteria:update_accepted_curriculum_type' project.id admission_round.id admission_criteria.id k %}" data-acid="{{ admission_criteria.id }}" data-ctypeid="{{ k }}" data-cval="1" class="accepted-curriculum-type-toggles btn btn-sm btn-success"><i class="fa fa-check"></i> {{ c.1 }}</a>
+	  <a href="{% url 'backoffice:criteria:update-accepted-curriculum-type' project.id admission_round.id admission_criteria.id k %}" data-acid="{{ admission_criteria.id }}" data-ctypeid="{{ k }}" data-cval="1" class="accepted-curriculum-type-toggles btn btn-sm btn-success"><i class="fa fa-check"></i> {{ c.1 }}</a>
 	{% else %}
-	  <a href="{% url 'backoffice:criteria:update_accepted_curriculum_type' project.id admission_round.id admission_criteria.id k %}" data-acid="{{ admission_criteria.id }}" data-ctypeid="{{ k }}" data-cval="0" class="accepted-curriculum-type-toggles btn btn-sm btn-outline-secondary"><i class="fa fa-times"></i> {{ c.1 }}</a>
+	  <a href="{% url 'backoffice:criteria:update-accepted-curriculum-type' project.id admission_round.id admission_criteria.id k %}" data-acid="{{ admission_criteria.id }}" data-ctypeid="{{ k }}" data-cval="0" class="accepted-curriculum-type-toggles btn btn-sm btn-outline-secondary"><i class="fa fa-times"></i> {{ c.1 }}</a>
 	{% endif %}
       {% endfor %}
     </div>

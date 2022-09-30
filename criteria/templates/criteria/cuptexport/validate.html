@@ -1,0 +1,65 @@
+{% extends 'backoffice/base.html' %}
+{% block content %}
+<div class="row">
+  <div class="col-md-12">
+    <h2>Validate ข้อมูลโครงการ{{ project.title }} ({{ admission_round }})</h2>
+
+    <table class="table table-sm table-striped">
+      <thead class="thead-light">
+	<tr>
+	  <th></th>
+	  <th>project_id</th>
+	  <th>รหัส</th>
+	  <th>สาขาวิชา</th>
+	  <th>จำนวนรับ</th>
+	  <th>add_limit</th>
+	  <th>messages</th>
+	</tr>
+      </thead>
+      <tbody>
+	{% for mid, rows in majors.items %}
+	  {% for r in rows %}
+	    {% with r.curriculum_major.cupt_code as major_cupt_code %}
+	      <tr>
+		<td></td>
+		<td>{{ r.project_id }}</td>
+		<td>{{ major_cupt_code.program_code }}</td>
+		<td>
+		  {% if r.validation_messages %}
+		    <span class="badge badge-warning">!!</span>
+		  {% endif %}
+		  {{ major_cupt_code.display_title }}
+		</td>
+		<td>{{ r.slots }}</td>
+		<td>{{ r.add_limit }}</td>
+		<td>
+		  {% if r.validation_messages %}
+		    <ul>
+		      {% for m in r.validation_messages %}
+			<li>{{ m }}</li>
+		      {% endfor %}
+		    </ul>
+		  {% endif %}
+		</td>
+	      </tr>
+	    {% endwith %}
+	  {% endfor %}
+	{% endfor %}
+      </tbody>
+    </table>
+
+    {% if free_curriculum_majors %}
+      <h3>สาขาที่ไม่ระบุข้อมูล</h3>
+      <table class="table table-sm table-striped">
+	{% for curriculum_major in free_curriculum_majors %}
+	  <tr>
+	    <td>{{ curriculum_major.faculty }}</td>
+	    <td>{{ curriculum_major.program_code }}</td>
+	    <td>{{ curriculum_major.display_title }}</td>
+	  </tr>
+	{% endfor %}
+      </table>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

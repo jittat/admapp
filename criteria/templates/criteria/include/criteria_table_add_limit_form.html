@@ -13,7 +13,7 @@
     <input id="add-limit-num-id-{{ majorcriteria.id }}" {% if majorcriteria.add_limit_type_display != 'C' %}disabled{% endif %} data-orgnum="{{ majorcriteria.add_limit_num }}" type="text" size="2" value="{% if majorcriteria.add_limit_type_display == 'C' %}{{ majorcriteria.add_limit_num }}{% endif %}">
     <button
       data-mid="{{ majorcriteria.id }}"
-      data-url="{% url 'backoffice:criteria:update_add_limit' project.id admission_round.id majorcriteria.id %}"
+      data-url="{% url 'backoffice:criteria:update-add-limit' project.id admission_round.id majorcriteria.id %}"
       class="add-limit-save-buttons btn btn-sm btn-success">จัดเก็บ</button>
     <button
       data-mid="{{ majorcriteria.id }}"
