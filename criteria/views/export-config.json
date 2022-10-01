@@ -1,0 +1,292 @@
+{
+  "projects": [
+    [
+      "C2801",
+      "Admission (พาณิชยศาสตรศึกษา ใช้คะแนน A-Level)"
+    ],
+    [
+      "C2802",
+      "Admission (พาณิชยศาสตรศึกษา ใช้คะแนน V-NET)"
+    ],
+    [
+      "C2803",
+      "Admission (ใช้คะแนนคณิตศาสตร์ประยุกต์ 1)"
+    ],
+    [
+      "C2804",
+      "Admission (ใช้คะแนนคณิตศาสตร์ประยุกต์ 2)"
+    ],
+    [
+      "C2805",
+      "Admission (ใช้คะแนนวิทยาศาสตร์ประยุกต์)"
+    ],
+    [
+      "C2806",
+      "Admission (ใช้คะแนนภาษาไทย)"
+    ],
+    [
+      "C2807",
+      "Admission (ใช้คะแนนภาษาฝรั่งเศส)"
+    ],
+    [
+      "C2808",
+      "Admission (ใช้คะแนนภาษาเยอรมัน)"
+    ],
+    [
+      "C2809",
+      "Admission (ใช้คะแนนภาษาญี่ปุ่น)"
+    ],
+    [
+      "C2810",
+      "Admission (ใช้คะแนนภาษาเกาหลี)"
+    ],
+    [
+      "C2811",
+      "Admission (ใช้คะแนนภาษาจีน)"
+    ],
+    [
+      "C2812",
+      "Admission (ใช้คะแนนคณิตศาสตร์ประยุกต์)"
+    ],
+    [
+      "C2813",
+      "Admission (ใช้คะแนนความถนัดวิทยาศาสตร์ เทคโนโลยี วิศวกรรมศาสตร์)"
+    ],
+    [
+      "C2814",
+      "Admission (ใช้คะแนนฟิสิกส์)"
+    ],
+    [
+      "C2815",
+      "Admission (ใช้คะแนน A-Level)"
+    ],
+    [
+      "C2816",
+      "Admission (ใช้คะแนน A-Level ภาษาต่างประเทศ)"
+    ],
+    [
+      "C2817",
+      "Admission (รับผู้มีวุฒิประกาศนียบัตรวิชาชีพ)"
+    ]
+  ],
+  "custom_projects": {
+    "10020106700301A0I": [
+      {
+        "score-include": "A-Level",
+        "project_id": "C2801"
+      },
+      {
+        "score-include": "V-NET",
+        "project_id": "C2802"
+      }
+    ],
+    "10020107611103A": [
+      {
+        "score-include": "คณิตศาสตร์ประยุกต์ 1",
+        "project_id": "C2803"
+      },
+      {
+        "score-include": "คณิตศาสตร์ประยุกต์ 2",
+        "project_id": "C2804"
+      }
+    ],
+    "10020107611103B": [
+      {
+        "score-include": "คณิตศาสตร์ประยุกต์ 1",
+        "project_id": "C2803"
+      },
+      {
+        "score-include": "คณิตศาสตร์ประยุกต์ 2",
+        "project_id": "C2804"
+      }
+    ],
+    "10020108901001A": [
+      {
+        "score-include": "คณิตศาสตร์ประยุกต์ 1",
+        "project_id": "C2803"
+      },
+      {
+        "score-include": "คณิตศาสตร์ประยุกต์ 2",
+        "project_id": "C2804"
+      },
+      {
+        "score-include": "วิทยาศาสตร์ประยุกต์",
+        "project_id": "C2805"
+      },
+      {
+        "score-include": "ภาษาไทย",
+        "project_id": "C2806"
+      },
+      {
+        "score-include": "ฝรั่งเศส",
+        "project_id": "C2807"
+      },
+      {
+        "score-include": "เยอรมัน",
+        "project_id": "C2808"
+      },
+      {
+        "score-include": "ญี่ปุ่น",
+        "project_id": "C2809"
+      },
+      {
+        "score-include": "เกาหลี",
+        "project_id": "C2810"
+      },
+      {
+        "score-include": "จีน",
+        "project_id": "C2811"
+      }
+    ],
+    "10020108901001B": [
+      {
+        "score-include": "คณิตศาสตร์ประยุกต์ 1",
+        "project_id": "C2803"
+      },
+      {
+        "score-include": "คณิตศาสตร์ประยุกต์ 2",
+        "project_id": "C2804"
+      },
+      {
+        "score-include": "วิทยาศาสตร์ประยุกต์",
+        "project_id": "C2805"
+      },
+      {
+        "score-include": "ภาษาไทย",
+        "project_id": "C2806"
+      },
+      {
+        "score-include": "ฝรั่งเศส",
+        "project_id": "C2807"
+      },
+      {
+        "score-include": "เยอรมัน",
+        "project_id": "C2808"
+      },
+      {
+        "score-include": "ญี่ปุ่น",
+        "project_id": "C2809"
+      },
+      {
+        "score-include": "เกาหลี",
+        "project_id": "C2810"
+      },
+      {
+        "score-include": "จีน",
+        "project_id": "C2811"
+      }
+    ],
+    "10020108902801B": [
+      {
+        "score-include": "คณิตศาสตร์ประยุกต์",
+        "project_id": "C2812"
+      },
+      {
+        "score-include": "เกาหลี",
+        "project_id": "C2810"
+      },
+      {
+        "score-include": "จีน",
+        "project_id": "C2811"
+      },
+      {
+        "score-include": "ฝรั่งเศส",
+        "project_id": "C2807"
+      },
+      {
+        "score-include": "ญี่ปุ่น",
+        "project_id": "C2809"
+      },
+      {
+        "score-include": "เยอรมัน",
+        "project_id": "C2808"
+      }
+    ],
+    "10020110501104A": [
+      {
+        "score-include": "TPAT3",
+        "project_id": "C2813"
+      },
+      {
+        "score-include": "A-Level Phy",
+        "project_id": "C2814"
+      }
+    ],
+    "10020110501106A": [
+      {
+        "score-include": "TPAT3",
+        "project_id": "C2813"
+      },
+      {
+        "score-include": "A-Level",
+        "project_id": "C2815"
+      }
+    ],
+    "10020110501106B": [
+      {
+        "score-include": "TPAT3",
+        "project_id": "C2813"
+      },
+      {
+        "score-include": "A-Level",
+        "project_id": "C2815"
+      }
+    ],
+    "10020219500201A": [
+      {
+        "score-include": "TPAT3",
+        "project_id": "C2813"
+      },
+      {
+        "score-include": "A-Level",
+        "project_id": "C2815"
+      }
+    ],
+    "10020219501201A": [
+      {
+        "score-include": "TPAT3",
+        "project_id": "C2813"
+      },
+      {
+        "score-include": "A-Level",
+        "project_id": "C2815"
+      }
+    ],
+    "10020222900201A": [
+      {
+        "score-include": "A-Level Thai",
+        "project_id": "C2806"
+      },
+      {
+        "score-include": "A-Level Fre",
+        "project_id": "C2816"
+      }
+    ],
+    "10020233620102A0B": [
+      {
+        "score-include": "คณิตศาสตร์ประยุกต์ 1",
+        "project_id": "C2803"
+      },
+      {
+        "score-include": "คณิตศาสตร์ประยุกต์ 2",
+        "project_id": "C2804"
+      }
+    ],
+    "10020233620102A0C": [
+      {
+        "score-include": "คณิตศาสตร์ประยุกต์ 1",
+        "project_id": "C2803"
+      },
+      {
+        "score-include": "คณิตศาสตร์ประยุกต์ 2",
+        "project_id": "C2804"
+      }
+    ],
+    "10020327212701A": [
+      {
+        "require-include": "ประกาศนียบัตรวิชาชีพ",
+        "project_id": "C2817"
+      }
+    ]
+  }
+}

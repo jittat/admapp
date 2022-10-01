@@ -38,12 +38,54 @@ def combine_slots(curriculum_major_rows):
     return [rr]
 
 
-def validate_project_ids(curriculum_major_rows, project_export_options):
+def is_criteria_match(row, custom_project):
+    for key, str_key in [('score-include', 'scoring_criteria_str'),
+                         ('require-include', 'required_criteria_str')]:
+        if key in custom_project:
+            if custom_project[key] not in row[str_key]:
+                return False
+    return True
+
+
+def validate_project_ids(curriculum_major_rows, additional_projects, cupt_code_custom_projects):
     if len(curriculum_major_rows) > 1:
+        program_id = curriculum_major_rows[0]['curriculum_major'].cupt_code.get_program_major_code_as_str()
+
+        if program_id in cupt_code_custom_projects:
+            custom_projects = cupt_code_custom_projects[program_id]
+        else:
+            custom_projects = []
+
         for r in curriculum_major_rows:
-            r['validation_messages'].append('Too many rows')
-            r['validation_messages'].append(r['criteria'].get_all_required_score_criteria_as_str())
-            r['validation_messages'].append(r['criteria'].get_all_scoring_score_criteria_as_str())
+            r['required_criteria_str'] = r['criteria'].get_all_required_score_criteria_as_str()
+            r['scoring_criteria_str'] = r['criteria'].get_all_scoring_score_criteria_as_str()
+
+        if len(custom_projects) == 0:
+            for r in curriculum_major_rows:
+                r['validation_messages'].append(f'Too many rows - {len(custom_projects)} in config')
+                r['validation_messages'].append(r['required_criteria_str'])
+                r['validation_messages'].append(r['scoring_criteria_str'])
+            return
+
+        for r in curriculum_major_rows:
+            custom_project = next((p for p in custom_projects if is_criteria_match(r, p)), None)
+            #print(r,[p for p in custom_projects if is_criteria_match(r, p)])
+            #print("---------")
+            if custom_project:
+                r['project_id'] = custom_project['project_id']
+                if r['project_id'] in additional_projects:
+                    r['validation_messages'].append(f"changed to {r['project_id']} ({additional_projects[r['project_id']]})")
+                    r['validation_messages'].append(r['required_criteria_str'])
+                    r['validation_messages'].append(r['scoring_criteria_str'])
+                else:
+                    r['validation_messages'].append(f"changed to {r['project_id']} (PROJECT NOT FOUND)")
+                    r['validation_messages'].append(r['required_criteria_str'])
+                    r['validation_messages'].append(r['scoring_criteria_str'])
+
+        project_id_sets = set([r['project_id'] for r in curriculum_major_rows])
+        if len(project_id_sets) != len(curriculum_major_rows):
+            for r in curriculum_major_rows:
+                r['validation_messages'].append('Too many rows')
 
 def load_export_config(project):
     configs = CuptExportConfig.objects.filter(admission_project=project)
@@ -68,6 +110,15 @@ def load_export_config(project):
                 config[k] = this_config[k]
     return config
 
+def extract_additional_projects(config):
+    additional_projects = {}
+    cupt_code_custom_projects = {}
+    if 'projects' in config:
+        additional_projects = {p[0]: p[1] for p in config['projects']}
+    if 'custom_projects' in config:
+        cupt_code_custom_projects = config['custom_projects']
+    return additional_projects, cupt_code_custom_projects
+
 @user_login_required
 def project_validation(request, project_id, round_id):
     user = request.user
@@ -77,9 +128,11 @@ def project_validation(request, project_id, round_id):
 
     global_messages = []
     
-    project_export_options = load_export_config(project)
-    if 'errors' in project_export_options:
-        global_messages += ['JSON error: ' + e for e in project_export_options['errors']]
+    project_export_config = load_export_config(project)
+    if 'errors' in project_export_config:
+        global_messages += ['JSON error: ' + e for e in project_export_config['errors']]
+
+    additional_projects, cupt_code_custom_projects = extract_additional_projects(project_export_config)
 
     if not user.profile.is_admission_admin:
         return redirect(reverse('backoffice:index'))
@@ -126,7 +179,7 @@ def project_validation(request, project_id, round_id):
             majors[mid] = combine_slots(majors[mid])
     else:
         for mid in majors:
-            validate_project_ids(majors[mid], project_export_options)
+            validate_project_ids(majors[mid], additional_projects, cupt_code_custom_projects)
 
     free_curriculum_majors = []
     for curriculum_major in curriculum_majors:

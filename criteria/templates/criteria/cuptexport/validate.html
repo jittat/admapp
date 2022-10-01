@@ -18,6 +18,7 @@
 	  <th></th>
 	  <th>project_id</th>
 	  <th>รหัส</th>
+	  <th></th>
 	  <th>สาขาวิชา</th>
 	  <th>จำนวนรับ</th>
 	  <th>add_limit</th>
@@ -32,6 +33,7 @@
 		<td></td>
 		<td>{{ r.project_id }}</td>
 		<td>{{ major_cupt_code.program_code }}</td>
+		<td>{{ major_cupt_code.major_code }}</td>
 		<td>
 		  {% if r.validation_messages %}
 		    <span class="badge badge-warning">!!</span>

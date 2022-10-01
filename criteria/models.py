@@ -279,6 +279,12 @@ class MajorCuptCode(models.Model):
     def get_program_major_code(self):
         return (self.program_code, self.major_code)
 
+    def get_program_major_code_as_str(self):
+        if self.major_code == '':
+            return self.program_code
+        else:
+            return f'{self.program_code}0{self.major_code}'
+
     
 class CurriculumMajor(models.Model):
     admission_project = models.ForeignKey(AdmissionProject,
