@@ -178,8 +178,12 @@
     ],
     "10020108902801B": [
       {
-        "score-include": "คณิตศาสตร์ประยุกต์",
-        "project_id": "C2812"
+        "score-include": "คณิตศาสตร์ประยุกต์ 1",
+        "project_id": "C2803"
+      },
+      {
+        "score-include": "คณิตศาสตร์ประยุกต์ 2",
+        "project_id": "C2804"
       },
       {
         "score-include": "เกาหลี",
@@ -286,6 +290,26 @@
       {
         "require-include": "ประกาศนียบัตรวิชาชีพ",
         "project_id": "C2817"
+      }
+    ],
+    "10020111620105A": [
+      {
+        "score-include": "คณิตศาสตร์ประยุกต์ 2",
+        "project_id": "C2804"
+      },
+      {
+        "score-include": "A-Level Fre",
+        "project_id": "C2816"
+      }
+    ],
+    "10020108901401A": [
+      {
+        "score-include": "คณิตศาสตร์ประยุกต์ 2",
+        "project_id": "C2804"
+      },
+      {
+        "score-include": "A-Level Fre",
+        "project_id": "C2816"
       }
     ]
   }
