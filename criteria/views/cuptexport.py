@@ -404,7 +404,7 @@ def extract_additional_projects(config):
 
 def extract_required_criteria(admission_criteria):
     messages = []
-    
+
     score_criterias = admission_criteria.get_all_required_score_criteria()
 
     for c in score_criterias:
@@ -413,6 +413,13 @@ def extract_required_criteria(admission_criteria):
                 messages.append("Group: " + c.relation)
             else:
                 messages.append("Group: ERROR")
+            for ch in c.cached_children:
+                if ch.score_type == 'OTHER':
+                    messages.append("child: " + ch.score_type + ": " + ch.description)
+        else:
+            if c.score_type == 'OTHER':
+                messages.append(c.score_type + ": " + c.description)
+                
     return {}, messages
 
 def extract_scoring_criteria(criteria):
@@ -451,6 +458,7 @@ def project_validation(request, project_id, round_id):
     for admission_criteria in admission_criterias:
         curriculum_major_admission_criterias = admission_criteria.curriculummajoradmissioncriteria_set.select_related('curriculum_major').all()
 
+        admission_criteria.cache_score_criteria_children()
         admission_criteria.extracted_required_criteria = extract_required_criteria(admission_criteria)
 
         for mc in curriculum_major_admission_criterias:
