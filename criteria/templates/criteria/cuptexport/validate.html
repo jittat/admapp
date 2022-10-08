@@ -46,10 +46,22 @@
 		<td>{{ r.add_limit }}</td>
 		<td>
 		  {% if r.criteria %}
+		    {% for item in r.criteria.extracted_required_criteria.0 %}
+		      {{ item }}
+		    {% endfor %}
+		    <br>
 		    {% for m in r.criteria.extracted_required_criteria.1 %}{{ m }}<br>{% endfor %}
 		  {% endif %}
 		</td>
-		<td></td>
+		<td>
+		  {% if r.criteria %}
+		    {% for item in r.criteria.extracted_scoring_criteria.0 %}
+		      {{ item }}
+		    {% endfor %}
+		    <br>
+		    {% for m in r.criteria.extracted_scoring_criteria.1 %}{{ m }}<br>{% endfor %}
+		  {% endif %}
+		</td>
 		<td>
 		  {% if r.validation_messages %}
 		    <ul>

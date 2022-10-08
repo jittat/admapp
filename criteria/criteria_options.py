@@ -134,3 +134,6 @@ CRITERIA_OPTIONS = {
         { "score_type": "MU_ELT", "description": "MU-ELT", "unit": "คะแนน" },
     ]
 }
+
+REQUIRED_SCORE_TYPE_TAGS = CRITERIA_OPTIONS['general_required_tags'] + CRITERIA_OPTIONS['test_tags']
+SCORING_SCORE_TYPE_TAGS = CRITERIA_OPTIONS['general_scoring_tags'] + CRITERIA_OPTIONS['test_tags']
