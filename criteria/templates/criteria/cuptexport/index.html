@@ -1,0 +1,25 @@
+{% extends 'backoffice/base.html' %}
+{% block content %}
+<div class="row">
+  <div class="col-md-12">
+    <h2>Export ข้อมูลเงื่อนไข</h2>
+    <h3>รายการข้อมูล</h3>
+    <ul>
+      <li>
+	เงื่อนไขการรับ
+      </li>
+      <li>
+	Scoring
+      </li>
+    </ul>
+    <h3>ตรวจสอบข้อมูล</h3>
+    <ul>
+      {% for project in admission_projects %}
+	{% for round in project.admission_rounds.all %}
+	  <li><a target="_blank" href="{% url 'backoffice:criteria:export-project-validate' project.id round.id %}">{{ project }} {{ round }}</a></li>
+	{% endfor %}
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+{% endblock %}

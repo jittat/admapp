@@ -40,6 +40,9 @@ urlpatterns = [
 from .views import cuptexport
 
 urlpatterns += [
+    path('export/',
+         cuptexport.index, name='export-index'),
+
     path('export/validate/<int:project_id>/<int:round_id>/',
          cuptexport.project_validation, name='export-project-validate'),
 ]

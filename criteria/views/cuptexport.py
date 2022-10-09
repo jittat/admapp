@@ -9,6 +9,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseNotFound
 from django.db import transaction
+from django.db.models import Q
 
 from django.http import Http404
 
@@ -280,6 +281,9 @@ def extract_scoring_criteria(admission_criteria):
 @user_login_required
 def project_validation(request, project_id, round_id):
     user = request.user
+    if not user.profile.is_admission_admin:
+        return redirect(reverse('backoffice:index'))
+
     project = get_object_or_404(AdmissionProject, pk=project_id)
     admission_round = get_object_or_404(AdmissionRound, pk=round_id)
     project_round = project.get_project_round_for(admission_round)
@@ -291,9 +295,6 @@ def project_validation(request, project_id, round_id):
         global_messages += ['JSON error: ' + e for e in project_export_config['errors']]
 
     additional_projects, cupt_code_custom_projects = extract_additional_projects(project_export_config)
-
-    if not user.profile.is_admission_admin:
-        return redirect(reverse('backoffice:index'))
 
     faculties = Faculty.objects.all()
     
@@ -309,10 +310,11 @@ def project_validation(request, project_id, round_id):
     
     for admission_criteria in admission_criterias:
         curriculum_major_admission_criterias = admission_criteria.curriculummajoradmissioncriteria_set.select_related('curriculum_major').all()
-
-        admission_criteria.cache_score_criteria_children()
-        admission_criteria.extracted_required_criteria = extract_required_criteria(admission_criteria)
-        admission_criteria.extracted_scoring_criteria = extract_scoring_criteria(admission_criteria)
+        
+        if not project.is_cupt_export_only_major_list:
+            admission_criteria.cache_score_criteria_children()
+            admission_criteria.extracted_required_criteria = extract_required_criteria(admission_criteria)
+            admission_criteria.extracted_scoring_criteria = extract_scoring_criteria(admission_criteria)
 
         for mc in curriculum_major_admission_criterias:
             curriculum_major = mc.curriculum_major
@@ -356,6 +358,21 @@ def project_validation(request, project_id, round_id):
                    'free_curriculum_majors': free_curriculum_majors,
                    'validation_messages': global_messages,
                    })
+
+
+@user_login_required
+def index(request):
+    user = request.user
+    if not user.profile.is_admission_admin:
+        return redirect(reverse('backoffice:index'))
+
+    admission_projects = AdmissionProject.objects.filter(Q(is_available=True) | Q(is_visible_in_backoffice=True)).all()
+    
+    return render(request,
+                  'criteria/cuptexport/index.html',
+                  {'admission_projects': admission_projects
+                   })
+                  
 
 CONDITION_FILE_FIELDS = """program_id
 major_id
