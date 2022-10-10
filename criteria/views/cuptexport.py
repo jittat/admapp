@@ -574,6 +574,13 @@ def extract_condition_rows(project, admission_criterias):
             
     return rows
 
+def export_options_as_dict(config):
+    d = {}
+    for k, val in config.items():
+        program_major_code, project_id = k.split("-")
+        d[(project_id, program_major_code)] = val
+    return d
+
 def update_project_information(project, rows):
     project_export_config = load_export_config(project)
     additional_projects, cupt_code_custom_projects = extract_additional_projects(project_export_config)
@@ -586,6 +593,23 @@ def update_project_information(project, rows):
     for mid in majors:
         validate_project_ids(majors[mid], additional_projects, cupt_code_custom_projects, False)
 
+    if 'custom_comments' in project_export_config:
+        comments = export_options_as_dict(project_export_config['custom_comments'])
+        for r in rows:
+            if (r['project_id'],r['program_id']) in comments:
+                r['condition'] = comments[(r['project_id'],r['program_id'])]
+
+    if 'custom_options' in project_export_config:
+        options = export_options_as_dict(project_export_config['custom_options'])
+        for r in rows:
+            if (r['project_id'],r['program_id']) in options:
+                option = options[(r['project_id'],r['program_id'])]
+
+                if 'accepts_male_only' in option:
+                    if option['accepts_male_only'] == 1:
+                        r['gender_male_number'] = r['slots']
+
+                        
 @user_login_required
 def export_required_csv(request):
     user = request.user
