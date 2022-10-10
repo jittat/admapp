@@ -283,3 +283,67 @@ gsat_l
 gsat_m
 """
 
+CONDITION_FILE_ZERO_FIELD_STR = """
+project_name_en
+gender_male_number
+gender_female_number
+join_id
+"""
+
+SCORING_FILE_ZERO_FIELD_STR = """
+"""
+
+EXAM_FIELD_MAP = {
+    'GPAX_5_SEMESTER': '',
+    'GPAX': 'gpax',
+    'UNIT_MATH': 'credit_gpa22',
+    'UNIT_FOREIGN': 'credit_gpa28',
+    'UNIT_SCI': 'credit_gpa23',
+    'GPAX_MATH': 'gpa22',
+    'GPAX_FOREIGN': 'gpa28',
+    'GPAX_SCI': 'gpa23',
+    'TGAT': 'tgat',
+    'TGAT1': 'tgat1',
+    'TGAT2': 'tgat2',
+    'TGAT3': 'tgat3',
+    'TPAT1': 'tpat1',
+    'TPAT2': 'tpat2',
+    'TPAT21': 'tpat21',
+    'TPAT22': 'tpat22',
+    'TPAT23': 'tpat23',
+    'TPAT3': 'tpat3',
+    'TPAT4': 'tpat4',
+    'TPAT5': 'tpat5',
+    'A61Math1': 'a_lv_61',
+    'A62Math2': 'a_lv_62',
+    'A63Sci': 'a_lv_63',
+    'A64Phy': 'a_lv_64',
+    'A65Chem': 'a_lv_65',
+    'A66Bio': 'a_lv_66',
+    'A70Soc': 'a_lv_70',
+    'A81Thai': 'a_lv_81',
+    'A82Eng': 'a_lv_82',
+    'A83Fre': 'a_lv_83',
+    'A84Ger': 'a_lv_84',
+    'A85Jap': 'a_lv_85',
+    'A86Kor': 'a_lv_86',
+    'A87Chi': 'a_lv_87',
+    'A88Bal': 'a_lv_88',
+    'A89Spn': 'a_lv_89',
+    'VNET': 'vnet_51',
+    'TOEFL_PBT_ITP': '',
+    'TOEFL_CBT': 'toefl_cbt',
+    'TOEFL_IBT': 'toefl_itp',
+    'IELTS': 'ielts',
+    'TOEIC': 'toeic',
+    'OOPT': '',
+    'KU_EPT': 'kuept',
+    'CU_TEP': 'cutep',
+    'TU_GET': 'tuget',
+    'KKU_KEPT': 'kept',
+    'PSU_TEP': 'psutep',
+    'CMU_ETEGS': 'cmuetegs',
+    'SWU_SET': 'swu_set',
+    'DET': 'det',
+    'MU_ELT': '',
+}

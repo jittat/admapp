@@ -1,6 +1,7 @@
 import csv
 import json
 from decimal import Decimal
+from collections import defaultdict
 
 from datetime import datetime
 from django.core import serializers
@@ -23,7 +24,9 @@ from backoffice.decorators import user_login_required
 from criteria.models import CurriculumMajor, AdmissionCriteria, ScoreCriteria, CurriculumMajorAdmissionCriteria, MajorCuptCode, CuptExportConfig
 
 from criteria.criteria_options import REQUIRED_SCORE_TYPE_TAGS, SCORING_SCORE_TYPE_TAGS
-from .cuptexport_fields import CONDITION_FILE_FIELD_STR, SCORING_FILE_FIELD_STR
+from .cuptexport_fields import CONDITION_FILE_FIELD_STR, CONDITION_FILE_ZERO_FIELD_STR
+from .cuptexport_fields import SCORING_FILE_FIELD_STR, SCORING_FILE_ZERO_FIELD_STR
+from .cuptexport_fields import EXAM_FIELD_MAP
 
 from . import prepare_admission_criteria, get_all_curriculum_majors
 
@@ -34,10 +37,13 @@ def combine_slots(curriculum_major_rows):
     new_rows = []
 
     rr = curriculum_major_rows[0]
-    rr['add_limit'] = '0'
+    #rr['add_limit'] = '0'
+    
     for r in curriculum_major_rows[1:]:
         rr['slots'] += r['slots']
-        rr['validation_messages'] += r['validation_messages']
+
+        if 'validation_messages' in rr:
+            rr['validation_messages'] += r['validation_messages']
 
     return [rr]
 
@@ -51,7 +57,7 @@ def is_criteria_match(row, custom_project):
     return True
 
 
-def validate_project_ids(curriculum_major_rows, additional_projects, cupt_code_custom_projects):
+def validate_project_ids(curriculum_major_rows, additional_projects, cupt_code_custom_projects, save_criteria_str=True):
     if len(curriculum_major_rows) > 1:
         program_id = curriculum_major_rows[0]['curriculum_major'].cupt_code.get_program_major_code_as_str()
 
@@ -66,9 +72,10 @@ def validate_project_ids(curriculum_major_rows, additional_projects, cupt_code_c
 
         if len(custom_projects) == 0:
             for r in curriculum_major_rows:
-                r['validation_messages'].append(f'Too many rows - {len(custom_projects)} in config')
-                r['validation_messages'].append(r['required_criteria_str'])
-                r['validation_messages'].append(r['scoring_criteria_str'])
+                if 'validation_messages' in r:
+                    r['validation_messages'].append(f'Too many rows - {len(custom_projects)} in config')
+                    r['validation_messages'].append(r['required_criteria_str'])
+                    r['validation_messages'].append(r['scoring_criteria_str'])
             return
 
         for r in curriculum_major_rows:
@@ -78,18 +85,28 @@ def validate_project_ids(curriculum_major_rows, additional_projects, cupt_code_c
             if custom_project:
                 r['project_id'] = custom_project['project_id']
                 if r['project_id'] in additional_projects:
-                    r['validation_messages'].append(f"changed to {r['project_id']} ({additional_projects[r['project_id']]})")
-                    r['validation_messages'].append(r['required_criteria_str'])
-                    r['validation_messages'].append(r['scoring_criteria_str'])
+                    if 'project_name_th' in r:
+                        r['project_name_th'] = additional_projects[r['project_id']]
+                    if 'validation_messages' in r:
+                        r['validation_messages'].append(f"changed to {r['project_id']} ({additional_projects[r['project_id']]})")
+                        r['validation_messages'].append(r['required_criteria_str'])
+                        r['validation_messages'].append(r['scoring_criteria_str'])
                 else:
-                    r['validation_messages'].append(f"changed to {r['project_id']} (PROJECT NOT FOUND)")
-                    r['validation_messages'].append(r['required_criteria_str'])
-                    r['validation_messages'].append(r['scoring_criteria_str'])
+                    if 'validation_messages' in r:
+                        r['validation_messages'].append(f"changed to {r['project_id']} (PROJECT NOT FOUND)")
+                        r['validation_messages'].append(r['required_criteria_str'])
+                        r['validation_messages'].append(r['scoring_criteria_str'])
 
         project_id_sets = set([r['project_id'] for r in curriculum_major_rows])
         if len(project_id_sets) != len(curriculum_major_rows):
             for r in curriculum_major_rows:
-                r['validation_messages'].append('Too many rows')
+                if 'validation_messages' in r:
+                    r['validation_messages'].append('Too many rows')
+
+        if not save_criteria_str:
+            for r in curriculum_major_rows:
+                del r['required_criteria_str']
+                del r['scoring_criteria_str']
 
 def load_export_config(project):
     configs = CuptExportConfig.objects.filter(admission_project=project)
@@ -279,6 +296,33 @@ def extract_scoring_criteria(admission_criteria):
             
     return scoring_scores, messages
 
+def get_project_type(project):
+    TYPE_MAP = {
+        'A': '1_2566',
+        'B': '2_2566',
+        'C': '3_2566',
+        'D': '4_2566',
+    }
+    if project.cupt_code[0] in TYPE_MAP:
+        return TYPE_MAP[project.cupt_code[0]]
+    else:
+        return ''
+
+def convert_to_base_row(project, curriculum_major, admission_criteria, curriculum_major_admission_criteria):
+    mc = curriculum_major_admission_criteria
+    return {
+        'project_id': project.cupt_code,
+        'project_name_th': project.short_title,
+        'program_id': curriculum_major.cupt_code.program_code,
+        'major_id': curriculum_major.cupt_code.major_code,
+        'add_limit': mc.add_limit_display(),
+        'type': get_project_type(project),
+
+        'criteria': admission_criteria,
+        'curriculum_major': curriculum_major,
+        'slots': mc.slots,
+    }
+
 @user_login_required
 def project_validation(request, project_id, round_id):
     user = request.user
@@ -305,7 +349,7 @@ def project_validation(request, project_id, round_id):
                                    is_deleted=False)
                            .order_by('faculty_id'))
     
-    majors = {}
+    majors = defaultdict(list)
     
     for admission_criteria in admission_criterias:
         curriculum_major_admission_criterias = admission_criteria.curriculummajoradmissioncriteria_set.select_related('curriculum_major').all()
@@ -323,19 +367,12 @@ def project_validation(request, project_id, round_id):
             if project.is_cupt_export_only_major_list:
                 row_criteria = None
 
-            if curriculum_major.id not in majors:
-                majors[curriculum_major.id] = []
-
-            majors[curriculum_major.id].append({
-                'project_id': project.cupt_code,
-                'add_limit': mc.add_limit_display(),
-                
-                'curriculum_major': curriculum_major,
-                'slots': mc.slots,
-                'criteria': row_criteria,
+            row_items = convert_to_base_row(project, curriculum_major, row_criteria, mc)
+            row_items.update({
                 'cm_ar': mc,
                 'validation_messages': [],
             })
+            majors[curriculum_major.id].append(row_items)
     
     if project.is_cupt_export_only_major_list:
         for mid in majors:
@@ -376,21 +413,63 @@ def index(request):
 CONDITION_FILE_FIELDS = [f.strip() for f in CONDITION_FILE_FIELD_STR.split() if f.strip() != '']
 SCORING_FILE_FIELDS = [f.strip() for f in SCORING_FILE_FIELD_STR.split() if f.strip() != '']
 
+CONDITION_FILE_FIELD_DEFAULTS = {
+    'condition': '',
+    'interview_location': 'มหาวิทยาลัยเกษตรศาสตร์',
+    'interview_date': '',
+    'interview_time': '',
+    'link': 'https://admission.ku.ac.th/',
+    'score_condition': 0,
+    'subject_names': 0,
+    'score_minimum': 0,
+}
+
 def write_csv_header(writer, fields):
     writer.writerow(fields)
 
-def write_condition_row(writer, row):
-    pass
+def write_condition_row(writer, row, zero_fields):
+    EXTRA_FIELDS = [
+        'slots',
+        'curriculum_major',
+        'criteria',
+        'add_limit',
+    ]
+
+    curriculum_major = row['curriculum_major']
+    major_cupt_code = row['curriculum_major'].cupt_code
+    
+    update = {
+        'receive_add_limit': row['add_limit'],
+        'receive_student_number': row['slots'],
+        'description': f'{curriculum_major.faculty} {major_cupt_code}'
+    }
+
+    out_row = dict(row)
+    for f in EXTRA_FIELDS:
+        del out_row[f]
+    for f in zero_fields:
+        if f not in out_row:
+            out_row[f] = '0'
+
+    for f in CONDITION_FILE_FIELD_DEFAULTS:
+        if f not in out_row:
+            out_row[f] = CONDITION_FILE_FIELD_DEFAULTS[f]
+        
+    out_row.update(update)
+    writer.writerow(out_row)
 
 def sort_csv_rows(rows):
     def row_key(r):
-        return (r['project_id'][:2], r['program_id'], r['major_id'], r['project_id'])
+        return (r['project_id'][:3], r['program_id'], r['major_id'], r['project_id'])
     
-    keyrows = [(row_key(r),r) for r in rows]
-    return [r[1] for r in sorted(keyrows)]
+    keyrows = [(row_key(r),i,r) for i,r in zip(range(len(rows)),rows)]
+    return [r[2] for r in sorted(keyrows)]
 
 def load_all_criterias():
-    admission_criterias = {}
+    admission_projects = { p.id:p for p in AdmissionProject.objects.all() }
+    
+    admission_criterias = defaultdict(list)
+    curriculum_major_admission_criteria_map = defaultdict(list)
     curriculum_majors = { cm.id: cm
                           for cm
                           in CurriculumMajor.objects.select_related('cupt_code').all() }
@@ -398,30 +477,110 @@ def load_all_criterias():
     curriculum_major_admission_criterias = { cmac.admission_criteria_id: cmac
                                              for cmac in CurriculumMajorAdmissionCriteria.objects.all() }
 
-    curriculum_major_admission_criteria_map = {}
 
     for id in curriculum_major_admission_criterias:
         cmac = curriculum_major_admission_criterias[id]
         cmac.curriculum_major = curriculum_majors[cmac.curriculum_major_id]
-        if cmac.admission_criteria_id not in curriculum_major_admission_criteria_map:
-            curriculum_major_admission_criteria_map[cmac.admission_criteria_id] = []
         curriculum_major_admission_criteria_map[cmac.admission_criteria_id].append(cmac)
     
     for criteria in (AdmissionCriteria
                      .objects
                      .filter(is_deleted=False)
                      .order_by('faculty_id')):
-        if criteria.admission_project_id not in admission_criterias:
-            admission_criterias[criteria.admission_project_id] = []
+        project = admission_projects[criteria.admission_project_id]
+
+        if not project.is_cupt_export_only_major_list:
+            criteria.cache_score_criteria_children()
+            criteria.extracted_required_criteria = extract_required_criteria(criteria)
+            criteria.extracted_scoring_criteria = extract_scoring_criteria(criteria)
 
         admission_criterias[criteria.admission_project_id].append(criteria)
 
-        criteria.curriculummajoradmissioncriterias = curriculum_major_admission_criteria_map[criteria.id]
+        criteria.curriculum_major_admission_criterias = curriculum_major_admission_criteria_map[criteria.id]
 
     return admission_criterias
 
+def exam_name_to_required_field(exam):
+    if (exam in EXAM_FIELD_MAP) and (EXAM_FIELD_MAP[exam] != ''):
+        return f'min_{EXAM_FIELD_MAP[exam]}'
+    else:
+        return 'ERROR'
+
+def group_condition_rows(rows):
+    groupped_rows = defaultdict(list)
+    for r in rows:
+        groupped_rows[r['curriculum_major'].id].append(r)
+
+    for mid in groupped_rows:
+        if len(groupped_rows[mid]) > 1:
+            groupped_rows[mid] = combine_slots(groupped_rows[mid])
+
+    return sum(groupped_rows.values(),[])
+
+def normalize_int_value(val):
+    if int(val) == val:
+        return int(val)
+
+def extract_student_curriculum_type(row_items, admission_criteria):
+    TYPE_CHOICE_FIELDS = {
+        1: 'only_formal',
+        2: 'only_international',
+        3: 'only_vocational',
+        4: 'only_non_formal',
+        5: 'only_ged',
+    }
+    for i in TYPE_CHOICE_FIELDS:
+        f = TYPE_CHOICE_FIELDS[i]
+        if admission_criteria.is_curriculum_type_accepted(i):
+            row_items[f] = 1
+        else:
+            row_items[f] = 0
+
+            
 def extract_condition_rows(project, admission_criterias):
-    return []
+    rows = []
+    for admission_criteria in admission_criterias:
+        curriculum_major_admission_criterias = admission_criteria.curriculum_major_admission_criterias
+
+        for mc in curriculum_major_admission_criterias:
+            curriculum_major = mc.curriculum_major
+            row_items = convert_to_base_row(project, curriculum_major, admission_criteria, mc)
+
+            if not project.is_cupt_export_only_major_list:
+                for required_score in admission_criteria.extracted_required_criteria[0]:
+                    if required_score['score_type'] != 'GROUP-OR':
+                        row_items[exam_name_to_required_field(required_score['score_type'])] = normalize_int_value(required_score['min_value'])
+                    else:
+                        names = []
+                        mins = []
+                        for item_score in required_score['children']:
+                            names.append(exam_name_to_required_field(item_score['score_type']))
+                            mins.append(normalize_int_value(item_score['min_value']))
+
+                        row_items['score_condition'] = 1
+                        row_items['subject_names'] = ' '.join(names)
+                        row_items['score_minimum'] = ' '.join([str(v) for v in mins])
+
+            extract_student_curriculum_type(row_items, admission_criteria)
+                        
+            rows.append(row_items)
+
+        if project.is_cupt_export_only_major_list:
+            rows = group_condition_rows(rows)
+            
+    return rows
+
+def update_project_information(project, rows):
+    project_export_config = load_export_config(project)
+    additional_projects, cupt_code_custom_projects = extract_additional_projects(project_export_config)
+
+    majors = defaultdict(list)
+
+    for r in rows:
+        majors[r['curriculum_major'].id].append(r)
+
+    for mid in majors:
+        validate_project_ids(majors[mid], additional_projects, cupt_code_custom_projects, False)
 
 @user_login_required
 def export_required_csv(request):
@@ -446,10 +605,15 @@ def export_required_csv(request):
     
     for project in admission_projects:
         rows = extract_condition_rows(project, admission_criterias[project.id])
+
+        update_project_information(project, rows)
+        
         all_rows += rows
 
+    zero_fields = [x.strip() for x in CONDITION_FILE_ZERO_FIELD_STR.split() if x.strip() != '']
+        
     rows = sort_csv_rows(all_rows)
     for r in rows:
-        write_condition_row(writer, r)
+        write_condition_row(writer, r, zero_fields)
     
     return response
