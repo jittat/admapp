@@ -23,6 +23,7 @@ from backoffice.decorators import user_login_required
 from criteria.models import CurriculumMajor, AdmissionCriteria, ScoreCriteria, CurriculumMajorAdmissionCriteria, MajorCuptCode, CuptExportConfig
 
 from criteria.criteria_options import REQUIRED_SCORE_TYPE_TAGS, SCORING_SCORE_TYPE_TAGS
+from .cuptexport_fields import CONDITION_FILE_FIELD_STR, SCORING_FILE_FIELD_STR
 
 from . import prepare_admission_criteria, get_all_curriculum_majors
 
@@ -304,8 +305,6 @@ def project_validation(request, project_id, round_id):
                                    is_deleted=False)
                            .order_by('faculty_id'))
     
-    curriculum_majors = get_all_curriculum_majors(project)
-
     majors = {}
     
     for admission_criteria in admission_criterias:
@@ -346,7 +345,7 @@ def project_validation(request, project_id, round_id):
             validate_project_ids(majors[mid], additional_projects, cupt_code_custom_projects)
 
     free_curriculum_majors = []
-    for curriculum_major in curriculum_majors:
+    for curriculum_major in get_all_curriculum_majors(project):
         if curriculum_major.id not in majors:
             free_curriculum_majors.append(curriculum_major)
     
@@ -372,288 +371,85 @@ def index(request):
                   'criteria/cuptexport/index.html',
                   {'admission_projects': admission_projects
                    })
-                  
 
-CONDITION_FILE_FIELDS = """program_id
-major_id
-project_id
-project_name_th
-project_name_en
-type
-receive_student_number
-gender_male_number
-gender_female_number
-receive_add_limit
-join_id
-only_formal
-only_international
-only_vocational
-only_non_formal
-only_ged
-min_priority
-min_age
-min_age_date
-max_age
-max_age_date
-min_height_male
-min_height_female
-min_weight_male
-min_weight_female
-max_weight_male
-max_weight_female
-min_bmi_male
-min_bmi_female
-max_bmi_male
-max_bmi_female
-min_gpax
-min_credit_gpa21
-min_credit_gpa22
-min_credit_gpa23
-min_credit_gpa24
-min_credit_gpa25
-min_credit_gpa26
-min_credit_gpa27
-min_credit_gpa28
-min_credit_gpa29
-min_gpa21
-min_gpa22
-min_gpa23
-min_gpa24
-min_gpa25
-min_gpa26
-min_gpa27
-min_gpa28
-min_gpa29
-min_gpa22_23
-min_credit_gpa22_23
-min_gpa22_23_28
-min_credit_gpa22_23_28
-grad_current
-min_tgat
-min_tgat1
-min_tgat2
-min_tgat3
-min_tpat1
-min_tpat11
-min_tpat12
-min_tpat13
-min_tpat2
-min_tpat21
-min_tpat22
-min_tpat23
-min_tpat3
-min_tpat4
-min_tpat5
-min_a_lv_61
-min_a_lv_62
-min_a_lv_63
-min_a_lv_64
-min_a_lv_65
-min_a_lv_66
-min_a_lv_70
-min_a_lv_81
-min_a_lv_82
-min_a_lv_83
-min_a_lv_84
-min_a_lv_85
-min_a_lv_86
-min_a_lv_87
-min_a_lv_88
-min_a_lv_89
-min_vnet_51
-min_vnet_511
-min_vnet_512
-min_vnet_513
-min_vnet_514
-min_toefl_ibt
-min_toefl_pbt
-min_toefl_cbt
-min_toefl_itp
-min_ielts
-min_toeic
-min_cutep
-min_tuget
-min_kept
-min_psutep
-min_kuept
-min_cmuetegs
-min_swu_set
-min_det
-min_sat
-min_cefr
-min_ged_score
-description
-condition
-interview_location
-interview_date
-interview_time
-link
-min_cotmes_01
-min_cotmes_02
-min_cotmes_03
-min_mu001
-min_mu002
-min_mu003
-min_su001
-min_su002
-min_su003
-min_su004
-min_su005
-min_su006
-min_su007
-min_su008
-min_su009
-min_su010
-min_su011
-min_su012
-min_su013
-min_su014
-min_tu001
-min_tu002
-min_tu003
-min_tu004
-min_tu005
-min_tu061
-min_tu062
-min_tu071
-min_tu072
-min_tu081
-min_tu082
-min_tu091
-min_tu092
-min_gsat
-min_gsat_l
-min_gsat_m
-min_mu_elt
-min_netsat_math
-min_netsat_lang
-min_netsat_sci
-min_netsat_phy
-min_netsat_chem
-min_netsat_bio
-score_condition
-subject_names
-score_minimum
-"""
 
-SCORING_FILE_FIELDS = """type
-program_id
-major_id
-project_id
-project_name_th
-cal_type
-cal_subject_name
-cal_score_sum
-t_score
-priority_score 
-min_total_score
-gpax
-gpa21
-gpa22
-gpa23
-gpa24
-gpa25
-gpa26
-gpa27
-gpa28
-gpa29
-gpa22_23
-gpa22_23_28
-tgat
-tgat1
-tgat2
-tgat3
-tpat1
-tpat11
-tpat12
-tpat13
-tpat2
-tpat21
-tpat22
-tpat23
-tpat3
-tpat4
-tpat5
-a_lv_61
-a_lv_62
-a_lv_63
-a_lv_64
-a_lv_65
-a_lv_66
-a_lv_70
-a_lv_81
-a_lv_82
-a_lv_83
-a_lv_84
-a_lv_85
-a_lv_86
-a_lv_87
-a_lv_88
-a_lv_89
-vnet_51
-vnet_511
-vnet_512
-vnet_513
-vnet_514
-toefl_ibt
-toefl_pbt
-toefl_cbt
-toefl_ipt
-ielts
-toeic
-cutep
-tuget
-kept
-psutep
-kuept
-cmuetegs
-swu_set
-det
-mu_elt
-sat
-cefr
-ged_score
-cotmes_01
-cotmes_02
-cotmes_03
-mu001
-mu002
-mu003
-su001
-su002
-su003
-su004
-su005
-su006
-su007
-su008
-su009
-su010
-su011
-su012
-su013
-su014
-tu001
-tu002
-tu003
-tu004
-tu005
-tu061
-tu062
-tu071
-tu072
-tu081
-tu082
-tu091
-tu092
-netsat_math
-netsat_lang
-netsat_sci
-netsat_phy
-netsat_chem
-netsat_bio
-gsat
-gsat_l
-gsat_m
-"""
+CONDITION_FILE_FIELDS = [f.strip() for f in CONDITION_FILE_FIELD_STR.split() if f.strip() != '']
+SCORING_FILE_FIELDS = [f.strip() for f in SCORING_FILE_FIELD_STR.split() if f.strip() != '']
 
+def write_csv_header(writer, fields):
+    writer.writerow(fields)
+
+def write_condition_row(writer, row):
+    pass
+
+def sort_csv_rows(rows):
+    def row_key(r):
+        return (r['project_id'][:2], r['program_id'], r['major_id'], r['project_id'])
+    
+    keyrows = [(row_key(r),r) for r in rows]
+    return [r[1] for r in sorted(keyrows)]
+
+def load_all_criterias():
+    admission_criterias = {}
+    curriculum_majors = { cm.id: cm
+                          for cm
+                          in CurriculumMajor.objects.select_related('cupt_code').all() }
+
+    curriculum_major_admission_criterias = { cmac.admission_criteria_id: cmac
+                                             for cmac in CurriculumMajorAdmissionCriteria.objects.all() }
+
+    curriculum_major_admission_criteria_map = {}
+
+    for id in curriculum_major_admission_criterias:
+        cmac = curriculum_major_admission_criterias[id]
+        cmac.curriculum_major = curriculum_majors[cmac.curriculum_major_id]
+        if cmac.admission_criteria_id not in curriculum_major_admission_criteria_map:
+            curriculum_major_admission_criteria_map[cmac.admission_criteria_id] = []
+        curriculum_major_admission_criteria_map[cmac.admission_criteria_id].append(cmac)
+    
+    for criteria in (AdmissionCriteria
+                     .objects
+                     .filter(is_deleted=False)
+                     .order_by('faculty_id')):
+        if criteria.admission_project_id not in admission_criterias:
+            admission_criterias[criteria.admission_project_id] = []
+
+        admission_criterias[criteria.admission_project_id].append(criteria)
+
+        criteria.curriculummajoradmissioncriterias = curriculum_major_admission_criteria_map[criteria.id]
+
+    return admission_criterias
+
+def extract_condition_rows(project, admission_criterias):
+    return []
+
+@user_login_required
+def export_required_csv(request):
+    user = request.user
+    if not user.profile.is_admission_admin:
+        return redirect(reverse('backoffice:index'))
+
+    csv_filename = f"conditions-{datetime.now().strftime('%Y%m%d-%H%M%S')}.csv"
+    
+    response = HttpResponse(
+        content_type='text/csv',
+        headers={'Content-Disposition': f'attachment; filename="{csv_filename}"'},
+    )
+
+    writer = csv.DictWriter(response, fieldnames=CONDITION_FILE_FIELDS)
+    writer.writeheader()
+
+    all_rows = []
+
+    admission_projects = AdmissionProject.objects.filter(is_visible_in_backoffice=True).all()
+    admission_criterias = load_all_criterias()
+    
+    for project in admission_projects:
+        rows = extract_condition_rows(project, admission_criterias[project.id])
+        all_rows += rows
+
+    rows = sort_csv_rows(all_rows)
+    for r in rows:
+        write_condition_row(writer, r)
+    
+    return response
