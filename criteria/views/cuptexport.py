@@ -27,6 +27,7 @@ from criteria.criteria_options import REQUIRED_SCORE_TYPE_TAGS, SCORING_SCORE_TY
 from .cuptexport_fields import CONDITION_FILE_FIELD_STR, CONDITION_FILE_ZERO_FIELD_STR
 from .cuptexport_fields import SCORING_FILE_FIELD_STR, SCORING_FILE_ZERO_FIELD_STR
 from .cuptexport_fields import EXAM_FIELD_MAP
+from .cuptexport_fields import CONDITION_FILE_MIN_ZERO_FIELD_STR
 
 from . import prepare_admission_criteria, get_all_curriculum_majors
 
@@ -58,9 +59,6 @@ def is_criteria_match(row, custom_project):
 
 
 def validate_project_ids(curriculum_major_rows, additional_projects, cupt_code_custom_projects, save_criteria_str=True):
-    if len(curriculum_major_rows) <= 1:
-        return
-    
     program_id = curriculum_major_rows[0]['curriculum_major'].cupt_code.get_program_major_code_as_str()
 
     if program_id in cupt_code_custom_projects:
@@ -68,6 +66,9 @@ def validate_project_ids(curriculum_major_rows, additional_projects, cupt_code_c
     else:
         custom_projects = []
 
+    if custom_projects == []:
+        return
+        
     for r in curriculum_major_rows:
         r['required_criteria_str'] = r['criteria'].get_all_required_score_criteria_as_str()
         r['scoring_criteria_str'] = r['criteria'].get_all_scoring_score_criteria_as_str()
@@ -609,6 +610,13 @@ def update_project_information(project, rows):
                     if option['accepts_male_only'] == 1:
                         r['gender_male_number'] = r['slots']
 
+def fill_zero_min_scores(rows):
+    min_score_zero_fields = [f.strip() for f in CONDITION_FILE_MIN_ZERO_FIELD_STR.split() if f.strip() != '']
+    for r in rows:
+        for f in min_score_zero_fields:
+            if f not in r:
+                r[f] = 0
+
                         
 @user_login_required
 def export_required_csv(request):
@@ -635,6 +643,8 @@ def export_required_csv(request):
         rows = extract_condition_rows(project, admission_criterias[project.id])
 
         update_project_information(project, rows)
+
+        fill_zero_min_scores(rows)
         
         all_rows += rows
 
