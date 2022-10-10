@@ -58,55 +58,57 @@ def is_criteria_match(row, custom_project):
 
 
 def validate_project_ids(curriculum_major_rows, additional_projects, cupt_code_custom_projects, save_criteria_str=True):
-    if len(curriculum_major_rows) > 1:
-        program_id = curriculum_major_rows[0]['curriculum_major'].cupt_code.get_program_major_code_as_str()
+    if len(curriculum_major_rows) <= 1:
+        return
+    
+    program_id = curriculum_major_rows[0]['curriculum_major'].cupt_code.get_program_major_code_as_str()
 
-        if program_id in cupt_code_custom_projects:
-            custom_projects = cupt_code_custom_projects[program_id]
-        else:
-            custom_projects = []
+    if program_id in cupt_code_custom_projects:
+        custom_projects = cupt_code_custom_projects[program_id]
+    else:
+        custom_projects = []
 
+    for r in curriculum_major_rows:
+        r['required_criteria_str'] = r['criteria'].get_all_required_score_criteria_as_str()
+        r['scoring_criteria_str'] = r['criteria'].get_all_scoring_score_criteria_as_str()
+
+    if len(custom_projects) == 0:
         for r in curriculum_major_rows:
-            r['required_criteria_str'] = r['criteria'].get_all_required_score_criteria_as_str()
-            r['scoring_criteria_str'] = r['criteria'].get_all_scoring_score_criteria_as_str()
+            if 'validation_messages' in r:
+                r['validation_messages'].append(f'Too many rows - {len(custom_projects)} in config')
+                r['validation_messages'].append(r['required_criteria_str'])
+                r['validation_messages'].append(r['scoring_criteria_str'])
+        return
 
-        if len(custom_projects) == 0:
-            for r in curriculum_major_rows:
+    for r in curriculum_major_rows:
+        custom_project = next((p for p in custom_projects if is_criteria_match(r, p)), None)
+        #print(r,[p for p in custom_projects if is_criteria_match(r, p)])
+        #print("---------")
+        if custom_project:
+            r['project_id'] = custom_project['project_id']
+            if r['project_id'] in additional_projects:
+                if 'project_name_th' in r:
+                    r['project_name_th'] = additional_projects[r['project_id']]
                 if 'validation_messages' in r:
-                    r['validation_messages'].append(f'Too many rows - {len(custom_projects)} in config')
+                    r['validation_messages'].append(f"changed to {r['project_id']} ({additional_projects[r['project_id']]})")
                     r['validation_messages'].append(r['required_criteria_str'])
                     r['validation_messages'].append(r['scoring_criteria_str'])
-            return
-
-        for r in curriculum_major_rows:
-            custom_project = next((p for p in custom_projects if is_criteria_match(r, p)), None)
-            #print(r,[p for p in custom_projects if is_criteria_match(r, p)])
-            #print("---------")
-            if custom_project:
-                r['project_id'] = custom_project['project_id']
-                if r['project_id'] in additional_projects:
-                    if 'project_name_th' in r:
-                        r['project_name_th'] = additional_projects[r['project_id']]
-                    if 'validation_messages' in r:
-                        r['validation_messages'].append(f"changed to {r['project_id']} ({additional_projects[r['project_id']]})")
-                        r['validation_messages'].append(r['required_criteria_str'])
-                        r['validation_messages'].append(r['scoring_criteria_str'])
-                else:
-                    if 'validation_messages' in r:
-                        r['validation_messages'].append(f"changed to {r['project_id']} (PROJECT NOT FOUND)")
-                        r['validation_messages'].append(r['required_criteria_str'])
-                        r['validation_messages'].append(r['scoring_criteria_str'])
-
-        project_id_sets = set([r['project_id'] for r in curriculum_major_rows])
-        if len(project_id_sets) != len(curriculum_major_rows):
-            for r in curriculum_major_rows:
+            else:
                 if 'validation_messages' in r:
-                    r['validation_messages'].append('Too many rows')
+                    r['validation_messages'].append(f"changed to {r['project_id']} (PROJECT NOT FOUND)")
+                    r['validation_messages'].append(r['required_criteria_str'])
+                    r['validation_messages'].append(r['scoring_criteria_str'])
 
-        if not save_criteria_str:
-            for r in curriculum_major_rows:
-                del r['required_criteria_str']
-                del r['scoring_criteria_str']
+    project_id_sets = set([r['project_id'] for r in curriculum_major_rows])
+    if len(project_id_sets) != len(curriculum_major_rows):
+        for r in curriculum_major_rows:
+            if 'validation_messages' in r:
+                r['validation_messages'].append('Too many rows')
+
+    if not save_criteria_str:
+        for r in curriculum_major_rows:
+            del r['required_criteria_str']
+            del r['scoring_criteria_str']
 
 def load_export_config(project):
     configs = CuptExportConfig.objects.filter(admission_project=project)
@@ -349,7 +351,7 @@ def project_validation(request, project_id, round_id):
                                    is_deleted=False)
                            .order_by('faculty_id'))
     
-    majors = defaultdict(list)
+    majors = {}
     
     for admission_criteria in admission_criterias:
         curriculum_major_admission_criterias = admission_criteria.curriculummajoradmissioncriteria_set.select_related('curriculum_major').all()
@@ -372,6 +374,8 @@ def project_validation(request, project_id, round_id):
                 'cm_ar': mc,
                 'validation_messages': [],
             })
+            if curriculum_major.id not in majors:
+                majors[curriculum_major.id] = []
             majors[curriculum_major.id].append(row_items)
     
     if project.is_cupt_export_only_major_list:
@@ -385,7 +389,7 @@ def project_validation(request, project_id, round_id):
     for curriculum_major in get_all_curriculum_majors(project):
         if curriculum_major.id not in majors:
             free_curriculum_majors.append(curriculum_major)
-    
+
     return render(request,
                   'criteria/cuptexport/validate.html',
                   {'project': project,
