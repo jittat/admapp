@@ -564,7 +564,7 @@ def extract_rows(project, admission_criterias, base_row_conversion_f, extract_f,
                         
             rows.append(row_items)
 
-        postprocess_f(rows, project)
+    rows = postprocess_f(rows, project)
             
     return rows
 
@@ -592,6 +592,7 @@ def extract_condition_rows(project, admission_criterias):
     def condition_postprocess_f(rows, project):
         if project.is_cupt_export_only_major_list:
             rows = group_condition_rows(rows)
+        return rows
     
     return extract_rows(project, admission_criterias,
                         convert_to_base_row,
@@ -632,7 +633,6 @@ def update_project_information(project, rows):
                 if 'accepts_male_only' in option:
                     if option['accepts_male_only'] == 1:
                         r['gender_male_number'] = r['slots']
-
 
 
 def fill_zero_in_rows(rows, zero_fields):
@@ -705,7 +705,7 @@ def extract_scoring_rows(project, admission_criterias):
                 row_items['cal_subject_name'] = '|'.join(names)
 
     def scoring_postprocess_f(rows, project):
-        pass
+        return rows
     
     return extract_rows(project, admission_criterias,
                         convert_to_base_row,
