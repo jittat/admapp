@@ -313,7 +313,7 @@ def get_project_type(project):
 
 def convert_to_base_row(project, curriculum_major, admission_criteria, curriculum_major_admission_criteria):
     mc = curriculum_major_admission_criteria
-    return {
+    row = {
         'project_id': project.cupt_code,
         'project_name_th': project.short_title,
         'program_id': curriculum_major.cupt_code.program_code,
@@ -325,6 +325,9 @@ def convert_to_base_row(project, curriculum_major, admission_criteria, curriculu
         'curriculum_major': curriculum_major,
         'slots': mc.slots,
     }
+    if project.is_cupt_export_only_major_list:
+        row['add_limit'] = 0
+    return row
 
 @user_login_required
 def project_validation(request, project_id, round_id):
@@ -548,7 +551,7 @@ def extract_student_curriculum_type(row_items, admission_criteria):
         if admission_criteria.is_curriculum_type_accepted(i):
             row_items[f] = 1
         else:
-            row_items[f] = 0
+            row_items[f] = 2
 
 
 def extract_rows(project, admission_criterias, base_row_conversion_f, extract_f, postprocess_f):
