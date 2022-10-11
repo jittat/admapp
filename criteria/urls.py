@@ -46,6 +46,9 @@ urlpatterns += [
     path('export/required/csv/',
          cuptexport.export_required_csv, name='export-required-csv'),
 
+    path('export/scoring/csv/',
+         cuptexport.export_scoring_csv, name='export-scoring-csv'),
+
     path('export/validate/<int:project_id>/<int:round_id>/',
          cuptexport.project_validation, name='export-project-validate'),
 ]

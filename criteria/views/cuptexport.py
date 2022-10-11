@@ -27,7 +27,7 @@ from criteria.criteria_options import REQUIRED_SCORE_TYPE_TAGS, SCORING_SCORE_TY
 from .cuptexport_fields import CONDITION_FILE_FIELD_STR, CONDITION_FILE_ZERO_FIELD_STR
 from .cuptexport_fields import SCORING_FILE_FIELD_STR, SCORING_FILE_ZERO_FIELD_STR
 from .cuptexport_fields import EXAM_FIELD_MAP
-from .cuptexport_fields import CONDITION_FILE_MIN_ZERO_FIELD_STR
+from .cuptexport_fields import CONDITION_FILE_MIN_ZERO_FIELD_STR, SCORING_FILE_SCORING_ZERO_FIELD_STR
 
 from . import prepare_admission_criteria, get_all_curriculum_majors
 
@@ -429,6 +429,9 @@ CONDITION_FILE_FIELD_DEFAULTS = {
     'score_minimum': 0,
 }
 
+SCORING_FILE_FIELD_DEFAULTS = {
+}
+
 def write_csv_header(writer, fields):
     writer.writerow(fields)
 
@@ -509,7 +512,13 @@ def exam_name_to_required_field(exam):
     if (exam in EXAM_FIELD_MAP) and (EXAM_FIELD_MAP[exam] != ''):
         return f'min_{EXAM_FIELD_MAP[exam]}'
     else:
-        return 'ERROR'
+        return 'ERROR-' + exam
+
+def exam_name_to_scoring_field(exam):
+    if (exam in EXAM_FIELD_MAP) and (EXAM_FIELD_MAP[exam] != ''):
+        return EXAM_FIELD_MAP[exam]
+    else:
+        return 'ERROR-' + exam
 
 def group_condition_rows(rows):
     groupped_rows = defaultdict(list)
@@ -541,39 +550,53 @@ def extract_student_curriculum_type(row_items, admission_criteria):
         else:
             row_items[f] = 0
 
-            
-def extract_condition_rows(project, admission_criterias):
+
+def extract_rows(project, admission_criterias, base_row_conversion_f, extract_f, postprocess_f):
     rows = []
     for admission_criteria in admission_criterias:
         curriculum_major_admission_criterias = admission_criteria.curriculum_major_admission_criterias
 
         for mc in curriculum_major_admission_criterias:
             curriculum_major = mc.curriculum_major
-            row_items = convert_to_base_row(project, curriculum_major, admission_criteria, mc)
+            row_items = base_row_conversion_f(project, curriculum_major, admission_criteria, mc)
 
-            if not project.is_cupt_export_only_major_list:
-                for required_score in admission_criteria.extracted_required_criteria[0]:
-                    if required_score['score_type'] != 'GROUP-OR':
-                        row_items[exam_name_to_required_field(required_score['score_type'])] = normalize_int_value(required_score['min_value'])
-                    else:
-                        names = []
-                        mins = []
-                        for item_score in required_score['children']:
-                            names.append(exam_name_to_required_field(item_score['score_type']))
-                            mins.append(normalize_int_value(item_score['min_value']))
-
-                        row_items['score_condition'] = 1
-                        row_items['subject_names'] = ' '.join(names)
-                        row_items['score_minimum'] = ' '.join([str(v) for v in mins])
-
-            extract_student_curriculum_type(row_items, admission_criteria)
+            extract_f(row_items, project, admission_criteria, curriculum_major)
                         
             rows.append(row_items)
 
-        if project.is_cupt_export_only_major_list:
-            rows = group_condition_rows(rows)
+        postprocess_f(rows, project)
             
     return rows
+
+
+def extract_condition_rows(project, admission_criterias):
+
+    def condition_extract_f(row_items, project, admission_criteria, curriculum_major):
+        if not project.is_cupt_export_only_major_list:
+            for required_score in admission_criteria.extracted_required_criteria[0]:
+                if required_score['score_type'] != 'GROUP-OR':
+                    row_items[exam_name_to_required_field(required_score['score_type'])] = normalize_int_value(required_score['min_value'])
+                else:
+                    names = []
+                    mins = []
+                    for item_score in required_score['children']:
+                        names.append(exam_name_to_required_field(item_score['score_type']))
+                        mins.append(normalize_int_value(item_score['min_value']))
+
+                    row_items['score_condition'] = 1
+                    row_items['subject_names'] = ' '.join(names)
+                    row_items['score_minimum'] = ' '.join([str(v) for v in mins])
+
+        extract_student_curriculum_type(row_items, admission_criteria)
+                        
+    def condition_postprocess_f(rows, project):
+        if project.is_cupt_export_only_major_list:
+            rows = group_condition_rows(rows)
+    
+    return extract_rows(project, admission_criterias,
+                        convert_to_base_row,
+                        condition_extract_f,
+                        condition_postprocess_f)
 
 def export_options_as_dict(config):
     d = {}
@@ -610,14 +633,22 @@ def update_project_information(project, rows):
                     if option['accepts_male_only'] == 1:
                         r['gender_male_number'] = r['slots']
 
-def fill_zero_min_scores(rows):
-    min_score_zero_fields = [f.strip() for f in CONDITION_FILE_MIN_ZERO_FIELD_STR.split() if f.strip() != '']
+
+
+def fill_zero_in_rows(rows, zero_fields):
     for r in rows:
-        for f in min_score_zero_fields:
+        for f in zero_fields:
             if f not in r:
                 r[f] = 0
 
-                        
+def fill_zero_min_scores(rows):
+    min_score_zero_fields = [f.strip() for f in CONDITION_FILE_MIN_ZERO_FIELD_STR.split() if f.strip() != '']
+    fill_zero_in_rows(rows, min_score_zero_fields)
+
+def fill_zero_scoring_scores(rows):
+    scoring_score_zero_fields = [f.strip() for f in SCORING_FILE_SCORING_ZERO_FIELD_STR.split() if f.strip() != '']
+    fill_zero_in_rows(rows, scoring_score_zero_fields)
+
 @user_login_required
 def export_required_csv(request):
     user = request.user
@@ -653,5 +684,101 @@ def export_required_csv(request):
     rows = sort_csv_rows(all_rows)
     for r in rows:
         write_condition_row(writer, r, zero_fields)
+    
+    return response
+
+def extract_scoring_rows(project, admission_criterias):
+    def scoring_extract_f(row_items, project, admission_criteria, curriculum_major):
+        row_items['cal_type'] = 0
+        row_items['cal_score_sum'] = 0
+        row_items['cal_subject_name'] = 0
+        for scoring_score in admission_criteria.extracted_scoring_criteria[0]:
+            if scoring_score['score_type'] != 'GROUP-MAX':
+                row_items[exam_name_to_scoring_field(scoring_score['score_type'])] = normalize_int_value(scoring_score['base_weight'])
+            else:
+                row_items['cal_type'] = 1
+                row_items['cal_score_sum'] = normalize_int_value(scoring_score['base_weight'])
+                names = []
+                for item_score in scoring_score['children']:
+                    names.append(exam_name_to_scoring_field(item_score['score_type']))
+
+                row_items['cal_subject_name'] = '|'.join(names)
+
+    def scoring_postprocess_f(rows, project):
+        pass
+    
+    return extract_rows(project, admission_criterias,
+                        convert_to_base_row,
+                        scoring_extract_f,
+                        scoring_postprocess_f)
+
+
+def write_scoring_row(writer, row, zero_fields):
+    EXTRA_FIELDS = [
+        'slots',
+        'curriculum_major',
+        'criteria',
+        'add_limit',
+        'condition',
+        'gender_male_number',
+    ]
+
+    curriculum_major = row['curriculum_major']
+    major_cupt_code = row['curriculum_major'].cupt_code
+    
+    update = {
+    }
+
+    out_row = dict(row)
+    for f in EXTRA_FIELDS:
+        if f in out_row:
+            del out_row[f]
+    for f in zero_fields:
+        if f not in out_row:
+            out_row[f] = '0'
+
+    for f in SCORING_FILE_FIELD_DEFAULTS:
+        if f not in out_row:
+            out_row[f] = CONDITION_FILE_FIELD_DEFAULTS[f]
+        
+    out_row.update(update)
+    writer.writerow(out_row)
+
+@user_login_required
+def export_scoring_csv(request):
+    user = request.user
+    if not user.profile.is_admission_admin:
+        return redirect(reverse('backoffice:index'))
+
+    csv_filename = f"scoring-{datetime.now().strftime('%Y%m%d-%H%M%S')}.csv"
+    
+    response = HttpResponse(
+        content_type='text/csv',
+        headers={'Content-Disposition': f'attachment; filename="{csv_filename}"'},
+    )
+
+    writer = csv.DictWriter(response, fieldnames=SCORING_FILE_FIELDS)
+    writer.writeheader()
+
+    all_rows = []
+
+    admission_projects = AdmissionProject.objects.filter(is_visible_in_backoffice=True).all()
+    admission_criterias = load_all_criterias()
+    
+    for project in admission_projects:
+        if not project.is_cupt_export_only_major_list:
+            rows = extract_scoring_rows(project, admission_criterias[project.id])
+
+            update_project_information(project, rows)
+
+            fill_zero_scoring_scores(rows)
+        
+            all_rows += rows
+
+    zero_fields = [x.strip() for x in SCORING_FILE_ZERO_FIELD_STR.split() if x.strip() != '']
+        
+    rows = sort_csv_rows(all_rows)
+    for r in rows:
+        write_scoring_row(writer, r, zero_fields)
     
     return response
