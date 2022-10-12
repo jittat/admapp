@@ -14,7 +14,7 @@
     ./manage.py makemigrations
     ./manage.py migrate
     ./manage.py migrate --run-syncdb
-    ./manage.py loaddata campuses faculties admission_projects_and_rounds majors
+    ./manage.py loaddata campuses faculties majors provinces admission_rounds
 ```
 ## ใช้ pipenv
 สร้าง env และ install dependencies สำหรับทำครั้งแรก
@@ -25,4 +25,25 @@
 สำหรับเปิด shell เพื่อเข้าไปรันคำสั่ง manage.py ต่างๆ
 ```
     pipenv shell
+```
+
+
+## ใช้ conda
+**สร้าง env ครั้งแรก**
+```shell
+conda create -n admapp python=3.8
+```
+**Activate**
+```shell
+conda activate admapp
+```
+**Install requirements**
+```shell
+pip install -r requirements.txt
+```
+
+## MySql
+ถ้าต้องการใช้ MySql สำหรับ develop สามารถรัน `docker-compose.yml` และตั้งค่า `/admapp/settings_local.py` เพิมเติมได้
+```shell
+docker-compose up
 ```
