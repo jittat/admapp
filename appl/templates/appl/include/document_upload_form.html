@@ -60,13 +60,13 @@
   		{% for d in doc.applicant_uploaded_documents %}
   		  <li>
                     {% if not doc.is_url_document %}
-  		      <a href="{% url 'appl:document-download' applicant.id doc.id d.id %}" target="_blank">
+  		      <a href="{% url 'appl:document-download' applicant.id doc.id d.id %}" target="_blank" rel="noopener noreferrer">
   		        {{ d|uploadeddocument_name }}
   		      </a>
                     {% else %}
                       {{ d.detail }}
                       &nbsp;
-                      <a href="{{ d.document_url }}" class="btn btn-sm btn-info" target="_blank">{% trans 'ดูลิงก์' %}</a>
+                      <a href="{{ d.document_url }}" class="btn btn-sm btn-info" target="_blank" rel="noopener noreferrer">{% trans 'ดูลิงก์' %}</a>
                     {% endif %}
                     &nbsp;
                     {% if not is_deadline_passed or doc.is_interview_document %}

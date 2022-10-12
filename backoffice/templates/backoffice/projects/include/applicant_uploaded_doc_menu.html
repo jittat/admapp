@@ -12,7 +12,7 @@
               {% if app_doc.detail %}{{ app_doc.detail }}{% else %}เอกสารที่ {{ forloop.counter }}{% endif %}
             </a>
           {% else %}
-            <a target="_blank" href="{{ app_doc.document_url }}">
+            <a target="_blank" rel="noopener noreferrer" href="{{ app_doc.document_url }}">
               <i class="fa fa-angle-double-right"></i>
               {% if app_doc.detail %}{{ app_doc.detail }}{% else %}เอกสารที่ {{ forloop.counter }}{% endif %} <i class="fa fa-external-link"></i>
             </a>
@@ -28,7 +28,7 @@
 	    </a>
             <span class="badge badge-secondary">{{ doc.applicant_uploaded_documents|length }}</span>
           {% else %}
-            <a target="_blank" href="{{ app_doc.document_url }}">
+            <a target="_blank" rel="noopener noreferrer" href="{{ app_doc.document_url }}">
               <i class="fa fa-angle-right"></i> {{ doc.title }} <i class="fa fa-external-link"></i>
             </a>
           {% endif %}
@@ -44,9 +44,9 @@
       var href = $(this).attr('href');
       var isPdf = ($(this).data('isPdf') == 'True');
       if(!isPdf) {
-        var imgstr = '<a onclick="openPhotoSwipe(\'' + href + '\')" target="_blank"><img class="img-fluid" style="max-height: 100%;" src="' + href + '"/></a>';
+        var imgstr = '<a onclick="openPhotoSwipe(\'' + href + '\')" rel="noopener noreferrer" target="_blank"><img class="img-fluid" style="max-height: 100%;" src="' + href + '"/></a>';
       } else {
-        var imgstr = '<a href="' + href + '" target="_blank"><embed width="100%" height="100%" type="application/pdf" src="' + href + '"/></a>';
+        var imgstr = '<a href="' + href + '" target="_blank" rel="noopener noreferrer"><embed width="100%" height="100%" type="application/pdf" src="' + href + '"/></a>';
       }
       $('#document_panel_id').html(imgstr);
       $('#download_link_id').attr('href', href).show();

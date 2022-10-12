@@ -6,17 +6,17 @@
     <h3>รายการข้อมูล</h3>
     <ul>
       <li>
-	เงื่อนไขการรับ: <a class="btn btn-sm btn-primary" target="_blank" href="{% url 'backoffice:criteria:export-required-csv' %}">ดาวน์โหลด</a>
+	เงื่อนไขการรับ: <a class="btn btn-sm btn-primary" target="_blank" rel="noopener noreferrer" href="{% url 'backoffice:criteria:export-required-csv' %}">ดาวน์โหลด</a>
       </li>
       <li>
-	Scoring <a class="btn btn-sm btn-primary" target="_blank" href="{% url 'backoffice:criteria:export-scoring-csv' %}">ดาวน์โหลด</a>
+	Scoring <a class="btn btn-sm btn-primary" target="_blank" rel="noopener noreferrer" href="{% url 'backoffice:criteria:export-scoring-csv' %}">ดาวน์โหลด</a>
       </li>
     </ul>
     <h3>ตรวจสอบข้อมูล</h3>
     <ul>
       {% for project in admission_projects %}
 	{% for round in project.admission_rounds.all %}
-	  <li><a target="_blank" href="{% url 'backoffice:criteria:export-project-validate' project.id round.id %}">{{ project }} {{ round }}</a></li>
+	  <li><a target="_blank" rel="noopener noreferrer" href="{% url 'backoffice:criteria:export-project-validate' project.id round.id %}">{{ project }} {{ round }}</a></li>
 	{% endfor %}
       {% endfor %}
     </ul>

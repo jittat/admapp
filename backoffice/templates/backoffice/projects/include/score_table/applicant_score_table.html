@@ -124,7 +124,7 @@
                   {% if accepted_for_interview_result_frozen %}
                     {% if a.is_called_for_interview %}<i class="fa fa-check" style="color: green;"></i>{% else %}{% if a.is_called_for_interview == False %}<i class="fa fa-times" style="color: red;"></i>{% endif %}{% endif %}
 		    {% if individual_call_only %}
-		      <a class="btn btn-outline-secondary btn-sm" target="_blank" href="{% url 'backoffice:projects-show-applicant' project.id admission_round.id major.number 0 %}?natid={{ a.national_id }}">กรอก</a>
+		      <a class="btn btn-outline-secondary btn-sm" target="_blank" rel="noopener noreferrer" href="{% url 'backoffice:projects-show-applicant' project.id admission_round.id major.number 0 %}?natid={{ a.national_id }}">กรอก</a>
 		    {% endif %}
                     {% if a.is_called_for_interview %}
                       {% if admission_result.is_tcas_confirmed == False %}

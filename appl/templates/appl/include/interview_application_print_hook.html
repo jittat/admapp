@@ -1,17 +1,17 @@
 {% load i18n %}
 {% if admission_round.id == 5 %}
   <h4>พิมพ์ใบสมัครเพื่อสัมภาษณ์</h4>
-  <a class="btn btn-success btn-sm" target="_blank" href="{% url 'appl:common-print' %}">พิมพ์ใบสมัคร</a><br />
+  <a class="btn btn-success btn-sm" target="_blank" rel="noopener noreferrer" href="{% url 'appl:common-print' %}">พิมพ์ใบสมัคร</a><br />
 {% endif %}
 {% if false and admission_round.id == 2 %}
   {% if active_application.admission_project.id != 11 %} <!-- ไม่ใช่กีฬา -->
     {% if active_application.admission_project.id != 5 %} <!-- ไม่ใช่สาธิต -->
       <h4>พิมพ์ใบสมัครเพื่อสัมภาษณ์</h4>
-      <a class="btn btn-success btn-sm" target="_blank" href="{% url 'appl:common-print' %}">พิมพ์ใบสมัคร</a><br />
+      <a class="btn btn-success btn-sm" target="_blank" rel="noopener noreferrer" href="{% url 'appl:common-print' %}">พิมพ์ใบสมัคร</a><br />
       เพื่อนำมาประกอบการสัมภาษณ์ในวันที่ 19 เม.ย. 2562<br>
       <div class="mt10">
         {% if active_application.admission_project.id != 12 %}
-          อ่าน<a href="https://admission.ku.ac.th/admmedia/62-tcas-r2-interview-schedule.pdf" target="_blank">รายละเอียดและกำหนดการสัมภาษณ์</a> <a href="https://admission.ku.ac.th/admmedia/62-tcas-r2-interview-schedule.pdf" target="_blank" class="badge badge-secondary">ดาวน์โหลด</a>
+          อ่าน<a href="https://admission.ku.ac.th/admmedia/62-tcas-r2-interview-schedule.pdf" target="_blank">รายละเอียดและกำหนดการสัมภาษณ์</a> <a href="https://admission.ku.ac.th/admmedia/62-tcas-r2-interview-schedule.pdf" target="_blank" rel="noopener noreferrer" rel="noopener noreferrer" class="badge badge-secondary">ดาวน์โหลด</a>
         {% else %}
           อ่าน<a href="https://admission.ku.ac.th/admmedia/62-tcas-r2-culture-interview-schedule.pdf" target="_blank">รายละเอียดและกำหนดการสัมภาษณ์</a> <a href="https://admission.ku.ac.th/admmedia/62-tcas-r2-culture-interview-schedule.pdf" target="_blank" class="badge badge-secondary">ดาวน์โหลด</a>
         {% endif %}
@@ -22,38 +22,38 @@
 {% endif %}
 {% if active_application.admission_project.id == 1 %} <!-- ช้างเผือก -->
   <h4>พิมพ์ใบสมัครเพื่อสัมภาษณ์</h4>
-  <a class="btn btn-success btn-sm" target="_blank" href="{% url 'appl:el-print' %}">พิมพ์ใบสมัคร</a><br />
+  <a class="btn btn-success btn-sm" target="_blank" rel="noopener noreferrer" href="{% url 'appl:el-print' %}">พิมพ์ใบสมัคร</a><br />
   เพื่อนำมาประกอบการสัมภาษณ์ในวันที่ 18 ม.ค. 2563
   <hr />
 {% endif %}
 {% if active_application.admission_project.id == 2 %} <!-- เรียนล่วงหน้า -->
   <h4>พิมพ์ใบสมัครเพื่อสัมภาษณ์</h4>
-  <a class="btn btn-success btn-sm" target="_blank" href="{% url 'appl:ap-print' %}">พิมพ์ใบสมัคร</a><br />
+  <a class="btn btn-success btn-sm" target="_blank" rel="noopener noreferrer" href="{% url 'appl:ap-print' %}">พิมพ์ใบสมัคร</a><br />
   เพื่อนำมาประกอบการสัมภาษณ์ในวันที่ 18 ม.ค. 2563
   <hr />
 {% endif %}
 {% if active_application.admission_project.id == 3 %} <!-- นานาชาติและภาษาอังกฤษ -->
   <h4>{% trans 'พิมพ์ใบสมัครเพื่อสัมภาษณ์' %}</h4>
-  <a class="btn btn-success btn-sm" target="_blank" href="{% url 'appl:inter-print' %}">{% trans 'พิมพ์ใบสมัคร' %}</a><br />
+  <a class="btn btn-success btn-sm" target="_blank" rel="noopener noreferrer" href="{% url 'appl:inter-print' %}">{% trans 'พิมพ์ใบสมัคร' %}</a><br />
   {% trans 'เพื่อนำมาประกอบการสัมภาษณ์ในวันที่ 18 ม.ค. 2563' %}
   <hr />
 {% endif %}
 {% if active_application.admission_project.id == 28 %} <!-- พสวท -->
   <h4>พิมพ์ใบสมัครเพื่อสัมภาษณ์</h4>
-  <a class="btn btn-success btn-sm" target="_blank" href="{% url 'appl:common-print' %}">พิมพ์ใบสมัคร</a><br />
+  <a class="btn btn-success btn-sm" target="_blank" rel="noopener noreferrer" href="{% url 'appl:common-print' %}">พิมพ์ใบสมัคร</a><br />
   เพื่อนำมาประกอบการสัมภาษณ์
   <hr />
 {% endif %}
 {% if active_application.admission_project.id == 36 %} <!-- โอลิมปิก -->
   <h4>พิมพ์ใบสมัครเพื่อสัมภาษณ์</h4>
-  <a class="btn btn-success btn-sm" target="_blank" href="{% url 'appl:common-print' %}">พิมพ์ใบสมัคร</a><br />
+  <a class="btn btn-success btn-sm" target="_blank" rel="noopener noreferrer" href="{% url 'appl:common-print' %}">พิมพ์ใบสมัคร</a><br />
   เพื่อนำมาประกอบการสัมภาษณ์ในวันที่ 18 ม.ค. 2563
   <hr />
 {% endif %}
 {% if admission_round.id == 3 %}
   {% if active_application.admission_project.id != 12 and active_application.admission_project.id != 18 %}
     <h4>พิมพ์ใบสมัครเพื่อสัมภาษณ์</h4>
-    <a class="btn btn-success btn-sm" target="_blank" href="{% url 'appl:common-print' %}">พิมพ์ใบสมัคร</a><br />
+    <a class="btn btn-success btn-sm" target="_blank" rel="noopener noreferrer" href="{% url 'appl:common-print' %}">พิมพ์ใบสมัคร</a><br />
     เพื่อนำมาประกอบการสัมภาษณ์
     <hr />
   {% endif %}

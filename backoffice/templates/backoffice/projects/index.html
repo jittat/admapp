@@ -122,9 +122,9 @@
               <td class="xx-none">
                 {% if user_major_number == any_major or user_major_number == major.number %}
                   {% if major.has_any_applications and applicant_score_viewable %}
-                    <a target="_blank" class="xx-none btn btn-sm btn-outline-secondary" href="{% url 'backoffice:projects-show-scores' project.id admission_round.id major.number %}">เรียกสัมภาษณ์</a>
+                    <a target="_blank" class="xx-none btn btn-sm btn-outline-secondary" rel="noopener noreferrer" href="{% url 'backoffice:projects-show-scores' project.id admission_round.id major.number %}">เรียกสัมภาษณ์</a>
                   {% endif %}
-                  <a target="_blank" class="xx-none btn btn-sm btn-outline-secondary" href="{% url 'backoffice:projects-show-applicant' project.id admission_round.id major.number 1 %}">พิจารณาผู้สมัคร</a>
+                  <a target="_blank" class="xx-none btn btn-sm btn-outline-secondary" rel="noopener noreferrer" href="{% url 'backoffice:projects-show-applicant' project.id admission_round.id major.number 1 %}">พิจารณาผู้สมัคร</a>
                 {% endif %}
               </td>
               <td class="d-none">
@@ -133,9 +133,9 @@
                     <div class="dropdown">
                       <a class="btn btn-sm btn-outline-secondary dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">พิจารณา</a>
                       <div class="dropdown-menu">
-                        <a target="_blank" class="dropdown-item" href="{% url 'backoffice:projects-show-applicant' project.id admission_round.id major.number 1 %}">ผู้สมัครรายคน</a>
+                        <a target="_blank" class="dropdown-item" rel="noopener noreferrer" href="{% url 'backoffice:projects-show-applicant' project.id admission_round.id major.number 1 %}">ผู้สมัครรายคน</a>
                         {% if applicant_score_viewable %}
-                          <a target="_blank" class="dropdown-item" href="{% url 'backoffice:projects-show-scores' project.id admission_round.id major.number %}">พิจารณาคะแนน</a>
+                          <a target="_blank" class="dropdown-item" rel="noopener noreferrer" href="{% url 'backoffice:projects-show-scores' project.id admission_round.id major.number %}">พิจารณาคะแนน</a>
                         {% endif %}
                       </div>
                     </div>
