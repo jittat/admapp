@@ -404,7 +404,7 @@ def create(request, project_id, round_id):
                 "value": float(s.value) if s.value is not None else None,
                 "unit": s.unit,
                 "relation": s.relation if s.relation is not None else None,
-                "type": s.score_type,
+                "score_type": s.score_type,
                 "children": [{
                     "id": "%s.%s" % (ss.primary_order, ss.secondary_order),
                     "title": ss.description,
