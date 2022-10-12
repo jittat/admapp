@@ -2,11 +2,8 @@ from django_bootstrap import bootstrap
 bootstrap()
 
 import sys
-import csv
-from datetime import datetime
 
-from regis.models import Applicant
-from appl.models import AdmissionProject, AdmissionResult, AdmissionRound, ProjectApplication
+from appl.models import AdmissionProject, AdmissionRound
 from backoffice.models import MajorInterviewCallDecision
 
 def main():

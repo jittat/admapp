@@ -1,27 +1,21 @@
 # -*- coding: utf-8 -*-
-import os, sys
-from django import forms
-from django.forms import ValidationError
-
-from django.shortcuts import render, redirect, get_object_or_404
-from django.urls import reverse
-from django.http import HttpResponse, HttpResponseForbidden
-
-from django.contrib.auth.password_validation import validate_password
-
-from django.conf import settings
-from django.utils.translation import gettext_lazy as _
-
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Submit, ButtonHolder, Row, Div
+from django import forms
+from django.conf import settings
+from django.contrib.auth.password_validation import validate_password
+from django.forms import ValidationError
+from django.http import HttpResponse, HttpResponseForbidden
+from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse
+from django.utils.translation import gettext_lazy as _
 
 from admapp.emails import send_registration_email, send_forget_password_email
-
+from .decorators import appl_login_required
+from .models import Applicant, LogItem
 from .validators import is_valid_national_id
 from .validators import is_valid_passport_number
-from .models import Applicant, LogItem
 
-from .decorators import appl_login_required
 
 class LoginForm(forms.Form):
     national_id = forms.CharField(label=_('รหัสประจำตัวประชาชนหรือหมายเลขพาสปอร์ต'),

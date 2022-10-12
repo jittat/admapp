@@ -1,27 +1,19 @@
-import csv
 import json
 from decimal import Decimal
 
-from datetime import datetime
-from django.core import serializers
-
+from django.db import transaction
+from django.http import Http404
+from django.http import HttpResponse, HttpResponseForbidden, HttpResponseNotFound
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
-from django.http import HttpResponse, HttpResponseForbidden, HttpResponseNotFound
-from django.db import transaction
 
-from django.http import Http404
-
-from regis.models import Applicant, LogItem
 from appl.models import AdmissionProject, AdmissionRound
-from appl.models import ProjectApplication, Payment, Major, AdmissionResult, Faculty
-from appl.models import ProjectUploadedDocument, UploadedDocument, ExamScoreProvider, MajorInterviewDescription
-
-from backoffice.views.permissions import can_user_view_project, can_user_view_applicant_in_major, can_user_view_applicants_in_major
+from appl.models import Faculty
 from backoffice.decorators import user_login_required
+from backoffice.views.permissions import can_user_view_project
+from criteria.models import CurriculumMajor, AdmissionCriteria, ScoreCriteria, CurriculumMajorAdmissionCriteria, \
+    MajorCuptCode
 
-from criteria.models import CurriculumMajor, AdmissionCriteria, ScoreCriteria, CurriculumMajorAdmissionCriteria, MajorCuptCode
-from criteria.models import COMPONENT_WEIGHT_TYPE_CHOICES
 
 def is_number(string):
     try:

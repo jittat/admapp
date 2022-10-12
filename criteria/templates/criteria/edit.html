@@ -42,7 +42,7 @@
 
     <!-- Mameaw: to modify react component go to "/main/static/react" 
       run "yarn" then "yarn dev" and modify file in src folder-->
-    <script src="{% static "react/CreateCriterionForm.js" %}" data-majors='{{ majors|safe }}'
+    <script src="{% static 'react/CreateCriterionForm.js' %}" data-majors='{{ majors|safe }}'
       data-selected-majors='{{ data_selected_majors|safe }}' data-required='{{ data_required|safe }}'
       data-scoring='{{ data_scoring|safe }}' data-mode="edit" data-is_custom_score_criteria_allowed={{project.is_custom_score_criteria_allowed}}></script>
 

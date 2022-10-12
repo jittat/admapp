@@ -2,8 +2,9 @@ import json
 
 from django.db import models
 
-from regis.models import Applicant
 from appl.models import School, AdmissionProject
+from regis.models import Applicant
+
 
 class TopSchool(models.Model):
     school = models.OneToOneField(School,

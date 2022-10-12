@@ -3,7 +3,6 @@ bootstrap()
 
 import sys
 import csv
-from datetime import datetime
 
 from regis.models import Applicant
 

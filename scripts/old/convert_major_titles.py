@@ -1,5 +1,6 @@
-import sys
 import csv
+import sys
+
 
 def main():
     app_filename = sys.argv[1]

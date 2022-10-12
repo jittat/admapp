@@ -3,9 +3,8 @@ bootstrap()
 
 import sys
 import csv
-from datetime import datetime
 
-from appl.models import AdmissionProject, AdmissionRound, Faculty
+from appl.models import AdmissionProject, Faculty
 from criteria.models import AdmissionCriteria
 
 from export_major_criterias_as_json import score_vector_from_criterias
@@ -298,7 +297,6 @@ PROJECT_TYPES = {
     'A0699': '1_2565',
     'A0700': '1_2565',
     'A0799': '1_2565',
-    'A0700': '1_2565',
     'A0800': '1_2565',
     'A0900': '1_2565',
     'A1000': '1_2565',
@@ -744,8 +742,7 @@ def min_score_vector_from_criterias(score_criterias, curriculum_major):
     return value_vectors
 
 def build_or_conditions(or_criterias):
-    items = {}
-    items['score_condition'] = 1
+    items = {'score_condition': 1}
     names = []
     scores = []
     for c in or_criterias:

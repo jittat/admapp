@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 
+from django.http import HttpResponseForbidden
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
-from django.http import HttpResponseForbidden, HttpResponseServerError
 
-from regis.models import Applicant, LogItem
-from appl.models import AdmissionProject, AdmissionRound, Major, MajorSelection, Faculty
-
+from appl.models import AdmissionRound, Major, MajorSelection, Faculty
 from regis.decorators import appl_login_required
+from regis.models import LogItem
+
 
 # def get_all_majors(request):
 #     return 

@@ -5,8 +5,8 @@ import sys
 import csv
 
 from regis.models import Applicant
-from appl.models import AdmissionProject, AdmissionResult, AdmissionRound, ProjectApplication, Payment
-from supplements.models import load_supplement_configs_with_instance
+from appl.models import AdmissionProject, AdmissionResult, AdmissionRound
+
 
 def main():
     project_id = sys.argv[1]

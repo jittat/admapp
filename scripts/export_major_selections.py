@@ -3,7 +3,7 @@ bootstrap()
 
 import sys
 
-from appl.models import AdmissionProject, AdmissionRound, Applicant, ProjectApplication
+from appl.models import AdmissionProject, AdmissionRound, ProjectApplication
 
 def main():
     project_id = sys.argv[1]

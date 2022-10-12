@@ -1,13 +1,13 @@
-from django.shortcuts import render
-
-from django.http import JsonResponse, HttpResponseForbidden, HttpResponse
-from django.views.decorators.csrf import csrf_exempt
-from django.conf import settings
 import json
-import dateutil.parser
 
-from .models import QRConfirmation
+import dateutil.parser
+from django.conf import settings
+from django.http import JsonResponse, HttpResponse
+from django.views.decorators.csrf import csrf_exempt
+
 from appl.models import AdmissionRound, Payment, Applicant
+from .models import QRConfirmation
+
 
 def health(request):
     return JsonResponse({ 'description': 'KU Admission Health Status',

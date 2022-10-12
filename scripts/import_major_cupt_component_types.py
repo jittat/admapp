@@ -1,7 +1,6 @@
 from django_bootstrap import bootstrap
 bootstrap()
 
-import re
 import sys
 import csv
 

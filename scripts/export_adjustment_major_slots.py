@@ -1,12 +1,7 @@
 from django_bootstrap import bootstrap
 bootstrap()
 
-import sys
-import csv
-
-from django.contrib.auth.models import User
-from appl.models import Faculty, AdmissionRound
-from backoffice.models import AdjustmentMajor, AdjustmentMajorSlot
+from backoffice.models import AdjustmentMajorSlot
 
 NUMS = """
 00219111613

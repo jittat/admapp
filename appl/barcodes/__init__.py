@@ -1,9 +1,9 @@
-import barcode
-import types
-import sys
-from barcode.writer import ImageWriter
-from PIL import Image, ImageDraw, ImageFont
 import os.path
+import types
+
+import barcode
+from PIL import ImageFont
+from barcode.writer import ImageWriter
 
 PATH = os.path.dirname(os.path.abspath(__file__))
 FONT = os.path.join(PATH, 'fonts', 'DejaVuSansMono.ttf')

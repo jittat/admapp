@@ -1,13 +1,9 @@
 from django_bootstrap import bootstrap
 bootstrap()
 
-import sys
-import csv
-import io
 import json
 
 from qrconfirmations.models import QRConfirmation
-from appl.models import AdmissionRound, Payment, Applicant
 
 from qrconfirmations.views import process_payment
 

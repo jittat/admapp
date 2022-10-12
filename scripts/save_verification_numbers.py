@@ -1,10 +1,6 @@
 from django_bootstrap import bootstrap
 bootstrap()
 
-import sys
-import csv
-import io
-
 from appl.models import ProjectApplication
 
 def main():

@@ -1,8 +1,6 @@
 from django_bootstrap import bootstrap
 bootstrap()
 
-import sys
-
 from regis.models import Applicant
 
 def main():

@@ -1,18 +1,12 @@
-import csv
-import json
-from datetime import datetime
-
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
-from django.http import HttpResponse, HttpResponseForbidden, HttpResponseNotFound
 
-from regis.models import Applicant, LogItem
 from appl.models import Faculty, AdmissionRound
-from backoffice.models import AdjustmentMajor, AdjustmentMajorSlot
-
 from backoffice.decorators import number_adjustment_login_required
-
+from backoffice.models import AdjustmentMajor, AdjustmentMajorSlot
 from backoffice.views.permissions import can_user_adjust_major, can_user_confirm_major_adjustment
+from regis.models import LogItem
+
 
 def load_faculty_major_statistics(faculty, admission_rounds):
     adjustment_majors = (AdjustmentMajor.objects.

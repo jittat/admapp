@@ -2,6 +2,7 @@ from django.contrib import admin
 
 from .models import ProjectUploadedDocument, AdmissionProject, AdmissionRound, AdmissionProjectRound, Faculty
 
+
 class ProjectUploadedDocumentInline(admin.StackedInline):
     model = ProjectUploadedDocument.admission_projects.through
     can_delete = True

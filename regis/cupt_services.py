@@ -1,8 +1,9 @@
-import suds
 import json
 import ssl
 
+import suds
 from django.conf import settings
+
 
 def create_cupt_client():
     url = getattr(settings,'CUPT_SERVICE_URL','')

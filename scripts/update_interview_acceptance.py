@@ -3,7 +3,7 @@ bootstrap()
 
 import sys
 
-from appl.models import Campus, Faculty, AdmissionProject, AdmissionRound, Major, MajorInterviewDescription, AdmissionResult
+from appl.models import AdmissionProject, AdmissionRound, MajorInterviewDescription, AdmissionResult
 
 from regis.models import LogItem
 

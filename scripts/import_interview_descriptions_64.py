@@ -3,9 +3,8 @@ bootstrap()
 
 import sys
 import csv
-import io
 
-from appl.models import Campus, Faculty, AdmissionProject, AdmissionRound, Major, MajorInterviewDescription
+from appl.models import AdmissionRound, Major, MajorInterviewDescription
 
 DESCIPTION_FIELDS = [
     'has_free_acceptance',

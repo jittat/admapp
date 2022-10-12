@@ -1,7 +1,8 @@
+from django.conf import settings
 from django.shortcuts import render
 
 from regis.views import LoginForm
-from django.conf import settings
+
 
 def index(request):
     login_enabled = settings.LOGIN_ENABLED

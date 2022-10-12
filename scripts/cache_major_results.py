@@ -2,12 +2,8 @@ from django_bootstrap import bootstrap
 bootstrap()
 
 import sys
-import csv
-from random import choice
-from datetime import datetime
 
-from regis.models import Applicant
-from appl.models import Major, MajorSelection, ProjectApplication, AdmissionProjectRound, EducationalProfile
+from appl.models import Major, ProjectApplication, AdmissionProjectRound
 from backoffice.models import ApplicantMajorResult, ApplicantMajorScore
 
 def main():

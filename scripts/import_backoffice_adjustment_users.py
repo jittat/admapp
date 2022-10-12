@@ -5,7 +5,7 @@ import sys
 import csv
 
 from django.contrib.auth.models import User
-from appl.models import AdmissionProject, Faculty
+from appl.models import Faculty
 
 def main():
     filename = sys.argv[1]

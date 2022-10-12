@@ -1,7 +1,7 @@
 from django_bootstrap import bootstrap
 bootstrap()
 
-from appl.models import Campus, Faculty, Major, AdmissionProject, AdmissionRound
+from appl.models import Campus, Faculty, AdmissionProject, AdmissionRound
 
 def dump_data(objects, varname, fields):
     items = []
@@ -29,6 +29,7 @@ def dump_header():
     
 def main():
     dump_header()
+    # noinspection PyTypeChecker
     dump_model_data(Campus, 'CAMPUSES', ['title'])
     dump_model_data(Faculty, 'FACULTIES', ['title'])
 

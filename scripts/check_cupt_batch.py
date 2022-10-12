@@ -1,12 +1,6 @@
 from django_bootstrap import bootstrap
 bootstrap()
 
-from datetime import datetime
-
-from regis.models import Applicant
-from regis.models import CuptConfirmation, CuptRequestQueueItem
-from regis.models import LogItem
-
 from regis.cupt_services import create_cupt_client, get_token, check_permission
 
 import sys

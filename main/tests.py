@@ -1,4 +1,5 @@
-from django.test import TestCase, SimpleTestCase, Client
+from django.test import SimpleTestCase
+
 
 class MainTestCase(SimpleTestCase):
 

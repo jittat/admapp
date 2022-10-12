@@ -1,17 +1,14 @@
 import json
 
+from django import forms
+from django.http import HttpResponseForbidden, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
-from django.http import HttpResponseForbidden, HttpResponse
-from django import forms
-
-from regis.models import Applicant, LogItem
-from appl.models import Payment, AdmissionRound, ProjectApplication
-from backoffice.models import Profile
 
 from admapp.emails import send_payment_email
-
+from appl.models import Payment, AdmissionRound, ProjectApplication
 from backoffice.decorators import super_admin_login_required
+from regis.models import Applicant, LogItem
 
 
 class PaymentForm(forms.Form):

@@ -1,20 +1,18 @@
-import os
 import json
+import os
 
-from django.shortcuts import render, redirect, get_object_or_404
-from django.urls import reverse
-from django.forms import ModelForm
-from django.http import HttpResponseForbidden, HttpResponse
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
-
 from django.db.utils import OperationalError
+from django.forms import ModelForm
+from django.http import HttpResponseForbidden, HttpResponse
+from django.shortcuts import get_object_or_404
 
-from regis.models import Applicant, LogItem
+from appl.models import ProjectUploadedDocument, UploadedDocument, AdmissionRound
 from regis.decorators import appl_login_required
+from regis.models import Applicant, LogItem
 
-from appl.models import AdmissionProject, ProjectUploadedDocument, UploadedDocument, AdmissionRound
 
 class UploadedDocumentForm(ModelForm):
     class Meta:

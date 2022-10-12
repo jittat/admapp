@@ -1,13 +1,13 @@
-from django.urls import re_path, include
 from django.urls import path
+from django.urls import re_path, include
 
-from . import views
-from backoffice.views import payments
-from backoffice.views import projects
-from backoffice.views import users
-from backoffice.views import reports
 from backoffice.views import adjustment
+from backoffice.views import payments
 from backoffice.views import projectoptions
+from backoffice.views import projects
+from backoffice.views import reports
+from backoffice.views import users
+from . import views
 
 app_name = 'backoffice'
 

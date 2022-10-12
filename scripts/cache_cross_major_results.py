@@ -2,13 +2,10 @@ from django_bootstrap import bootstrap
 bootstrap()
 
 import sys
-import csv
-from random import choice
-from datetime import datetime
 
-from regis.models import Applicant
-from appl.models import Major, MajorSelection, ProjectApplication, AdmissionProjectRound, EducationalProfile
-from backoffice.models import ApplicantMajorResult, ApplicantMajorScore
+from appl.models import Major, ProjectApplication, AdmissionProjectRound
+from backoffice.models import ApplicantMajorResult
+
 
 def main():
     project_round_id = sys.argv[1]

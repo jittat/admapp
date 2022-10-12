@@ -2,14 +2,12 @@ from django_bootstrap import bootstrap
 bootstrap()
 
 import sys
-import csv
 import json
 import copy
-from datetime import datetime
 
 import yaml
     
-from appl.models import AdmissionProject, AdmissionRound, Faculty
+from appl.models import AdmissionProject, Faculty
 from criteria.models import AdmissionCriteria
 
 error_report_file = sys.stderr

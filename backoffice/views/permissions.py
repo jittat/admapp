@@ -1,7 +1,3 @@
-from django.http import HttpResponseForbidden
-
-from regis.models import Applicant
-from appl.models import AdmissionProject
 from backoffice.models import Profile
 
 def is_super_admin(user):

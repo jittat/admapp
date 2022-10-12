@@ -2,17 +2,13 @@ from django_bootstrap import bootstrap
 bootstrap()
 
 import sys
-import csv
-from datetime import datetime
 
-from regis.models import Applicant
-from appl.models import AdmissionProject, AdmissionResult, AdmissionRound, ProjectApplication
+from appl.models import AdmissionProject, AdmissionRound
 from backoffice.models import MajorInterviewCallDecision
 
 from backoffice.views.projects import load_major_applicants
-from backoffice.views.projects import load_check_marks_and_results
 from backoffice.views.projects import sort_applicants_by_calculated_scores
-from backoffice.views.projects import update_interview_call_status
+
 
 def make_calls(project, admission_round, project_round, major, confirmed_applicants, fake=True):
     all_applicants = load_major_applicants(project, admission_round, major, load_results=True)

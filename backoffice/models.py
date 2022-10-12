@@ -1,15 +1,14 @@
 # -*- coding: utf-8 -*-
-import os, sys
-from django.db import models
-
 from django.contrib.auth.models import User
+from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-from regis.models import Applicant
+from appl.models import AdmissionProject, AdmissionRound, ProjectApplication
 from appl.models import Campus, Faculty
-from appl.models import AdmissionProject, AdmissionRound, ProjectApplication 
 from appl.models import Major, AdmissionResult, ExamScore
+from regis.models import Applicant
+
 
 class Profile(models.Model):
     ANY_MAJOR = 0

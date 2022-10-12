@@ -1,14 +1,9 @@
 from django_bootstrap import bootstrap
 bootstrap()
 
-import sys
-import csv
-from datetime import datetime
-
-from admapp.emails import send_mail_to_applicant
-
 from regis.models import Applicant
-from appl.models import OldUploadedDocument, UploadedDocument
+from appl.models import OldUploadedDocument
+
 
 def main():
     app_ids = set()

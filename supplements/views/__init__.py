@@ -1,13 +1,13 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 
-from regis.decorators import appl_login_required
 from appl.models import AdmissionProject, AdmissionRound
-from supplements.models import ProjectSupplement, ProjectSupplementConfig
-
+from regis.decorators import appl_login_required
 from supplements.models import PROJECT_SUPPLEMENTS
+from supplements.models import ProjectSupplement
 from supplements.models import load_project_supplements
 from .utils import get_function
+
 
 def render_supplement_block(request,
                             applicant,

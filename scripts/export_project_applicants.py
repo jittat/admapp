@@ -4,7 +4,6 @@ bootstrap()
 import sys
 import json
 
-from regis.models import Applicant
 from appl.models import AdmissionProject, AdmissionRound, ProjectApplication, AdmissionResult
 
 def load_tcas_data(filename):

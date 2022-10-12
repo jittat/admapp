@@ -3,7 +3,6 @@ bootstrap()
 
 from datetime import datetime
 
-from regis.models import Applicant
 from regis.models import CuptConfirmation, CuptRequestQueueItem
 from regis.models import LogItem
 

@@ -4,7 +4,6 @@ bootstrap()
 import sys
 import csv
 
-from django.contrib.auth.models import User
 from appl.models import Faculty
 from backoffice.models import AdjustmentMajor
 

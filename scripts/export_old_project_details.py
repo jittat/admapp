@@ -4,7 +4,7 @@ bootstrap()
 import sys
 import csv
 
-from appl.models import AdmissionProject, AdmissionProjectRound, AdmissionRound, Faculty
+from appl.models import AdmissionProjectRound, AdmissionRound
 
 FIELDS = ['id','round','title','applying_warning','descriptions']
 

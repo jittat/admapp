@@ -3,9 +3,8 @@ bootstrap()
 
 import sys
 import csv
-import io
 
-from appl.models import Campus, Faculty, AdmissionProject, AdmissionRound, Major, MajorInterviewDescription
+from appl.models import AdmissionProject, AdmissionRound, Major, MajorInterviewDescription
 
 def main():
     project_id = sys.argv[2]

@@ -4,7 +4,8 @@ bootstrap()
 import sys
 import csv
 
-from appl.models import Campus, AdmissionRound, AdmissionProject, AdmissionProjectRound
+from appl.models import Campus, AdmissionRound, AdmissionProject
+
 
 def main():
     admission_rounds = dict([(r.id,r) for r in AdmissionRound.objects.all()])

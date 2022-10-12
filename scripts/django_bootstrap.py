@@ -1,4 +1,6 @@
-import os, sys
+import os
+import sys
+
 
 def bootstrap():
     sys.path.append(os.getcwd())

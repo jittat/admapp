@@ -3,11 +3,9 @@ bootstrap()
 
 import sys
 import csv
-from datetime import datetime
 
-from regis.models import Applicant, LogItem
-from appl.models import AdmissionProject, AdmissionResult, AdmissionRound, ProjectApplication
-from regis.models import CuptConfirmation, CuptRequestQueueItem
+from regis.models import Applicant
+from regis.models import CuptRequestQueueItem
 
 def main():
     filename = sys.argv[1]

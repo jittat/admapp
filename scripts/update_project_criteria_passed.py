@@ -6,7 +6,8 @@ import csv
 from datetime import datetime
 
 from regis.models import Applicant
-from appl.models import AdmissionProject, AdmissionResult, AdmissionRound, ProjectApplication
+from appl.models import AdmissionProject, AdmissionResult
+
 
 def main():
     result_filename = sys.argv[1]

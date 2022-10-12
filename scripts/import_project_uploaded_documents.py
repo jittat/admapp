@@ -3,7 +3,6 @@ bootstrap()
 
 import sys
 import csv
-import io
 
 from appl.models import ProjectUploadedDocument, AdmissionProject
 

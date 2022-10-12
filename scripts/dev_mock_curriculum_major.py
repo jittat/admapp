@@ -2,9 +2,6 @@ from django_bootstrap import bootstrap  # noqa
 
 bootstrap()  # noqa
 
-import sys
-
-import xlrd
 from criteria.models import MajorCuptCode, CurriculumMajor
 from appl.models import AdmissionProject
 

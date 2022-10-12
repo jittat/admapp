@@ -1,16 +1,12 @@
-from django.shortcuts import render, redirect, get_object_or_404
-from django.urls import reverse
-from django.http import HttpResponseForbidden, HttpResponse
-from django.core import serializers
 import json
 
-from regis.models import Applicant, LogItem
-from appl.models import AdmissionProject, ProjectApplication, EducationalProfile, PersonalProfile, Payment
+from django.http import HttpResponse
+from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse
 
-from backoffice.models import Profile
+from appl.models import AdmissionProject
+from backoffice.decorators import user_login_required
 
-from backoffice.decorators import user_login_required, super_admin_login_required
-from .permissions import can_user_view_project
 
 @user_login_required
 def show_project_application_info(request):

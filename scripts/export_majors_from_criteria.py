@@ -3,10 +3,10 @@ bootstrap()
 
 import sys
 import csv
-from datetime import datetime
 
-from appl.models import AdmissionProject, AdmissionRound, Faculty
-from criteria.models import AdmissionCriteria, COMPONENT_WEIGHT_TYPE_CHOICES
+from appl.models import AdmissionProject, Faculty
+from criteria.models import AdmissionCriteria
+
 
 def render_score_criterias(score_criterias, hide_percent=False, short=False):
     lines = []

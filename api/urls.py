@@ -1,8 +1,8 @@
 from django.urls import path, include
-from django.contrib.auth.models import User
 from rest_framework import routers, serializers, viewsets
 
 from appl.models import Campus, Faculty
+
 
 # Serializers define the API representation.
 class CampusSerializer(serializers.HyperlinkedModelSerializer):

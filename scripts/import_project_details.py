@@ -4,7 +4,8 @@ bootstrap()
 import sys
 import csv
 
-from appl.models import Campus, AdmissionRound, AdmissionProject, AdmissionProjectRound
+from appl.models import AdmissionRound, AdmissionProject
+
 
 def extract_datetime(date_str, time_str):
     from datetime import datetime

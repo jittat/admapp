@@ -3,10 +3,9 @@ bootstrap()
 
 import sys
 import csv
-from datetime import datetime
 
-from regis.models import Applicant, LogItem
-from appl.models import AdmissionProject, AdmissionResult, AdmissionRound, ProjectApplication
+from regis.models import LogItem
+from appl.models import AdmissionRound, ProjectApplication
 
 def main():
     cancel_filename = sys.argv[1]

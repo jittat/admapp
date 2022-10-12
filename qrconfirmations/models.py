@@ -2,6 +2,7 @@ from django.db import models
 
 from appl.models import Payment
 
+
 class QRConfirmation(models.Model):
     bill_payment_ref1 = models.CharField(max_length=30,
                                          blank=True)

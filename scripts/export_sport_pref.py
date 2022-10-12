@@ -1,9 +1,7 @@
 from django_bootstrap import bootstrap
 bootstrap()
 
-import sys
-
-from regis.models import Applicant, LogItem
+from regis.models import LogItem
 from appl.models import AdmissionProject, AdmissionRound, ProjectApplication
 
 def main():

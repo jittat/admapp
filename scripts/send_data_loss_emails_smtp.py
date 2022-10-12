@@ -1,16 +1,10 @@
 from django_bootstrap import bootstrap
 bootstrap()
 
-import sys
-import csv
-from datetime import datetime
-
 import smtplib, ssl
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.header import Header
-from email.generator import Generator
-from io import StringIO
 
 #from admapp.emails import send_mail_to_applicant
 

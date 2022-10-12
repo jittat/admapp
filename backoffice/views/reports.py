@@ -1,21 +1,13 @@
-import csv
-import json
-from datetime import datetime
-
-from django.shortcuts import render, redirect, get_object_or_404
+from django.http import HttpResponse, HttpResponseForbidden
+from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse
-from django.http import HttpResponse, HttpResponseForbidden, HttpResponseNotFound
 
-from regis.models import Applicant, LogItem
 from appl.models import AdmissionProject, AdmissionRound
-from appl.models import ProjectApplication, Payment, Major, AdmissionResult, Faculty
-from appl.models import ProjectUploadedDocument, UploadedDocument
-from backoffice.models import CheckMarkGroup, JudgeComment
-
-from backoffice.views.permissions import can_user_view_project, can_user_view_applicant_in_major, can_user_view_applicants_in_major
+from appl.models import Major, AdmissionResult
 from backoffice.decorators import user_login_required
-
-from .projects import load_major_applicants, load_check_marks_and_results, load_major_applicants_no_cache, load_all_judge_comments
+from backoffice.views.permissions import can_user_view_applicants_in_major
+from .projects import load_major_applicants, load_check_marks_and_results, load_major_applicants_no_cache, \
+    load_all_judge_comments
 
 ROW_HEIGHT_SCALE = 20
 

@@ -2,11 +2,8 @@ from django_bootstrap import bootstrap
 bootstrap()
 
 import sys
-import csv
-from datetime import datetime
 
-from regis.models import Applicant
-from appl.models import AdmissionProject, AdmissionResult, AdmissionRound, ProjectApplication, Payment
+from appl.models import AdmissionProject, AdmissionRound, ProjectApplication, Payment
 from supplements.models import load_supplement_configs_with_instance
 
 import json

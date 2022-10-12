@@ -1,4 +1,5 @@
-from supplements.models import AdvancedPlacementApplicant, AdvancedPlacementResult
+from supplements.models import AdvancedPlacementApplicant
+
 
 def load_ap_course_results(applicant, admission_project, admission_round):
     try:

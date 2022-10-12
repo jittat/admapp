@@ -3,9 +3,8 @@ bootstrap()
 
 import sys
 import csv
-import io
 
-from appl.models import Campus, Faculty, AdmissionProject, Major
+from appl.models import Major
 
 def main():
     filename = sys.argv[1]

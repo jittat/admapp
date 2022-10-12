@@ -2,11 +2,9 @@ from django_bootstrap import bootstrap
 bootstrap()
 
 import sys
-import csv
-from datetime import datetime
 
 from regis.models import Applicant
-from appl.models import AdmissionProject, AdmissionResult, AdmissionRound, ProjectApplication, AdmissionProjectRound
+from appl.models import AdmissionResult, AdmissionRound, AdmissionProjectRound
 
 def read_confirmed_applicants(filename):
     return [st.strip().split(',') for st in open(filename).readlines()[1:]]

@@ -4,10 +4,9 @@ bootstrap()
 import sys
 import csv
 from random import choice
-from datetime import datetime
 
 from regis.models import Applicant
-from appl.models import Major, MajorSelection, ProjectApplication, AdmissionProjectRound, EducationalProfile
+from appl.models import EducationalProfile
 
 def random_email():
     return ''.join([choice('abcdefghijklmnopqrstuvwxyz') for i in range(10)]) + '@ku.ac.th'

@@ -1,15 +1,12 @@
 # -*- coding: utf-8 -*-
-import os, sys
-import io
 import csv
+import io
 from datetime import datetime
 
-from django.db import models
-from django.core.validators import MinValueValidator, MaxValueValidator, RegexValidator
 from django.core.exceptions import ObjectDoesNotExist
-
+from django.core.validators import MinValueValidator, MaxValueValidator, RegexValidator
+from django.db import models
 from django.utils.translation import gettext_lazy as _
-from django.utils.text import format_lazy
 
 from admapp import settings
 from regis.models import Applicant
@@ -30,7 +27,7 @@ class Campus(models.Model):
 
     def title_trans(self):
         return _(self.title)
-    
+
 
 class Faculty(models.Model):
     title = models.CharField(max_length=100)
@@ -39,7 +36,7 @@ class Faculty(models.Model):
 
     ku_code = models.CharField(max_length=10, blank=True)
     cupt_code = models.CharField(max_length=10, blank=True)
-    
+
     class Meta:
         verbose_name_plural = 'faculties'
 
@@ -48,7 +45,7 @@ class Faculty(models.Model):
 
     def title_trans(self):
         return _(self.title)
-    
+
 
 class AdmissionRound(models.Model):
     number = models.IntegerField()
@@ -71,25 +68,25 @@ class AdmissionRound(models.Model):
                                                   verbose_name='ข้อมูลการยืนยันสิทธิ์')
     clearing_house_dates = models.CharField(max_length=50,
                                             blank=True)
-    
+
     class Meta:
         ordering = ['rank']
-
 
     def __str__(self):
         if self.subround_number == 0:
             return 'รอบที่ %d' % (self.number,)
         else:
             return 'รอบที่ %d/%d' % (self.number, self.subround_number)
+
     def title_trans(self):
         return _(str(self))
-        
+
     def get_full_number(self):
         if self.subround_number == 0:
             return '%d' % (self.number,)
         else:
             return '%d/%d' % (self.number, self.subround_number)
-        
+
     @staticmethod
     def get_available():
         rounds = AdmissionRound.objects.filter(is_available=True).all()
@@ -140,7 +137,7 @@ class AdmissionProject(models.Model):
                                                        verbose_name='ให้ระบุจำนวนรับเพิ่มในกรณีที่ผู้สมัครเกินและมีคะแนนเท่ากัน')
     is_criteria_edit_allowed = models.BooleanField(default=True,
                                                    verbose_name='อนุญาตให้ผู้ดูแลโครงการแก้ไขเงื่อนไขการรับ')
-    
+
     max_num_selections = models.IntegerField(default=1,
                                              verbose_name='จำนวนสาขาที่เลือกได้')
 
@@ -206,28 +203,28 @@ class AdmissionProject(models.Model):
 
     def get_project_round_for(self, admission_round):
         project_rounds = self.admissionprojectround_set.filter(admission_round=admission_round).all()
-        if len(project_rounds)==0:
+        if len(project_rounds) == 0:
             return None
         else:
             return project_rounds[0]
 
     def get_major_description_list_template(self):
         from .header_utils import table_header_as_list_template
-        
+
         return table_header_as_list_template(self.column_descriptions)
 
     def get_major_description_table_header(self):
         from .header_utils import table_header
-        
+
         return table_header(self.column_descriptions, tr_class="table-active")
 
     def get_majors_as_dict(self, with_faculty=False):
         if not with_faculty:
-            return dict([(m.number,m) for m in self.major_set.all()])
+            return dict([(m.number, m) for m in self.major_set.all()])
         else:
-            return dict([(m.number,m) for m in self.major_set.select_related('faculty').all()])
+            return dict([(m.number, m) for m in self.major_set.select_related('faculty').all()])
 
-    
+
 class AdmissionProjectRound(models.Model):
     admission_round = models.ForeignKey('AdmissionRound',
                                         on_delete=models.CASCADE)
@@ -254,7 +251,7 @@ class AdmissionProjectRound(models.Model):
     criteria_check_required = models.BooleanField(default=False,
                                                   verbose_name='มีการตรวจเกณฑ์พื้นฐานก่อน')
     criteria_check_frozen = models.BooleanField(default=False,
-                                                  verbose_name='ปิดการแก้ไขผลการตรวจเกณฑ์พื้นฐาน')
+                                                verbose_name='ปิดการแก้ไขผลการตรวจเกณฑ์พื้นฐาน')
 
     applicant_score_viewable = models.BooleanField(default=False,
                                                    verbose_name='แสดงคะแนนสำหรับการคัดเลือก')
@@ -271,16 +268,16 @@ class AdmissionProjectRound(models.Model):
                                                            verbose_name='รายละเอียดแสดงกับผู้สมัครที่ผ่านการคัดเลือก')
 
     accepted_result_frozen = models.BooleanField(default=False,
-                                                  verbose_name='ปิดการแก้ไขผลการรับเข้าศึกษากับผู้สมัคร')
+                                                 verbose_name='ปิดการแก้ไขผลการรับเข้าศึกษากับผู้สมัคร')
     accepted_result_shown = models.BooleanField(default=False,
                                                 verbose_name='แสดงผลการรับเข้าศึกษากับผู้สมัคร')
 
     accepted_instructions = models.TextField(blank=True,
                                              verbose_name='รายละเอียดแสดงกับผู้สมัครที่ได้รับการคัดเลือกเข้าศึกษา')
-    
+
     class Meta:
-        ordering = ['admission_round','admission_project']
-    
+        ordering = ['admission_round', 'admission_project']
+
     def __str__(self):
         return "{0} ({1})".format(self.admission_project.title, str(self.admission_round))
 
@@ -320,7 +317,7 @@ class Major(models.Model):
 
     is_forced_individual_interview_call = models.BooleanField(default=False,
                                                               verbose_name='ให้เรียกสัมภาษณ์ไม่ตามคะแนน')
-    
+
     class Meta:
         ordering = ['number']
 
@@ -332,16 +329,15 @@ class Major(models.Model):
 
     def title_with_faculty(self):
         return '{} ({})'.format(self.title, self.faculty.title)
-    
+
     @staticmethod
     def get_by_project_number(project, number):
         majors = Major.objects.filter(admission_project=project,
                                       number=number).all()
-        if len(majors)==0:
+        if len(majors) == 0:
             return None
         else:
             return majors[0]
-
 
     def get_detail_items(self):
         csv_io = io.StringIO(self.detail_items_csv)
@@ -350,7 +346,7 @@ class Major(models.Model):
             return row
 
     def get_detail_items_as_list_display(self):
-        items = [item.replace("\n","<br />") for item in self.get_detail_items()]
+        items = [item.replace("\n", "<br />") for item in self.get_detail_items()]
         return self.admission_project.get_major_description_list_template().format(*items)
 
     def get_full_major_cupt_code(self,
@@ -358,7 +354,7 @@ class Major(models.Model):
                                  faculty=None):
         if self.cupt_full_code:
             return self.cupt_full_code
-        
+
         if not admission_project:
             admission_project = self.admission_project
         if not faculty:
@@ -366,15 +362,15 @@ class Major(models.Model):
 
         major_cupt_code = '{0:0>3}'.format(self.cupt_code)
         study_type_code = self.cupt_study_type_code
-        
+
         full_major_code = ('002' +
                            admission_project.cupt_code +
                            faculty.cupt_code +
-                           major_cupt_code + 
+                           major_cupt_code +
                            study_type_code)
         return full_major_code
-    
-        
+
+
 class ProjectUploadedDocument(models.Model):
     admission_projects = models.ManyToManyField(AdmissionProject,
                                                 blank=True)
@@ -392,7 +388,7 @@ class ProjectUploadedDocument(models.Model):
     size_limit = models.IntegerField(default=2000000)
 
     is_url_document = models.BooleanField(default=False)
-    
+
     is_required = models.BooleanField(default=True)
     is_detail_required = models.BooleanField(default=False)
     can_have_multiple_files = models.BooleanField(default=False)
@@ -401,14 +397,14 @@ class ProjectUploadedDocument(models.Model):
                                              verbose_name='ใช้ทุกโครงการ')
     is_interview_document = models.BooleanField(default=False,
                                                 verbose_name='ใช้สำหรับสัมภาษณ์')
-    
+
     document_key = models.CharField(max_length=30,
                                     blank=True)
 
     requirement_key = models.CharField(max_length=10,
                                        blank=True,
                                        default='')
-    
+
     class Meta:
         ordering = ['rank']
 
@@ -446,7 +442,7 @@ class UploadedDocument(models.Model):
                                      blank=True)
     original_filename = models.CharField(max_length=200,
                                          blank=True)
-    
+
     document_url = models.URLField(blank=True)
 
     def __str__(self):
@@ -459,7 +455,7 @@ class UploadedDocument(models.Model):
         else:
             return False
 
-        
+
 class OldUploadedDocument(models.Model):
     applicant = models.ForeignKey(Applicant,
                                   on_delete=models.CASCADE)
@@ -473,7 +469,7 @@ class OldUploadedDocument(models.Model):
                                      blank=True)
     original_filename = models.CharField(max_length=200,
                                          blank=True)
-    
+
     document_url = models.URLField(blank=True)
 
 
@@ -481,7 +477,7 @@ class Province(models.Model):
     title = models.CharField(max_length=30)
 
     def __str__(self):
-    	return "%s" % (self.title)
+        return "%s" % (self.title)
 
 
 class School(models.Model):
@@ -497,16 +493,16 @@ class School(models.Model):
 
 class EducationalProfile(models.Model):
     EDUCATION_LEVEL_CHOICES = [
-            (1,_('กำลังศึกษาชั้นมัธยมศึกษาปีที่ 6 หรือเทียบเท่า')),
-            (2,_('จบการศึกษาชั้นมัธยมศึกษาปีที่ 6 หรือเทียบเท่า')),
+        (1, _('กำลังศึกษาชั้นมัธยมศึกษาปีที่ 6 หรือเทียบเท่า')),
+        (2, _('จบการศึกษาชั้นมัธยมศึกษาปีที่ 6 หรือเทียบเท่า')),
     ]
     EDUCATION_PLAN_CHOICES = [
-        (1,_('วิทย์-คณิต')),
-        (2,_('ศิลป์-คำนวณ')),
-        (3,_('ศิลป์-ภาษา')),
-        (6,_('ศิลป์-สังคม')),
-        (4,_('อาชีวศึกษา')),
-        (5,_('ไม่ระบุ')),
+        (1, _('วิทย์-คณิต')),
+        (2, _('ศิลป์-คำนวณ')),
+        (3, _('ศิลป์-ภาษา')),
+        (6, _('ศิลป์-สังคม')),
+        (4, _('อาชีวศึกษา')),
+        (5, _('ไม่ระบุ')),
     ]
 
     applicant = models.OneToOneField(Applicant,
@@ -518,15 +514,16 @@ class EducationalProfile(models.Model):
     sci_credit = models.FloatField(default=0,
                                    verbose_name=_('หน่วยกิตกลุ่มสาระวิทยาศาสตร์'))
     math_credit = models.FloatField(default=0,
-                                      verbose_name=_('หน่วยกิตกลุ่มสาระคณิตศาสตร์'))
+                                    verbose_name=_('หน่วยกิตกลุ่มสาระคณิตศาสตร์'))
     lang_credit = models.FloatField(default=0,
-                                      verbose_name=_('หน่วยกิตกลุ่มสาระภาษาต่างประเทศ'))
-    
+                                    verbose_name=_('หน่วยกิตกลุ่มสาระภาษาต่างประเทศ'))
+
     gpa = models.FloatField(default=0,
                             verbose_name='GPAX',
                             validators=[MinValueValidator(0.0), MaxValueValidator(5.0)],
-                            help_text=_('ในกรณีที่กำลังศึกษาชั้นม.6 ให้กรอกเกรดเฉลี่ย 5 ภาคการศึกษา ถ้าจบการศึกษาแล้วให้กรอกเกรดเฉลี่ย 6 ภาคการศึกษา'))
-                            #help_text='สำหรับการคัดเลือก TCAS รอบ 5 <b>ให้กรอกเกรดเฉลี่ย 6 ภาคการศึกษา</b>')
+                            help_text=_(
+                                'ในกรณีที่กำลังศึกษาชั้นม.6 ให้กรอกเกรดเฉลี่ย 5 ภาคการศึกษา ถ้าจบการศึกษาแล้วให้กรอกเกรดเฉลี่ย 6 ภาคการศึกษา'))
+    # help_text='สำหรับการคัดเลือก TCAS รอบ 5 <b>ให้กรอกเกรดเฉลี่ย 6 ภาคการศึกษา</b>')
     province = models.ForeignKey(Province,
                                  verbose_name=_('จังหวัด'),
                                  on_delete=models.CASCADE)
@@ -565,7 +562,7 @@ class PersonalProfile(models.Model):
                                           verbose_name=_('ชื่อ (อังกฤษ)'))
     middle_name_english = models.CharField(max_length=100,
                                            verbose_name=_('ชื่อกลาง (อังกฤษ, ถ้ามี)'),
-                                           blank=True )
+                                           blank=True)
     last_name_english = models.CharField(max_length=200,
                                          verbose_name=_('นามสกุล (อังกฤษ)'))
     passport_number = models.CharField(max_length=20,
@@ -605,9 +602,9 @@ class PersonalProfile(models.Model):
                                    verbose_name=_('รหัสไปรษณีย์'))
 
     contact_phone = models.CharField(max_length=20,
-                                    verbose_name=_('เบอร์โทรศัพท์ที่ติดต่อได้'),
-                                    help_text='หากเป็นเบอร์ติดต่อภายใน ให้ใช้ # คั่น เช่น 034-567-890#111',
-                                    validators=[validate_phonenumber])
+                                     verbose_name=_('เบอร์โทรศัพท์ที่ติดต่อได้'),
+                                     help_text='หากเป็นเบอร์ติดต่อภายใน ให้ใช้ # คั่น เช่น 034-567-890#111',
+                                     validators=[validate_phonenumber])
     mobile_phone = models.CharField(max_length=20,
                                     verbose_name=_('เบอร์โทรศัพท์มือถือ'),
                                     blank=True,
@@ -636,8 +633,8 @@ class PersonalProfile(models.Model):
                     sub_district_prefix,
                     district_prefix,
                     'จังหวัด']
-        for f,pre in zip(addr_fields, prefixes):
-            v = getattr(self,f).strip()
+        for f, pre in zip(addr_fields, prefixes):
+            v = getattr(self, f).strip()
             if v == '' or v == '-':
                 continue
             if v.startswith(pre):
@@ -649,8 +646,8 @@ class PersonalProfile(models.Model):
                     if pre != 'หมู่':
                         addr_items.append(pre + v)
                     else:
-                        addr_items.append('หมู่บ้าน' + v)                        
-                    
+                        addr_items.append('หมู่บ้าน' + v)
+
         return ' '.join(addr_items)
 
 
@@ -675,7 +672,7 @@ class ProjectApplication(models.Model):
         indexes = [
             models.Index(fields=['verification_number']),
         ]
-    
+
     ID_OFFSET_MAGIC = 104341
 
     def get_number(self):
@@ -744,7 +741,7 @@ class ProjectApplication(models.Model):
             if applicant_additional_data:
                 if 'p' in applicant_additional_data:
                     if ((self.admission_project_id == applicant_additional_data['p']) and
-                        (majors[0].number in applicant_additional_data['m'])):
+                            (majors[0].number in applicant_additional_data['m'])):
                         return 0
         return fee
 
@@ -764,14 +761,14 @@ class ProjectApplication(models.Model):
         return paid_amount >= amount
 
     def has_applied_to_faculty(self, faculty):
-        if hasattr(self,'major_selection'):
+        if hasattr(self, 'major_selection'):
             major_selection = self.major_selection
             return major_selection.has_applied_to_faculty(faculty)
         else:
             return False
 
     def has_applied_to_major(self, major):
-        if hasattr(self,'major_selection'):
+        if hasattr(self, 'major_selection'):
             major_selection = self.major_selection
             return major_selection.has_applied_to_major(major)
         else:
@@ -783,15 +780,15 @@ class ProjectApplication(models.Model):
                                    with_selection=False):
         results = (ProjectApplication.objects
                    .select_related('applicant')
-                   .filter(admission_project=admission_project, 
-                           admission_round=admission_round, 
+                   .filter(admission_project=admission_project,
+                           admission_round=admission_round,
                            is_canceled=False))
         if with_selection:
             results = results.select_related('major_selection')
 
         return results.all()
 
-    
+
 class MajorSelection(models.Model):
     applicant = models.ForeignKey(Applicant,
                                   on_delete=models.CASCADE)
@@ -837,7 +834,7 @@ class MajorSelection(models.Model):
             return [int(num) for num in self.major_list.split(',')]
         else:
             return []
-        
+
     def has_applied_to_faculty(self, faculty):
         for m in self.get_majors():
             if m.faculty.id == faculty.id:
@@ -846,7 +843,8 @@ class MajorSelection(models.Model):
 
     def has_applied_to_major(self, major):
         return major.number in self.get_major_numbers()
-        
+
+
 class Payment(models.Model):
     applicant = models.ForeignKey(Applicant,
                                   null=True,
@@ -871,13 +869,12 @@ class Payment(models.Model):
     def __str__(self):
         return '{0} ({1}/{2})'.format(self.amount, self.id, self.paid_at)
 
-
     @staticmethod
     def find_for_applicant_in_round(applicant, admission_round):
         return Payment.objects.filter(applicant=applicant,
                                       admission_round=admission_round).all()
 
-    
+
 class AdmissionResult(models.Model):
     applicant = models.ForeignKey(Applicant,
                                   on_delete=models.CASCADE)
@@ -895,7 +892,7 @@ class AdmissionResult(models.Model):
     is_criteria_passed = models.BooleanField(default=None,
                                              null=True)
     updated_criteria_passed_at = models.DateTimeField(null=True)
-    
+
     is_accepted_for_interview = models.BooleanField(default=None,
                                                     null=True)
     updated_accepted_for_interview_at = models.DateTimeField(null=True)
@@ -920,19 +917,19 @@ class AdmissionResult(models.Model):
     clearing_house_code_number = models.IntegerField(default=0)
 
     calculated_score = models.FloatField(default=0)
-    
+
     has_confirmed = models.BooleanField(default=None,
                                         null=True)
-    
+
     class Meta:
         indexes = [
-            models.Index(fields=['application','major']),
-            models.Index(fields=['admission_round','major']),
+            models.Index(fields=['application', 'major']),
+            models.Index(fields=['admission_round', 'major']),
             models.Index(fields=['major']),
             models.Index(fields=['admission_project']),
             models.Index(fields=['applicant']),
         ]
-        unique_together = (('applicant','admission_project','major'),)
+        unique_together = (('applicant', 'admission_project', 'major'),)
 
     def has_interview_rank(self):
         return self.interview_rank != 0
@@ -950,7 +947,7 @@ class AdmissionResult(models.Model):
 
     def is_interview_callable(self):
         return self.scoring_criteria_passed()
-    
+
     def criteria_failed_display(self):
         error_map = {
             -10000: 'gpa',
@@ -963,13 +960,13 @@ class AdmissionResult(models.Model):
             return error_map[int(self.calculated_score)]
         else:
             return 'ไม่ผ่านเกณฑ์'
-            
+
     def calculated_score_display(self):
         if self.calculated_score < 0:
             return 'ไม่ผ่านเกณฑ์'
         else:
             return '%.3f' % (self.calculated_score,)
-        
+
     @staticmethod
     def find_by_admission_round_and_major(admission_round, major):
         return AdmissionResult.objects.filter(admission_round=admission_round,
@@ -981,14 +978,14 @@ class AdmissionResult(models.Model):
                     in AdmissionResult.find_by_admission_round_and_major(admission_round,
                                                                          major)
                     if result.is_accepted_for_interview])
-        
+
     @staticmethod
     def accepted_count(admission_round, major):
         return len([result for result
                     in AdmissionResult.find_by_admission_round_and_major(admission_round,
                                                                          major)
                     if result.is_accepted])
-        
+
     @staticmethod
     def get_for_application_and_major(application, major):
         results = AdmissionResult.objects.filter(application=application,
@@ -1001,8 +998,8 @@ class AdmissionResult(models.Model):
     @staticmethod
     def find_by_application(application):
         return AdmissionResult.objects.filter(application=application).all()
-    
-    
+
+
 class MajorInterviewDescription(models.Model):
     major = models.ForeignKey(Major,
                               on_delete=models.CASCADE)
@@ -1025,19 +1022,19 @@ class MajorInterviewDescription(models.Model):
 
     class Meta:
         indexes = [
-            models.Index(fields=['admission_round','major']),
+            models.Index(fields=['admission_round', 'major']),
             models.Index(fields=['major']),
         ]
 
     @staticmethod
-    def find_by_major_and_admission_round(major,admission_round):
+    def find_by_major_and_admission_round(major, admission_round):
         descs = MajorInterviewDescription.objects.filter(major=major,
                                                          admission_round=admission_round).all()
         if len(descs) > 0:
             return descs[0]
         else:
             return None
-    
+
 
 class Eligibility(object):
     def __init__(self, project=None, applicant=None):
@@ -1077,7 +1074,6 @@ class Eligibility(object):
         self.is_eligible = True
         self.is_hidden = False
 
-
     def advanced_placement(self):
         from supplements.models import AdvancedPlacementApplicant
         self.is_eligible = False
@@ -1106,11 +1102,10 @@ class ExamScore(models.Model):
 
     class Meta:
         indexes = [
-            models.Index(fields=['applicant','exam_type']),
+            models.Index(fields=['applicant', 'exam_type']),
         ]
-        unique_together = (('applicant','exam_type','exam_round'),)
+        unique_together = (('applicant', 'exam_type', 'exam_round'),)
         ordering = ['exam_round']
-
 
     def extract_scores(self):
         self._exams = []
@@ -1137,21 +1132,21 @@ class ExamScore(models.Model):
                 sc = float(sitems[i])
             self._scores.append(sc)
             self._exam_scores[eitems[i]] = sc
-    
+
     def get_exams(self):
-        if not hasattr(self,'_exams'):
+        if not hasattr(self, '_exams'):
             self.extract_scores()
 
         return self._exams
 
     def get_scores(self):
-        if not hasattr(self,'_scores'):
+        if not hasattr(self, '_scores'):
             self.extract_scores()
 
         return self._scores
 
     def get_exam_score(self, exam):
-        if not hasattr(self,'_exam_scores'):
+        if not hasattr(self, '_exam_scores'):
             self.extract_scores()
 
         return self._exam_scores.get(exam, ExamScore.NO_SCORE)
@@ -1166,7 +1161,7 @@ class ExamScoreProvider(object):
         scores = []
         for i in range(self.get_gatpat_round_count()):
             items = []
-            for j in range(1,8):
+            for j in range(1, 8):
                 key = 'pat7_' + str(j)
                 if key in arr:
                     if arr[key][i] != -1:
@@ -1176,7 +1171,6 @@ class ExamScoreProvider(object):
             else:
                 scores.append('-')
         return scores
-                    
 
     def load_scores(self, scores=None):
         if scores == None:
@@ -1190,7 +1184,7 @@ class ExamScoreProvider(object):
 
             for ex in s.get_exams():
                 if '.' in ex:
-                    ex = ex.replace('.','_')
+                    ex = ex.replace('.', '_')
                 d = getattr(self, s.exam_type)
                 d[ex] = s.get_exam_score(ex)
                 darr = getattr(self, s.exam_type + '_array')
@@ -1202,10 +1196,9 @@ class ExamScoreProvider(object):
                               for s in self.scores
                               if s.exam_type == 'gatpat']
 
-        if hasattr(self,'gatpat_array'):
-            ar = getattr(self,'gatpat_array')
+        if hasattr(self, 'gatpat_array'):
+            ar = getattr(self, 'gatpat_array')
             ar['pat7'] = self.process_pat7(ar)
-                
-        
+
     def get_gatpat_round_count(self):
         return len(self.gatpat_rounds)

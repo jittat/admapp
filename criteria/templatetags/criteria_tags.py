@@ -1,8 +1,9 @@
+import json
+
 from django import template
 from django.utils.safestring import mark_safe
 
 from criteria.criteria_options import CRITERIA_OPTIONS
-import json
 
 register = template.Library()
 

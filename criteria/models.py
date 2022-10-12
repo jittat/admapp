@@ -1,6 +1,6 @@
 from django.db import models
 
-from appl.models import AdmissionProject, AdmissionRound, ProjectApplication
+from appl.models import AdmissionProject
 from appl.models import Major, Faculty
 
 

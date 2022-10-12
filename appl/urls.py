@@ -1,10 +1,10 @@
-from django.urls import re_path, include
+from django.urls import re_path
 
 from appl import views
-from appl.views import upload as upload_views
 from appl.views import general_forms
 from appl.views import major_selection
 from appl.views import print_views
+from appl.views import upload as upload_views
 
 app_name = 'appl'
 urlpatterns = [

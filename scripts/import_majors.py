@@ -5,7 +5,7 @@ import sys
 import csv
 import io
 
-from appl.models import Campus, Faculty, AdmissionProject, Major
+from appl.models import Faculty, AdmissionProject, Major
 
 def main():
     project_id = sys.argv[1]

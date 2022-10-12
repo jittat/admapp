@@ -1,35 +1,23 @@
 import csv
-import json
-from decimal import Decimal
 from collections import defaultdict
-
 from datetime import datetime
-from django.core import serializers
 
+from django.db.models import Q
+from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
-from django.http import HttpResponse, HttpResponseForbidden, HttpResponseNotFound
-from django.db import transaction
-from django.db.models import Q
 
-from django.http import Http404
-
-from regis.models import Applicant, LogItem
 from appl.models import AdmissionProject, AdmissionRound
-from appl.models import ProjectApplication, Payment, Major, AdmissionResult, Faculty
-
-from backoffice.views.permissions import can_user_view_project, can_user_view_applicant_in_major, can_user_view_applicants_in_major
+from appl.models import Faculty
 from backoffice.decorators import user_login_required
-
-from criteria.models import CurriculumMajor, AdmissionCriteria, ScoreCriteria, CurriculumMajorAdmissionCriteria, MajorCuptCode, CuptExportConfig
-
 from criteria.criteria_options import REQUIRED_SCORE_TYPE_TAGS, SCORING_SCORE_TYPE_TAGS
+from criteria.models import CurriculumMajor, AdmissionCriteria, CurriculumMajorAdmissionCriteria, CuptExportConfig
+from . import get_all_curriculum_majors
 from .cuptexport_fields import CONDITION_FILE_FIELD_STR, CONDITION_FILE_ZERO_FIELD_STR
-from .cuptexport_fields import SCORING_FILE_FIELD_STR, SCORING_FILE_ZERO_FIELD_STR
-from .cuptexport_fields import EXAM_FIELD_MAP
 from .cuptexport_fields import CONDITION_FILE_MIN_ZERO_FIELD_STR, SCORING_FILE_SCORING_ZERO_FIELD_STR
+from .cuptexport_fields import EXAM_FIELD_MAP
+from .cuptexport_fields import SCORING_FILE_FIELD_STR, SCORING_FILE_ZERO_FIELD_STR
 
-from . import prepare_admission_criteria, get_all_curriculum_majors
 
 def combine_slots(curriculum_major_rows):
     if len(curriculum_major_rows) == 0:

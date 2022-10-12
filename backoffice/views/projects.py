@@ -1,20 +1,19 @@
-import csv
 import json
 from datetime import datetime
 
+from django.http import HttpResponse, HttpResponseForbidden, HttpResponseNotFound
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
-from django.http import HttpResponse, HttpResponseForbidden, HttpResponseNotFound
 
-from regis.models import Applicant, LogItem
 from appl.models import AdmissionProject, AdmissionRound
 from appl.models import ProjectApplication, Payment, Major, AdmissionResult, Faculty
 from appl.models import ProjectUploadedDocument, UploadedDocument, ExamScoreProvider, MajorInterviewDescription
-
-from backoffice.views.permissions import can_user_view_project, can_user_view_applicant_in_major, can_user_view_applicants_in_major
 from backoffice.decorators import user_login_required
-
 from backoffice.models import CheckMarkGroup, JudgeComment, MajorInterviewCallDecision
+from backoffice.views.permissions import can_user_view_project, can_user_view_applicant_in_major, \
+    can_user_view_applicants_in_major
+from regis.models import Applicant, LogItem
+
 
 def load_applicant_round_paid_amount(admission_round):
     round_payments = Payment.objects.filter(admission_round=admission_round)
@@ -750,7 +749,6 @@ def load_applicant_application_and_check_permission(request, project_id, round_i
 def download_applicant_document(request, project_id, round_id, major_number,
                                 national_id, project_uploaded_document_id, document_id):
 
-    from appl.views.upload import get_uploaded_document_or_403
     from appl.views.upload import download_uploaded_document_response
 
     can_view, error_response = load_applicant_application_and_check_permission(request,

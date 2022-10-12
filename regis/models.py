@@ -1,12 +1,11 @@
+from datetime import datetime
 from random import choice
 
-from django.db import models
-from django.contrib.auth.hashers import make_password
-from django.contrib.auth.hashers import check_password as check_hashed_password
-
 from django.conf import settings
+from django.contrib.auth.hashers import check_password as check_hashed_password
+from django.contrib.auth.hashers import make_password
+from django.db import models
 
-from datetime import datetime
 
 class Applicant(models.Model):
     national_id = models.CharField(max_length=16,

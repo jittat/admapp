@@ -3,9 +3,7 @@ bootstrap()
 
 import sys
 import csv
-from datetime import datetime
 
-from regis.models import Applicant
 from appl.models import AdmissionProject, AdmissionResult, AdmissionRound, ProjectApplication
 from backoffice.models import ApplicantMajorResult
 

@@ -8,7 +8,7 @@
 	รอบอื่น:
 	{% for r in admission_rounds %}
 	  {% if r.id != admission_round.id %}
-	    <a class="btn btn-sm btn-outline-secondary" href="{% url "backoffice:criteria:report-num-slots" r.id %}">{{ r }}</a>
+	    <a class="btn btn-sm btn-outline-secondary" href="{% url 'backoffice:criteria:report-num-slots' r.id %}">{{ r }}</a>
 	  {% endif %}
 	{% endfor %}
       </small>

@@ -1,7 +1,7 @@
 from django_bootstrap import bootstrap
 bootstrap()
 
-from appl.models import Campus, Faculty, AdmissionProject, Major
+from appl.models import AdmissionProject, Major
 
 def main():
     project_majors = {

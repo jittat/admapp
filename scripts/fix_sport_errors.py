@@ -1,12 +1,9 @@
 from django_bootstrap import bootstrap
 bootstrap()
 
-import sys
-import csv
-import io
 from datetime import datetime
 
-from appl.models import Campus, Faculty, AdmissionProject, Major, ProjectApplication
+from appl.models import AdmissionProject, ProjectApplication
 from regis.models import LogItem
 
 MMAP = {

@@ -4,11 +4,9 @@
 #from PIL import Image
 
 from django.conf import settings
-from django.contrib.staticfiles import finders
+from suds import Client
 
 from regis.models import LogItem
-
-from suds import Client
 
 """
 def len2(st):

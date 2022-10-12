@@ -1,30 +1,25 @@
 from datetime import datetime, timedelta
 
-from django.shortcuts import render, get_object_or_404, redirect
-from django.urls import reverse
 from django.conf import settings
 from django.http import HttpResponseForbidden, HttpResponse, JsonResponse, HttpResponseServerError
-
-from regis.models import Applicant, LogItem
-from regis.models import CuptConfirmation, CuptRequestQueueItem
-
-from regis.decorators import appl_login_required
+from django.shortcuts import render, get_object_or_404, redirect
+from django.urls import reverse
 
 from admapp.utils import number_to_thai_text
-
-from appl.models import AdmissionProject, AdmissionRound, AdmissionProjectRound
-from appl.models import ProjectApplication
-from appl.models import ProjectUploadedDocument
+from appl.barcodes import generate
+from appl.models import AdmissionProject, AdmissionRound
+from appl.models import AdmissionResult, MajorInterviewDescription
 from appl.models import Eligibility
 from appl.models import Payment
-from appl.models import AdmissionResult, MajorInterviewDescription
-
-from appl.views.upload import upload_form_for
-
-from appl.barcodes import generate
+from appl.models import ProjectApplication
+from appl.models import ProjectUploadedDocument
 from appl.qrpayment import generate_ku_qr
-
+from appl.views.upload import upload_form_for
+from regis.decorators import appl_login_required
+from regis.models import CuptConfirmation, CuptRequestQueueItem
+from regis.models import LogItem
 from supplements.models import load_supplement_configs_with_instance
+
 
 def prepare_uploaded_document_forms(applicant, project_uploaded_documents):
     for d in project_uploaded_documents:

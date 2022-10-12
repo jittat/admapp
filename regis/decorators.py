@@ -3,6 +3,7 @@ from django.urls import reverse
 
 from .models import Applicant
 
+
 def appl_login_required(view_function):
 
     def login_required_view_function(request, *args, **kw):

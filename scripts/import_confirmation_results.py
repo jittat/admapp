@@ -2,17 +2,9 @@ from django_bootstrap import bootstrap
 bootstrap()
 
 import sys
-import csv
-from datetime import datetime
 
 from regis.models import Applicant
-from appl.models import AdmissionProject, AdmissionResult, AdmissionRound, ProjectApplication, Major
-from backoffice.models import MajorInterviewCallDecision
-
-from backoffice.views.projects import load_major_applicants
-from backoffice.views.projects import load_check_marks_and_results
-from backoffice.views.projects import sort_applicants_by_calculated_scores
-from backoffice.views.projects import update_interview_call_status
+from appl.models import AdmissionProject, AdmissionResult, AdmissionRound, Major
 
 
 def main():

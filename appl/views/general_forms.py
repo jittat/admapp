@@ -1,22 +1,18 @@
 import json
 
-from django.shortcuts import render, redirect
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, Fieldset, ButtonHolder, Submit, MultiWidgetField, Div, Row, HTML
 from django import forms
 from django.forms import ModelForm
 from django.http import HttpResponse
+from django.shortcuts import render, redirect
 from django.urls import reverse
-
-from django.utils.translation import gettext_lazy as _
 from django.utils.text import format_lazy
+from django.utils.translation import gettext_lazy as _
 
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Fieldset, ButtonHolder, Submit, MultiWidgetField, Div, Row, HTML
-
-from regis.decorators import appl_login_required
-
-from regis.models import Applicant
-from appl.models import Province, School
 from appl.models import PersonalProfile, EducationalProfile
+from appl.models import School
+from regis.decorators import appl_login_required
 
 
 class EducationForm(ModelForm):

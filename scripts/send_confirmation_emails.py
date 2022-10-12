@@ -2,11 +2,8 @@ from django_bootstrap import bootstrap
 bootstrap()
 
 import sys
-import csv
-from datetime import datetime
 
-from regis.models import Applicant
-from appl.models import AdmissionProject, AdmissionResult, AdmissionRound, ProjectApplication, Payment
+from appl.models import AdmissionProject, AdmissionRound, ProjectApplication, Payment
 from admapp.emails import send_major_confirmation_email
 
 def compute_amount_paid(admission_round):

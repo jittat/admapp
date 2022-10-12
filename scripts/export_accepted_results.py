@@ -2,11 +2,9 @@ from django_bootstrap import bootstrap
 bootstrap()
 
 import sys
-import csv
-from datetime import datetime
 
-from regis.models import Applicant
-from appl.models import AdmissionProject, AdmissionResult, AdmissionRound, ProjectApplication
+from appl.models import AdmissionResult, AdmissionRound
+
 
 def main():
     round_id = sys.argv[1]

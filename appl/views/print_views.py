@@ -1,13 +1,9 @@
-from django.shortcuts import render, get_object_or_404, redirect
-from django.http import HttpResponseForbidden, HttpResponse
+from django.http import HttpResponseForbidden
+from django.shortcuts import render
 
-from regis.models import Applicant, LogItem
-from regis.decorators import appl_login_required
-
-from appl.models import AdmissionProject, AdmissionRound, AdmissionProjectRound
-from appl.models import Payment, ProjectApplication
 from appl.models import AdmissionResult
-
+from appl.models import AdmissionRound
+from regis.decorators import appl_login_required
 from supplements.models import load_supplement_configs_with_instance
 from supplements.views.blocks import load_ap_course_results
 

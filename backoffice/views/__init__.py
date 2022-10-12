@@ -1,24 +1,18 @@
+from django import forms
+from django.db.models import Q
+from django.http import HttpResponseForbidden
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
-from django.http import HttpResponseForbidden
-from django.db.models import Q
-
-from django import forms
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Submit, ButtonHolder, Row, Div
-
-from regis.models import Applicant, LogItem
-from appl.models import AdmissionProject, ProjectApplication, EducationalProfile, PersonalProfile, Payment
-
-from supplements.models import load_supplement_configs_with_instance
-from supplements.views import render_supplement_for_backoffice
-
-from backoffice.models import Profile
-
-from backoffice.decorators import user_login_required, super_admin_login_required
-from .permissions import can_user_view_project
 
 from admapp.emails import send_forget_password_email
+from appl.models import AdmissionProject, ProjectApplication, Payment
+from backoffice.decorators import user_login_required, super_admin_login_required
+from backoffice.models import Profile
+from regis.models import Applicant, LogItem
+from supplements.models import load_supplement_configs_with_instance
+from supplements.views import render_supplement_for_backoffice
+from .permissions import can_user_view_project
+
 
 class ApplicantForm(forms.Form):
     email = forms.EmailField(label='อีเมล')

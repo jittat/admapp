@@ -4,7 +4,7 @@ bootstrap()
 import sys
 import csv
 
-from appl.models import Campus, Faculty, Major
+from appl.models import Major
 
 def main():
     filename = sys.argv[1]
