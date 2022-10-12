@@ -12,6 +12,27 @@
 	Scoring <a class="btn btn-sm btn-primary" target="_blank" rel="noopener noreferrer" href="{% url 'backoffice:criteria:export-scoring-csv' %}">ดาวน์โหลด</a>
       </li>
     </ul>
+    
+    <h3>นำเข้าไฟล์เงื่อนไขและไฟล์การคำนวณคะแนนเพื่อตรวจสอบ</h3>
+    <p>
+      {{ condition_json_count }} condition rows, {{ scoring_json_count }} scoring rows.
+    </p>
+    <form method="POST" action="{% url 'backoffice:criteria:export-import-file' %}" class="form-inline border rounded p-2" enctype="multipart/form-data">
+      <div class="form-group m-2">
+	<label class="mr-2">ประเภทไฟล์</label>
+	<select class="form-control" name="criteria_type">
+	  <option value="required">conditions</option>
+	  <option value="scoring">scoring</option>
+	</select>
+      </div>
+      <div class="form-group m-2">
+	<label>ไฟล์ข้อมูล</label>
+	<input type="file" class="form-control-file" name="imported_file">
+      </div>
+      <button type="submit" class="btn btn-secondary mb-2">นำเข้า</button>
+      {% csrf_token %}
+    </form>
+    
     <h3>ตรวจสอบข้อมูล</h3>
     <ul>
       {% for project in admission_projects %}

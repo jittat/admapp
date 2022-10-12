@@ -50,4 +50,7 @@ urlpatterns += [
 
     path('export/validate/<int:project_id>/<int:round_id>/',
          cuptexport.project_validation, name='export-project-validate'),
+
+    path('export/import/',
+         cuptexport.import_file, name='export-import-file'),
 ]

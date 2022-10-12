@@ -11,7 +11,8 @@ from appl.models import AdmissionProject, AdmissionRound
 from appl.models import Faculty
 from backoffice.decorators import user_login_required
 from criteria.criteria_options import REQUIRED_SCORE_TYPE_TAGS, SCORING_SCORE_TYPE_TAGS
-from criteria.models import CurriculumMajor, AdmissionCriteria, CurriculumMajorAdmissionCriteria, CuptExportConfig
+from criteria.models import CurriculumMajor, AdmissionCriteria, CurriculumMajorAdmissionCriteria, CuptExportConfig, ImportedCriteriaJSON
+
 from . import get_all_curriculum_majors
 from .cuptexport_fields import CONDITION_FILE_FIELD_STR, CONDITION_FILE_ZERO_FIELD_STR
 from .cuptexport_fields import CONDITION_FILE_MIN_ZERO_FIELD_STR, SCORING_FILE_SCORING_ZERO_FIELD_STR
@@ -399,11 +400,15 @@ def index(request):
         return redirect(reverse('backoffice:index'))
 
     admission_projects = AdmissionProject.objects.filter(Q(is_available=True) | Q(is_visible_in_backoffice=True)).all()
+
+    condition_json_count = ImportedCriteriaJSON.objects.filter(criteria_type='required').count()
+    scoring_json_count = ImportedCriteriaJSON.objects.filter(criteria_type='scoring').count()
     
     return render(request,
                   'criteria/cuptexport/index.html',
-                  {'admission_projects': admission_projects
-                   })
+                  { 'admission_projects': admission_projects,
+                    'condition_json_count': condition_json_count,
+                    'scoring_json_count': scoring_json_count })
 
 
 CONDITION_FILE_FIELDS = [f.strip() for f in CONDITION_FILE_FIELD_STR.split() if f.strip() != '']
@@ -773,3 +778,40 @@ def export_scoring_csv(request):
         write_scoring_row(writer, r, zero_fields)
     
     return response
+
+def import_file(request):
+    if request.method != 'POST':
+        return redirect(reverse('backoffice:criteria:export-index'))
+    
+    criteria_type = request.POST['criteria_type']
+    if criteria_type not in ['required','scoring']:
+        return redirect(reverse('backoffice:criteria:export-index'))
+
+    old_jsons = ImportedCriteriaJSON.objects.filter(criteria_type=criteria_type).all()
+    for o in old_jsons:
+        o.delete()
+
+    uploaded_file = request.FILES['imported_file']
+    if not uploaded_file:
+        return redirect(reverse('backoffice:criteria:export-index'))
+
+
+    from io import TextIOWrapper
+    reader = csv.DictReader(TextIOWrapper(uploaded_file, encoding='utf-8'))
+
+    import json
+       
+    for row in reader:
+        program_id = row.get('program_id','')
+        major_id = row.get('major_id','')
+        project_id = row.get('project_id','')
+
+        criteria_json = ImportedCriteriaJSON(criteria_type=criteria_type,
+                                    program_id=program_id,
+                                    major_id=major_id,
+                                    project_id=project_id)
+        criteria_json.data_json = json.dumps(row)
+
+        criteria_json.save()
+    
+    return redirect(reverse('backoffice:criteria:export-index'))
