@@ -523,14 +523,18 @@ def load_all_criterias():
                           for cm
                           in CurriculumMajor.objects.select_related('cupt_code').all() }
 
-    curriculum_major_admission_criterias = { cmac.admission_criteria_id: cmac
-                                             for cmac in CurriculumMajorAdmissionCriteria.objects.all() }
+    curriculum_major_admission_criterias = CurriculumMajorAdmissionCriteria.objects.all()
 
-
-    for id in curriculum_major_admission_criterias:
-        cmac = curriculum_major_admission_criterias[id]
+    #ids = []
+    for cmac in curriculum_major_admission_criterias:
         cmac.curriculum_major = curriculum_majors[cmac.curriculum_major_id]
         curriculum_major_admission_criteria_map[cmac.admission_criteria_id].append(cmac)
+        #if cmac.curriculum_major.cupt_code.program_code == '10020105303201A':
+        #    print(cmac.admission_criteria.admission_project, curriculum_major_admission_criteria_map[cmac.admission_criteria_id])
+        #ids.append(cmac.admission_criteria_id)
+
+    #for i in ids:
+    #    print(i,curriculum_major_admission_criteria_map[i])
     
     for criteria in (AdmissionCriteria
                      .objects
@@ -545,6 +549,9 @@ def load_all_criterias():
 
         admission_criterias[criteria.admission_project_id].append(criteria)
 
+        #if criteria.id in ids:
+        #    print(criteria, criteria.admission_project)
+        
         criteria.curriculum_major_admission_criterias = curriculum_major_admission_criteria_map[criteria.id]
 
     return admission_criterias
