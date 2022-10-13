@@ -318,6 +318,28 @@ def convert_to_base_row(project, curriculum_major, admission_criteria, curriculu
         row['add_limit'] = 0
     return row
 
+def load_imported_data(criteria_type, project, field_str, additional_fields):
+    import json
+    
+    all_jsons = ImportedCriteriaJSON.objects.filter(criteria_type=criteria_type,
+                                                    project_id__startswith=project.cupt_code[:3]).all()
+
+    fields = [x.strip() for x in field_str.split() if x.strip() != ''] + additional_fields
+
+    json_dict = {}
+    for j in all_jsons:
+        k = (j.project_id,j.program_id,j.major_id)
+
+        scores = {}
+        data = json.loads(j.data_json)
+        for f in fields:
+            if data[f] != '0':
+                scores[f] = data[f]
+
+        json_dict[k] = json.dumps(scores)
+
+    return json_dict
+
 @user_login_required
 def project_validation(request, project_id, round_id):
     user = request.user
@@ -345,6 +367,15 @@ def project_validation(request, project_id, round_id):
                            .order_by('faculty_id'))
     
     majors = {}
+
+    condition_jsons = load_imported_data('required',
+                                         project,
+                                         CONDITION_FILE_MIN_ZERO_FIELD_STR,
+                                         ['score_condition','subject_names','score_minimum'])
+    scoring_jsons = load_imported_data('scoring',
+                                       project,
+                                       SCORING_FILE_SCORING_ZERO_FIELD_STR,
+                                       ['cal_type','cal_subject_name','cal_score_sum'])
     
     for admission_criteria in admission_criterias:
         curriculum_major_admission_criterias = admission_criteria.curriculummajoradmissioncriteria_set.select_related('curriculum_major').all()
@@ -377,6 +408,15 @@ def project_validation(request, project_id, round_id):
     else:
         for mid in majors:
             validate_project_ids(majors[mid], additional_projects, cupt_code_custom_projects)
+
+    for mid in majors:
+        for r in majors[mid]:
+            major_cupt_code = r['curriculum_major'].cupt_code
+            json_key = (r['project_id'], major_cupt_code.program_code, major_cupt_code.major_code)
+            if json_key in condition_jsons:
+                r['condition_json'] = condition_jsons[json_key]
+            if json_key in scoring_jsons:
+                r['scoring_json'] = scoring_jsons[json_key]
 
     free_curriculum_majors = []
     for curriculum_major in get_all_curriculum_majors(project):

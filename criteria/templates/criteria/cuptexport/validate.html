@@ -23,7 +23,9 @@
 	  <th>จำนวนรับ</th>
 	  <th>add_limit</th>
 	  <th>required</th>
+	  <th></th>
 	  <th>scoring</th>
+	  <th></th>
 	  <th>messages</th>
 	</tr>
       </thead>
@@ -54,6 +56,9 @@
 		  {% endif %}
 		</td>
 		<td>
+		  {% if r.condition_json %}{{ r.condition_json}}{% endif %}
+		</td>
+		<td>
 		  {% if r.criteria %}
 		    {% for item in r.criteria.extracted_scoring_criteria.0 %}
 		      {{ item }}
@@ -61,6 +66,9 @@
 		    <br>
 		    {% for m in r.criteria.extracted_scoring_criteria.1 %}{{ m }}<br>{% endfor %}
 		  {% endif %}
+		</td>
+		<td>
+		  {% if r.scoring_json %}{{ r.scoring_json }}{% endif %}
 		</td>
 		<td>
 		  {% if r.validation_messages %}
