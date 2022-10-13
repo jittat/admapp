@@ -48,6 +48,11 @@
 		<td>{{ r.add_limit }}</td>
 		<td>
 		  {% if r.criteria %}
+		    {% if r.required_criteria_str %}
+		      <p class="border rounded p-1">
+			{{ r.required_criteria_str|linebreaksbr }}
+		      </p>
+		    {% endif %}
 		    {% for item in r.criteria.extracted_required_criteria.0 %}
 		      {{ item }}
 		    {% endfor %}
@@ -59,6 +64,11 @@
 		  {% if r.condition_json %}{{ r.condition_json}}{% endif %}
 		</td>
 		<td>
+		  {% if r.scoring_criteria_str %}
+		    <p class="border rounded p-1">
+		      {{ r.scoring_criteria_str|linebreaksbr }}
+		    </p>
+		  {% endif %}
 		  {% if r.criteria %}
 		    {% for item in r.criteria.extracted_scoring_criteria.0 %}
 		      {{ item }}

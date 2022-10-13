@@ -418,6 +418,11 @@ def project_validation(request, project_id, round_id):
             if json_key in scoring_jsons:
                 r['scoring_json'] = scoring_jsons[json_key]
 
+            if not project.is_cupt_export_only_major_list:
+                r['required_criteria_str'] = r['criteria'].get_all_required_score_criteria_as_str()
+                r['scoring_criteria_str'] = r['criteria'].get_all_scoring_score_criteria_as_str()
+
+                
     free_curriculum_majors = []
     for curriculum_major in get_all_curriculum_majors(project):
         if curriculum_major.id not in majors:
