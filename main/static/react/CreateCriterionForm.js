@@ -1,59 +1,49 @@
 'use strict';
 
-var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
-
-function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-var e = React.createElement;
-var _React = React,
-    useState = _React.useState,
-    useRef = _React.useRef,
-    useEffect = _React.useEffect;
-
-var majors = JSON.parse(document.currentScript.getAttribute('data-majors'));
-var dataRequired = JSON.parse(document.currentScript.getAttribute('data-required'));
-var dataScoring = JSON.parse(document.currentScript.getAttribute('data-scoring'));
-var dataSelectedMajors = JSON.parse(document.currentScript.getAttribute('data-selected-majors'));
-var mode = document.currentScript.getAttribute('data-mode');
-var _isCustomScoreCriteriaAllowed = document.currentScript.getAttribute('data-is_custom_score_criteria_allowed') === 'True';
-var MODE = {
+function _extends() { _extends = Object.assign ? Object.assign.bind() : function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
+const e = React.createElement;
+const {
+  useState,
+  useRef,
+  useEffect
+} = React;
+let majors = JSON.parse(document.currentScript.getAttribute('data-majors'));
+let dataRequired = JSON.parse(document.currentScript.getAttribute('data-required'));
+let dataScoring = JSON.parse(document.currentScript.getAttribute('data-scoring'));
+let dataSelectedMajors = JSON.parse(document.currentScript.getAttribute('data-selected-majors'));
+let mode = document.currentScript.getAttribute('data-mode');
+let _isCustomScoreCriteriaAllowed = document.currentScript.getAttribute('data-is_custom_score_criteria_allowed') === 'True';
+const MODE = {
   CREATE: 'create',
   EDIT: 'edit'
 };
-var RELATION_MAX = "MAX";
-
-var Form = function Form() {
+const RELATION_MAX = "MAX";
+const Form = () => {
   // console.log(dataRequired)
   // console.log(dataScoring)
-  return React.createElement(
-    'div',
-    null,
-    React.createElement(SelectMajors, null),
-    !hideRequiredSection && React.createElement(RequiredCriteria, { initialTopics: dataRequired || [] }),
-    React.createElement(ScoringCriteria, { initialTopics: dataScoring || [] })
-  );
+  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement(SelectMajors, null), !hideRequiredSection && /*#__PURE__*/React.createElement(RequiredCriteria, {
+    initialTopics: dataRequired || []
+  }), /*#__PURE__*/React.createElement(ScoringCriteria, {
+    initialTopics: dataScoring || []
+  }));
 };
-var SelectMajors = function SelectMajors() {
-  var _useState = useState(dataSelectedMajors || []),
-      _useState2 = _slicedToArray(_useState, 2),
-      selectedMajors = _useState2[0],
-      setSelectedMajors = _useState2[1];
-
-  var inputRef = useRef();
-  var jRef = useRef();
-  var choices = majors.map(function (m) {
-    return { label: m.title, value: m.id, raw: m };
-  });
+const SelectMajors = () => {
+  const [selectedMajors, setSelectedMajors] = useState(dataSelectedMajors || []);
+  const inputRef = useRef();
+  const jRef = useRef();
+  const choices = majors.map(m => ({
+    label: m.title,
+    value: m.id,
+    raw: m
+  }));
   // console.log(selectedMajors, dataSelectedMajors)
   // fix for jQuery
-  jRef.current = { selectedMajors: selectedMajors };
-  var toggleMajor = function toggleMajor(major) {
-    var newSelectedMajors = jRef.current.selectedMajors.slice();
-    var index = newSelectedMajors.findIndex(function (m) {
-      return m.id == major.id;
-    });
+  jRef.current = {
+    selectedMajors: selectedMajors
+  };
+  const toggleMajor = major => {
+    const newSelectedMajors = jRef.current.selectedMajors.slice();
+    const index = newSelectedMajors.findIndex(m => m.id == major.id);
     if (index > -1) {
       newSelectedMajors.splice(index, 1);
     } else {
@@ -61,11 +51,11 @@ var SelectMajors = function SelectMajors() {
     }
     setSelectedMajors(newSelectedMajors);
   };
-  useEffect(function () {
+  useEffect(() => {
     $(inputRef.current).autocomplete({
       source: choices,
       minLength: 0,
-      select: function select(e, ui) {
+      select: (e, ui) => {
         toggleMajor(ui.item.raw);
         $(inputRef.current).blur();
         return false;
@@ -74,817 +64,621 @@ var SelectMajors = function SelectMajors() {
       $(inputRef.current).autocomplete('search');
     });
   }, []);
-
-  return React.createElement(
-    'div',
-    { className: 'form-group' },
-    React.createElement(
-      'label',
-      { htmlFor: 'majors' },
-      '\u0E40\u0E25\u0E37\u0E2D\u0E01\u0E2A\u0E32\u0E02\u0E32'
-    ),
-    React.createElement('input', { ref: inputRef, className: 'form-control d-inline-block mb-2', id: 'search-major', name: 'search', type: 'text', placeholder: '\u0E04\u0E49\u0E19\u0E2B\u0E32\u0E0A\u0E37\u0E48\u0E2D\u0E2A\u0E32\u0E02\u0E32' }),
-    selectedMajors.length > 0 && React.createElement(
-      'table',
-      { className: 'table table-bordered' },
-      React.createElement(
-        'thead',
-        null,
-        React.createElement(
-          'tr',
-          null,
-          React.createElement(
-            'th',
-            { scope: 'col' },
-            '\u0E2A\u0E32\u0E02\u0E32'
-          ),
-          React.createElement(
-            'th',
-            { scope: 'col' },
-            '\u0E08\u0E33\u0E19\u0E27\u0E19\u0E23\u0E31\u0E1A (\u0E04\u0E19)'
-          ),
-          React.createElement('th', { scope: 'col' })
-        )
-      ),
-      React.createElement(
-        'tbody',
-        null,
-        selectedMajors.map(function (major, idx) {
-          var label = major.title;
-          return React.createElement(
-            'tr',
-            { key: 'major-' + major.id },
-            React.createElement(
-              'td',
-              { scope: 'row' },
-              label,
-              React.createElement('input', { value: major.id, type: 'hidden', name: 'majors_' + (idx + 1) + '_id', required: true })
-            ),
-            React.createElement(
-              'td',
-              null,
-              React.createElement('input', { type: 'number', className: 'form-control', name: 'majors_' + (idx + 1) + '_slot', defaultValue: major.slot, required: true })
-            ),
-            React.createElement(
-              'td',
-              null,
-              React.createElement(
-                'button',
-                { htmltype: 'button', className: 'btn btn-secondary', onClick: function onClick() {
-                    return toggleMajor(major);
-                  } },
-                '\u0E25\u0E1A'
-              )
-            )
-          );
-        })
-      )
-    )
-  );
+  return /*#__PURE__*/React.createElement("div", {
+    className: "form-group"
+  }, /*#__PURE__*/React.createElement("label", {
+    htmlFor: "majors"
+  }, "\u0E40\u0E25\u0E37\u0E2D\u0E01\u0E2A\u0E32\u0E02\u0E32"), /*#__PURE__*/React.createElement("input", {
+    ref: inputRef,
+    className: "form-control d-inline-block mb-2",
+    id: "search-major",
+    name: "search",
+    type: "text",
+    placeholder: "\u0E04\u0E49\u0E19\u0E2B\u0E32\u0E0A\u0E37\u0E48\u0E2D\u0E2A\u0E32\u0E02\u0E32"
+  }), selectedMajors.length > 0 && /*#__PURE__*/React.createElement("table", {
+    className: "table table-bordered"
+  }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", {
+    scope: "col"
+  }, "\u0E2A\u0E32\u0E02\u0E32"), /*#__PURE__*/React.createElement("th", {
+    scope: "col"
+  }, "\u0E08\u0E33\u0E19\u0E27\u0E19\u0E23\u0E31\u0E1A (\u0E04\u0E19)"), /*#__PURE__*/React.createElement("th", {
+    scope: "col"
+  }))), /*#__PURE__*/React.createElement("tbody", null, selectedMajors.map((major, idx) => {
+    const label = major.title;
+    return /*#__PURE__*/React.createElement("tr", {
+      key: `major-${major.id}`
+    }, /*#__PURE__*/React.createElement("td", {
+      scope: "row"
+    }, label, /*#__PURE__*/React.createElement("input", {
+      value: major.id,
+      type: "hidden",
+      name: `majors_${idx + 1}_id`,
+      required: true
+    })), /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement("input", {
+      type: "number",
+      className: "form-control",
+      name: `majors_${idx + 1}_slot`,
+      defaultValue: major.slot,
+      required: true
+    })), /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement("button", {
+      htmltype: "button",
+      className: "btn btn-secondary",
+      onClick: () => toggleMajor(major)
+    }, "\u0E25\u0E1A")));
+  }))));
 };
-var RequiredCriteria = function RequiredCriteria(_ref) {
-  var _ref$initialTopics = _ref.initialTopics,
-      initialTopics = _ref$initialTopics === undefined ? [] : _ref$initialTopics;
-
-  var _useState3 = useState(initialTopics),
-      _useState4 = _slicedToArray(_useState3, 2),
-      topics = _useState4[0],
-      setTopics = _useState4[1];
-
-  var isCustomScoreCriteriaAllowed = _isCustomScoreCriteriaAllowed; //from global variable
-  var addNewTopic = function addNewTopic(e) {
+const RequiredCriteria = ({
+  initialTopics = []
+}) => {
+  const [topics, setTopics] = useState(initialTopics);
+  const isCustomScoreCriteriaAllowed = _isCustomScoreCriteriaAllowed; //from global variable
+  const addNewTopic = e => {
     e.preventDefault();
-    var newTopic = topics.slice();
-    newTopic.push({ id: function () {
-        return Date.now();
-      }(), title: '', unit: '', children: [] });
+    const newTopic = topics.slice();
+    newTopic.push({
+      id: (() => Date.now())(),
+      title: '',
+      unit: '',
+      children: []
+    });
     console.log(newTopic);
     setTopics(newTopic);
   };
-  var updateTopic = function updateTopic(topicId, value) {
-    console.log('Updating topic', topicId, value);
-    var newTopics = topics.slice();
-    var index = newTopics.findIndex(function (t) {
-      return t.id === topicId;
-    });
-    newTopics[index] = Object.assign({}, newTopics[index], value);
+  const updateTopic = (topicId, value) => {
+    console.log(`Updating topic`, topicId, value);
+    const newTopics = topics.slice();
+    const index = newTopics.findIndex(t => t.id === topicId);
+    newTopics[index] = {
+      ...newTopics[index],
+      ...value
+    };
     console.log('eiei', newTopics[index]);
     setTopics(newTopics);
   };
-  var removeTopic = function removeTopic(topic) {
-    var newTopics = topics.slice();
-    var index = newTopics.findIndex(function (t) {
-      return t.id === topic.id;
-    });
+  const removeTopic = topic => {
+    const newTopics = topics.slice();
+    const index = newTopics.findIndex(t => t.id === topic.id);
     newTopics.splice(index, 1);
     setTopics(newTopics);
   };
-  var _setSecondaryTopics = function _setSecondaryTopics(topicId, newSecondaryTopics) {
-    var newTopics = topics.slice();
-    var index = newTopics.findIndex(function (t) {
-      return t.id === topicId;
-    });
-    newTopics[index] = Object.assign({}, newTopics[index], { children: newSecondaryTopics });
+  const setSecondaryTopics = (topicId, newSecondaryTopics) => {
+    const newTopics = topics.slice();
+    const index = newTopics.findIndex(t => t.id === topicId);
+    newTopics[index] = {
+      ...newTopics[index],
+      children: newSecondaryTopics
+    };
     console.log('new topic', newTopics[index]);
     setTopics(newTopics);
   };
-  return React.createElement(
-    'div',
-    { className: 'form-group' },
-    React.createElement(
-      'label',
-      { htmlFor: 'majors' },
-      '\u0E04\u0E38\u0E13\u0E2A\u0E21\u0E1A\u0E31\u0E15\u0E34\u0E40\u0E09\u0E1E\u0E32\u0E30'
-    ),
-    React.createElement(
-      'small',
-      { className: 'form-text text-muted' },
-      '\u0E04\u0E38\u0E13\u0E2A\u0E21\u0E1A\u0E31\u0E15\u0E34\u0E41\u0E25\u0E30\u0E04\u0E30\u0E41\u0E19\u0E19\u0E02\u0E31\u0E49\u0E19\u0E15\u0E48\u0E33 \u0E40\u0E0A\u0E48\u0E19 \u0E1C\u0E25\u0E01\u0E32\u0E23\u0E40\u0E23\u0E35\u0E22\u0E19\u0E40\u0E09\u0E25\u0E35\u0E48\u0E22\u0E2A\u0E30\u0E2A\u0E21 \u0E44\u0E21\u0E48\u0E19\u0E49\u0E2D\u0E22\u0E01\u0E27\u0E48\u0E32 2.0'
-    ),
-    React.createElement(
-      'table',
-      { className: 'table table-bordered', style: { tableLayout: 'fixed' } },
-      React.createElement(
-        'thead',
-        null,
-        React.createElement(
-          'tr',
-          null,
-          React.createElement('th', { style: { width: '5%' } }),
-          React.createElement('th', null),
-          React.createElement(
-            'th',
-            { style: { width: '15%' } },
-            '\u0E02\u0E31\u0E49\u0E19\u0E15\u0E48\u0E33 (\u2265)'
-          ),
-          React.createElement(
-            'th',
-            { style: { width: '15%' } },
-            '\u0E2B\u0E19\u0E48\u0E27\u0E22'
-          ),
-          React.createElement('th', { style: { width: '5%' } })
-        )
-      ),
-      React.createElement(
-        'tbody',
-        null,
-        topics.map(function (topic, idx) {
-          return React.createElement(PrimaryTopic, {
-            key: topic.id,
-            topic: topic,
-            removeTopic: removeTopic,
-            updateTopic: updateTopic,
-            number: idx + 1,
-            secondaryTopics: topic.children,
-            setSecondaryTopics: function setSecondaryTopics(newSecondaryTopics) {
-              return _setSecondaryTopics(topic.id, newSecondaryTopics);
-            },
-            isCustomScoreCriteriaAllowed: isCustomScoreCriteriaAllowed
-          });
-        }),
-        React.createElement(
-          'tr',
-          null,
-          React.createElement(
-            'td',
-            null,
-            React.createElement(
-              'div',
-              { className: 'btn btn-primary', onClick: addNewTopic },
-              '+'
-            )
-          ),
-          React.createElement('td', null),
-          React.createElement('td', null),
-          React.createElement('td', null),
-          React.createElement('td', null)
-        )
-      )
-    )
-  );
+  return /*#__PURE__*/React.createElement("div", {
+    className: "form-group"
+  }, /*#__PURE__*/React.createElement("label", {
+    htmlFor: "majors"
+  }, "\u0E04\u0E38\u0E13\u0E2A\u0E21\u0E1A\u0E31\u0E15\u0E34\u0E40\u0E09\u0E1E\u0E32\u0E30"), /*#__PURE__*/React.createElement("small", {
+    className: "form-text text-muted"
+  }, "\u0E04\u0E38\u0E13\u0E2A\u0E21\u0E1A\u0E31\u0E15\u0E34\u0E41\u0E25\u0E30\u0E04\u0E30\u0E41\u0E19\u0E19\u0E02\u0E31\u0E49\u0E19\u0E15\u0E48\u0E33 \u0E40\u0E0A\u0E48\u0E19 \u0E1C\u0E25\u0E01\u0E32\u0E23\u0E40\u0E23\u0E35\u0E22\u0E19\u0E40\u0E09\u0E25\u0E35\u0E48\u0E22\u0E2A\u0E30\u0E2A\u0E21 \u0E44\u0E21\u0E48\u0E19\u0E49\u0E2D\u0E22\u0E01\u0E27\u0E48\u0E32 2.0"), /*#__PURE__*/React.createElement("table", {
+    className: "table table-bordered",
+    style: {
+      tableLayout: 'fixed'
+    }
+  }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", {
+    style: {
+      width: '5%'
+    }
+  }), /*#__PURE__*/React.createElement("th", null), /*#__PURE__*/React.createElement("th", {
+    style: {
+      width: '15%'
+    }
+  }, "\u0E02\u0E31\u0E49\u0E19\u0E15\u0E48\u0E33 (\u2265)"), /*#__PURE__*/React.createElement("th", {
+    style: {
+      width: '15%'
+    }
+  }, "\u0E2B\u0E19\u0E48\u0E27\u0E22"), /*#__PURE__*/React.createElement("th", {
+    style: {
+      width: '5%'
+    }
+  }))), /*#__PURE__*/React.createElement("tbody", null, topics.map((topic, idx) => /*#__PURE__*/React.createElement(PrimaryTopic, {
+    key: topic.id,
+    topic: topic,
+    removeTopic: removeTopic,
+    updateTopic: updateTopic,
+    number: idx + 1,
+    secondaryTopics: topic.children,
+    setSecondaryTopics: newSecondaryTopics => setSecondaryTopics(topic.id, newSecondaryTopics),
+    isCustomScoreCriteriaAllowed: isCustomScoreCriteriaAllowed
+  })), /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement("div", {
+    className: "btn btn-primary",
+    onClick: addNewTopic
+  }, "+")), /*#__PURE__*/React.createElement("td", null), /*#__PURE__*/React.createElement("td", null), /*#__PURE__*/React.createElement("td", null), /*#__PURE__*/React.createElement("td", null)))));
 };
+const ScoringCriteria = ({
+  initialTopics = []
+}) => {
+  const isCustomScoreCriteriaAllowed = _isCustomScoreCriteriaAllowed; //from global variable
 
-var ScoringCriteria = function ScoringCriteria(_ref2) {
-  var _ref2$initialTopics = _ref2.initialTopics,
-      initialTopics = _ref2$initialTopics === undefined ? [] : _ref2$initialTopics;
-
-  var isCustomScoreCriteriaAllowed = _isCustomScoreCriteriaAllowed; //from global variable
-
-  var _useState5 = useState(initialTopics),
-      _useState6 = _slicedToArray(_useState5, 2),
-      topics = _useState6[0],
-      setTopics = _useState6[1];
-
-  var topicsRef = useRef(topics);
-  useEffect(function () {
+  const [topics, setTopics] = useState(initialTopics);
+  const topicsRef = useRef(topics);
+  useEffect(() => {
     topicsRef.current = topics;
   }, [topics]);
-
-  var addNewTopic = function addNewTopic(e) {
+  const addNewTopic = e => {
     e.preventDefault();
-    var newTopic = topicsRef.current.slice();
-    newTopic.push({ id: function () {
-        return Date.now();
-      }(), title: '', value: 1, children: [] });
+    const newTopic = topicsRef.current.slice();
+    newTopic.push({
+      id: (() => Date.now())(),
+      title: '',
+      value: 1,
+      children: []
+    });
     console.log(newTopic);
     setTopics(newTopic);
   };
-  var removeTopic = function removeTopic(topic) {
-    var newTopics = topicsRef.current.slice();
-    var index = newTopics.findIndex(function (t) {
-      return t.id === topic.id;
-    });
+  const removeTopic = topic => {
+    const newTopics = topicsRef.current.slice();
+    const index = newTopics.findIndex(t => t.id === topic.id);
     newTopics.splice(index, 1);
     setTopics(newTopics);
   };
-  var updateTopic = function updateTopic(topicId, value) {
-    console.log('Updating topic', topicId, value);
-    var newTopics = topicsRef.current.slice();
-    var index = newTopics.findIndex(function (t) {
-      return t.id === topicId;
-    });
-    newTopics[index] = Object.assign({}, newTopics[index], value);
+  const updateTopic = (topicId, value) => {
+    console.log(`Updating topic`, topicId, value);
+    const newTopics = topicsRef.current.slice();
+    const index = newTopics.findIndex(t => t.id === topicId);
+    newTopics[index] = {
+      ...newTopics[index],
+      ...value
+    };
     setTopics(newTopics);
   };
-  var _setSecondaryTopics2 = function _setSecondaryTopics2(topicId, newSecondaryTopics) {
-    var newTopics = topicsRef.current.slice();
-    var index = newTopics.findIndex(function (t) {
-      return t.id === topicId;
-    });
-    newTopics[index] = Object.assign({}, newTopics[index], { children: newSecondaryTopics });
+  const setSecondaryTopics = (topicId, newSecondaryTopics) => {
+    const newTopics = topicsRef.current.slice();
+    const index = newTopics.findIndex(t => t.id === topicId);
+    newTopics[index] = {
+      ...newTopics[index],
+      children: newSecondaryTopics
+    };
     setTopics(newTopics);
   };
-  var maxScore = topics.reduce(function (a, b) {
-    return a + b.value;
-  }, 0);
-  return React.createElement(
-    'div',
-    { className: 'form-group' },
-    React.createElement(
-      'label',
-      { htmlFor: 'majors' },
-      '\u0E40\u0E01\u0E13\u0E11\u0E4C\u0E01\u0E32\u0E23\u0E04\u0E31\u0E14\u0E40\u0E25\u0E37\u0E2D\u0E01'
-    ),
-    !useComponentWeightType && React.createElement(
-      'small',
-      { className: 'form-text text-muted' },
-      '\u0E40\u0E01\u0E13\u0E11\u0E4C\u0E2A\u0E33\u0E2B\u0E23\u0E31\u0E1A\u0E04\u0E33\u0E19\u0E27\u0E19\u0E04\u0E30\u0E41\u0E19\u0E19 \u0E08\u0E31\u0E14\u0E25\u0E33\u0E14\u0E31\u0E1A \u0E40\u0E0A\u0E48\u0E19 GAT 50%, PAT-1 50%  \u0E2A\u0E33\u0E2B\u0E23\u0E31\u0E1A\u0E23\u0E2D\u0E1A\u0E17\u0E35\u0E48 1 \u0E16\u0E49\u0E32\u0E44\u0E21\u0E48\u0E15\u0E49\u0E2D\u0E07\u0E01\u0E32\u0E23\u0E23\u0E30\u0E1A\u0E38\u0E2A\u0E31\u0E14\u0E2A\u0E48\u0E27\u0E19\u0E43\u0E2B\u0E49\u0E43\u0E2A\u0E48 0'
-    ),
-    useComponentWeightType && React.createElement(
-      'small',
-      { className: 'form-text text-muted' },
-      '\u0E2A\u0E33\u0E2B\u0E23\u0E31\u0E1A\u0E40\u0E01\u0E13\u0E11\u0E4C\u0E23\u0E2D\u0E1A Admission 2 \u0E43\u0E2B\u0E49\u0E40\u0E25\u0E37\u0E2D\u0E01\u0E41\u0E04\u0E48\u0E2D\u0E07\u0E04\u0E4C\u0E1B\u0E23\u0E30\u0E01\u0E2D\u0E1A\u0E40\u0E14\u0E35\u0E22\u0E27 (\u0E15\u0E2D\u0E19\u0E19\u0E35\u0E49\u0E43\u0E19\u0E23\u0E30\u0E1A\u0E1A\u0E2D\u0E32\u0E08\u0E40\u0E25\u0E37\u0E2D\u0E01\u0E44\u0E14\u0E49\u0E2B\u0E25\u0E32\u0E22\u0E40\u0E01\u0E13\u0E11\u0E4C \u0E41\u0E15\u0E48\u0E23\u0E1A\u0E01\u0E27\u0E19\u0E40\u0E25\u0E37\u0E2D\u0E01\u0E41\u0E04\u0E48\u0E2D\u0E31\u0E19\u0E40\u0E14\u0E35\u0E22\u0E27\u0E01\u0E48\u0E2D\u0E19) \u0E16\u0E49\u0E32\u0E21\u0E35\u0E01\u0E32\u0E23\u0E23\u0E31\u0E1A\u0E2B\u0E25\u0E32\u0E22\u0E23\u0E39\u0E1B\u0E41\u0E1A\u0E1A\u0E43\u0E2B\u0E49\u0E2A\u0E23\u0E49\u0E32\u0E07\u0E40\u0E07\u0E37\u0E48\u0E2D\u0E19\u0E44\u0E02\u0E01\u0E32\u0E23\u0E23\u0E31\u0E1A\u0E40\u0E1E\u0E34\u0E48\u0E21\u0E40\u0E15\u0E34\u0E21 \xA0 \u0E16\u0E49\u0E32\u0E15\u0E49\u0E2D\u0E07\u0E01\u0E32\u0E23\u0E41\u0E01\u0E49\u0E40\u0E01\u0E13\u0E11\u0E4C\u0E17\u0E35\u0E48\u0E40\u0E25\u0E37\u0E2D\u0E01\u0E41\u0E25\u0E49\u0E27\u0E42\u0E14\u0E22\u0E01\u0E32\u0E23\u0E40\u0E25\u0E37\u0E2D\u0E01\u0E43\u0E2B\u0E21\u0E48 \u0E43\u0E2B\u0E49\u0E25\u0E1A\u0E02\u0E49\u0E2D\u0E04\u0E27\u0E32\u0E21\u0E17\u0E34\u0E49\u0E07\u0E08\u0E30\u0E21\u0E35\u0E15\u0E31\u0E27\u0E40\u0E25\u0E37\u0E2D\u0E01\u0E02\u0E36\u0E49\u0E19\u0E21\u0E32\u0E41\u0E2A\u0E14\u0E07\u0E40\u0E2B\u0E21\u0E37\u0E2D\u0E19\u0E40\u0E14\u0E34\u0E21'
-    ),
-    React.createElement(
-      'table',
-      { className: 'table table-bordered', style: { tableLayout: 'fixed' } },
-      React.createElement(
-        'thead',
-        null,
-        React.createElement(
-          'tr',
-          null,
-          React.createElement('th', { style: { width: '5%' } }),
-          React.createElement('th', null),
-          React.createElement(
-            'th',
-            { style: { width: '15%' } },
-            '\u0E2A\u0E31\u0E14\u0E2A\u0E48\u0E27\u0E19\u0E04\u0E30\u0E41\u0E19\u0E19'
-          ),
-          React.createElement(
-            'th',
-            { style: { width: '15%' } },
-            '\u0E23\u0E49\u0E2D\u0E22\u0E25\u0E30'
-          ),
-          React.createElement('th', { style: { width: '5%' } })
-        )
-      ),
-      React.createElement(
-        'tbody',
-        null,
-        topics.map(function (topic, idx) {
-          return React.createElement(PrimaryScoringTopic, {
-            topic: topic,
-            updateTopic: updateTopic,
-            removeTopic: removeTopic,
-            number: idx + 1,
-            maxScore: maxScore,
-            secondaryTopics: topic.children,
-            setSecondaryTopics: function setSecondaryTopics(newSecondaryTopics) {
-              return _setSecondaryTopics2(topic.id, newSecondaryTopics);
-            },
-            key: topic.id,
-            isCustomScoreCriteriaAllowed: isCustomScoreCriteriaAllowed
-          });
-        }),
-        React.createElement(
-          'tr',
-          null,
-          React.createElement(
-            'td',
-            null,
-            React.createElement(
-              'div',
-              { className: 'btn btn-primary', onClick: addNewTopic },
-              '+'
-            )
-          ),
-          React.createElement('td', null),
-          React.createElement('td', null),
-          React.createElement('td', null),
-          React.createElement('td', null)
-        )
-      )
-    )
-  );
+  const maxScore = topics.reduce((a, b) => a + b.value, 0);
+  return /*#__PURE__*/React.createElement("div", {
+    className: "form-group"
+  }, /*#__PURE__*/React.createElement("label", {
+    htmlFor: "majors"
+  }, "\u0E40\u0E01\u0E13\u0E11\u0E4C\u0E01\u0E32\u0E23\u0E04\u0E31\u0E14\u0E40\u0E25\u0E37\u0E2D\u0E01"), !useComponentWeightType && /*#__PURE__*/React.createElement("small", {
+    className: "form-text text-muted"
+  }, "\u0E40\u0E01\u0E13\u0E11\u0E4C\u0E2A\u0E33\u0E2B\u0E23\u0E31\u0E1A\u0E04\u0E33\u0E19\u0E27\u0E19\u0E04\u0E30\u0E41\u0E19\u0E19 \u0E08\u0E31\u0E14\u0E25\u0E33\u0E14\u0E31\u0E1A \u0E40\u0E0A\u0E48\u0E19 GAT 50%, PAT-1 50%  \u0E2A\u0E33\u0E2B\u0E23\u0E31\u0E1A\u0E23\u0E2D\u0E1A\u0E17\u0E35\u0E48 1 \u0E16\u0E49\u0E32\u0E44\u0E21\u0E48\u0E15\u0E49\u0E2D\u0E07\u0E01\u0E32\u0E23\u0E23\u0E30\u0E1A\u0E38\u0E2A\u0E31\u0E14\u0E2A\u0E48\u0E27\u0E19\u0E43\u0E2B\u0E49\u0E43\u0E2A\u0E48 0"), useComponentWeightType && /*#__PURE__*/React.createElement("small", {
+    className: "form-text text-muted"
+  }, "\u0E2A\u0E33\u0E2B\u0E23\u0E31\u0E1A\u0E40\u0E01\u0E13\u0E11\u0E4C\u0E23\u0E2D\u0E1A Admission 2 \u0E43\u0E2B\u0E49\u0E40\u0E25\u0E37\u0E2D\u0E01\u0E41\u0E04\u0E48\u0E2D\u0E07\u0E04\u0E4C\u0E1B\u0E23\u0E30\u0E01\u0E2D\u0E1A\u0E40\u0E14\u0E35\u0E22\u0E27 (\u0E15\u0E2D\u0E19\u0E19\u0E35\u0E49\u0E43\u0E19\u0E23\u0E30\u0E1A\u0E1A\u0E2D\u0E32\u0E08\u0E40\u0E25\u0E37\u0E2D\u0E01\u0E44\u0E14\u0E49\u0E2B\u0E25\u0E32\u0E22\u0E40\u0E01\u0E13\u0E11\u0E4C \u0E41\u0E15\u0E48\u0E23\u0E1A\u0E01\u0E27\u0E19\u0E40\u0E25\u0E37\u0E2D\u0E01\u0E41\u0E04\u0E48\u0E2D\u0E31\u0E19\u0E40\u0E14\u0E35\u0E22\u0E27\u0E01\u0E48\u0E2D\u0E19) \u0E16\u0E49\u0E32\u0E21\u0E35\u0E01\u0E32\u0E23\u0E23\u0E31\u0E1A\u0E2B\u0E25\u0E32\u0E22\u0E23\u0E39\u0E1B\u0E41\u0E1A\u0E1A\u0E43\u0E2B\u0E49\u0E2A\u0E23\u0E49\u0E32\u0E07\u0E40\u0E07\u0E37\u0E48\u0E2D\u0E19\u0E44\u0E02\u0E01\u0E32\u0E23\u0E23\u0E31\u0E1A\u0E40\u0E1E\u0E34\u0E48\u0E21\u0E40\u0E15\u0E34\u0E21 \xA0 \u0E16\u0E49\u0E32\u0E15\u0E49\u0E2D\u0E07\u0E01\u0E32\u0E23\u0E41\u0E01\u0E49\u0E40\u0E01\u0E13\u0E11\u0E4C\u0E17\u0E35\u0E48\u0E40\u0E25\u0E37\u0E2D\u0E01\u0E41\u0E25\u0E49\u0E27\u0E42\u0E14\u0E22\u0E01\u0E32\u0E23\u0E40\u0E25\u0E37\u0E2D\u0E01\u0E43\u0E2B\u0E21\u0E48 \u0E43\u0E2B\u0E49\u0E25\u0E1A\u0E02\u0E49\u0E2D\u0E04\u0E27\u0E32\u0E21\u0E17\u0E34\u0E49\u0E07\u0E08\u0E30\u0E21\u0E35\u0E15\u0E31\u0E27\u0E40\u0E25\u0E37\u0E2D\u0E01\u0E02\u0E36\u0E49\u0E19\u0E21\u0E32\u0E41\u0E2A\u0E14\u0E07\u0E40\u0E2B\u0E21\u0E37\u0E2D\u0E19\u0E40\u0E14\u0E34\u0E21"), /*#__PURE__*/React.createElement("table", {
+    className: "table table-bordered",
+    style: {
+      tableLayout: 'fixed'
+    }
+  }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", {
+    style: {
+      width: '5%'
+    }
+  }), /*#__PURE__*/React.createElement("th", null), /*#__PURE__*/React.createElement("th", {
+    style: {
+      width: '15%'
+    }
+  }, "\u0E2A\u0E31\u0E14\u0E2A\u0E48\u0E27\u0E19\u0E04\u0E30\u0E41\u0E19\u0E19"), /*#__PURE__*/React.createElement("th", {
+    style: {
+      width: '15%'
+    }
+  }, "\u0E23\u0E49\u0E2D\u0E22\u0E25\u0E30"), /*#__PURE__*/React.createElement("th", {
+    style: {
+      width: '5%'
+    }
+  }))), /*#__PURE__*/React.createElement("tbody", null, topics.map((topic, idx) => /*#__PURE__*/React.createElement(PrimaryScoringTopic, {
+    topic: topic,
+    updateTopic: updateTopic,
+    removeTopic: removeTopic,
+    number: idx + 1,
+    maxScore: maxScore,
+    secondaryTopics: topic.children,
+    setSecondaryTopics: newSecondaryTopics => setSecondaryTopics(topic.id, newSecondaryTopics),
+    key: topic.id,
+    isCustomScoreCriteriaAllowed: isCustomScoreCriteriaAllowed
+  })), /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement("div", {
+    className: "btn btn-primary",
+    onClick: addNewTopic
+  }, "+")), /*#__PURE__*/React.createElement("td", null), /*#__PURE__*/React.createElement("td", null), /*#__PURE__*/React.createElement("td", null), /*#__PURE__*/React.createElement("td", null)))));
 };
-var PrimaryTopic = function PrimaryTopic(_ref3) {
-  var _React$createElement;
-
-  var topic = _ref3.topic,
-      removeTopic = _ref3.removeTopic,
-      number = _ref3.number,
-      updateTopic = _ref3.updateTopic,
-      secondaryTopics = _ref3.secondaryTopics,
-      setSecondaryTopics = _ref3.setSecondaryTopics,
-      isCustomScoreCriteriaAllowed = _ref3.isCustomScoreCriteriaAllowed;
-
-  var secondaryTopicsRef = useRef(secondaryTopics);
-  useEffect(function () {
+const PrimaryTopic = ({
+  topic,
+  removeTopic,
+  number,
+  updateTopic,
+  secondaryTopics,
+  setSecondaryTopics,
+  isCustomScoreCriteriaAllowed
+}) => {
+  const secondaryTopicsRef = useRef(secondaryTopics);
+  useEffect(() => {
     secondaryTopicsRef.current = secondaryTopics;
   }, [secondaryTopics]);
-
-  var addNewTopic = function addNewTopic(e) {
+  const addNewTopic = e => {
     e.preventDefault();
-    var newSecondaryTopics = secondaryTopicsRef.current.slice();
-    newSecondaryTopics.push({ id: function () {
-        return Date.now();
-      }(), title: '' });
+    const newSecondaryTopics = secondaryTopicsRef.current.slice();
+    newSecondaryTopics.push({
+      id: (() => Date.now())(),
+      title: ''
+    });
     setSecondaryTopics(newSecondaryTopics);
   };
-  var removeSecondaryTopic = function removeSecondaryTopic(topic) {
-    var newSecondaryTopics = secondaryTopicsRef.current.slice();
-    var index = newSecondaryTopics.findIndex(function (t) {
-      return t.id === topic.id;
-    });
+  const removeSecondaryTopic = topic => {
+    const newSecondaryTopics = secondaryTopicsRef.current.slice();
+    const index = newSecondaryTopics.findIndex(t => t.id === topic.id);
     newSecondaryTopics.splice(index, 1);
     setSecondaryTopics(newSecondaryTopics);
   };
-
-  var updateSecondaryTopic = function updateSecondaryTopic(topicId, value) {
-    var newSecondaryTopics = secondaryTopicsRef.current.slice();
-    var index = newSecondaryTopics.findIndex(function (t) {
-      return t.id === topicId;
-    });
-    newSecondaryTopics[index] = Object.assign({}, newSecondaryTopics[index], value);
+  const updateSecondaryTopic = (topicId, value) => {
+    const newSecondaryTopics = secondaryTopicsRef.current.slice();
+    const index = newSecondaryTopics.findIndex(t => t.id === topicId);
+    newSecondaryTopics[index] = {
+      ...newSecondaryTopics[index],
+      ...value
+    };
     setSecondaryTopics(newSecondaryTopics);
   };
-
-  var suffix = React.createElement(
-    'div',
-    { className: 'd-flex ml-2' },
-    secondaryTopics.length > 0 && React.createElement(SelectRelation, { name: 'required_' + number + '_relation', relations: relationRequired, className: 'ml-2', value: topic.relation, onChange: function onChange(event) {
-        event.target.value !== topic.relation && updateTopic(topic.id, { relation: event.target.value });
-      } }),
-    React.createElement(
-      'button',
-      { className: 'btn btn-primary btn-sm ml-2', onClick: addNewTopic },
-      '+'
-    )
-  );
-  return React.createElement(
-    React.Fragment,
-    null,
-    React.createElement(
-      'tr',
-      null,
-      React.createElement(
-        'td',
-        null,
-        number
-      ),
-      isCustomScoreCriteriaAllowed ? React.createElement(EditableCell, (_React$createElement = {
-        name: 'required_' + number + '_title'
-        // editable={mode === MODE.CREATE}
-        , initialValue: topic.title,
-        focusOnMount: true,
-        suffix: suffix,
-        inputProps: { required: false },
-        tags: requiredTags
-      }, _defineProperty(_React$createElement, 'name', 'required_' + number + '_title'), _defineProperty(_React$createElement, 'onSave', function onSave(v) {
-        var tag = requiredTags.find(function (o) {
-          return o.description === v;
+  const suffix = /*#__PURE__*/React.createElement("div", {
+    className: "d-flex ml-2"
+  }, secondaryTopics.length > 0 && /*#__PURE__*/React.createElement(SelectRelation, {
+    name: `required_${number}_relation`,
+    relations: relationRequired,
+    className: "ml-2",
+    value: topic.relation,
+    onChange: event => {
+      event.target.value !== topic.relation && updateTopic(topic.id, {
+        relation: event.target.value
+      });
+    }
+  }), /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-primary btn-sm ml-2",
+    onClick: addNewTopic
+  }, "+"));
+  return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", null, number), isCustomScoreCriteriaAllowed ? /*#__PURE__*/React.createElement(EditableCell, {
+    name: `required_${number}_title`
+    // editable={mode === MODE.CREATE}
+    ,
+    initialValue: topic.title,
+    focusOnMount: true,
+    suffix: suffix,
+    inputProps: {
+      required: false
+    },
+    tags: requiredTags,
+    name: `required_${number}_title`,
+    onSave: v => {
+      const tag = requiredTags.find(o => o.description === v);
+      updateTopic(topic.id, {
+        score_type: tag ? tag.score_type : 'OTHER',
+        unit: tag ? tag.unit : ''
+      });
+    }
+  }) : /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement("div", {
+    className: "d-flex align-items-baseline"
+  }, /*#__PURE__*/React.createElement(SelectMenu, {
+    name: `required_${number}_title`,
+    initialValue: topic.title,
+    inputProps: {
+      required: false
+    },
+    choices: requiredTags.map(tag => ({
+      value: tag.description,
+      label: tag.description,
+      ...tag
+    })),
+    onSave: v => {
+      const tag = requiredTags.find(o => o.description === v);
+      updateTopic(topic.id, {
+        score_type: tag ? tag.score_type : 'OTHER',
+        unit: tag ? tag.unit : ''
+      });
+    }
+  }), suffix)), /*#__PURE__*/React.createElement(EditableCell, {
+    name: `required_${number}_value`
+    // editable={mode === MODE.CREATE}
+    ,
+    initialValue: topic.value
+  }), /*#__PURE__*/React.createElement(EditableCell, {
+    name: `required_${number}_unit`,
+    editable: isCustomScoreCriteriaAllowed,
+    initialValue: topic.unit || '',
+    tags: unitTags
+  }), /*#__PURE__*/React.createElement("input", {
+    type: "hidden",
+    name: `required_${number}_type`,
+    value: topic.score_type || "OTHER",
+    required: true
+  }), /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-secondary btn-sm",
+    onClick: () => removeTopic(topic)
+  }, "-"))), secondaryTopics.map((secondaryTopic, idx) => {
+    const snumber = `${number}.${idx + 1}`;
+    const prefix = /*#__PURE__*/React.createElement("span", null, snumber, "\xA0\xA0");
+    return /*#__PURE__*/React.createElement("tr", {
+      key: secondaryTopic.id
+    }, /*#__PURE__*/React.createElement("td", null), isCustomScoreCriteriaAllowed ? /*#__PURE__*/React.createElement(EditableCell, {
+      name: `required_${snumber}_title`
+      // editable={mode === MODE.CREATE}
+      ,
+      initialValue: secondaryTopic.title,
+      focusOnMount: true,
+      prefix: prefix,
+      inputProps: {
+        required: true
+      },
+      tags: requiredTags,
+      onSave: v => {
+        const tag = requiredTags.find(o => o.description === v);
+        updateSecondaryTopic(secondaryTopic.id, {
+          ...secondaryTopic,
+          score_type: tag ? tag.score_type : 'OTHER',
+          unit: tag ? tag.unit : ''
         });
-        updateTopic(topic.id, { score_type: tag ? tag.score_type : 'OTHER', unit: tag ? tag.unit : '' });
-      }), _React$createElement)) : React.createElement(
-        'td',
-        null,
-        React.createElement(
-          'div',
-          { className: 'd-flex align-items-baseline' },
-          React.createElement(SelectMenu, {
-            name: 'required_' + number + '_title',
-            initialValue: topic.title,
-            inputProps: {
-              required: false
-            },
-            choices: requiredTags.map(function (tag) {
-              return Object.assign({
-                value: tag.description,
-                label: tag.description
-              }, tag);
-            }),
-
-            onSave: function onSave(v) {
-              var tag = requiredTags.find(function (o) {
-                return o.description === v;
-              });
-              updateTopic(topic.id, { score_type: tag ? tag.score_type : 'OTHER', unit: tag ? tag.unit : '' });
-            }
-          }),
-          suffix
-        )
-      ),
-      React.createElement(EditableCell, {
-        name: 'required_' + number + '_value'
-        // editable={mode === MODE.CREATE}
-        , initialValue: topic.value
-      }),
-      React.createElement(EditableCell, {
-        name: 'required_' + number + '_unit',
-        editable: isCustomScoreCriteriaAllowed,
-        initialValue: topic.unit || '',
-        tags: unitTags
-      }),
-      React.createElement('input', { type: 'hidden', name: 'required_' + number + '_type', value: topic.score_type || "OTHER", required: true }),
-      React.createElement(
-        'td',
-        null,
-        React.createElement(
-          'button',
-          { className: 'btn btn-secondary btn-sm', onClick: function onClick() {
-              return removeTopic(topic);
-            } },
-          '-'
-        )
-      )
-    ),
-    secondaryTopics.map(function (secondaryTopic, idx) {
-      var snumber = number + '.' + (idx + 1);
-      var prefix = React.createElement(
-        'span',
-        null,
-        snumber,
-        '\xA0\xA0'
-      );
-      return React.createElement(
-        'tr',
-        { key: secondaryTopic.id },
-        React.createElement('td', null),
-        isCustomScoreCriteriaAllowed ? React.createElement(EditableCell, {
-          name: 'required_' + snumber + '_title'
-          // editable={mode === MODE.CREATE}
-          , initialValue: secondaryTopic.title,
-          focusOnMount: true,
-          prefix: prefix,
-          inputProps: { required: true },
-          tags: requiredTags,
-          onSave: function onSave(v) {
-            var tag = requiredTags.find(function (o) {
-              return o.description === v;
-            });
-            updateSecondaryTopic(secondaryTopic.id, Object.assign({}, secondaryTopic, { score_type: tag ? tag.score_type : 'OTHER', unit: tag ? tag.unit : '' }));
-          }
-        }) : React.createElement(
-          'td',
-          null,
-          React.createElement(
-            'div',
-            { className: 'd-flex align-items-baseline' },
-            prefix,
-            React.createElement(SelectMenu, {
-              name: 'required_' + snumber + '_title',
-              initialValue: secondaryTopic.title,
-              inputProps: { required: true },
-              choices: requiredTags.map(function (tag) {
-                return Object.assign({
-                  value: tag.description,
-                  label: tag.description
-                }, tag);
-              }),
-
-              onSave: function onSave(v) {
-                var tag = requiredTags.find(function (o) {
-                  return o.description === v;
-                });
-                updateSecondaryTopic(secondaryTopic.id, Object.assign({}, secondaryTopic, { score_type: tag ? tag.score_type : 'OTHER', unit: tag ? tag.unit : '' }));
-              }
-            })
-          )
-        ),
-        React.createElement(EditableCell, {
-          name: 'required_' + snumber + '_value'
-          // editable={mode === MODE.CREATE}
-          , initialValue: secondaryTopic.value
-        }),
-        React.createElement(EditableCell, {
-          name: 'required_' + snumber + '_unit',
-          editable: isCustomScoreCriteriaAllowed,
-          initialValue: secondaryTopic.unit,
-          tags: unitTags
-        }),
-        React.createElement('input', { type: 'hidden', name: 'required_' + snumber + '_type', value: secondaryTopic.score_type || "OTHER", required: true }),
-        React.createElement(
-          'td',
-          null,
-          React.createElement(
-            'button',
-            { className: 'btn btn-secondary btn-sm', onClick: function onClick() {
-                return removeSecondaryTopic(secondaryTopic);
-              } },
-            '-'
-          )
-        )
-      );
-    })
-  );
+      }
+    }) : /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement("div", {
+      className: "d-flex align-items-baseline"
+    }, prefix, /*#__PURE__*/React.createElement(SelectMenu, {
+      name: `required_${snumber}_title`,
+      initialValue: secondaryTopic.title,
+      inputProps: {
+        required: true
+      },
+      choices: requiredTags.map(tag => ({
+        value: tag.description,
+        label: tag.description,
+        ...tag
+      })),
+      onSave: v => {
+        const tag = requiredTags.find(o => o.description === v);
+        updateSecondaryTopic(secondaryTopic.id, {
+          ...secondaryTopic,
+          score_type: tag ? tag.score_type : 'OTHER',
+          unit: tag ? tag.unit : ''
+        });
+      }
+    }))), /*#__PURE__*/React.createElement(EditableCell, {
+      name: `required_${snumber}_value`
+      // editable={mode === MODE.CREATE}
+      ,
+      initialValue: secondaryTopic.value
+    }), /*#__PURE__*/React.createElement(EditableCell, {
+      name: `required_${snumber}_unit`,
+      editable: isCustomScoreCriteriaAllowed,
+      initialValue: secondaryTopic.unit,
+      tags: unitTags
+    }), /*#__PURE__*/React.createElement("input", {
+      type: "hidden",
+      name: `required_${snumber}_type`,
+      value: secondaryTopic.score_type || "OTHER",
+      required: true
+    }), /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement("button", {
+      className: "btn btn-secondary btn-sm",
+      onClick: () => removeSecondaryTopic(secondaryTopic)
+    }, "-")));
+  }));
 };
-var PrimaryScoringTopic = function PrimaryScoringTopic(_ref4) {
-  var topic = _ref4.topic,
-      removeTopic = _ref4.removeTopic,
-      number = _ref4.number,
-      updateTopic = _ref4.updateTopic,
-      maxScore = _ref4.maxScore,
-      secondaryTopics = _ref4.secondaryTopics,
-      setSecondaryTopics = _ref4.setSecondaryTopics,
-      isCustomScoreCriteriaAllowed = _ref4.isCustomScoreCriteriaAllowed;
-
-  var secondaryTopicsRef = useRef(secondaryTopics);
-  useEffect(function () {
+const PrimaryScoringTopic = ({
+  topic,
+  removeTopic,
+  number,
+  updateTopic,
+  maxScore,
+  secondaryTopics,
+  setSecondaryTopics,
+  isCustomScoreCriteriaAllowed
+}) => {
+  const secondaryTopicsRef = useRef(secondaryTopics);
+  useEffect(() => {
     secondaryTopicsRef.current = secondaryTopics;
   }, [secondaryTopics]);
-
-  var addNewTopic = function addNewTopic(e) {
+  const addNewTopic = e => {
     e.preventDefault();
-    var newSecondaryTopics = secondaryTopicsRef.current.slice();
-    newSecondaryTopics.push({ id: function () {
-        return function () {
-          return Date.now();
-        }();
-      }(), title: '', value: 1 });
+    const newSecondaryTopics = secondaryTopicsRef.current.slice();
+    newSecondaryTopics.push({
+      id: (() => (() => Date.now())())(),
+      title: '',
+      value: 1
+    });
     setSecondaryTopics(newSecondaryTopics);
   };
-  var removeSecondaryTopic = function removeSecondaryTopic(topic) {
-    var newSecondaryTopics = secondaryTopicsRef.current.slice();
-    var index = newSecondaryTopics.findIndex(function (t) {
-      return t.id === topic.id;
-    });
+  const removeSecondaryTopic = topic => {
+    const newSecondaryTopics = secondaryTopicsRef.current.slice();
+    const index = newSecondaryTopics.findIndex(t => t.id === topic.id);
     newSecondaryTopics.splice(index, 1);
     setSecondaryTopics(newSecondaryTopics);
   };
-  var updateSecondaryTopic = function updateSecondaryTopic(topicId, value) {
-    var newSecondaryTopics = secondaryTopicsRef.current.slice();
-    var index = newSecondaryTopics.findIndex(function (t) {
-      return t.id === topicId;
-    });
-    newSecondaryTopics[index] = Object.assign({}, newSecondaryTopics[index], value);
+  const updateSecondaryTopic = (topicId, value) => {
+    const newSecondaryTopics = secondaryTopicsRef.current.slice();
+    const index = newSecondaryTopics.findIndex(t => t.id === topicId);
+    newSecondaryTopics[index] = {
+      ...newSecondaryTopics[index],
+      ...value
+    };
     setSecondaryTopics(newSecondaryTopics);
   };
-  var primaryMaxScore = secondaryTopics.reduce(function (a, b) {
-    return a + b.value;
-  }, 0);
-  var suffix = React.createElement(
-    'div',
-    { className: 'd-flex' },
-    secondaryTopics.length > 0 && React.createElement(SelectRelation, { name: 'scoring_' + number + '_relation', relations: relationScoring, className: 'ml-2', value: topic.relation, onChange: function onChange(event) {
-        event.target.value !== topic.relation && updateTopic(topic.id, { relation: event.target.value });
-      } }),
-    React.createElement(
-      'button',
-      { className: 'btn btn-primary btn-sm ml-2', onClick: addNewTopic },
-      '+'
-    )
-  );
-  return React.createElement(
-    React.Fragment,
-    null,
-    React.createElement(
-      'tr',
-      null,
-      React.createElement(
-        'td',
-        null,
-        number
-      ),
-      isCustomScoreCriteriaAllowed ? React.createElement(EditableCell, {
-        name: 'scoring_' + number + '_title'
-        // editable={mode === MODE.CREATE}
-        , initialValue: topic.title,
-        focusOnMount: true,
-        suffix: suffix,
-        inputProps: { required: false },
-        tags: scoringTags,
-        onSave: function onSave(v) {
-          var tag = scoringTags.find(function (o) {
-            return o.description === v;
-          });
-          updateTopic(topic.id, { score_type: tag ? tag.score_type : 'OTHER' });
-        }
-      }) : React.createElement(
-        'td',
-        null,
-        React.createElement(
-          'div',
-          { className: 'd-flex align-items-baseline' },
-          React.createElement(SelectMenu, {
-            name: 'scoring_' + number + '_title',
-            initialValue: topic.title,
-            inputProps: {
-              required: false
-            },
-            choices: scoringTags.map(function (tag) {
-              return Object.assign({
-                value: tag.description,
-                label: tag.description
-              }, tag);
-            }),
-
-            onSave: function onSave(v) {
-              var tag = scoringTags.find(function (o) {
-                return o.description === v;
-              });
-              updateTopic(topic.id, { score_type: tag ? tag.score_type : 'OTHER' });
-            }
-          }),
-          suffix
-        )
-      ),
-      React.createElement(EditableCell, {
-        name: 'scoring_' + number + '_value'
-        // editable={mode === MODE.CREATE}
-        , initialValue: topic.value,
-        onSave: function onSave(v) {
-          updateTopic(topic.id, { value: parseInt(v) });
-        },
-        inputType: 'number',
-        inputProps: { required: true }
-      }),
-      React.createElement('input', { type: 'hidden', name: 'scoring_' + number + '_type', value: topic.score_type || "OTHER", required: true }),
-      React.createElement(
-        'td',
-        null,
-        React.createElement(
-          'strong',
-          null,
-          (topic.value / maxScore * 100).toLocaleString(),
-          '%'
-        )
-      ),
-      React.createElement(
-        'td',
-        null,
-        React.createElement(
-          'button',
-          { className: 'btn btn-secondary btn-sm', onClick: function onClick() {
-              return removeTopic(topic);
-            } },
-          '-'
-        )
-      )
-    ),
-    secondaryTopics.map(function (secondaryTopic, idx) {
-      var snumber = number + '.' + (idx + 1);
-      var prefix = React.createElement(
-        'span',
-        null,
-        number,
-        '.',
-        idx + 1,
-        '\xA0\xA0'
-      );
-      return React.createElement(
-        'tr',
-        { key: secondaryTopic.id },
-        React.createElement('td', null),
-        isCustomScoreCriteriaAllowed ? React.createElement(EditableCell, {
-          name: 'scoring_' + snumber + '_title'
-          // editable={mode === MODE.CREATE}
-          , initialValue: secondaryTopic.title,
-          focusOnMount: true,
-          prefix: prefix,
-          inputProps: { required: true },
-          tags: scoringTags,
-
-          onSave: function onSave(v) {
-            var tag = scoringTags.find(function (o) {
-              return o.description === v;
-            });
-            updateSecondaryTopic(secondaryTopic.id, Object.assign({}, secondaryTopic, { score_type: tag ? tag.score_type : 'OTHER' }));
-          }
-        }) : React.createElement(
-          'td',
-          null,
-          React.createElement(
-            'div',
-            { className: 'd-flex align-items-baseline' },
-            prefix,
-            React.createElement(SelectMenu, {
-              name: 'scoring_' + snumber + '_title',
-              initialValue: secondaryTopic.title,
-              inputProps: {
-                required: true
-              },
-              choices: scoringTags.map(function (tag) {
-                return Object.assign({
-                  value: tag.description,
-                  label: tag.description
-                }, tag);
-              }),
-
-              onSave: function onSave(v) {
-                var tag = scoringTags.find(function (o) {
-                  return o.description === v;
-                });
-                updateSecondaryTopic(secondaryTopic.id, Object.assign({}, secondaryTopic, { score_type: tag ? tag.score_type : 'OTHER' }));
-              }
-            })
-          )
-        ),
-        topic.relation === RELATION_MAX ? React.createElement('td', null) : React.createElement(EditableCell, {
-          name: 'scoring_' + snumber + '_value'
-          // editable={mode === MODE.CREATE}
-          , initialValue: secondaryTopic.value,
-          onSave: function onSave(v) {
-            updateSecondaryTopic(secondaryTopic.id, { value: parseInt(v) });
-          },
-          inputType: 'number',
-          inputProps: { required: true }
-        }),
-        React.createElement('input', { type: 'hidden', name: 'scoring_' + snumber + '_type', value: secondaryTopic.score_type || "OTHER", required: true }),
-        React.createElement(
-          'td',
-          null,
-          topic.relation !== RELATION_MAX && (secondaryTopic.value / primaryMaxScore * 100).toLocaleString() + '%'
-        ),
-        React.createElement(
-          'td',
-          null,
-          React.createElement(
-            'button',
-            { className: 'btn btn-secondary btn-sm', onClick: function onClick() {
-                return removeSecondaryTopic(secondaryTopic);
-              } },
-            '-'
-          )
-        )
-      );
-    })
-  );
+  const primaryMaxScore = secondaryTopics.reduce((a, b) => a + b.value, 0);
+  const suffix = /*#__PURE__*/React.createElement("div", {
+    className: "d-flex"
+  }, secondaryTopics.length > 0 && /*#__PURE__*/React.createElement(SelectRelation, {
+    name: `scoring_${number}_relation`,
+    relations: relationScoring,
+    className: "ml-2",
+    value: topic.relation,
+    onChange: event => {
+      event.target.value !== topic.relation && updateTopic(topic.id, {
+        relation: event.target.value
+      });
+    }
+  }), /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-primary btn-sm ml-2",
+    onClick: addNewTopic
+  }, "+"));
+  return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", null, number), isCustomScoreCriteriaAllowed ? /*#__PURE__*/React.createElement(EditableCell, {
+    name: `scoring_${number}_title`
+    // editable={mode === MODE.CREATE}
+    ,
+    initialValue: topic.title,
+    focusOnMount: true,
+    suffix: suffix,
+    inputProps: {
+      required: false
+    },
+    tags: scoringTags,
+    onSave: v => {
+      const tag = scoringTags.find(o => o.description === v);
+      updateTopic(topic.id, {
+        score_type: tag ? tag.score_type : 'OTHER'
+      });
+    }
+  }) : /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement("div", {
+    className: "d-flex align-items-baseline"
+  }, /*#__PURE__*/React.createElement(SelectMenu, {
+    name: `scoring_${number}_title`,
+    initialValue: topic.title,
+    inputProps: {
+      required: false
+    },
+    choices: scoringTags.map(tag => ({
+      value: tag.description,
+      label: tag.description,
+      ...tag
+    })),
+    onSave: v => {
+      const tag = scoringTags.find(o => o.description === v);
+      updateTopic(topic.id, {
+        score_type: tag ? tag.score_type : 'OTHER'
+      });
+    }
+  }), suffix)), /*#__PURE__*/React.createElement(EditableCell, {
+    name: `scoring_${number}_value`
+    // editable={mode === MODE.CREATE}
+    ,
+    initialValue: topic.value,
+    onSave: v => {
+      updateTopic(topic.id, {
+        value: parseInt(v)
+      });
+    },
+    inputType: "number",
+    inputProps: {
+      required: true
+    }
+  }), /*#__PURE__*/React.createElement("input", {
+    type: "hidden",
+    name: `scoring_${number}_type`,
+    value: topic.score_type || "OTHER",
+    required: true
+  }), /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement("strong", null, (topic.value / maxScore * 100).toLocaleString(), "%")), /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-secondary btn-sm",
+    onClick: () => removeTopic(topic)
+  }, "-"))), secondaryTopics.map((secondaryTopic, idx) => {
+    const snumber = `${number}.${idx + 1}`;
+    const prefix = /*#__PURE__*/React.createElement("span", null, number, ".", idx + 1, "\xA0\xA0");
+    return /*#__PURE__*/React.createElement("tr", {
+      key: secondaryTopic.id
+    }, /*#__PURE__*/React.createElement("td", null), isCustomScoreCriteriaAllowed ? /*#__PURE__*/React.createElement(EditableCell, {
+      name: `scoring_${snumber}_title`
+      // editable={mode === MODE.CREATE}
+      ,
+      initialValue: secondaryTopic.title,
+      focusOnMount: true,
+      prefix: prefix,
+      inputProps: {
+        required: true
+      },
+      tags: scoringTags,
+      onSave: v => {
+        const tag = scoringTags.find(o => o.description === v);
+        updateSecondaryTopic(secondaryTopic.id, {
+          ...secondaryTopic,
+          score_type: tag ? tag.score_type : 'OTHER'
+        });
+      }
+    }) : /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement("div", {
+      className: "d-flex align-items-baseline"
+    }, prefix, /*#__PURE__*/React.createElement(SelectMenu, {
+      name: `scoring_${snumber}_title`,
+      initialValue: secondaryTopic.title,
+      inputProps: {
+        required: true
+      },
+      choices: scoringTags.map(tag => ({
+        value: tag.description,
+        label: tag.description,
+        ...tag
+      })),
+      onSave: v => {
+        const tag = scoringTags.find(o => o.description === v);
+        updateSecondaryTopic(secondaryTopic.id, {
+          ...secondaryTopic,
+          score_type: tag ? tag.score_type : 'OTHER'
+        });
+      }
+    }))), topic.relation === RELATION_MAX ? /*#__PURE__*/React.createElement("td", null) : /*#__PURE__*/React.createElement(EditableCell, {
+      name: `scoring_${snumber}_value`
+      // editable={mode === MODE.CREATE}
+      ,
+      initialValue: secondaryTopic.value,
+      onSave: v => {
+        updateSecondaryTopic(secondaryTopic.id, {
+          value: parseInt(v)
+        });
+      },
+      inputType: "number",
+      inputProps: {
+        required: true
+      }
+    }), /*#__PURE__*/React.createElement("input", {
+      type: "hidden",
+      name: `scoring_${snumber}_type`,
+      value: secondaryTopic.score_type || "OTHER",
+      required: true
+    }), /*#__PURE__*/React.createElement("td", null, topic.relation !== RELATION_MAX && `${(secondaryTopic.value / primaryMaxScore * 100).toLocaleString()}%`), /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement("button", {
+      className: "btn btn-secondary btn-sm",
+      onClick: () => removeSecondaryTopic(secondaryTopic)
+    }, "-")));
+  }));
 };
-var EditableCell = function EditableCell(_ref5) {
-  var value = _ref5.value,
-      initialValue = _ref5.initialValue,
-      _ref5$editable = _ref5.editable,
-      editable = _ref5$editable === undefined ? true : _ref5$editable,
-      _ref5$focusOnMount = _ref5.focusOnMount,
-      focusOnMount = _ref5$focusOnMount === undefined ? false : _ref5$focusOnMount,
-      children = _ref5.children,
-      onSave = _ref5.onSave,
-      prefix = _ref5.prefix,
-      suffix = _ref5.suffix,
-      inputType = _ref5.inputType,
-      name = _ref5.name,
-      inputProps = _ref5.inputProps,
-      _ref5$tags = _ref5.tags,
-      tags = _ref5$tags === undefined ? [] : _ref5$tags,
-      restProps = _objectWithoutProperties(_ref5, ['value', 'initialValue', 'editable', 'focusOnMount', 'children', 'onSave', 'prefix', 'suffix', 'inputType', 'name', 'inputProps', 'tags']);
-
-  var inputRef = useRef();
-  useEffect(function () {
+const EditableCell = ({
+  value,
+  initialValue,
+  editable = true,
+  focusOnMount = false,
+  children,
+  onSave,
+  prefix,
+  suffix,
+  inputType,
+  name,
+  inputProps,
+  tags = [],
+  ...restProps
+}) => {
+  const inputRef = useRef();
+  useEffect(() => {
     if (editable) {
       $(inputRef.current).autocomplete({
         source: typeof tags[0] === 'string' ? tags :
         // for required and scoring tags
         // TODO: refactor this
-        tags.map(function (o) {
-          return {
-            label: o.description,
-            value: o.description,
-            onSelect: function onSelect() {
-
-              var temp = name.split('_');
-              temp[temp.length - 1] = 'unit';
-              var unitName = temp.join('_');
-              var unitEl = $('[name="' + unitName + '"]')[0];
-
-              if (unitEl) {
-                unitEl.value = o.unit;
-              }
+        tags.map(o => ({
+          label: o.description,
+          value: o.description,
+          onSelect: () => {
+            let temp = name.split('_');
+            temp[temp.length - 1] = 'unit';
+            const unitName = temp.join('_');
+            const unitEl = $(`[name="${unitName}"]`)[0];
+            if (unitEl) {
+              unitEl.value = o.unit;
             }
-          };
-        }),
+          }
+        })),
         minLength: 0,
-        select: function select(event, ui) {
+        select: (event, ui) => {
           ui.item.onSelect && ui.item.onSelect();
         }
       }).focus(function () {
@@ -894,122 +688,133 @@ var EditableCell = function EditableCell(_ref5) {
       });
     } else {}
   }, [editable]);
-
-  useEffect(function () {
+  useEffect(() => {
     if (focusOnMount && !initialValue) {
       inputRef.current.focus();
       inputRef.current.select();
     }
   }, [focusOnMount]);
-  var save = function save(e) {
+  const save = e => {
     try {
       onSave && onSave(inputRef.current.value);
     } catch (errInfo) {
       console.log('Save failed:', errInfo);
     }
   };
-
-  var calHeight = function calHeight() {
+  const calHeight = () => {
     inputRef.current.style.height = "";
     inputRef.current.style.height = inputRef.current.scrollHeight + 'px';
   };
-  useEffect(function () {
+  useEffect(() => {
     if (editable) {
       calHeight();
     }
   }, []);
-  var childNode = React.createElement('input', Object.assign({ type: inputType, name: name, className: 'form-control d-inline-block', defaultValue: initialValue, tabIndex: -1, style: { pointerEvents: 'none' } }, inputProps));
+  let childNode = /*#__PURE__*/React.createElement("input", _extends({
+    type: inputType,
+    name: name,
+    className: "form-control d-inline-block",
+    defaultValue: initialValue,
+    tabIndex: -1,
+    style: {
+      pointerEvents: 'none'
+    }
+  }, inputProps));
   if (editable) {
-    childNode = React.createElement(
-      'div',
-      { className: 'd-flex align-items-baseline' },
-      prefix,
-      inputType === 'number' ? React.createElement('input', Object.assign({ type: 'number', name: name, className: 'form-control d-inline-block', ref: inputRef, onChange: save, onBlur: save, defaultValue: initialValue }, inputProps)) : React.createElement('textarea', Object.assign({ className: 'form-control d-inline-block', rows: 1, name: name, ref: inputRef, onChange: calHeight, onBlur: save, defaultValue: initialValue }, inputProps)),
-      suffix
-    );
+    childNode = /*#__PURE__*/React.createElement("div", {
+      className: "d-flex align-items-baseline"
+    }, prefix, inputType === 'number' ? /*#__PURE__*/React.createElement("input", _extends({
+      type: "number",
+      name: name,
+      className: "form-control d-inline-block",
+      ref: inputRef,
+      onChange: save,
+      onBlur: save,
+      defaultValue: initialValue
+    }, inputProps)) : /*#__PURE__*/React.createElement("textarea", _extends({
+      className: "form-control d-inline-block",
+      rows: 1,
+      name: name,
+      ref: inputRef,
+      onChange: calHeight,
+      onBlur: save,
+      defaultValue: initialValue
+    }, inputProps)), suffix);
   }
-  return React.createElement(
-    'td',
-    Object.assign({ style: editable ? { cursor: 'pointer' } : {} }, restProps),
-    ' ',
-    childNode
-  );
+  return /*#__PURE__*/React.createElement("td", _extends({
+    style: editable ? {
+      cursor: 'pointer'
+    } : {}
+  }, restProps), " ", childNode);
 };
-var SelectRelation = function SelectRelation(_ref6) {
-  var name = _ref6.name,
-      relations = _ref6.relations,
-      className = _ref6.className,
-      value = _ref6.value,
-      onChange = _ref6.onChange;
-
-  return React.createElement(
-    'select',
-    { name: name, id: name, className: className, value: value, onChange: onChange },
-    React.createElement(
-      'option',
-      { disabled: true, selected: true, value: '' },
-      '\u0E40\u0E25\u0E37\u0E2D\u0E01\u0E04\u0E27\u0E32\u0E21\u0E2A\u0E31\u0E21\u0E1E\u0E31\u0E19\u0E18\u0E4C'
-    ),
-    relations.map(function (r) {
-      return React.createElement(
-        'option',
-        { value: r.value, key: r.value },
-        r.label
-      );
-    })
-  );
+const SelectRelation = ({
+  name,
+  relations,
+  className,
+  value,
+  onChange
+}) => {
+  return /*#__PURE__*/React.createElement("select", {
+    name: name,
+    id: name,
+    className: className,
+    value: value,
+    onChange: onChange
+  }, /*#__PURE__*/React.createElement("option", {
+    disabled: true,
+    selected: true,
+    value: ""
+  }, "\u0E40\u0E25\u0E37\u0E2D\u0E01\u0E04\u0E27\u0E32\u0E21\u0E2A\u0E31\u0E21\u0E1E\u0E31\u0E19\u0E18\u0E4C"), relations.map(r => /*#__PURE__*/React.createElement("option", {
+    value: r.value,
+    key: r.value
+  }, r.label)));
 };
-
-var SelectMenu = function SelectMenu(_ref7) {
-  var name = _ref7.name,
-      choices = _ref7.choices,
-      className = _ref7.className,
-      initialValue = _ref7.initialValue,
-      inputProps = _ref7.inputProps,
-      onSave = _ref7.onSave;
-
-  var inputRef = useRef();
-  useEffect(function () {
+const SelectMenu = ({
+  name,
+  choices,
+  className,
+  initialValue,
+  inputProps,
+  onSave
+}) => {
+  const inputRef = useRef();
+  useEffect(() => {
     $(inputRef.current).selectmenu({
-      classes: { 'ui-selectmenu-button': 'flex-1' },
-      select: function select(event, ui) {
+      classes: {
+        'ui-selectmenu-button': 'flex-1'
+      },
+      select: (event, ui) => {
         onSave && onSave(inputRef.current.value);
-
-        var name = event.target.name;
-        var o = choices.find(function (choice) {
-          return choice.value === ui.item.value;
-        });
+        const name = event.target.name;
+        const o = choices.find(choice => choice.value === ui.item.value);
         // console.log('name: ', name)
         // console.log('o: ', o)
         if (!o) return;
-
-        var temp = name.split('_');
+        let temp = name.split('_');
         temp[temp.length - 1] = 'unit';
-        var unitName = temp.join('_');
-        var unitEl = $('[name="' + unitName + '"]')[0];
+        const unitName = temp.join('_');
+        const unitEl = $(`[name="${unitName}"]`)[0];
         if (unitEl) {
           unitEl.value = o.unit;
         }
       }
     }).selectmenu("menuWidget").addClass("overflow");
   }, []);
-  return React.createElement(
-    'select',
-    Object.assign({ name: name, id: name, defaultValue: initialValue || null, ref: inputRef, rows: 1 }, inputProps),
-    React.createElement(
-      'option',
-      { disabled: inputProps.required, selected: true, value: '', key: '' },
-      inputProps.required ? 'กรุณาเลือก' : ''
-    ),
-    choices.map(function (r) {
-      return React.createElement(
-        'option',
-        { value: r.value, key: r.value },
-        r.label
-      );
-    })
-  );
+  return /*#__PURE__*/React.createElement("select", _extends({
+    name: name,
+    id: name,
+    defaultValue: initialValue || null,
+    ref: inputRef,
+    rows: 1
+  }, inputProps), /*#__PURE__*/React.createElement("option", {
+    disabled: inputProps.required,
+    selected: true,
+    value: "",
+    key: ""
+  }, inputProps.required ? 'กรุณาเลือก' : ''), choices.map(r => /*#__PURE__*/React.createElement("option", {
+    value: r.value,
+    key: r.value
+  }, r.label)));
 };
-
-var domContainer = document.querySelector('#add-criterion-form');
+const domContainer = document.querySelector('#add-criterion-form');
 ReactDOM.render(e(Form), domContainer);
