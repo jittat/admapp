@@ -36,9 +36,8 @@
         document.getElementById('ie-error').innerHTML = "ไม่รองรับ Internet Explorer กรุณาใช้ Google Chrome / Mozilla Firefox / Microsoft Edge"
       }
     </script>
-    
-    <script src="https://unpkg.com/react@16/umd/react.production.min.js" crossorigin></script>
-    <script src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js" crossorigin></script>
+
+    {% include "criteria/include/criteria_script_and_style.html" %}
 
     <!-- Mameaw: to modify react component go to "/main/static/react" 
       run "yarn" then "yarn dev" and modify file in src folder-->
@@ -46,33 +45,6 @@
       data-selected-majors='{{ data_selected_majors|safe }}' data-required='{{ data_required|safe }}'
       data-scoring='{{ data_scoring|safe }}' data-mode="edit" data-is_custom_score_criteria_allowed={{project.is_custom_score_criteria_allowed}}></script>
 
-    <style>
-      .table td {
-        vertical-align: baseline;
-      }
-
-      td input.form-control:not(:focus):not(:hover),
-      td textarea.form-control:not(:focus):not(:hover) {
-        border-width: 0;
-      }
-
-      td input,
-      textarea {
-        resize: none;
-      }
-
-      .ui-autocomplete {
-        max-height: 250px;
-        overflow-y: auto;
-      }
-
-      .overflow {
-        height: 200px;
-      }
-      .flex-1 {
-        flex: 1;
-      }
-    </style>
   </div>
 </div>
 {% endblock %}
