@@ -33,13 +33,18 @@ def main():
             end_time = items[6].strip()
             last_payment_date = items[7].strip()
 
+            if len(items) >= 11:
+                pdf_url = items[10].strip()
+            else:
+                pdf_url = None
+
             project = AdmissionProject.objects.get(pk=pid)
             admission_round = AdmissionRound.objects.get(number=round_number)
             project_round = project.get_project_round_for(admission_round)
 
             if project.title != title:
                 print('ERROR Title mismatch', title, project.title)
-                continue
+                #continue
 
             project_round.applying_start_time = extract_datetime(start_date, start_time)
             project_round.applying_deadline = extract_datetime(end_date, end_time)
@@ -47,10 +52,18 @@ def main():
             project_round.save()
             
             if warning != '':
+                if '”' in warning:
+                    warning = warning.replace('”','"')
+                if (pdf_url != None) and ('PDFURL' in warning):
+                    warning = warning.replace('PDFURL', pdf_url)
                 project.applying_confirmation_warning = warning
                 project.save()
 
             if descriptions != '':
+                if '”' in descriptions:
+                    descriptions = descriptions.replace('”','"')
+                if (pdf_url != None) and ('PDFURL' in descriptions):
+                    descriptions = descriptions.replace('PDFURL', pdf_url)
                 project.descriptions = descriptions
                 project.save()
 
