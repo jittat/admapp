@@ -94,11 +94,21 @@ def process_payment_file(f):
     payments = read_payment_file(f)
     admission_round = AdmissionRound.get_available()
 
+    MIN_AMOUNT = 51
+    MAX_AMOUNT = 999
+    
     all_counter = 0
     imported_counter = 0
+    ignore_counter = 0
     duplicated_counter = 0
     
     for p in payments:
+        all_counter += 1
+
+        if (p['amount'] < MIN_AMOUNT) or (p['amount'] > MAX_AMOUNT):
+            ignore_counter += 1
+            continue
+
         payment = Payment(admission_round=admission_round,
                           verification_number=p['ver_num'],
                           national_id=p['nat_id'],
@@ -128,8 +138,7 @@ def process_payment_file(f):
         if not is_duplicated:
             payment.save()
             
-        all_counter += 1
-    return 'สามารถนำเข้าได้ {0} ใบ จากทั้งหมด {1} ใบ (มีปัญหา {2} ใบ, ซ้ำ {3} ใบ)'.format(imported_counter, all_counter, all_counter - imported_counter - duplicated_counter, duplicated_counter)
+    return 'สามารถนำเข้าได้ {0} ใบ จากทั้งหมด {1} ใบ (มีปัญหา {2} ใบ, ข้าม {3} ใบ, ซ้ำ {4} ใบ)'.format(imported_counter, all_counter, all_counter - imported_counter - duplicated_counter - ignore_counter, ignore_counter, duplicated_counter)
     
 @super_admin_login_required
 def index(request):
