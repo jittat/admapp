@@ -222,6 +222,10 @@ def create_applicant(form):
     
 
 def register(request):
+    registration_enabled = settings.REGISTRATION_ENABLED
+    if not registration_enabled:
+        return HttpResponseForbidden()
+    
     if request.method == 'POST':
         form = RegistrationForm(request.POST)
         if form.is_valid():
