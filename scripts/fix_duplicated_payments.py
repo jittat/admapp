@@ -4,7 +4,7 @@ bootstrap()
 import sys
 
 from appl.models import AdmissionRound, Payment, AdmissionProjectRound, ProjectApplication
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 def main():
     payments = {}
@@ -17,6 +17,7 @@ def main():
             payments[app_id] = []
         payments[app_id].append(p)
 
+    all_dellist = []
     for app_id in payments:
         if len(payments[app_id]) == 1:
             continue
@@ -35,9 +36,16 @@ def main():
             else:
                 old = p
         if len(dellist) != 0:
-            print(app_id, dellist[0].applicant, dellist)
             for p in dellist:
                 p.delete()
-    
+
+            all_dellist += [(app_id, dellist[0].applicant, p) for p in dellist]
+
+    if len(all_dellist) != 0:
+        print(datetime.now())
+        for app_id, applicant, p in all_dellist:
+            print(app_id, applicant, p)
+
+                
 if __name__ == '__main__':
     main()
