@@ -82,6 +82,14 @@ def find_qr_applicant(qr_national_id):
     except:
         return None
 
+def is_payments_too_close(payment1, payment2):
+    from datetime import timedelta
+    
+    if payment1.paid_at < payment2.paid_at:
+        payment2, payment1 = payment1, payment2
+
+    return payment1.paid_at - payment2.paid_at < timedelta(0,1)
+    
     
 def process_payment_file(f):
     from django.conf import settings
@@ -125,7 +133,7 @@ def process_payment_file(f):
             payment.applicant = applicant
 
             for old_payment in applicant.payment_set.all():
-                if (payment.amount == old_payment.amount) and (payment.paid_at == old_payment.paid_at):
+                if (payment.amount == old_payment.amount) and (is_payments_too_close(old_payment,payment)):
                     is_duplicated = True
 
             if not is_duplicated:
