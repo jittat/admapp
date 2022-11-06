@@ -13,7 +13,7 @@ from appl.models import Eligibility
 from appl.models import Payment
 from appl.models import ProjectApplication
 from appl.models import ProjectUploadedDocument
-from appl.qrpayment import generate_ku_qr
+from appl.qrpayment import generate_ku_qr, generate_empty_img
 from appl.views.upload import upload_form_for
 from regis.decorators import appl_login_required
 from regis.models import CuptConfirmation, CuptRequestQueueItem
@@ -498,6 +498,9 @@ def payment(request, application_id, payment_type=''):
     else:
         additional_payment = 0
 
+    if additional_payment == 0:
+        return redirect(reverse('appl:index'))
+
     project_round = admission_project.get_project_round_for(admission_round)
     if not project_round:
         return redirect(reverse('appl:index'))
@@ -569,7 +572,6 @@ def payment_code_img(request, application_id, stub, code_type):
     else:
         additional_payment = 0
 
-
     import os.path
     
     img_filename = os.path.join(settings.BARCODE_DIR,
@@ -578,7 +580,10 @@ def payment_code_img(request, application_id, stub, code_type):
                                 stub)
 
     generated = False
-    if code_type == 'barcode':
+    if additional_payment == 0:
+        generate_empty_img(img_filename)
+        generated = True
+    elif code_type == 'barcode':
         generate('099400015938201',
                  applicant.national_id,
                  application.get_verification_number(),
@@ -590,7 +595,6 @@ def payment_code_img(request, application_id, stub, code_type):
                                    application,
                                    additional_payment,
                                    img_filename)
-
 
     if generated:
         fp = open(img_filename + '.png', 'rb')

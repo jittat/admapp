@@ -66,6 +66,13 @@ def generate_qr(ref1, ref2, additional_payment, filename):
     qr_in.save(filename + '.png')
 """    
 
+def generate_empty_img(filename):
+    from PIL import Image
+
+    im = Image.new('RGB', (1,1))
+    im.save(filename + '.png', 'PNG')
+
+
 def generate_ku_qr(applicant, application, additional_payment, filename):
     KU_QR_SERVICE_URL = settings.KU_QR_SERVICE_URL
     KU_QR_CALLBACK_URL = settings.KU_QR_CALLBACK_URL
