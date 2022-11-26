@@ -3,18 +3,22 @@
 {% load crispy_forms_tags %}
 {% load i18n %}
 {% block additional_head %}
-  <link href="{% static 'lib/jquery/jquery-ui.min.css' %}" rel="stylesheet" />
-  <script src="{% static 'lib/jquery/jquery-ui.min.js' %}"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css"
+      integrity="sha512-aOG0c6nPNzGk+5zjwyJaoRUgCdOrfSDhmMID2u4+OIslr0GjpLKo7Xm0Ao3xmpM4T8AmIouRkqwj1nrdVsLKEQ=="
+      crossorigin="anonymous" referrerpolicy="no-referrer"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"
+        integrity="sha512-uto9mlQzrs59VwILcLiRYeLKPPbS/bT71da/OEBYEwcdNUk8jYIy+D176RYoop1Da+f9mvkYrmj5MCLZWEtQuA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 {% endblock %}
 {% block content %}
 <div class="row">
-  <div class="col-md-12">
-    <h2>{% trans 'กรอกข้อมูลการศึกษา' context 'form title' %}</h2>
-  </div>
-  {% include 'appl/include/form_instruction.html' %}
-  <div class="col-md-12">
-    {% crispy form %}
-  </div>
+    <div class="col-md-12">
+        <h2>{% trans 'กรอกข้อมูลการศึกษา' context 'form title' %}</h2>
+    </div>
+    {% include 'appl/include/form_instruction.html' %}
+    <div class="col-md-12">
+        {% crispy form %}
+    </div>
 </div>
 <script>
   var schoolSelectStr = '<select id="id_topschool_select" class="select form-control" style="display:none;"></select>';
@@ -126,6 +130,7 @@
     //updateNoStudyPlanWarning();
     //$('#id_education_plan').change(updateNoStudyPlanWarning);
   });
+
 </script>
 {% endblock %}
 
