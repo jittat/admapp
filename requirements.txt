@@ -17,7 +17,7 @@ django-extensions==3.2.1
 django-filter==22.1
 django-mailer==2.1
 django-ses==3.1.2
-django==4.1.1
+django==4.1.2
 djangorestframework==3.13.1
 et-xmlfile==1.1.0; python_version >= '3.6'
 future==0.18.2
