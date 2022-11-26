@@ -2,12 +2,12 @@
 {% load static %}
 {% block additional_head %}
   <!-- Core CSS file -->
-  <link rel="stylesheet" href="{% static 'lib/photoswipe/photoswipe.css' %}"> 
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/photoswipe.css" integrity="sha512-/lf2y2d7SFJau+G4TGgXCWJOAUxyDmJD+Tb35CdqoMZAQ8eNX0sgDKISlcxCtGpEAuyb1Q5vGPfB1XMettf0FA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <!-- Skin CSS file (styling of UI - buttons, caption, etc.)
        In the folder of skin CSS file there are also:
      - .png and .svg icons sprite, 
      - preloader.gif (for browsers that do not support CSS animations) -->
-  <link rel="stylesheet" href="{% static 'lib/photoswipe/default-skin.css' %}"> 
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/default-skin/default-skin.css" integrity="sha512-QwSfZXX2w9SDWSNBKpEos673LXajTJpYKwtG+zJNP9zHsgRrWtNSx1gKVyB6qWUP4wJ0Hfnk9KJzrB6IKrXmEQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 {% endblock %}
 {% block content %}
   <div class="row" style="margin-top: -10px;">
@@ -62,9 +62,9 @@
     {% csrf_token %}
   </form>
   <!-- Core JS file -->
-  <script src="{% static 'lib/photoswipe/photoswipe.min.js' %}"></script> 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/photoswipe.min.js" integrity="sha512-CgVIIM2vhx0v0TDKdzOfWiCCQCWXwRh4tRAzh9yBOzde53yojRJMOr4zIbWtf6aXdtb4HBWg5hsvcktZthznfA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <!-- UI JS file -->
-  <script src="{% static 'lib/photoswipe/photoswipe-ui-default.min.js' %}"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/photoswipe-ui-default.min.js" integrity="sha512-RuKUPTW4qK7OUS1YqshNm+sCmsGvMyzAczUIBWi8wnLjeZTd1Zeih/D3C7uyXrnZVuaw8kHuKfilc7GyECtlag==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script>
     var csrftoken;
     
