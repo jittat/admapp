@@ -3,16 +3,26 @@ from django.db import models
 from appl.models import AdmissionProject, Faculty
 
 
+def criteria_as_str(criteria):
+    items = []
+    for c in criteria:
+        items.append(str(c))
+        if c.has_children():
+            for child in c.childs.all():
+                items.append('  - ' + str(child))
+    return '\n'.join(items)
+
+
 class AdmissionCriteria(models.Model):
     INITIAL_CURR_TYPE_FLAG = '*'
     DEFAULT_TYPE_FLAG = '1,2,3,4,5'
 
     STUDENT_CURRICULUM_TYPE_CHOICES = {
-        1: ('formal','หลักสูตรแกนกลาง','แกนกลาง','badge-primary'),
-        2: ('international','หลักสูตรนานาชาติ','นานาชาติ','badge-secondary'),
-        3: ('vocational','หลักสูตรอาชีวะ','อาชีวะ','badge-success'),
-        4: ('non_formal','หลักสูตรตามอัธยาศัย (กศน.)','กศน.','badge-danger'),
-        5: ('ged','หลักสูตร GED','GED','badge-dark'),
+        1: ('formal', 'หลักสูตรแกนกลาง', 'แกนกลาง', 'badge-primary'),
+        2: ('international', 'หลักสูตรนานาชาติ', 'นานาชาติ', 'badge-secondary'),
+        3: ('vocational', 'หลักสูตรอาชีวะ', 'อาชีวะ', 'badge-success'),
+        4: ('non_formal', 'หลักสูตรตามอัธยาศัย (กศน.)', 'กศน.', 'badge-danger'),
+        5: ('ged', 'หลักสูตร GED', 'GED', 'badge-dark'),
     }
     STUDENT_CURRICULUM_TYPE_CHOICE_COUNT = 5
 
@@ -36,35 +46,26 @@ class AdmissionCriteria(models.Model):
     curriculum_majors_json = models.TextField(blank=True)
 
     def get_all_score_criteria(self, criteria_type):
-        if getattr(self,'cached_score_criteria',None) == None:
+        if getattr(self, 'cached_score_criteria', None) is None:
             self.cached_score_criteria = self.scorecriteria_set.all()
         return [c for c in self.cached_score_criteria
-                if c.criteria_type==criteria_type and c.secondary_order==0]
+                if c.criteria_type == criteria_type and c.secondary_order == 0]
 
     def get_all_required_score_criteria(self):
-        if getattr(self,'cached_required_score_criteria',None) == None:
+        if getattr(self, 'cached_required_score_criteria', None) is None:
             self.cached_required_score_criteria = list(self.get_all_score_criteria('required'))
         return self.cached_required_score_criteria
 
     def get_all_required_score_criteria_as_str(self):
-        return self.criteria_as_str(self.get_all_required_score_criteria())
+        return criteria_as_str(self.get_all_required_score_criteria())
 
     def get_all_scoring_score_criteria(self):
-        if getattr(self,'cached_scoring_score_criteria',None) == None:
+        if getattr(self, 'cached_scoring_score_criteria', None) is None:
             self.cached_scoring_score_criteria = list(self.get_all_score_criteria('scoring'))
         return self.cached_scoring_score_criteria
 
     def get_all_scoring_score_criteria_as_str(self):
-        return self.criteria_as_str(self.get_all_scoring_score_criteria())
-
-    def criteria_as_str(self,criteria):
-        items = []
-        for c in criteria:
-            items.append(str(c))
-            if c.has_children():
-                for child in c.childs.all():
-                    items.append('  - ' + str(child))
-        return '\n'.join(items)
+        return criteria_as_str(self.get_all_scoring_score_criteria())
 
     def required_score_criteria_includes(self, conds):
         criteria = self.get_all_required_score_criteria()
@@ -125,11 +126,12 @@ class AdmissionCriteria(models.Model):
             return [int(x.strip()) for x in flags.split(',')]
 
     def get_accepted_student_curriculum_types(self):
-        return [AdmissionCriteria.STUDENT_CURRICULUM_TYPE_CHOICES[i] for i in self.get_accepted_student_curriculum_type_ids()]
+        return [AdmissionCriteria.STUDENT_CURRICULUM_TYPE_CHOICES[i] for i in
+                self.get_accepted_student_curriculum_type_ids()]
 
     def get_curriculum_type_choices_with_acceptance(self):
         accepted_types = self.get_accepted_student_curriculum_type_ids()
-        return [(k,k in accepted_types, v) for k,v in
+        return [(k, k in accepted_types, v) for k, v in
                 AdmissionCriteria.STUDENT_CURRICULUM_TYPE_CHOICES.items()]
 
     def is_curriculum_type_accepted(self, curriculum_type):
