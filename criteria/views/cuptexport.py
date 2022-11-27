@@ -11,7 +11,8 @@ from appl.models import AdmissionProject, AdmissionRound
 from appl.models import Faculty
 from backoffice.decorators import user_login_required
 from criteria.criteria_options import REQUIRED_SCORE_TYPE_TAGS, SCORING_SCORE_TYPE_TAGS
-from criteria.models import CurriculumMajor, AdmissionCriteria, CurriculumMajorAdmissionCriteria, CuptExportConfig, ImportedCriteriaJSON
+from criteria.models import AdmissionCriteria, CurriculumMajorAdmissionCriteria, CuptExportConfig, ImportedCriteriaJSON, \
+    CurriculumMajor
 
 from . import get_all_curriculum_majors
 from .cuptexport_fields import CONDITION_FILE_FIELD_STR, CONDITION_FILE_ZERO_FIELD_STR

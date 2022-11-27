@@ -11,8 +11,8 @@ from appl.models import AdmissionProject, AdmissionRound
 from appl.models import Faculty
 from backoffice.decorators import user_login_required
 from backoffice.views.permissions import can_user_view_project
-from criteria.models import CurriculumMajor, AdmissionCriteria, ScoreCriteria, CurriculumMajorAdmissionCriteria, \
-    MajorCuptCode
+from criteria.models import AdmissionCriteria, ScoreCriteria, CurriculumMajorAdmissionCriteria, \
+    MajorCuptCode, CurriculumMajor
 
 
 def is_number(string):

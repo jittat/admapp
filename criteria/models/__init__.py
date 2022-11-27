@@ -1,0 +1,7 @@
+from .admissionCriteria import AdmissionCriteria
+from .cuptExportConfig import CuptExportConfig
+from .curriculumMajorAdmissionCriteria import CurriculumMajorAdmissionCriteria
+from .importedCriteriaJSON import ImportedCriteriaJSON
+from .majorCuptCode import MajorCuptCode
+from .scoreCriteria import ScoreCriteria
+from .curriculumMajor import CurriculumMajor
