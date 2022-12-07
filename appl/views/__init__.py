@@ -177,8 +177,6 @@ def index_with_active_application(request, active_application, admission_round=N
                                                         admission_project,
                                                         supplement_configs,
                                                         list(common_uploaded_documents) + list(project_uploaded_documents))
-    print(documents_complete_status)
-        
     admission_projects = []
     has_confirmed = False
     
