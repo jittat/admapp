@@ -512,7 +512,7 @@ class EducationalProfile(models.Model):
     education_plan = models.IntegerField(choices=EDUCATION_PLAN_CHOICES,
                                          verbose_name=_('แผนการศึกษา'))
     sci_credit = models.FloatField(default=0,
-                                   verbose_name=_('หน่วยกิตกลุ่มสาระวิทยาศาสตร์'))
+                                   verbose_name=_('หน่วยกิตกลุ่มสาระวิทยาศาสตร์และเทคโนโลยี'))
     math_credit = models.FloatField(default=0,
                                     verbose_name=_('หน่วยกิตกลุ่มสาระคณิตศาสตร์'))
     lang_credit = models.FloatField(default=0,
