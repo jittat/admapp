@@ -410,34 +410,13 @@ def write_score_report_header(sheet, major, cell_format):
         'GPAX',
         'แผนการเรียน',
     ]
-    if major_with_full_onet(major):
-        items += [
-            'O-01',
-            'O-02',
-            'O-03',
-            'O-04',
-            'O-05',
-        ]
-    else:
-        items += [
-             'ONET(03)',
-        ]
     items += [
-        'GP-Round',
-        'GAT',
-        'P1','P2','P3','P4','P5','P6','P7',
+        'TGAT',
+        'TGAT1','TGAT2','TGAT3',
+        'TP2',
+        'TP21','TP22','TP23',
+        'TP3','TP4','TP5'
     ]
-    if major_with_udat(major):
-        items += [
-            '09',
-            '19',
-            '29',
-            '39',
-            '49',
-            '59',
-            '69',
-        ]
-    items += ['คะแนนรวม']
     write_sheet_row(sheet,2,
                     items,
                     cell_format)
@@ -453,7 +432,7 @@ def write_score_report_sheet(sheet, project, applicants, major, cell_format):
                              5,5,5,5,5,5,5,5,5,
                              3.5,3.5,3.5,3.5,3.5,3.5,3.5,
                              5])
-    sheet.write(0,0,'รายงานคะแนนผู้มีสิทธิ์สอบสัมภาษณ์ โครงการ' + project.title)
+    sheet.write(0,0,'รายงานคะแนนโครงการ' + project.title)
     sheet.write(1,0, 'สาขา' + major.title)
 
     write_score_report_header(sheet, major, cell_format)
@@ -473,60 +452,27 @@ def write_score_report_sheet(sheet, project, applicants, major, cell_format):
                  '%0.2f' % (float(applicant.educationalprofile.gpa),),
                  str(applicant.educationalprofile.get_education_plan_display()),]
 
-        gp_round_count = len(scores.gatpat_rounds)
-
-        if major_with_full_onet(major):
-            if hasattr(scores,'onet'):
-                items += [
-                    score_filter(scores.onet['x01']),
-                    score_filter(scores.onet['x02']),
-                    score_filter(scores.onet['x03']),
-                    score_filter(scores.onet['x04']),
-                    score_filter(scores.onet['x05']),
-                ]
-            else:
-                items += [' '] * 5
-        else:
-            if hasattr(scores,'onet'):
-                items += [ score_filter(scores.onet['x03']),]
-            else:
-                items += [' ']
-
-        if hasattr(scores,'gatpat_array'):
+        if hasattr(scores,'tgattpat'):
             items += [
-                round_array_filter(scores.gatpat_rounds, False),
-                score_array_filter(scores.gatpat_array['gat'], False),
-                score_array_filter(scores.gatpat_array['pat1'], False),
-                score_array_filter(scores.gatpat_array['pat2'], False),
-                score_array_filter(scores.gatpat_array['pat3'], False),
-                score_array_filter(scores.gatpat_array['pat4'], False),
-                score_array_filter(scores.gatpat_array['pat5'], False),
-                score_array_filter(scores.gatpat_array['pat6'], False),
-                round_array_filter(scores.gatpat_array['pat7'], False),
+                score_filter(scores.tgattpat['tgat']),
+                score_filter(scores.tgattpat['tgat1']),
+                score_filter(scores.tgattpat['tgat2']),
+                score_filter(scores.tgattpat['tgat3']),
+                score_filter(scores.tgattpat['tpat2']),
+                score_filter(scores.tgattpat['tpat21']),
+                score_filter(scores.tgattpat['tpat22']),
+                score_filter(scores.tgattpat['tpat23']),
+                score_filter(scores.tgattpat['tpat3']),
+                score_filter(scores.tgattpat['tpat4']),
+                score_filter(scores.tgattpat['tpat5']),
             ]
         else:
-            items += [' '] * 9
-
-        if major_with_udat(major):
-            if hasattr(scores,'udat'):
-                items += [
-                    score_filter(scores.udat['u09']),
-                    score_filter(scores.udat['u19']),
-                    score_filter(scores.udat['u29']),
-                    score_filter(scores.udat['u39']),
-                    score_filter(scores.udat['u49']),
-                    score_filter(scores.udat['u59']),
-                    score_filter(scores.udat['u69']),
-                ]
-            else:
-                items += [' '] * 7
-        items += [ score_filter(applicant.admission_result.calculated_score) ]
+            items += [' '] * 11
+        #items += [ score_filter(applicant.admission_result.calculated_score) ]
+        items += [ "-" ]
 
         write_sheet_row(sheet, r + 2, items, cell_format)
 
-        if gp_round_count > 1:
-            sheet.set_row(r + 2, gp_round_count * 14)
-            
         r += 1
 
 
@@ -584,6 +530,68 @@ def download_applicants_interview_score_sheet(request,
     # applicants = [a[2] for a in sorted(applicants)]
     
     applicants = sorted_by_name(applicants)
+
+    for a in applicants:
+        if a.national_id.startswith('T'):
+            a.national_id = a.national_id[1:]
+
+
+    output = io.BytesIO()
+    workbook = xlsxwriter.Workbook(output, {'in_memory': True})
+    score_worksheet = workbook.add_worksheet('คะแนนสอบ')
+    
+    bordered_cell_format = workbook.add_format()
+    bordered_cell_format.set_border(1)
+    bordered_cell_format.set_font_size(9)
+
+    write_score_report_sheet(score_worksheet,
+                             project,
+                             applicants,
+                             major,
+                             bordered_cell_format)
+    workbook.close()
+    output.seek(0)
+
+    filename = 'interview-score-{}-{}-{}.xlsx'.format(project_id, round_id, major_number)
+    response = HttpResponse(output.read(),
+                            content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename="{}"'.format(filename)
+
+    return response
+
+
+@user_login_required
+def download_applicants_score_sheet(request,
+                                    project_id,
+                                    round_id,
+                                    major_number):
+    import xlsxwriter
+    import io
+    
+    user = request.user
+    project = get_object_or_404(AdmissionProject, pk=project_id)
+    admission_round = get_object_or_404(AdmissionRound, pk=round_id)
+    project_round = project.get_project_round_for(admission_round)
+    major = Major.get_by_project_number(project, major_number)
+
+    if not can_user_view_applicants_in_major(user, project, major):
+        return redirect(reverse('backoffice:index'))
+
+    if admission_round.id == 5:
+        all_applicants = load_major_applicants(project,
+                                               admission_round,
+                                               major,
+                                               load_results=True)
+    else:
+        all_applicants = load_major_applicants_no_cache(project,
+                                                        admission_round,
+                                                        major)    
+        load_check_marks_and_results(all_applicants,
+                                     project,
+                                     admission_round,
+                                     project_round)
+
+    applicants = sorted_by_name(all_applicants)
 
     for a in applicants:
         if a.national_id.startswith('T'):

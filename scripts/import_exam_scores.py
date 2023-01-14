@@ -31,8 +31,13 @@ def main():
             try:
                 applicant = Applicant.objects.get(national_id=nat_id)
             except Applicant.DoesNotExist:
-                print('ERROR not found', nat_id)
-                continue
+                print('ERROR not found', nat_id,'try passport')
+                applicants = Applicant.objects.filter(passport_number=nat_id)
+                if len(applicants)==1:
+                    applicant = applicants[0]
+                    print('FOUND', applicant)
+                else:
+                    continue
 
             old_scores = applicant.examscore_set.filter(exam_type=exam_type,
                                                         exam_round=items[4]).all()

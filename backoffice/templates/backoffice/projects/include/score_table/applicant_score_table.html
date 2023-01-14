@@ -14,9 +14,12 @@
         <th></th>
       {% endif %}
       <th>GPAX</th>
+      {% include "backoffice/projects/include/score_table/tgattpat_header.html" %}
+      {% comment %}
       {% include "backoffice/projects/include/score_table/onet_header.html" %}
       {% include "backoffice/projects/include/score_table/gatpat_header.html" %}
       {% include "backoffice/projects/include/score_table/udat_header.html" %}
+      {% endcomment %}
       {% comment %}
       {% include "backoffice/projects/include/score_table/additional_hack_header.html" %}
       {% endcomment %}
@@ -61,6 +64,18 @@
         {% endif %}
         <td>{{ a.educationalprofile.gpa|floatformat:"2" }}</td>
         {% with a as applicant %}
+          <td class="gatpat-odd">{{ applicant.get_all_exam_scores.tgattpat.tgat|score }}</td>
+          <td class="gatpat-even onet-extra" style="display: none;">{{ applicant.get_all_exam_scores.tgattpat.tgat1|score }}</td>
+          <td class="gatpat-odd onet-extra" style="display: none;">{{ applicant.get_all_exam_scores.tgattpat.tgat2|score }}</td>
+          <td class="gatpat-even onet-extra" style="display: none;">{{ applicant.get_all_exam_scores.tgattpat.tgat3|score }}</td>
+          <td class="gatpat-even">{{ applicant.get_all_exam_scores.tgattpat.tpat2|score }}</td>
+          <td class="gatpat-even onet-extra" style="display: none;">{{ applicant.get_all_exam_scores.tgattpat.tpat21|score }}</td>
+          <td class="gatpat-odd onet-extra" style="display: none;">{{ applicant.get_all_exam_scores.tgattpat.tpat22|score }}</td>
+          <td class="gatpat-even onet-extra" style="display: none;">{{ applicant.get_all_exam_scores.tgattpat.tpat23|score }}</td>
+          <td class="gatpat-odd">{{ applicant.get_all_exam_scores.tgattpat.tpat3|score }}</td>
+          <td class="gatpat-even">{{ applicant.get_all_exam_scores.tgattpat.tpat4|score }}</td>
+          <td class="gatpat-odd">{{ applicant.get_all_exam_scores.tgattpat.tpat5|score }}</td>
+	  {% comment %}
           <td class="xonet-odd xonet-extra" style="display: none;">{{ applicant.get_all_exam_scores.onet.x01|score }}</td>
           <td class="xonet-even xonet-extra" style="display: none;">{{ applicant.get_all_exam_scores.onet.x02|score }}</td>
           <td class="xonet-odd" style="display: none;">{{ applicant.get_all_exam_scores.onet.x03|score }}</td>
@@ -86,7 +101,7 @@
           <td class="udat-odd udat-scores" style="display: none;">{{ applicant.get_all_exam_scores.udat.u59|score }}</td>
           <td class="udat-even udat-scores" style="display: none;">{{ applicant.get_all_exam_scores.udat.u69|score }}</td>
 	  <td class="udat-odd udat-scores" style="display: none;">{{ applicant.get_all_exam_scores.udat.u89|score }}</td>
-	  
+	  {% endcomment %}
           {% comment %}
           {% include "backoffice/projects/include/score_table/onet_cells.html" %}
           {% include "backoffice/projects/include/score_table/gatpat_cells.html" %}
@@ -97,7 +112,7 @@
           {% endcomment %}
         {% endwith %}
         {% if not a.is_criteria_passed %}
-          <td><i class="fa fa-times" style="color: red;"></i> ไม่ผ่านเกณฑ์ (หรือค่าสมัคร)</td>
+          <td><span class="d-none"><i class="fa fa-times" style="color: red;"></i> ไม่ผ่านเกณฑ์ (หรือค่าสมัคร)</span></td>
           <td></td>
         {% else %}
           {% if applicant_score_viewable %}

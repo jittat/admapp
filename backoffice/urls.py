@@ -90,6 +90,10 @@ urlpatterns = [
             reports.download_applicants_interview_sheet,
             name='projects-download-app-interview-sheet'),
 
+    re_path(r'^projects/applicants/(?P<project_id>\d+)/(?P<round_id>\d+)/(?P<major_number>\d+)/score-sheet$',
+            reports.download_applicants_score_sheet,
+            name='projects-download-app-score-sheet'),
+
     re_path(r'^projects/applicants/(?P<project_id>\d+)/(?P<round_id>\d+)/(?P<major_number>\d+)/interview-score-sheet$',
             reports.download_applicants_interview_score_sheet,
             name='projects-download-app-interview-score-sheet'),
