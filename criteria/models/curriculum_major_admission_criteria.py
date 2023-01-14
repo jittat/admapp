@@ -1,7 +1,7 @@
 from django.db import models
 
-from criteria.models.admissionCriteria import AdmissionCriteria
-from criteria.models.curriculumMajor import CurriculumMajor
+from criteria.models.admission_criteria import AdmissionCriteria
+from criteria.models.curriculum_major import CurriculumMajor
 
 
 class CurriculumMajorAdmissionCriteria(models.Model):
