@@ -47,7 +47,7 @@ def main():
                         nat_id = nat
             
             if nat_id not in all_applications:
-                print('ERROR nat not found', nat_id, name)
+                print('ERROR nat not found', nat_id)
                 continue
 
             major_num = int(items[1])
@@ -77,6 +77,7 @@ def main():
                     if m.title == major_title and m.faculty.title == fac_title:
                         accepted_major = m
                 if not accepted_major:
+                    print(majors)
                     print('ERROR', nat_id,'major not found',major_title, fac_title)
                     continue
             else:
