@@ -1,0 +1,93 @@
+{% extends 'backoffice/base.html' %}
+{% block content %}
+  <div class="row">
+    <div class="col-md-12">
+      <h2>
+        รายงานการปรับจำนวนการรับ
+      </h2>
+      
+      <table class="table table-striped table-sm">
+	<thead class="thead-dark">
+	  <tr>
+	    <th></th>
+	    <th class="d-none"></th>
+	    <th class="d-none"></th>
+	    <th>คณะ</th>
+	    <th>สาขา</th>
+	    <th>จำนวนรับ (ก่อน)</th>
+	    <th>จำนวนรับ (หลังปรับ)</th>
+	  </tr>
+	</thead>
+	<tbody>
+	  {% for s in adjusted_slots %}
+	    {% ifchanged s.project_code %}
+	      <tr class="table-primary">
+		<td colspan="100" class="text-center">
+		  {{ s.admission_project_title }}
+		</td>
+	      </tr>
+	    {% endifchanged %}
+	    <tr>
+	      <td>{{ s.counter }}</td>
+	      <td class="d-none">{{ s.cupt_code }}</td>
+	      <td class="d-none">{{ s.major_full_code }}</td>
+	      <td>{{ s.adjustment_major.faculty }}</td>
+	      <td>{{ s.adjustment_major }}</td>
+	      <td>{{ s.original_slots }}</td>
+	      <td>{{ s.current_slots }}</td>
+	    </tr>
+	  {% empty %}
+	    <tr>
+	      <td colspan="100">ไม่มีการปรับ</td>
+	    </tr>
+	  {% endfor %}
+	</tbody>
+      </table>
+
+      <table class="table table-striped table-sm">
+
+          {% for faculty in faculties %}
+          <tr class="table-primary">
+            <th colspan="2" class="text-center">{{ faculty.title }}</th>
+            <th colspan="100" class="text-center">จำนวนรับ</th>
+          </tr>
+          <tr>
+            <th>รหัส</th>
+            <th>สาขาวิชา</th>
+            {% for r in admission_rounds %}
+              <th class="text-right">รอบ {{ r.number }}</th>
+            {% endfor %}
+            <th></th>
+          </tr>
+          {% for m in faculty.majors %}
+            <tr>
+              <td>{{ m.full_code }}</td>
+              <td>{{ m.title }}</td>
+              {% for s in m.round_stats %}
+                <td class="text-right">
+                  {% if s.1 == -1 %}
+                    {{ s.0 }}
+                  {% else %}
+                    {{ s.1 }}/{{ s.0 }}
+                  {% endif %}
+                </td>
+              {% endfor %}
+              <td>
+                {% if not m.all_confirmed %}
+                  <a class="btn btn-outline-primary btn-sm" href="{% url 'backoffice:adjustment-major' m.full_code %}">
+                    {% if not can_confirm %}ปรับจำนวน{% else %}ปรับจำนวนและยืนยัน{% endif %}
+                  </a>
+                {% else %}
+                  <a class="btn btn-outline-secondary btn-sm" href="{% url 'backoffice:adjustment-major' m.full_code %}">
+                    ดูจำนวน
+                  </a>
+                  <span class="badge badge-success">ยืนยันแล้ว</span>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        {% endfor %}
+      </table>
+    </div>
+  </div>
+{% endblock %}

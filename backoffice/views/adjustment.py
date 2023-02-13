@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 
 from appl.models import Faculty, AdmissionRound
-from backoffice.decorators import number_adjustment_login_required
+from backoffice.decorators import number_adjustment_login_required, user_login_required
 from backoffice.models import AdjustmentMajor, AdjustmentMajorSlot
 from backoffice.views.permissions import can_user_adjust_major, can_user_confirm_major_adjustment
 from regis.models import LogItem
@@ -153,4 +153,27 @@ def major_index(request, major_full_code):
                     
                     'validation_error': validation_error,
                     'notice': notice })
+
+@user_login_required
+def adjustment_list(request):
+    user = request.user
+    
+    if not user.is_super_admin:
+        return HttpResponseForbidden()
+
+    adjusted_slots = AdjustmentMajorSlot.get_adjusted_slots()
+
+    counter = 0
+    old_project_code = ''
+    for s in adjusted_slots:
+        if old_project_code != s.project_code():
+            counter = 0
+            old_project_code = s.project_code()
+        counter += 1
+        s.counter = counter
+
+    return render(request,
+                  'backoffice/adjustment/adjustment_list.html',
+                  { 'adjusted_slots': adjusted_slots })
+
 

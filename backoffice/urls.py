@@ -114,6 +114,10 @@ urlpatterns = [
             adjustment.index,
             name='adjustment'),
     
+    path('adjustment/report/',
+         adjustment.adjustment_list,
+         name='adjustment-report'),
+    
     path('adjustment/<major_full_code>/',
          adjustment.major_index,
          name='adjustment-major'),

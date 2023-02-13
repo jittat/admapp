@@ -39,7 +39,7 @@ def main():
                 applicant = None
                 
             if not applicant:
-                #print('Applicant not found', nat_id, passport, row['first_name_th'])
+                print('Applicant not found', nat_id, passport, row['first_name_th'])
                 continue
             
             admission_results = AdmissionResult.objects.filter(applicant=applicant).all()

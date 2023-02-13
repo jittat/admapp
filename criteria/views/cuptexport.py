@@ -13,6 +13,7 @@ from backoffice.decorators import user_login_required
 from criteria.criteria_options import REQUIRED_SCORE_TYPE_TAGS, SCORING_SCORE_TYPE_TAGS
 from criteria.models import AdmissionCriteria, CurriculumMajorAdmissionCriteria, CuptExportConfig, ImportedCriteriaJSON, \
     CurriculumMajor
+from backoffice.models import AdjustmentMajor, AdjustmentMajorSlot
 
 from . import get_all_curriculum_majors
 from .cuptexport_fields import CONDITION_FILE_FIELD_STR, CONDITION_FILE_ZERO_FIELD_STR
@@ -698,13 +699,41 @@ def fill_zero_scoring_scores(rows):
     scoring_score_zero_fields = [f.strip() for f in SCORING_FILE_SCORING_ZERO_FIELD_STR.split() if f.strip() != '']
     fill_zero_in_rows(rows, scoring_score_zero_fields)
 
+def update_slots(rows, only_diff):
+    adjusted_slots = { s.cupt_code:s for s in AdjustmentMajorSlot.get_adjusted_slots() }
+    updated_rows = []
+    for r in rows:
+        if r['major_id'] == '':
+            k = r['project_id'] + r['program_id']
+        else:
+            k = r['project_id'] + r['program_id'] + '0' + r['major_id']
+        if k in adjusted_slots:
+            slot = adjusted_slots[k]
+            r['slots'] = slot.current_slots
+            if 'gender_male_number' in r:
+                r['gender_male_number'] = slot.current_slots
+            updated_rows.append(r)
+        else:
+            if not only_diff:
+                updated_rows.append(r)
+            
+    return updated_rows
+    
 @user_login_required
 def export_required_csv(request):
     user = request.user
     if not user.profile.is_admission_admin:
         return redirect(reverse('backoffice:index'))
 
-    csv_filename = f"conditions-{datetime.now().strftime('%Y%m%d-%H%M%S')}.csv"
+    uses_adjustment_slots = request.GET.get('adjustment',"false") == "true"
+    only_diff = (uses_adjustment_slots) and (request.GET.get('diff',"false") == "true")
+
+    if not uses_adjustment_slots:
+        csv_filename = f"conditions-{datetime.now().strftime('%Y%m%d-%H%M%S')}.csv"
+    elif not only_diff:
+        csv_filename = f"conditions-adjusted-{datetime.now().strftime('%Y%m%d-%H%M%S')}.csv"
+    else:
+        csv_filename = f"conditions-adjusted-diff-{datetime.now().strftime('%Y%m%d-%H%M%S')}.csv"
     
     response = HttpResponse(
         content_type='text/csv',
@@ -731,6 +760,10 @@ def export_required_csv(request):
     zero_fields = [x.strip() for x in CONDITION_FILE_ZERO_FIELD_STR.split() if x.strip() != '']
         
     rows = sort_csv_rows(all_rows)
+
+    if uses_adjustment_slots:
+        rows = update_slots(rows, only_diff)
+    
     for r in rows:
         write_condition_row(writer, r, zero_fields)
     

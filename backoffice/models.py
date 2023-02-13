@@ -299,6 +299,14 @@ class AdjustmentMajorSlot(models.Model):
                                     self.current_slots,
                                     self.cupt_code)
 
+    def project_code(self):
+        return self.cupt_code[:3]
+    
     def is_editable(self):
         return (not self.is_frozen) and (not self.is_final) and (not self.is_confirmed_by_faculty)
 
+
+    @staticmethod
+    def get_adjusted_slots():
+        return [slot for slot in AdjustmentMajorSlot.objects.all()
+                if slot.original_slots != slot.current_slots]

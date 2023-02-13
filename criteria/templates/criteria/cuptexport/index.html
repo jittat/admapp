@@ -7,6 +7,8 @@
     <ul>
       <li>
 	เงื่อนไขการรับ: <a class="btn btn-sm btn-primary" target="_blank" rel="noopener noreferrer" href="{% url 'backoffice:criteria:export-required-csv' %}">ดาวน์โหลด</a>
+	<a class="btn btn-sm btn-outline-secondary" target="_blank" rel="noopener noreferrer" href="{% url 'backoffice:criteria:export-required-csv' %}?adjustment=true">ดาวน์โหลดข้อมูลหลังปรับจำนวน (ทั้งหมด)</a>
+	<a class="btn btn-sm btn-outline-secondary" target="_blank" rel="noopener noreferrer" href="{% url 'backoffice:criteria:export-required-csv' %}?adjustment=true&diff=true">ดาวน์โหลดข้อมูลหลังปรับจำนวน (เฉพาะที่เปลี่ยนแปลง)</a><br>
       </li>
       <li>
 	Scoring <a class="btn btn-sm btn-primary" target="_blank" rel="noopener noreferrer" href="{% url 'backoffice:criteria:export-scoring-csv' %}">ดาวน์โหลด</a>
