@@ -31,15 +31,19 @@ def main():
             program_id = row['program_id']
 
             try:
-                if nat_id != '0':
-                    applicant = Applicant.objects.get(national_id=nat_id)
-                else:
-                    applicant = Applicant.objects.get(passport_number=passport)
+                applicant = Applicant.objects.get(national_id=nat_id)
             except:
                 applicant = None
-                
+
             if not applicant:
-                print('Applicant not found', nat_id, passport, row['first_name_th'])
+                try:
+                    applicant = Applicant.objects.get(passport_number=passport)
+                except:
+                    applicant = None
+               
+            if not applicant:
+                if (decision == '3') or (decision == 'ยืนยันสิทธิ์'):
+                    print('Applicant not found', nat_id, passport, row['first_name_th'])
                 continue
             
             admission_results = AdmissionResult.objects.filter(applicant=applicant).all()
