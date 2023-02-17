@@ -7,6 +7,7 @@ from backoffice.views import projectoptions
 from backoffice.views import projects
 from backoffice.views import reports
 from backoffice.views import users
+from backoffice.views import interviews
 from . import views
 
 app_name = 'backoffice'
@@ -123,4 +124,13 @@ urlpatterns = [
          name='adjustment-major'),
     
     re_path(r'^criteria/', include('criteria.urls')),
+
+    path('interviews/<admission_round_id>/<faculty_id>/',
+         interviews.interview_form,
+         { 'description_id': '0' },
+         name='interviews-create'),
+
+    path('interviews/<admission_round_id>/<faculty_id>/<description_id/',
+         interviews.interview_form,
+         name='interviews-edit'),
 ]

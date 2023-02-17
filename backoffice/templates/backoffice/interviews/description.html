@@ -1,0 +1,168 @@
+{% extends 'backoffice/base.html' %}
+{% block content %}
+  <div class="row">
+    <div class="col-md-12">
+      <h2>
+        ข้อมูลการสัมภาษณ์ {{ admission_round}} {{ faculty }}
+      </h2>
+      {% if admission_project %}
+	<h3>
+	  โครงการ{{ admission_project }}
+	</h3>
+      {% endif %}
+
+      {% if validation_error %}
+        <div class="alert alert-danger">
+        </div>
+      {% endif %}
+      
+      <form method="post" action="{% url 'backoffice:interviews-create' admission_round.id faculty.id %}">
+	<h4>ข้อมูลทั่วไป</h4>
+	<div class="form-row">
+	  <div class="col-md-3">
+	    <label for="interviewType">รูปแบบการสัมภาษณ์</label>
+	  </div>
+	  <div class="col-md-9">
+	    <select id="interviewType" class="form-control">
+	      <option>ไม่มีการสัมภาษณ์</option>
+	      <option>สัมภาษณ์ออนไลน์</option>
+	      <option>สัมภาษณ์ที่สถานที่</option>
+	    </select>
+	  </div>
+	</div>
+	<div class="form-row mt-2">
+	  <div class="col-md-3">
+	    <label for="interviewType">การส่งเอกสารเพิ่มเติม</label>
+	  </div>
+	  <div class="col-md-9">
+	    <select id="interviewType" class="form-control">
+	      <option>ไม่มี</option>
+	      <option>ต้องส่งเอกสารหรือส่งลิงก์เพิ่มเติม (กรุณาแจ้งรายละเอียดในส่วนการสัมภาษณ์ด้วย)</option>
+	    </select>
+	  </div>
+	</div>
+
+	<h4 class="mt-3">การเตรียมตัวก่อนสัมภาษณ์</h4>
+	<div class="form-row">
+	  <div class="col-md-12">
+	    <label>รายละเอียดการเตรียมตัว</label>
+	    <textarea class="form-control" rows="2"></textarea>
+	  </div>
+	</div>
+	<div class="form-row mt-2">
+	  <div class="col-md-3 pr-2">
+	    รูปประกอบ
+	    <small class="text-muted">รูปจะปรากฏด้านขวาของข้อความ</small>
+	    <br>
+	    <img class="img-fluid" id="prepImgId">
+	  </div>
+	  <div class="col-md-9">
+	    <div class="custom-file">
+	      <input type="file" class="custom-file-input img-file-controls" data-img-id="prepImgId" id="prepImgFile">
+	      <label class="custom-file-label" for="prepImgFile">Choose file</label>
+	    </div>
+	  </div>
+	</div>
+
+
+	<h4 class="mt-3">รายละเอียดการสัมภาษณ์ออนไลน์</h4>
+	<div class="form-row">
+	  <div class="col-md-3">
+	    สัมภาษณ์ผ่านทางโปรแกรม
+	  </div>
+	  <div class="col-md-9">
+	    <div class="form-check form-check-inline">
+	      <input class="form-check-input" type="radio" name="apptype" id="appChoiceWebex" value="webex">
+	      <label class="form-check-label" for="appChoiceWebex">Cisco Webex</label>
+	    </div>
+	    <div class="form-check form-check-inline">
+	      <input class="form-check-input" type="radio" name="apptype" id="appChoiceZoom" value="Zoom">
+	      <label class="form-check-label" for="appChoiceZoom">Zoom</label>
+	    </div>
+	    <div class="form-check form-check-inline">
+	      <input class="form-check-input" type="radio" name="apptype" id="appChoiceGoogleMeet" value="google-meet">
+	      <label class="form-check-label" for="appChoiceGoogleMeet">Google Meet</label>
+	    </div>
+	    <div class="form-check form-check-inline">
+	      <input class="form-check-input" type="radio" name="apptype" id="appChoiceOther" value="other">
+	      <label class="form-check-label" for="appChoiceOther">โปรแกรมอื่น (กรุณาระบุในรายละเอียด)</label>
+	    </div>
+	  </div>
+	</div>
+	<div class="form-row">
+	  <div class="col-md-12">
+	    รายละเอียด
+	    <small class="text-muted">ป้อนลายละเอียด เช่น ลิงก์สำหรับสัมภาษณ์ รหัสผ่าน</small>
+	    <textarea class="form-control" rows="3"></textarea>
+	  </div>
+	</div>
+	<div class="form-row mt-2">
+	  <div class="col-md-3">
+	    รูปประกอบ
+	    <small class="text-muted">รูปจะปรากฏด้านขวาของข้อความ</small>
+	    <br>
+	    <img class="img-fluid" id="descImgId">
+	  </div>
+	  <div class="col-md-9">
+	    <div class="custom-file">
+	      <input type="file" class="custom-file-input img-file-controls" data-img-id="descImgId" id="descImgFile">
+	      <label class="custom-file-label" for="descImgFile">Choose file</label>
+	    </div>
+	  </div>
+	</div>
+	<h4 class="mt-3">ข้อมูลการติดต่อ</h4>
+	<div class="form-row">
+	  <div class="col-md-4">ชื่อผู้ติดต่อ</div>
+	  <div class="col-md-3">อีเมล</div>
+	  <div class="col-md-3">โทรศัพท์</div>
+	  <div class="col-md-2"></div>
+	</div>
+	<div class="form-row">
+	  <div class="col-md-4">
+	    <input class="form-control" type="text">
+	  </div>
+	  <div class="col-md-3">
+	    <input class="form-control" type="text">
+	  </div>
+	  <div class="col-md-3">
+	    <input class="form-control" type="text">
+	  </div>
+	  <div class="col-md-2">
+	    <button class="btn-sm btn-danger">ลบ</button>
+	  </div>
+	</div>
+	<div class="form-row mt-2">
+	  <div class="col-md-12">
+	    <button class="btn btn-secondary">เพิ่มผู้ติดต่อ</button>
+	  </div>
+	</div>
+
+	<div class="form-row bg-light mt-2 p-2 rounded">
+	  <div class="col">
+	    <button class="btn btn-outline-primary">ดูตัวอย่าง</button>
+	    <button class="btn btn-success">จัดเก็บ</button>
+	    <button class="btn btn-warning">ยกเลิกการแก้ไข</button>
+	    <button class="btn btn-danger ml-2">ลบ</button>
+	  </div>
+	</div>
+      </form>
+    </div>
+  </div>
+<script>
+ 
+ 
+ $(function(){
+   $('.img-file-controls').change(function(){
+     var imgId = $(this).data('imgId');
+     var file = this.files[0];
+     if(file) {
+       var reader = new FileReader();
+       reader.onload = function(event){
+	 $('#' + imgId).attr('src', event.target.result);
+       };
+       reader.readAsDataURL(file);
+     }
+   });
+ });
+</script>
+{% endblock %}
