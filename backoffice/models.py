@@ -313,3 +313,48 @@ class AdjustmentMajorSlot(models.Model):
     def get_adjusted_slots():
         return [slot for slot in AdjustmentMajorSlot.objects.all()
                 if slot.original_slots != slot.current_slots]
+
+
+class InterviewDescription(models.Model):
+    OPTION_NO_INTERVIEW = 0
+    OPTION_ONLINE_INTERVIEW = 1
+    OPTION_OFFLINE_INTERVIEW = 2
+    
+    admission_round = models.ForeignKey(AdmissionRound,
+                                        on_delete=models.CASCADE)
+
+    admission_project = models.ForeignKey(AdmissionProject,
+                                          on_delete=models.CASCADE,
+                                          blank=True,
+                                          null=True)
+    major = models.ForeignKey(Major,
+                              on_delete=models.CASCADE,
+                              blank=True,
+                              null=True)
+
+    faculty = models.ForeignKey(Faculty,
+                                on_delete=models.CASCADE)
+
+    interview_options = models.IntegerField(verbose_name='ทางเลือกการสัมภาษณ์',
+                                            choices=[
+                                                (OPTION_NO_INTERVIEW, 'ไม่มีการสัมภาษณ์'),
+                                                (OPTION_ONLINE_INTERVIEW, 'สัมภาษณ์ออนไลน์'),
+                                                (OPTION_OFFLINE_INTERVIEW, 'สัมภาษณ์ที่สถานที่'),
+                                            ])
+    
+    preparation_descriptions = models.TextField(blank=True,
+                                                verbose_name='รายละเอียดการเตรียมตัว')
+    preparation_image = models.FileField(upload_to='interview_docs',
+                                         blank=True,
+                                         verbose_name='รูปประกอบการเตรียมตัว')
+
+    descriptions = models.TextField(blank=True,
+                                    verbose_name='รายละเอียดการสัมภาษณ์')
+    description_image = models.FileField(upload_to='interview_docs',
+                                         blank=True,
+                                         verbose_name='รูปประกอบการเตรียมตัว')
+
+    contacts = models.JSONField(blank=True,
+                                verbose_name='ข้อมูลการติดต่อ')
+
+    
