@@ -9,11 +9,17 @@
       {% if notice %}
         <div class="alert alert-success">{{ notice }}</div>
       {% endif %}
+
+      {% if is_super_admin %}
+	<div class="alert alert-secondary">
+	  สำหรับผู้ดูแลระบบ: รายงานการปรับจำนวน: <a class="btn btn-sm btn-outline-secondary" href="{% url 'backoffice:adjustment-report' 2 %}">รอบที่ 2</a> <a class="btn btn-sm btn-outline-secondary" href="{% url 'backoffice:adjustment-report' 3 %}">รอบที่ 3</a> <a class="btn btn-sm btn-outline-secondary" href="{% url 'backoffice:adjustment-report' 4 %}">รอบที่ 4</a>
+	</div>
+      {% endif %}
       
       <div class="alert alert-warning">
         สำหรับรอบที่รับเรียบร้อยแล้ว การแสดงจำนวนจะแสดงเป็น <b>จำนวนที่รับได้ / จำนวนในแผน</b> เช่น 10/12 คือรับได้ 10 คนจากแผน 12 คน รวมทุกโครงการในรอบนั้น ๆ
       </div>
-      
+
       <table class="table table-striped table-sm">
         {% for faculty in faculties %}
           <tr class="table-primary">

@@ -306,6 +306,9 @@ class AdjustmentMajorSlot(models.Model):
         return (not self.is_frozen) and (not self.is_final) and (not self.is_confirmed_by_faculty)
 
 
+    def is_adjusted(self):
+        return self.original_slots != self.current_slots
+    
     @staticmethod
     def get_adjusted_slots():
         return [slot for slot in AdjustmentMajorSlot.objects.all()

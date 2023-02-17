@@ -37,9 +37,11 @@ def index(request):
     user = request.user
     
     if user.is_super_admin:
+        is_super_admin = True
         faculties = Faculty.objects.all()
         can_confirm = True
     else:
+        is_super_admin = False
         faculties = [user.profile.faculty]
         can_confirm = user.profile.adjustment_major_number == '0'
 
@@ -57,7 +59,8 @@ def index(request):
                     'admission_rounds': admission_rounds,
 
                     'can_confirm': can_confirm,
-                    
+                    'is_super_admin': is_super_admin,
+
                     'notice': notice })
 
 def validate_updated_number(slot, number):
@@ -155,17 +158,20 @@ def major_index(request, major_full_code):
                     'notice': notice })
 
 @user_login_required
-def adjustment_list(request):
+def adjustment_list(request, round_number):
     user = request.user
     
     if not user.is_super_admin:
         return HttpResponseForbidden()
 
-    adjusted_slots = AdjustmentMajorSlot.get_adjusted_slots()
+    all_slots = AdjustmentMajorSlot.objects.filter(admission_round_number=round_number).select_related('adjustment_major').all()
 
+    faculty_map = { f.id:f for f in Faculty.objects.all() }
+    
     counter = 0
     old_project_code = ''
-    for s in adjusted_slots:
+    for s in all_slots:
+        s.adjustment_major.faculty = faculty_map[s.adjustment_major.faculty_id]
         if old_project_code != s.project_code():
             counter = 0
             old_project_code = s.project_code()
@@ -174,6 +180,7 @@ def adjustment_list(request):
 
     return render(request,
                   'backoffice/adjustment/adjustment_list.html',
-                  { 'adjusted_slots': adjusted_slots })
+                  { 'round_number': round_number,
+                    'all_slots': all_slots })
 
 

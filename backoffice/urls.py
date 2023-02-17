@@ -114,7 +114,7 @@ urlpatterns = [
             adjustment.index,
             name='adjustment'),
     
-    path('adjustment/report/',
+    path('adjustment/report/<round_number>/',
          adjustment.adjustment_list,
          name='adjustment-report'),
     
