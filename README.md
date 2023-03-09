@@ -35,7 +35,7 @@
 ถ้าใช้ pipenv ระบบจะไปอ่าน dependencies version จาก Pipfile/Pipfile.lock  
 requirements.txt จะไม่ถูกอ่าน ไม่มีผลเลย เวลาอัปเดต dependency ให้อัปใน Pipfile แล้วรันคำสั่งอัปเดต requirements.txt
 ```shell
-pipenv requirements > requirement.txt
+pipenv requirements > requirements.txt
 ```
 **ไม่ได้ใช้ pipenv**  
 file requirements.txt จะถูกใช้อยู่ ก็ใช้ตามปกติ แต่ถ้าจะอัปเดต dependency ตัวไหน แนะนำให้ใช้ pipenv แล้วทำตามด้านบนจะดีกว่า
