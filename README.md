@@ -19,7 +19,7 @@
 ## ใช้ pipenv
 สร้าง env และ install dependencies สำหรับทำครั้งแรก
 ```
-    pipenv --python 3.8
+    pipenv --python 3
     pipenv install --dev
 ```
 สำหรับเปิด shell เพื่อเข้าไปรันคำสั่ง manage.py ต่างๆ
@@ -46,4 +46,22 @@ pip install -r requirements.txt
 ถ้าต้องการใช้ MySql สำหรับ develop สามารถรัน `docker-compose.yml` และตั้งค่า `/admapp/settings_local.py` เพิมเติมได้
 ```shell
 docker-compose up
+```
+
+### Setup ครั้งแรก
+1. เข้า phpMyAdmin http://localhost:8080/  
+2. สร้าง database admapp
+3. import database (ขอจากคนอื่น)
+4. แก้ `/admapp/settings_local.py` ให้ใช้ mysql database
+```python
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'admapp',
+        'USER': 'root',
+        'PASSWORD': 'example',
+        'HOST': '127.0.0.1',
+        'PORT': '3306',
+    }
+}
 ```
