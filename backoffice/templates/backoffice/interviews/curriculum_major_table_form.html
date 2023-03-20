@@ -1,0 +1,21 @@
+<h3>สาขาในการรับ{{ admission_round }}</h3>
+<table class="table table-sm table-striped table-bordered">
+  <thead class="thead-dark">
+    <tr>
+      <th></th>
+      <th>สาขา</th>
+      {% for p in admission_projects %}
+        <th>{{ p }}</th>
+      {% endfor %}
+    </tr>
+  </thead>
+  {% for m, cols in round_major_table %}
+    <tr>
+      <td>{{ forloop.counter }}</td>
+      <td>{{ m }}</td>
+      {% for c in cols %}
+        <td class="text-center">{% if c %}<i class="fa fa-check"></i>{% endif %}</td>
+      {% endfor %}
+    </tr>
+  {% endfor %}
+</table>
