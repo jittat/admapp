@@ -21,7 +21,7 @@
 ## ใช้ pipenv
 สร้าง env และ install dependencies สำหรับทำครั้งแรก
 ```
-    pipenv --python 3
+    pipenv --python 3.8
     pipenv install
 ```
 สำหรับเปิด shell เพื่อเข้าไปรันคำสั่ง manage.py ต่างๆ
