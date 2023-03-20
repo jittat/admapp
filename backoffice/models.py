@@ -342,6 +342,12 @@ class InterviewDescription(models.Model):
                                                 (OPTION_OFFLINE_INTERVIEW, 'สัมภาษณ์ที่สถานที่'),
                                             ])
     
+    interview_date = models.DateTimeField(
+        verbose_name='วันและเวลาการสัมภาษณ์', blank=True, null=True)
+
+    is_additional_documents_required = models.BooleanField(
+        verbose_name='การส่งเอกสารเพิ่มเติม', default=False)
+
     preparation_descriptions = models.TextField(blank=True,
                                                 verbose_name='รายละเอียดการเตรียมตัว')
     preparation_image = models.FileField(upload_to='interview_docs',
