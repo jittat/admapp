@@ -16,11 +16,13 @@
     ./manage.py migrate --run-syncdb
     ./manage.py loaddata campuses faculties majors provinces admission_rounds
 ```
+
+
 ## ใช้ pipenv
 สร้าง env และ install dependencies สำหรับทำครั้งแรก
 ```
     pipenv --python 3.8
-    pipenv install --dev
+    pipenv install
 ```
 สำหรับเปิด shell เพื่อเข้าไปรันคำสั่ง manage.py ต่างๆ
 ```
@@ -28,22 +30,37 @@
 ```
 
 
-## ใช้ conda
-**สร้าง env ครั้งแรก**
+## Dependencies
+**ใช้ pipenv**  
+ถ้าใช้ pipenv ระบบจะไปอ่าน dependencies version จาก Pipfile/Pipfile.lock  
+requirements.txt จะไม่ถูกอ่าน ไม่มีผลเลย เวลาอัปเดต dependency ให้อัปใน Pipfile แล้วรันคำสั่งอัปเดต requirements.txt
 ```shell
-conda create -n admapp python=3.8
+pipenv requirements > requirements.txt
 ```
-**Activate**
-```shell
-conda activate admapp
-```
-**Install requirements**
-```shell
-pip install -r requirements.txt
-```
+**ไม่ได้ใช้ pipenv**  
+file requirements.txt จะถูกใช้อยู่ ก็ใช้ตามปกติ แต่ถ้าจะอัปเดต dependency ตัวไหน แนะนำให้ใช้ pipenv แล้วทำตามด้านบนจะดีกว่า
+
 
 ## MySql
 ถ้าต้องการใช้ MySql สำหรับ develop สามารถรัน `docker-compose.yml` และตั้งค่า `/admapp/settings_local.py` เพิมเติมได้
 ```shell
 docker-compose up
+```
+
+### Setup ครั้งแรก
+1. เข้า phpMyAdmin http://localhost:8080/  
+2. สร้าง database admapp
+3. import database (ขอจากคนอื่น)
+4. แก้ `/admapp/settings_local.py` ให้ใช้ mysql database
+```python
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'admapp',
+        'USER': 'root',
+        'PASSWORD': 'example',
+        'HOST': '127.0.0.1',
+        'PORT': '3306',
+    }
+}
 ```

@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
+import sys
 import os
 
 from django.utils.translation import gettext_lazy as _
@@ -48,6 +49,7 @@ INSTALLED_APPS = [
     'django_extensions',
     'template_timings_panel',
     'crispy_forms',
+    'crispy_bootstrap4',
     'mailer',
     'supplements',
     'qrconfirmations',
@@ -221,7 +223,7 @@ BARCODE_DIR = '/tmp/'
 ADM_EMAIL_FROM = 'admission@ku.ac.th'
 
 ELIGIBILITY_CHECK = {
-#    'ช้างเผือก': 'white_elephant',
+    #    'ช้างเผือก': 'white_elephant',
     'เรียนล่วงหน้า': 'advanced_placement',
 }
 
@@ -264,7 +266,6 @@ if DEBUG:
     INSTALLED_APPS.append('debug_toolbar')
     MIDDLEWARE.append('debug_toolbar.middleware.DebugToolbarMiddleware')
 
-import sys
 if 'test' in sys.argv:
     DATABASES['default'] = {
         'ENGINE': 'django.db.backends.sqlite3',
