@@ -1,3 +1,5 @@
+import random
+
 from django.shortcuts import render, get_object_or_404
 
 from appl.models import Faculty, AdmissionProject, AdmissionRound
@@ -21,35 +23,39 @@ def interview_form(request, admission_round_id, faculty_id, description_id):
     else:
         admission_projects = AdmissionProject.objects.filter(is_visible_in_backoffice=True)
 
-    for p in admission_projects:
-        p.adm_rounds = set([r.id for r in p.admission_rounds.all()])
+    for admission_project in admission_projects:
+        admission_project.adm_rounds = set([r.id for r in admission_project.admission_rounds.all()])
 
     major_table = []
 
     round_table = []
-    for m in majors:
+    for major in majors:
         row = []
-        for p in admission_projects:
-            if admission_round.id in p.adm_rounds:
+        for admission_project in admission_projects:
+            if admission_round.id in admission_project.adm_rounds:
                 row.append(False)
         round_table.append(row)
 
-    c = 0
-    for p in admission_projects:
-        if admission_round.id in p.adm_rounds:
+    j = 0
+    for admission_project in admission_projects:
+        if admission_round.id in admission_project.adm_rounds:
             cmajor_set = set([cm.cupt_code_id for cm in curriculum_majors
-                              if cm.admission_project_id == p.id])
-            for m, i in zip(majors, range(len(majors))):
-                round_table[i][c] = m.id in cmajor_set
+                              if cm.admission_project_id == admission_project.id])
+            for major, i in zip(majors, range(len(majors))):
+                is_checked = major.id in cmajor_set
+                is_disabled = random.choice([True, False]) if not is_checked else False
+                round_table[i][j] = {"is_checked": is_checked,
+                                     "is_disabled": is_disabled,
+                                     "url": 'url-to-related-interview'}
 
-            c += 1
+            j += 1
 
     major_table.extend(list(zip(majors, round_table)))
 
     return render(request,
                   'backoffice/interviews/description.html',
-                  { 'admission_round': admission_round,
-                    'admission_projects': admission_projects,
-                    'majors': majors,
-                    'faculty': faculty,
-                    'round_major_table': major_table})
+                  {'admission_round': admission_round,
+                   'admission_projects': admission_projects,
+                   'majors': majors,
+                   'faculty': faculty,
+                   'round_major_table': major_table})
