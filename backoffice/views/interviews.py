@@ -36,8 +36,9 @@ def interview_form(request, admission_round_id, faculty_id, description_id):
         admission_project.adm_rounds = set([r.id for r in admission_project.admission_rounds.all()])
 
     selected_admission_project_major_cupt_code_list = (
-        AdmissionProjectMajorCuptCodeInterviewDescription(
-            admission_project__round_id=admission_round_id, major_cupt_code__faculty=faculty_id
+        AdmissionProjectMajorCuptCodeInterviewDescription.objects.filter(
+            admission_project__admission_rounds=admission_round_id,
+            major_cupt_code__faculty=faculty_id,
         )
     )
 
