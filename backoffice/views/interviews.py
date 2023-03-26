@@ -83,18 +83,16 @@ def interview_form(request, admission_round_id, faculty_id, description_id):
             ]
         )
         for i, major in enumerate(majors):
-            is_checked = major.id in cmajor_set
             is_disabled = (
                 (admission_project.id, major.id) in map_selected_admission_project_major_cupt_code
                 and map_selected_admission_project_major_cupt_code[(admission_project.id, major.id)]
                 != form_id
             )
             project_majors_id = str(major.id) + "_" + str(admission_project.id)
-            # TODO: uncomment when use real data
-            # if not is_disabled:
-            #     project_majors_choices.append(
-            #         (project_majors_id, major.title + "_" + str(admission_project.id))
-            #     )
+            if not is_disabled:
+                project_majors_choices.append(
+                    (project_majors_id, major.title + "_" + str(admission_project.id))
+                )
             round_table[i][j] = {
                 "id": project_majors_id,
                 "is_disabled": is_disabled,
