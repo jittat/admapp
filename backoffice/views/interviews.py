@@ -55,7 +55,7 @@ def interview_form(request, admission_round_id, faculty_id, description_id):
                 if cm.admission_project_id == admission_project.id
             ]
         )
-        for major, i in zip(majors, range(len(majors))):
+        for i, major in enumerate(majors):
             is_checked = major.id in cmajor_set
             is_disabled = random.choice([True, False]) if not is_checked else False
             project_majors_id = str(major.id) + "_" + str(admission_project.id)
