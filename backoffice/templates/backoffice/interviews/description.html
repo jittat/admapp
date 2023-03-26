@@ -5,31 +5,25 @@
         <h2>
             ข้อมูลการสัมภาษณ์ {{ admission_round}} {{ faculty }}
         </h2>
-        <h3>
-            เลือกโครงการ
-        </h3>
-        {% include "backoffice/interviews/curriculum_major_table_form.html" %}
-
-
-        {% if validation_error %}
+        {% if form.errors %}
         <div class="alert alert-danger">
+            <h4 class="alert-heading">Form Errors:</h4>
+            <ul>
+                {% for field_errors in form.errors.values %}
+                {% for error in field_errors %}
+                <li>{{ error }}</li>
+                {% endfor %}
+                {% endfor %}
+            </ul>
         </div>
         {% endif %}
 
         <form method="post" action="{% url 'backoffice:interviews-create' admission_round.id faculty.id %}"
               enctype="multipart/form-data">
-            {% if form.errors %}
-            <div class="alert alert-danger">
-                <h4 class="alert-heading">Form Errors:</h4>
-                <ul>
-                    {% for field_errors in form.errors.values %}
-                    {% for error in field_errors %}
-                    <li>{{ error }}</li>
-                    {% endfor %}
-                    {% endfor %}
-                </ul>
-            </div>
-            {% endif %}
+            <h3>
+                เลือกโครงการ
+            </h3>
+            {% include "backoffice/interviews/curriculum_major_table_form.html" %}
 
             <h4>ข้อมูลทั่วไป</h4>
             <div class="form-row">

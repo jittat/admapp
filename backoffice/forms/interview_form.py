@@ -2,6 +2,7 @@ from django import forms
 
 
 class InterviewForm(forms.Form):
+    project_majors = forms.MultipleChoiceField(choices=(), widget=forms.CheckboxSelectMultiple)
     interview_type = forms.ChoiceField(
         choices=[('no_interview', 'ไม่มีการสัมภาษณ์'), ('online_interview', 'สัมภาษณ์ออนไลน์'),
                  ('on_site_interview', 'สัมภาษณ์ที่สถานที่')], widget=forms.Select(attrs={'class': 'form-control'}))

@@ -12,20 +12,6 @@ from criteria.models import MajorCuptCode, CurriculumMajor
 
 @user_login_required
 def interview_form(request, admission_round_id, faculty_id, description_id):
-    if request.method == 'POST':
-        form = InterviewForm(request.POST, request.FILES)
-        contact_person_formset = ContactPersonFormSet(request.POST, prefix='contact_person')
-        if form.is_valid() and contact_person_formset.is_valid():
-            print(form.cleaned_data)
-            # do something with form data, such as save to database
-            pass
-        else:
-            # print the errors to the console
-            print(form.errors)
-    else:
-        form = InterviewForm()
-        contact_person_formset = ContactPersonFormSet(prefix='contact_person')
-
     admission_round = get_object_or_404(AdmissionRound, pk=admission_round_id)
     faculty = get_object_or_404(Faculty, pk=faculty_id)
 
@@ -46,6 +32,7 @@ def interview_form(request, admission_round_id, faculty_id, description_id):
     major_table = []
 
     round_table = []
+    project_majors_choices = []
     for major in majors:
         row = []
         for admission_project in admission_projects:
@@ -61,13 +48,33 @@ def interview_form(request, admission_round_id, faculty_id, description_id):
             for major, i in zip(majors, range(len(majors))):
                 is_checked = major.id in cmajor_set
                 is_disabled = random.choice([True, False]) if not is_checked else False
-                round_table[i][j] = {"is_checked": is_checked,
-                                     "is_disabled": is_disabled,
-                                     "url": 'url-to-related-interview'}
+                project_majors_id = str(major.id) + '_' + str(admission_project.id)
+                project_majors_choices.append((project_majors_id, major.title + '_' + str(admission_project.id)))
+                round_table[i][j] = {
+                    "id": project_majors_id,
+                    "is_checked": is_checked,
+                    "is_disabled": is_disabled,
+                    "url": 'url-to-related-interview'}
 
             j += 1
 
     major_table.extend(list(zip(majors, round_table)))
+
+    if request.method == 'POST':
+        form = InterviewForm(request.POST, request.FILES)
+        form.fields['project_majors'].choices = project_majors_choices
+        contact_person_formset = ContactPersonFormSet(request.POST, prefix='contact_person')
+        if form.is_valid() and contact_person_formset.is_valid():
+            print(form.cleaned_data)
+            # do something with form data, such as save to database
+            pass
+        else:
+            # print the errors to the console
+            print(form.errors)
+    else:
+        form = InterviewForm()
+        form.fields['project_majors'].choices = project_majors_choices
+        contact_person_formset = ContactPersonFormSet(prefix='contact_person')
 
     return render(request,
                   'backoffice/interviews/description.html',
