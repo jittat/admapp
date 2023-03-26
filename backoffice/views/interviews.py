@@ -1,14 +1,31 @@
 import random
 
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
+from django.utils.datastructures import MultiValueDictKeyError
 
 from appl.models import Faculty, AdmissionProject, AdmissionRound
 from backoffice.decorators import user_login_required
+from backoffice.forms.contact_person_form import ContactPersonFormSet
+from backoffice.forms.interview_form import InterviewForm
 from criteria.models import MajorCuptCode, CurriculumMajor
 
 
 @user_login_required
 def interview_form(request, admission_round_id, faculty_id, description_id):
+    if request.method == 'POST':
+        form = InterviewForm(request.POST, request.FILES)
+        contact_person_formset = ContactPersonFormSet(request.POST, prefix='contact_person')
+        if form.is_valid() and contact_person_formset.is_valid():
+            print(form.cleaned_data)
+            # do something with form data, such as save to database
+            pass
+        else:
+            # print the errors to the console
+            print(form.errors)
+    else:
+        form = InterviewForm()
+        contact_person_formset = ContactPersonFormSet(prefix='contact_person')
+
     admission_round = get_object_or_404(AdmissionRound, pk=admission_round_id)
     faculty = get_object_or_404(Faculty, pk=faculty_id)
 
@@ -58,4 +75,18 @@ def interview_form(request, admission_round_id, faculty_id, description_id):
                    'admission_projects': admission_projects,
                    'majors': majors,
                    'faculty': faculty,
-                   'round_major_table': major_table})
+                   'round_major_table': major_table,
+                   'form': form,
+                   'contact_person_formset': contact_person_formset})
+
+
+def handle_file(request, name):
+    try:
+        interview_img = request.FILES[name]
+        # do something with the uploaded file
+    except MultiValueDictKeyError:
+        # no file was uploaded
+        pass
+    except Exception as e:
+        # handle other errors
+        print('Error uploading file:', e)
