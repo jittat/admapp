@@ -8,4 +8,4 @@ class ContactPersonForm(forms.Form):
     tel = forms.CharField(max_length=20, widget=forms.TextInput(attrs={'class': 'form-control'}))
 
 
-ContactPersonFormSet = formset_factory(ContactPersonForm, min_num=1, can_delete=True)
+ContactPersonFormSet = formset_factory(ContactPersonForm, extra=0, min_num=1, can_delete=True)

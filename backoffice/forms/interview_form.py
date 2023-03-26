@@ -11,7 +11,7 @@ class InterviewForm(forms.Form):
                                        widget=forms.Select(attrs={'class': 'form-control'})
                                        )
     datetime = forms.DateTimeField(
-        widget=forms.DateTimeInput(attrs={'type': 'datetime-local', 'class': 'form-control'}))
+        widget=forms.DateTimeInput(attrs={'type': 'datetime-local', 'class': 'form-control'}), required=False)
     prep_detail = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control', 'rows': '2'}),
                                   required=False,
                                   )

@@ -80,12 +80,13 @@ def interview_form(request, admission_round_id, faculty_id, description_id):
             is_checked = major.id in cmajor_set
             is_disabled = random.choice([True, False]) if not is_checked else False
             project_majors_id = str(major.id) + "_" + str(admission_project.id)
-            project_majors_choices.append(
-                (project_majors_id, major.title + "_" + str(admission_project.id))
-            )
+            # TODO: uncomment when use real data
+            # if not is_disabled:
+            #     project_majors_choices.append(
+            #         (project_majors_id, major.title + "_" + str(admission_project.id))
+            #     )
             round_table[i][j] = {
                 "id": project_majors_id,
-                "is_checked": is_checked,
                 "is_disabled": is_disabled,
                 "url": "url-to-related-interview",
             }
