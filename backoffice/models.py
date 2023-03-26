@@ -338,7 +338,7 @@ class InterviewDescription(models.Model):
     contacts = models.JSONField(blank=True, verbose_name="ข้อมูลการติดต่อ")
 
 
-class AddmissionProjectMajorCuptCodeInterviewDescription(models.Model):
+class AdmissionProjectMajorCuptCodeInterviewDescription(models.Model):
     admission_project = models.ForeignKey(AdmissionProject, on_delete=models.CASCADE)
 
     major_cupt_code = models.ForeignKey(MajorCuptCode, on_delete=models.CASCADE)

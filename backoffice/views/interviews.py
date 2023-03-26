@@ -7,11 +7,16 @@ from appl.models import Faculty, AdmissionProject, AdmissionRound
 from backoffice.decorators import user_login_required
 from backoffice.forms.contact_person_form import ContactPersonFormSet
 from backoffice.forms.interview_form import InterviewForm
+from backoffice.models import AdmissionProjectMajorCuptCodeInterviewDescription
 from criteria.models import MajorCuptCode, CurriculumMajor
 
 
 @user_login_required
 def interview_form(request, admission_round_id, faculty_id, description_id):
+    form_id = None
+    if request.method == "GET" and "form_id" in request.GET:
+        form_id = request.GET["form_id"]
+
     admission_round = get_object_or_404(AdmissionRound, pk=admission_round_id)
     faculty = get_object_or_404(Faculty, pk=faculty_id)
 
@@ -31,7 +36,7 @@ def interview_form(request, admission_round_id, faculty_id, description_id):
         admission_project.adm_rounds = set([r.id for r in admission_project.admission_rounds.all()])
 
     selected_admission_project_major_cupt_code_list = (
-        AddmissionProjectMajorCuptCodeInterviewDescription(
+        AdmissionProjectMajorCuptCodeInterviewDescription(
             admission_project__round_id=admission_round_id, major_cupt_code__faculty=faculty_id
         )
     )
@@ -78,7 +83,11 @@ def interview_form(request, admission_round_id, faculty_id, description_id):
         )
         for i, major in enumerate(majors):
             is_checked = major.id in cmajor_set
-            is_disabled = random.choice([True, False]) if not is_checked else False
+            is_disabled = (
+                (admission_project.id, major.id) in map_selected_admission_project_major_cupt_code
+                and map_selected_admission_project_major_cupt_code[(admission_project.id, major.id)]
+                != form_id
+            )
             project_majors_id = str(major.id) + "_" + str(admission_project.id)
             # TODO: uncomment when use real data
             # if not is_disabled:
