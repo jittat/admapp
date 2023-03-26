@@ -19,43 +19,65 @@ def interview_form(request, admission_round_id, faculty_id, description_id):
 
     if not user.profile.is_admission_admin:
         admission_projects = user.profile.admission_projects.filter(
-            is_visible_in_backoffice=True).all()
+            is_visible_in_backoffice=True
+        ).all()
     else:
         admission_projects = AdmissionProject.objects.filter(is_visible_in_backoffice=True)
 
     for admission_project in admission_projects:
         admission_project.adm_rounds = set([r.id for r in admission_project.admission_rounds.all()])
 
+    current_round_project_list = [
+        admission_project
+        for admission_project in admission_projects
+        if admission_round.id in admission_project.adm_rounds
+    ]
+
     major_table = []
 
     round_table = []
     for major in majors:
         row = []
-        for admission_project in admission_projects:
-            if admission_round.id in admission_project.adm_rounds:
-                row.append(False)
+        for admission_project in current_round_project_list:
+            row.append(False)
         round_table.append(row)
 
     j = 0
-    for admission_project in admission_projects:
-        if admission_round.id in admission_project.adm_rounds:
-            cmajor_set = set([cm.cupt_code_id for cm in curriculum_majors
-                              if cm.admission_project_id == admission_project.id])
-            for major, i in zip(majors, range(len(majors))):
-                is_checked = major.id in cmajor_set
-                is_disabled = random.choice([True, False]) if not is_checked else False
-                round_table[i][j] = {"is_checked": is_checked,
-                                     "is_disabled": is_disabled,
-                                     "url": 'url-to-related-interview'}
+    for admission_project in current_round_project_list:
+        cmajor_set = set(
+            [
+                cm.cupt_code_id
+                for cm in curriculum_majors
+                if cm.admission_project_id == admission_project.id
+            ]
+        )
+        for major, i in zip(majors, range(len(majors))):
+            is_checked = major.id in cmajor_set
+            is_disabled = random.choice([True, False]) if not is_checked else False
+            round_table[i][j] = {
+                "is_checked": is_checked,
+                "is_disabled": is_disabled,
+                "url": "url-to-related-interview",
+            }
 
-            j += 1
+        j += 1
+
+    current_round_project_list = [
+        admission_project
+        for admission_project in admission_projects
+        if admission_round.id in admission_project.adm_rounds
+    ]
 
     major_table.extend(list(zip(majors, round_table)))
 
-    return render(request,
-                  'backoffice/interviews/description.html',
-                  {'admission_round': admission_round,
-                   'admission_projects': admission_projects,
-                   'majors': majors,
-                   'faculty': faculty,
-                   'round_major_table': major_table})
+    return render(
+        request,
+        "backoffice/interviews/description.html",
+        {
+            "admission_round": admission_round,
+            "admission_projects": current_round_project_list,
+            "majors": majors,
+            "faculty": faculty,
+            "round_major_table": major_table,
+        },
+    )
