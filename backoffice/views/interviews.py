@@ -30,6 +30,27 @@ def interview_form(request, admission_round_id, faculty_id, description_id):
     for admission_project in admission_projects:
         admission_project.adm_rounds = set([r.id for r in admission_project.admission_rounds.all()])
 
+    selected_admission_project_major_cupt_code_list = (
+        AddmissionProjectMajorCuptCodeInterviewDescription(
+            admission_project__round_id=admission_round_id, major_cupt_code__faculty=faculty_id
+        )
+    )
+
+    map_selected_admission_project_major_cupt_code = dict()
+
+    for (
+        selected_admission_project_major_cupt_code
+    ) in selected_admission_project_major_cupt_code_list:
+        considered_obj_admission_project_id = (
+            selected_admission_project_major_cupt_code.admission_project.id
+        )
+        considered_obj_major_cupt_code_id = (
+            selected_admission_project_major_cupt_code.major_cupt_code.id
+        )
+        map_selected_admission_project_major_cupt_code[
+            (considered_obj_admission_project_id, considered_obj_major_cupt_code_id)
+        ] = selected_admission_project_major_cupt_code_list.interview_description.id
+
     current_round_project_list = [
         admission_project
         for admission_project in admission_projects
