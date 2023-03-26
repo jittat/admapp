@@ -7,48 +7,47 @@ from django.dispatch import receiver
 from appl.models import AdmissionProject, AdmissionRound, ProjectApplication
 from appl.models import Campus, Faculty
 from appl.models import Major, AdmissionResult, ExamScore
+from criteria.models import MajorCuptCode
 from regis.models import Applicant
 
 
 class Profile(models.Model):
     ANY_MAJOR = 0
 
-    user = models.OneToOneField(User,
-                                on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
 
-    faculty = models.ForeignKey(Faculty,
-                                verbose_name='คณะที่สังกัด',
-                                default=None,
-                                null=True,
-                                blank=True,
-                                on_delete=models.SET_NULL)
-    is_campus_admin = models.BooleanField(verbose_name='ดูแลข้อมูลในวิทยาเขต',
-                                          default=False)
-    campus = models.ForeignKey(Campus,
-                               verbose_name='วิทยาเขต',
-                               default=None,
-                               null=True,
-                               blank=True,
-                               on_delete=models.SET_NULL)
-    is_admission_admin = models.BooleanField(verbose_name='ดูแลข้อมูลทุกคณะ',
-                                             default=False)
+    faculty = models.ForeignKey(
+        Faculty,
+        verbose_name="คณะที่สังกัด",
+        default=None,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+    )
+    is_campus_admin = models.BooleanField(verbose_name="ดูแลข้อมูลในวิทยาเขต", default=False)
+    campus = models.ForeignKey(
+        Campus,
+        verbose_name="วิทยาเขต",
+        default=None,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+    )
+    is_admission_admin = models.BooleanField(verbose_name="ดูแลข้อมูลทุกคณะ", default=False)
 
-    admission_projects = models.ManyToManyField(AdmissionProject,
-                                                blank=True)
+    admission_projects = models.ManyToManyField(AdmissionProject, blank=True)
 
-    is_number_adjustment_admin = models.BooleanField(verbose_name='สำหรับปรับจำนวน',
-                                                     default=False)
-    major_number = models.IntegerField(default=ANY_MAJOR,
-                                       verbose_name='หมายเลขสาขา (กรณีที่ดูแลโครงการเดียว)')
-    adjustment_major_number = models.CharField(max_length=20,
-                                               blank=True)
-
+    is_number_adjustment_admin = models.BooleanField(verbose_name="สำหรับปรับจำนวน", default=False)
+    major_number = models.IntegerField(
+        default=ANY_MAJOR, verbose_name="หมายเลขสาขา (กรณีที่ดูแลโครงการเดียว)"
+    )
+    adjustment_major_number = models.CharField(max_length=20, blank=True)
 
     def __str__(self):
         if self.faculty:
-            return self.user.get_full_name() + ' (' + str(self.faculty) + ')'
+            return self.user.get_full_name() + " (" + str(self.faculty) + ")"
         elif self.is_admission_admin:
-            return self.user.get_full_name() + ' (ADMADMIN)'
+            return self.user.get_full_name() + " (ADMADMIN)"
         else:
             return self.user.get_full_name()
 
@@ -59,10 +58,12 @@ class Profile(models.Model):
         except:
             return None
 
+
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
         Profile.objects.create(user=instance)
+
 
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):
@@ -75,98 +76,88 @@ def save_user_profile(sender, instance, **kwargs):
 class CheckMarkGroup(models.Model):
     NUM_CHECK_MARKS = 6
 
-    COLORS = ['text-primary',
-              'text-success',
-              'text-warning',
-              'text-danger',
-              'text-secondary',
-              'text-dark']
+    COLORS = [
+        "text-primary",
+        "text-success",
+        "text-warning",
+        "text-danger",
+        "text-secondary",
+        "text-dark",
+    ]
 
-    applicant = models.ForeignKey(Applicant,
-                                  on_delete=models.CASCADE)
-    project_application = models.OneToOneField(ProjectApplication,
-                                               related_name='check_mark_group',
-                                               on_delete=models.CASCADE)
-    check_marks = models.CharField(default='',
-                                   max_length=20)
-
+    applicant = models.ForeignKey(Applicant, on_delete=models.CASCADE)
+    project_application = models.OneToOneField(
+        ProjectApplication, related_name="check_mark_group", on_delete=models.CASCADE
+    )
+    check_marks = models.CharField(default="", max_length=20)
 
     def is_checked(self, num):
         if len(self.check_marks) >= num:
-            return self.check_marks[num-1] == '1'
+            return self.check_marks[num - 1] == "1"
 
     def init_marks(self):
-        self.check_marks = ''.join(['0' for i in range(self.NUM_CHECK_MARKS)])
+        self.check_marks = "".join(["0" for i in range(self.NUM_CHECK_MARKS)])
 
     def set_check(self, num):
-        self.check_marks = self.check_marks[:(num-1)] + '1' + self.check_marks[num:]
+        self.check_marks = self.check_marks[: (num - 1)] + "1" + self.check_marks[num:]
 
     def set_uncheck(self, num):
-        self.check_marks = self.check_marks[:(num-1)] + '0' + self.check_marks[num:]
+        self.check_marks = self.check_marks[: (num - 1)] + "0" + self.check_marks[num:]
 
     def get_check_mark_list(self):
         marks = []
         for i in range(self.NUM_CHECK_MARKS):
-            marks.append({ 'number': i+1,
-                           'is_checked': self.is_checked(i+1),
-                           'text_color': self.COLORS[i], })
+            marks.append(
+                {
+                    "number": i + 1,
+                    "is_checked": self.is_checked(i + 1),
+                    "text_color": self.COLORS[i],
+                }
+            )
         return marks
 
     def __str__(self):
-        return '{0} - {1}'.format(self.applicant.national_id, self.check_marks)
+        return "{0} - {1}".format(self.applicant.national_id, self.check_marks)
 
 
 class JudgeComment(models.Model):
-    applicant = models.ForeignKey(Applicant,
-                                  on_delete=models.CASCADE)
-    project_application = models.ForeignKey(ProjectApplication,
-                                            related_name='judge_comment_set',
-                                            on_delete=models.CASCADE)
+    applicant = models.ForeignKey(Applicant, on_delete=models.CASCADE)
+    project_application = models.ForeignKey(
+        ProjectApplication, related_name="judge_comment_set", on_delete=models.CASCADE
+    )
 
-    author_username = models.CharField(max_length=30,
-                                       blank=True)
+    author_username = models.CharField(max_length=30, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     body = models.TextField()
 
     is_deleted = models.BooleanField(default=False)
     is_shared_in_major = models.BooleanField(default=False)
-    
-    admission_project = models.ForeignKey(AdmissionProject,
-                                          blank=True,
-                                          null=True,
-                                          default=None,
-                                          on_delete=models.SET_NULL)
-    admission_round = models.ForeignKey(AdmissionRound,
-                                        blank=True,
-                                        null=True,
-                                        default=None,
-                                        on_delete=models.SET_NULL)
-    major = models.ForeignKey(Major,
-                              blank=True,
-                              null=True,
-                              default=None,
-                              on_delete=models.SET_NULL)
-    
+
+    admission_project = models.ForeignKey(
+        AdmissionProject, blank=True, null=True, default=None, on_delete=models.SET_NULL
+    )
+    admission_round = models.ForeignKey(
+        AdmissionRound, blank=True, null=True, default=None, on_delete=models.SET_NULL
+    )
+    major = models.ForeignKey(Major, blank=True, null=True, default=None, on_delete=models.SET_NULL)
+
     class Meta:
-        ordering = ['-created_at']
+        ordering = ["-created_at"]
 
     def report_display(self):
         if self.author_username:
-            return self.body + ' - ' + self.author_username
+            return self.body + " - " + self.author_username
         else:
             return self.body
 
 
 class MajorInterviewCallDecision(models.Model):
     FLOAT_DELTA = 0.000001
-    
-    admission_project = models.ForeignKey(AdmissionProject,
-                                          on_delete=models.CASCADE)
-    admission_round = models.ForeignKey(AdmissionRound,
-                                        on_delete=models.CASCADE)
-    major = models.ForeignKey(Major,
-                              on_delete=models.CASCADE)
+
+    admission_project = models.ForeignKey(AdmissionProject, on_delete=models.CASCADE)
+    admission_round = models.ForeignKey(AdmissionRound, on_delete=models.CASCADE)
+    major = models.ForeignKey(Major, on_delete=models.CASCADE)
 
     interview_call_count = models.IntegerField(default=0)
     interview_call_min_score = models.FloatField(default=0)
@@ -176,15 +167,16 @@ class MajorInterviewCallDecision(models.Model):
 
     class Meta:
         indexes = [
-            models.Index(fields=['major','admission_round']),
-            models.Index(fields=['admission_round','admission_project']),
+            models.Index(fields=["major", "admission_round"]),
+            models.Index(fields=["admission_round", "admission_project"]),
         ]
-        unique_together = (('major','admission_round'),)
-    
+        unique_together = (("major", "admission_round"),)
+
     @staticmethod
     def get_for(major, admission_round):
-        decisions = MajorInterviewCallDecision.objects.filter(major=major,
-                                                              admission_round=admission_round).all()
+        decisions = MajorInterviewCallDecision.objects.filter(
+            major=major, admission_round=admission_round
+        ).all()
         if len(decisions) > 0:
             return decisions[0]
         else:
@@ -192,93 +184,77 @@ class MajorInterviewCallDecision(models.Model):
 
 
 class ApplicantMajorResult(models.Model):
-    admission_project = models.ForeignKey(AdmissionProject,
-                                          on_delete=models.CASCADE)
-    major = models.ForeignKey(Major,
-                              on_delete=models.CASCADE)
-    applicant = models.ForeignKey(Applicant,
-                                  on_delete=models.CASCADE)
-    project_application = models.ForeignKey(ProjectApplication,
-                                            null=True,
-                                            on_delete=models.SET_NULL)
-    admission_result = models.ForeignKey(AdmissionResult,
-                                         null=True,
-                                         on_delete=models.SET_NULL)
-    other_major_numbers = models.CharField(max_length=30,
-                                           blank='',
-                                           default='')
-    other_major_scores = models.CharField(max_length=50,
-                                          blank='',
-                                          default='')
+    admission_project = models.ForeignKey(AdmissionProject, on_delete=models.CASCADE)
+    major = models.ForeignKey(Major, on_delete=models.CASCADE)
+    applicant = models.ForeignKey(Applicant, on_delete=models.CASCADE)
+    project_application = models.ForeignKey(
+        ProjectApplication, null=True, on_delete=models.SET_NULL
+    )
+    admission_result = models.ForeignKey(AdmissionResult, null=True, on_delete=models.SET_NULL)
+    other_major_numbers = models.CharField(max_length=30, blank="", default="")
+    other_major_scores = models.CharField(max_length=50, blank="", default="")
 
     class Meta:
         indexes = [
-            models.Index(fields=['major','admission_project']),
-            models.Index(fields=['applicant']),
-            models.Index(fields=['admission_project','applicant']),
-            models.Index(fields=['major','admission_project','applicant']),
+            models.Index(fields=["major", "admission_project"]),
+            models.Index(fields=["applicant"]),
+            models.Index(fields=["admission_project", "applicant"]),
+            models.Index(fields=["major", "admission_project", "applicant"]),
         ]
-        unique_together = (('major','admission_project','applicant'),)
+        unique_together = (("major", "admission_project", "applicant"),)
 
     def get_other_major_numbers(self):
-        if self.other_major_numbers == '':
+        if self.other_major_numbers == "":
             return []
-        return [int(x) for x in self.other_major_numbers.split(',')]
-        
-    def get_other_major_scores(self):
-        if self.other_major_scores == '':
-            return []
-        return [float(x) for x in self.other_major_scores.split(',')]
-        
-class ApplicantMajorScore(models.Model):
-    admission_project = models.ForeignKey(AdmissionProject,
-                                          on_delete=models.CASCADE)
-    major = models.ForeignKey(Major,
-                              on_delete=models.CASCADE)
-    applicant = models.ForeignKey(Applicant,
-                                  on_delete=models.CASCADE)
+        return [int(x) for x in self.other_major_numbers.split(",")]
 
-    exam_score = models.ForeignKey(ExamScore,
-                                   on_delete=models.CASCADE)
-    
+    def get_other_major_scores(self):
+        if self.other_major_scores == "":
+            return []
+        return [float(x) for x in self.other_major_scores.split(",")]
+
+
+class ApplicantMajorScore(models.Model):
+    admission_project = models.ForeignKey(AdmissionProject, on_delete=models.CASCADE)
+    major = models.ForeignKey(Major, on_delete=models.CASCADE)
+    applicant = models.ForeignKey(Applicant, on_delete=models.CASCADE)
+
+    exam_score = models.ForeignKey(ExamScore, on_delete=models.CASCADE)
+
     class Meta:
         indexes = [
-            models.Index(fields=['major','admission_project']),
-            models.Index(fields=['applicant']),
-            models.Index(fields=['major','admission_project','applicant']),
+            models.Index(fields=["major", "admission_project"]),
+            models.Index(fields=["applicant"]),
+            models.Index(fields=["major", "admission_project", "applicant"]),
         ]
-    
+
+
 class AdjustmentMajor(models.Model):
-    full_code = models.CharField(max_length=20,
-                                 unique=True)
+    full_code = models.CharField(max_length=20, unique=True)
 
     major_code = models.CharField(max_length=20)
     study_type_code = models.CharField(max_length=3)
-    
+
     title = models.CharField(max_length=200)
 
-    faculty = models.ForeignKey(Faculty,
-                                on_delete=models.CASCADE)
+    faculty = models.ForeignKey(Faculty, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.title
-    
-    
+
+
 class AdjustmentMajorSlot(models.Model):
-    adjustment_major = models.ForeignKey(AdjustmentMajor,
-                                         on_delete=models.CASCADE,
-                                         related_name='slots')
-    faculty = models.ForeignKey(Faculty,
-                                on_delete=models.CASCADE)
-    admission_round = models.ForeignKey(AdmissionRound,
-                                        on_delete=models.CASCADE)
+    adjustment_major = models.ForeignKey(
+        AdjustmentMajor, on_delete=models.CASCADE, related_name="slots"
+    )
+    faculty = models.ForeignKey(Faculty, on_delete=models.CASCADE)
+    admission_round = models.ForeignKey(AdmissionRound, on_delete=models.CASCADE)
 
     admission_round_number = models.IntegerField()
 
     major_full_code = models.CharField(max_length=20)
-    cupt_code = models.CharField(max_length=30,
-                                 blank=True)
-    
+    cupt_code = models.CharField(max_length=30, blank=True)
+
     admission_project_title = models.CharField(max_length=200)
 
     original_slots = models.IntegerField()
@@ -291,76 +267,89 @@ class AdjustmentMajorSlot(models.Model):
     is_final = models.BooleanField(default=False)
 
     class Meta:
-        ordering = ['admission_round_number', 'cupt_code']
-    
+        ordering = ["admission_round_number", "cupt_code"]
+
     def __str__(self):
-        return '%s (%s) (%d) %s' % (self.adjustment_major,
-                                    self.admission_project_title,
-                                    self.current_slots,
-                                    self.cupt_code)
+        return "%s (%s) (%d) %s" % (
+            self.adjustment_major,
+            self.admission_project_title,
+            self.current_slots,
+            self.cupt_code,
+        )
 
     def project_code(self):
         return self.cupt_code[:3]
-    
+
     def is_editable(self):
         return (not self.is_frozen) and (not self.is_final) and (not self.is_confirmed_by_faculty)
 
-
     def is_adjusted(self):
         return self.original_slots != self.current_slots
-    
+
     @staticmethod
     def get_adjusted_slots():
-        return [slot for slot in AdjustmentMajorSlot.objects.all()
-                if slot.original_slots != slot.current_slots]
+        return [
+            slot
+            for slot in AdjustmentMajorSlot.objects.all()
+            if slot.original_slots != slot.current_slots
+        ]
 
 
 class InterviewDescription(models.Model):
     OPTION_NO_INTERVIEW = 0
     OPTION_ONLINE_INTERVIEW = 1
     OPTION_OFFLINE_INTERVIEW = 2
-    
-    admission_round = models.ForeignKey(AdmissionRound,
-                                        on_delete=models.CASCADE)
 
-    admission_project = models.ForeignKey(AdmissionProject,
-                                          on_delete=models.CASCADE,
-                                          blank=True,
-                                          null=True)
-    major = models.ForeignKey(Major,
-                              on_delete=models.CASCADE,
-                              blank=True,
-                              null=True)
+    admission_round = models.ForeignKey(AdmissionRound, on_delete=models.CASCADE)
 
-    faculty = models.ForeignKey(Faculty,
-                                on_delete=models.CASCADE)
+    admission_project = models.ForeignKey(
+        AdmissionProject, on_delete=models.CASCADE, blank=True, null=True
+    )
 
-    interview_options = models.IntegerField(verbose_name='ทางเลือกการสัมภาษณ์',
-                                            choices=[
-                                                (OPTION_NO_INTERVIEW, 'ไม่มีการสัมภาษณ์'),
-                                                (OPTION_ONLINE_INTERVIEW, 'สัมภาษณ์ออนไลน์'),
-                                                (OPTION_OFFLINE_INTERVIEW, 'สัมภาษณ์ที่สถานที่'),
-                                            ])
-    
+    faculty = models.ForeignKey(Faculty, on_delete=models.CASCADE)
+
+    interview_options = models.IntegerField(
+        verbose_name="ทางเลือกการสัมภาษณ์",
+        choices=[
+            (OPTION_NO_INTERVIEW, "ไม่มีการสัมภาษณ์"),
+            (OPTION_ONLINE_INTERVIEW, "สัมภาษณ์ออนไลน์"),
+            (OPTION_OFFLINE_INTERVIEW, "สัมภาษณ์ที่สถานที่"),
+        ],
+    )
+
     interview_date = models.DateTimeField(
-        verbose_name='วันและเวลาการสัมภาษณ์', blank=True, null=True)
+        verbose_name="วันและเวลาการสัมภาษณ์", blank=True, null=True
+    )
 
     is_additional_documents_required = models.BooleanField(
-        verbose_name='การส่งเอกสารเพิ่มเติม', default=False)
+        verbose_name="การส่งเอกสารเพิ่มเติม", default=False
+    )
 
-    preparation_descriptions = models.TextField(blank=True,
-                                                verbose_name='รายละเอียดการเตรียมตัว')
-    preparation_image = models.FileField(upload_to='interview_docs',
-                                         blank=True,
-                                         verbose_name='รูปประกอบการเตรียมตัว')
+    preparation_descriptions = models.TextField(blank=True, verbose_name="รายละเอียดการเตรียมตัว")
+    preparation_image = models.FileField(
+        upload_to="interview_docs", blank=True, verbose_name="รูปประกอบการเตรียมตัว"
+    )
 
-    descriptions = models.TextField(blank=True,
-                                    verbose_name='รายละเอียดการสัมภาษณ์')
-    description_image = models.FileField(upload_to='interview_docs',
-                                         blank=True,
-                                         verbose_name='รูปประกอบการเตรียมตัว')
+    descriptions = models.TextField(blank=True, verbose_name="รายละเอียดการสัมภาษณ์")
+    description_image = models.FileField(
+        upload_to="interview_docs", blank=True, verbose_name="รูปประกอบการเตรียมตัว"
+    )
 
-    contacts = models.JSONField(blank=True,
-                                verbose_name='ข้อมูลการติดต่อ')
+    contacts = models.JSONField(blank=True, verbose_name="ข้อมูลการติดต่อ")
 
-    
+
+class AddmissionProjectMajorCuptCodeInterviewDescription(models.Model):
+    admission_project = models.ForeignKey(AdmissionRound, on_delete=models.CASCADE)
+
+    major_cupt_code = models.ForeignKey(MajorCuptCode, on_delete=models.CASCADE)
+
+    interview_description = models.ForeignKey(
+        InterviewDescription,
+        on_delete=models.CASCADE,
+        related_name="admission_prject_major_cupt_code",
+    )
+
+    models.UniqueConstraint(
+        fields=["admission_project", "major_cupt_code"],
+        name="unique_admission_project_major_cupt_code",
+    )
