@@ -94,7 +94,7 @@ def interview_form(request, admission_round_id, faculty_id, description_id):
         "backoffice/interviews/description.html",
         {
             "admission_round": admission_round,
-            "admission_projects": admission_projects,
+            "admission_projects": current_round_project_list,
             "majors": majors,
             "faculty": faculty,
             "round_major_table": major_table,
