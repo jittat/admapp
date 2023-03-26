@@ -240,7 +240,6 @@
         contactPersonFormset.on('click', '.delete-contact-person', function (e) {
             // prevent the default form submission
             e.preventDefault();
-            console.log(e)
             // remove the contact person form from the formset
             $(this).parents('.contact-person-form').remove();
             // decrement the form count and update the total forms input field
