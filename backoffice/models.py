@@ -339,7 +339,7 @@ class InterviewDescription(models.Model):
 
 
 class AddmissionProjectMajorCuptCodeInterviewDescription(models.Model):
-    admission_project = models.ForeignKey(AdmissionRound, on_delete=models.CASCADE)
+    admission_project = models.ForeignKey(AdmissionProject, on_delete=models.CASCADE)
 
     major_cupt_code = models.ForeignKey(MajorCuptCode, on_delete=models.CASCADE)
 
