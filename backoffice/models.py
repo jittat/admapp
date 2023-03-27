@@ -300,12 +300,16 @@ class InterviewDescription(models.Model):
     OPTION_ONLINE_INTERVIEW = 1
     OPTION_OFFLINE_INTERVIEW = 2
 
+
+    # TODO: remove admission_round
     admission_round = models.ForeignKey(AdmissionRound, on_delete=models.CASCADE)
 
+    # TODO: remove admission_project
     admission_project = models.ForeignKey(
         AdmissionProject, on_delete=models.CASCADE, blank=True, null=True
     )
 
+    # TODO: remove faculty
     faculty = models.ForeignKey(Faculty, on_delete=models.CASCADE)
 
     interview_options = models.IntegerField(

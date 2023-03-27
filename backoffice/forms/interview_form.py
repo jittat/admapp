@@ -1,10 +1,10 @@
 from django import forms
+from django.db import transaction
 
 from backoffice.models import (
     InterviewDescription,
     AdmissionProjectMajorCuptCodeInterviewDescription,
 )
-from django.db import transaction
 
 
 class InterviewForm(forms.Form):
@@ -81,6 +81,7 @@ class InterviewDescriptionForm(forms.ModelForm):
     class Meta:
         model = InterviewDescription
         fields = [
+            # TODO: remove the top 3 fields
             "admission_round",
             "admission_project",
             "faculty",
@@ -98,7 +99,7 @@ class InterviewDescriptionForm(forms.ModelForm):
         interview_description = super(InterviewDescriptionForm, self).save(commit=commit)
 
         with transaction.atomic():
-            for project_major in self.project_majors:
+            for project_major in self.cleaned_data["project_majors"]:
                 admission_project_id, major_cupt_code_id = project_major.split("_")[0:2]
                 interview_relation = AdmissionProjectMajorCuptCodeInterviewDescription(
                     admission_project_id=admission_project_id,
@@ -108,3 +109,7 @@ class InterviewDescriptionForm(forms.ModelForm):
                 interview_relation.save()
 
         return interview_description
+
+    def clean_contacts(self):
+        # TODO: recheck this function
+        return []

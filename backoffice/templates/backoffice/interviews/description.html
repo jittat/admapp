@@ -5,11 +5,18 @@
         <h2>
             ข้อมูลการสัมภาษณ์ {{ admission_round}} {{ faculty }}
         </h2>
-        {% if form.errors %}
+        {% if form.errors or contact_person_formset.errors %}
         <div class="alert alert-danger">
             <h4 class="alert-heading">Form Errors:</h4>
             <ul>
                 {% for field_errors in form.errors.values %}
+                {% for error in field_errors %}
+                <li>{{ error }}</li>
+                {% endfor %}
+                {% endfor %}
+            </ul>
+            <ul>
+                {% for field_errors in contact_person_formset.errors.errors.values %}
                 {% for error in field_errors %}
                 <li>{{ error }}</li>
                 {% endfor %}
@@ -23,6 +30,10 @@
             <h3>
                 เลือกโครงการ
             </h3>
+<!--            TODO: remove these 3 fields-->
+            {{form.admission_round}}
+            {{form.admission_project}}
+            {{form.faculty}}
             {% include "backoffice/interviews/curriculum_major_table_form.html" %}
 
             <h4>ข้อมูลทั่วไป</h4>
@@ -31,7 +42,7 @@
                     <label for="{{ form.interview_type.id_for_label }}">รูปแบบการสัมภาษณ์</label>
                 </div>
                 <div class="col-md-9">
-                    {{ form.interview_type }}
+                    {{ form.interview_options }}
                 </div>
             </div>
             <div class="form-row mt-2">
@@ -39,7 +50,7 @@
                     <label for="{{form.additional_doc.id_for_label}}">การส่งเอกสารเพิ่มเติม</label>
                 </div>
                 <div class="col-md-9">
-                    {{form.additional_doc}}
+                    {{form.is_additional_documents_required}}
                 </div>
             </div>
             <div class="form-row mt-2 form-group">
@@ -47,7 +58,7 @@
                     <label for="{{form.datetime.id_for_label}}">วันเวลา</label>
                 </div>
                 <div class="col-md-9">
-                    {{form.datetime}}
+                    {{form.interview_date}}
                 </div>
             </div>
 
@@ -55,7 +66,7 @@
             <div class="form-row">
                 <div class="col-md-12">
                     <label for="{{form.prep_detail.id_for_label}}">รายละเอียดการเตรียมตัว</label>
-                    {{form.prep_detail}}
+                    {{form.preparation_descriptions}}
                 </div>
             </div>
             <div class="form-row mt-2">
@@ -68,7 +79,7 @@
                 <div class="col-md-9">
                     <div class="custom-file">
 
-                        {{form.prep_img}}
+                        {{form.preparation_image}}
                         <label class="custom-file-label" for="{{form.prep_img.id_for_label}}">Choose file</label>
                     </div>
                 </div>
@@ -90,21 +101,21 @@
             </div>
             <div class="form-row">
                 <div class="col-md-12">
-                    {{form.interview_detail.label}}
-                    <small class="text-muted">{{form.interview_detail.help_text}}</small>
-                    {{form.interview_detail}}
+                    {{form.descriptions.label}}
+                    <small class="text-muted">{{form.descriptions.help_text}}</small>
+                    {{form.descriptions}}
                 </div>
             </div>
             <div class="form-row mt-2">
                 <div class="col-md-3">
-                    {{form.interview_img.label}}
-                    <small class="text-muted">{{form.interview_img.help_text}}</small>
+                    {{form.description_image.label}}
+                    <small class="text-muted">{{form.description_image.help_text}}</small>
                     <br>
                     <img class="img-fluid" id="descImgId" alt="interview details">
                 </div>
                 <div class="col-md-9">
                     <div class="custom-file">
-                        {{form.interview_img}}
+                        {{form.description_image}}
                         <label class="custom-file-label" for="{{form.interview_img.id_for_label}}">Choose file</label>
                     </div>
                 </div>

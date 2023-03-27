@@ -1,12 +1,12 @@
-import random
+import json
 
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, get_object_or_404
 from django.utils.datastructures import MultiValueDictKeyError
 
 from appl.models import Faculty, AdmissionProject, AdmissionRound
 from backoffice.decorators import user_login_required
 from backoffice.forms.contact_person_form import ContactPersonFormSet
-from backoffice.forms.interview_form import InterviewForm
+from backoffice.forms.interview_form import InterviewDescriptionForm
 from backoffice.models import AdmissionProjectMajorCuptCodeInterviewDescription
 from criteria.models import MajorCuptCode, CurriculumMajor
 
@@ -104,18 +104,20 @@ def interview_form(request, admission_round_id, faculty_id, description_id):
     major_table.extend(list(zip(majors, round_table)))
 
     if request.method == "POST":
-        form = InterviewForm(request.POST, request.FILES)
+        form = InterviewDescriptionForm(request.POST, request.FILES)
         form.fields["project_majors"].choices = project_majors_choices
         contact_person_formset = ContactPersonFormSet(request.POST, prefix="contact_person")
+
         if form.is_valid() and contact_person_formset.is_valid():
-            print(form.cleaned_data)
-            # do something with form data, such as save to database
+            form.cleaned_data["contacts"] = clean_contacts(contact_person_formset)
+            form.save(commit=True)
             pass
         else:
             # print the errors to the console
             print(form.errors)
+            print(form.errors)
     else:
-        form = InterviewForm()
+        form = InterviewDescriptionForm()
         form.fields["project_majors"].choices = project_majors_choices
         contact_person_formset = ContactPersonFormSet(prefix="contact_person")
 
@@ -132,6 +134,22 @@ def interview_form(request, admission_round_id, faculty_id, description_id):
             "contact_person_formset": contact_person_formset,
         },
     )
+
+
+def clean_contacts(contact_person_formset):
+    """
+    Transform the formset data to a list of dictionaries that can be saved
+    as a JSON field on the model.
+    """
+    contacts = []
+    for form in contact_person_formset:
+        if form.cleaned_data:
+            contacts.append({
+                'name': form.cleaned_data['name'],
+                'tel': form.cleaned_data['tel'],
+                'email': form.cleaned_data['email'],
+            })
+    return json.dumps(contacts)
 
 
 def handle_file(request, name):
