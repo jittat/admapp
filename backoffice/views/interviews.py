@@ -1,21 +1,25 @@
-import json
+import random
 
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.datastructures import MultiValueDictKeyError
 
 from appl.models import Faculty, AdmissionProject, AdmissionRound
 from backoffice.decorators import user_login_required
 from backoffice.forms.contact_person_form import ContactPersonFormSet
-from backoffice.forms.interview_form import InterviewDescriptionForm
-from backoffice.models import AdmissionProjectMajorCuptCodeInterviewDescription
+from backoffice.forms.interview_form import InterviewForm, InterviewDescriptionForm
+from backoffice.models import (
+    InterviewDescription,
+    AdmissionProjectMajorCuptCodeInterviewDescription,
+)
 from criteria.models import MajorCuptCode, CurriculumMajor
 
 
 @user_login_required
 def interview_form(request, admission_round_id, faculty_id, description_id):
-    form_id = None
-    if request.method == "GET" and "form_id" in request.GET:
-        form_id = request.GET["form_id"]
+    interview_description_id = None
+    if request.method == "GET" and "interview_id" in request.GET:
+        interview_description_id = int(request.GET["interview_id"])
+        interview_description = get_object_or_404(InterviewDescription, pk=interview_description_id)
 
     admission_round = get_object_or_404(AdmissionRound, pk=admission_round_id)
     faculty = get_object_or_404(Faculty, pk=faculty_id)
@@ -54,8 +58,8 @@ def interview_form(request, admission_round_id, faculty_id, description_id):
             selected_admission_project_major_cupt_code.major_cupt_code.id
         )
         map_selected_admission_project_major_cupt_code[
-            (considered_obj_admission_project_id, considered_obj_major_cupt_code_id)
-        ] = selected_admission_project_major_cupt_code_list.interview_description.id
+            (considered_obj_major_cupt_code_id, considered_obj_admission_project_id)
+        ] = selected_admission_project_major_cupt_code.interview_description.id
 
     current_round_project_list = [
         admission_project
@@ -83,11 +87,22 @@ def interview_form(request, admission_round_id, faculty_id, description_id):
             ]
         )
         for i, major in enumerate(majors):
-            is_disabled = (
-                (admission_project.id, major.id) in map_selected_admission_project_major_cupt_code
-                and map_selected_admission_project_major_cupt_code[(admission_project.id, major.id)]
-                != form_id
+            is_project_major_has_interview_description = (
+                major.id,
+                admission_project.id,
+            ) in map_selected_admission_project_major_cupt_code
+
+            is_project_major_selected_by_current_form = (
+                is_project_major_has_interview_description
+                and map_selected_admission_project_major_cupt_code[(major.id, admission_project.id)]
+                == interview_description_id
             )
+
+            is_disabled = (
+                is_project_major_has_interview_description
+                and not is_project_major_selected_by_current_form
+            )
+
             project_majors_id = str(major.id) + "_" + str(admission_project.id)
             if not is_disabled:
                 project_majors_choices.append(
@@ -96,6 +111,7 @@ def interview_form(request, admission_round_id, faculty_id, description_id):
             round_table[i][j] = {
                 "id": project_majors_id,
                 "is_disabled": is_disabled,
+                "is_checked": is_project_major_selected_by_current_form,
                 "url": "url-to-related-interview",
             }
 
@@ -104,20 +120,25 @@ def interview_form(request, admission_round_id, faculty_id, description_id):
     major_table.extend(list(zip(majors, round_table)))
 
     if request.method == "POST":
-        form = InterviewDescriptionForm(request.POST, request.FILES)
+        form = InterviewDescriptionForm(request.POST, request.FILES, instance=None)
+        form.admission_round_id = admission_round_id
+        form.faculty_id = faculty_id
         form.fields["project_majors"].choices = project_majors_choices
         contact_person_formset = ContactPersonFormSet(request.POST, prefix="contact_person")
-
         if form.is_valid() and contact_person_formset.is_valid():
-            form.cleaned_data["contacts"] = clean_contacts(contact_person_formset)
-            form.save(commit=True)
+            print(form.cleaned_data)
+            # do something with form data, such as save to database
+
+            form.save()
             pass
         else:
             # print the errors to the console
             print(form.errors)
-            print(form.errors)
     else:
-        form = InterviewDescriptionForm()
+        if interview_description_id is not None:
+            form = InterviewDescriptionForm(instance=interview_description)
+        else:
+            form = InterviewDescriptionForm()
         form.fields["project_majors"].choices = project_majors_choices
         contact_person_formset = ContactPersonFormSet(prefix="contact_person")
 
@@ -134,22 +155,6 @@ def interview_form(request, admission_round_id, faculty_id, description_id):
             "contact_person_formset": contact_person_formset,
         },
     )
-
-
-def clean_contacts(contact_person_formset):
-    """
-    Transform the formset data to a list of dictionaries that can be saved
-    as a JSON field on the model.
-    """
-    contacts = []
-    for form in contact_person_formset:
-        if form.cleaned_data:
-            contacts.append({
-                'name': form.cleaned_data['name'],
-                'tel': form.cleaned_data['tel'],
-                'email': form.cleaned_data['email'],
-            })
-    return json.dumps(contacts)
 
 
 def handle_file(request, name):
