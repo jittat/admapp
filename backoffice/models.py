@@ -300,7 +300,6 @@ class InterviewDescription(models.Model):
     OPTION_ONLINE_INTERVIEW = 1
     OPTION_OFFLINE_INTERVIEW = 2
 
-
     # TODO: remove admission_round
     admission_round = models.ForeignKey(AdmissionRound, on_delete=models.CASCADE)
 
@@ -343,9 +342,13 @@ class InterviewDescription(models.Model):
 
 
 class AdmissionProjectMajorCuptCodeInterviewDescription(models.Model):
-    admission_project = models.ForeignKey(AdmissionProject, on_delete=models.CASCADE)
+    admission_project = models.ForeignKey(
+        AdmissionProject, on_delete=models.CASCADE, db_constraint=False
+    )
 
-    major_cupt_code = models.ForeignKey(MajorCuptCode, on_delete=models.CASCADE)
+    major_cupt_code = models.ForeignKey(
+        MajorCuptCode, on_delete=models.CASCADE, db_constraint=False
+    )
 
     interview_description = models.ForeignKey(
         InterviewDescription,
@@ -353,7 +356,10 @@ class AdmissionProjectMajorCuptCodeInterviewDescription(models.Model):
         related_name="admission_prject_major_cupt_code",
     )
 
-    models.UniqueConstraint(
-        fields=["admission_project", "major_cupt_code"],
-        name="unique_admission_project_major_cupt_code",
-    )
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["admission_project", "major_cupt_code"],
+                name="unique_admission_project_major_cupt_code",
+            )
+        ]
