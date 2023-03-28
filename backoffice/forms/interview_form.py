@@ -96,9 +96,8 @@ class InterviewDescriptionForm(forms.ModelForm):
         ]
 
     def save(self, commit=True):
-        interview_description = super(InterviewDescriptionForm, self).save(commit=commit)
-
         with transaction.atomic():
+            interview_description = super(InterviewDescriptionForm, self).save(commit=commit)
             for project_major in self.cleaned_data["project_majors"]:
                 admission_project_id, major_cupt_code_id = project_major.split("_")[0:2]
                 interview_relation = AdmissionProjectMajorCuptCodeInterviewDescription(
