@@ -2,6 +2,7 @@
 {% block content %}
 <div class="row">
     <div class="col-md-12">
+
         <h2>
             ข้อมูลการสัมภาษณ์ {{ admission_round}} {{ faculty }}
         </h2>
@@ -25,12 +26,12 @@
         </div>
         {% endif %}
 
-        <form method="post" action="{% url 'backoffice:interviews-create' admission_round.id faculty.id %}"
+        <form method="post" id="form" action="{% url 'backoffice:interviews-create' admission_round.id faculty.id %}"
               enctype="multipart/form-data">
             <h3>
                 เลือกโครงการ
             </h3>
-<!--            TODO: remove these 3 fields-->
+            <!--            TODO: remove these 3 fields-->
             {{form.admission_round}}
             {{form.admission_project}}
             {{form.faculty}}
@@ -122,32 +123,6 @@
             </div>
             <h4 class="mt-3">ข้อมูลการติดต่อ</h4>
             <div id="contact-person-root">
-                {% for form in contact_person_formset.forms %}
-                <div class="contact-person-form">
-                    <div class="form-row">
-                        <div class="col-md-4">ชื่อผู้ติดต่อ</div>
-                        <div class="col-md-3">อีเมล</div>
-                        <div class="col-md-3">โทรศัพท์</div>
-                        <div class="col-md-2"></div>
-                    </div>
-                    <div class="form-row">
-                        <div class="col-md-4">
-                            {{form.name}}
-                        </div>
-                        <div class="col-md-3">
-                            {{form.email}}
-                        </div>
-                        <div class="col-md-3">
-                            {{form.tel}}
-                        </div>
-                        <div class="col-md-2">
-                            {% if not forloop.first %}
-                            <button class="btn-sm btn-danger delete-contact-person" type="button">ลบ</button>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-                {% endfor %}
             </div>
             <div class="form-row mt-2">
                 <div class="col-md-12">
@@ -163,10 +138,11 @@
                     <button class="btn btn-danger ml-2">ลบ</button>
                 </div>
             </div>
-            {{ contact_person_formset.management_form }}
+
+            <input name="contacts" id="{{form.contacts.id_for_label}}" type="hidden" value="{{form.contacts.data}}">
             {% csrf_token %}
         </form>
-        <div id="empty-contact-person-form" style="display: none;">
+        <div style="display:none">
             <div class="contact-person-form">
                 <div class="form-row">
                     <div class="col-md-4">ชื่อผู้ติดต่อ</div>
@@ -176,11 +152,11 @@
                 </div>
                 <div class="form-row">
                     <div class="col-md-4">
-                        <input class="form-control" type="text" name="contact_person-__prefix__-name"></div>
+                        <input type="text" name="name" class="form-control"></div>
                     <div class="col-md-3">
-                        <input class="form-control" type="text" name="contact_person-__prefix__-email"></div>
+                        <input type="text" name="email" class="form-control"></div>
                     <div class="col-md-3">
-                        <input class="form-control" type="text" name="contact_person-__prefix__-tel"></div>
+                        <input type="text" name="tel" class="form-control"></div>
                     <div class="col-md-2">
                         <button class="btn-sm btn-danger delete-contact-person" type="button">ลบ</button>
                     </div>
@@ -189,6 +165,7 @@
         </div>
     </div>
 </div>
+
 <script>
  $(function(){
    $('.img-file-controls').change(function(){
@@ -204,62 +181,53 @@
    });
  });
 
- $(function() {
-    $(document).ready(function () {
-        function renumberContactPersonRows() {
-            $('.contact-person-form').each(function(index) {
-                $(this).find(':input').each(function() {
-                    var curId = $(this).attr('id');
-                    if (curId) {
-                        var newId = curId.replace(/\d+/g, index);
-                        $(this).attr('id', newId);
-                    }
-                    var curName = $(this).attr('name');
-                    if (curName) {
-                        var newName = curName.replace(/\d+/g, index);
-                        $(this).attr('name', newName);
-                    }
-                });
-            });
-        }
+let contactsInput = $('#{{form.contacts.id_for_label}}')
+var contacts = JSON.parse(contactsInput[0].value || [{}]);
+for (var i = 0; i < contacts.length; i++) {
+    var contact = contacts[i];
+    var contactForm = $('.contact-person-form').last().clone();
+    contactForm.find('input[name="name"]').val(contact.name);
+    contactForm.find('input[name="email"]').val(contact.email);
+    contactForm.find('input[name="tel"]').val(contact.tel);
+    if(i===0){
+    contactForm.find('.delete-contact-person').remove()
+    }
+    $('#contact-person-root').append(contactForm);
+}
 
-        // get the contact person formset
-        var contactPersonFormset = $('#contact-person-root');
-        // get the add button
-        var addButton = $('#add-contact-person');
-        // get the total forms input field
-        var totalFormsInput = $('#id_contact_person-TOTAL_FORMS');
-        // get the empty contact person form
-        var emptyForm = $('#empty-contact-person-form').html();
+$('#add-contact-person').on('click', function() {
+    var contactForm = $('.contact-person-form').last().clone();
+    contactForm.find('input[name="name"]').val('');
+    contactForm.find('input[name="email"]').val('');
+    contactForm.find('input[name="tel"]').val('');
+    $('#contact-person-root').append(contactForm);
+});
+$(document).on('click', '.delete-contact-person', function() {
+    $(this).closest('.contact-person-form').remove();
+});
 
-        // set the initial form count
-        var formCount = totalFormsInput.val();
+$('#form').on('submit',function(){
+    console.log('before submit')
+    const contacts = [];
 
-        // add the click event handler to the add button
-        addButton.on('click', function (e) {
-            // prevent the default form submission
-            e.preventDefault();
-            // append the empty contact person form to the formset
-            contactPersonFormset.append(emptyForm.replace(/__prefix__/g, formCount));
-            // increment the form count and update the total forms input field
-            formCount++;
-            renumberContactPersonRows()
-            totalFormsInput.val(formCount);
-        });
+  // loop through each contact person form and create an object for it
+  const contactForms = $('.contact-person-form')
+  for (let i = 0; i < contactForms.length-1; i++) {
+    const name = contactForms[i].querySelector('input[name="name"]').value;
+    const tel = contactForms[i].querySelector('input[name="tel"]').value;
+    const email = contactForms[i].querySelector('input[name="email').value;
+    contacts.push({ name, tel, email });
+  }
+    contactsInput.val(JSON.stringify(contacts))
 
-        // add the click event handler to the delete button
-        contactPersonFormset.on('click', '.delete-contact-person', function (e) {
-            // prevent the default form submission
-            e.preventDefault();
-            // remove the contact person form from the formset
-            $(this).parents('.contact-person-form').remove();
-            // decrement the form count and update the total forms input field
-            formCount--;
-            renumberContactPersonRows()
-            totalFormsInput.val(formCount);
-        });
-    });
- });
+    return true
+})
+
+
+
+
+
+
 
 
 
