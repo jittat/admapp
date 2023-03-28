@@ -182,7 +182,7 @@
  });
 
 let contactsInput = $('#{{form.contacts.id_for_label}}')
-var contacts = JSON.parse(contactsInput[0].value || [{}]);
+var contacts = contactsInput[0].value === 'None' ? [{}] : JSON.parse(contactsInput[0].value);
 for (var i = 0; i < contacts.length; i++) {
     var contact = contacts[i];
     var contactForm = $('.contact-person-form').last().clone();
@@ -222,6 +222,8 @@ $('#form').on('submit',function(){
 
     return true
 })
+
+
 
 
 

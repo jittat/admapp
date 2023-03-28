@@ -5,8 +5,7 @@ from django.utils.datastructures import MultiValueDictKeyError
 
 from appl.models import Faculty, AdmissionProject, AdmissionRound
 from backoffice.decorators import user_login_required
-from backoffice.forms.contact_person_form import ContactPersonFormSet
-from backoffice.forms.interview_form import InterviewForm, InterviewDescriptionForm
+from backoffice.forms.interview_form import InterviewDescriptionForm
 from backoffice.models import (
     InterviewDescription,
     AdmissionProjectMajorCuptCodeInterviewDescription,
@@ -124,11 +123,7 @@ def interview_form(request, admission_round_id, faculty_id, description_id):
         form.admission_round_id = admission_round_id
         form.faculty_id = faculty_id
         form.fields["project_majors"].choices = project_majors_choices
-        contact_person_formset = ContactPersonFormSet(request.POST, prefix="contact_person")
-        if form.is_valid() and contact_person_formset.is_valid():
-            print(form.cleaned_data)
-            # do something with form data, such as save to database
-
+        if form.is_valid():
             form.save()
             pass
         else:
@@ -140,7 +135,6 @@ def interview_form(request, admission_round_id, faculty_id, description_id):
         else:
             form = InterviewDescriptionForm()
         form.fields["project_majors"].choices = project_majors_choices
-        contact_person_formset = ContactPersonFormSet(prefix="contact_person")
 
     return render(
         request,
@@ -152,7 +146,6 @@ def interview_form(request, admission_round_id, faculty_id, description_id):
             "faculty": faculty,
             "round_major_table": major_table,
             "form": form,
-            "contact_person_formset": contact_person_formset,
         },
     )
 
