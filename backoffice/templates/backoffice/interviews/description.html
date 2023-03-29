@@ -138,8 +138,7 @@
                     <button class="btn btn-danger ml-2">ลบ</button>
                 </div>
             </div>
-            <input name="interview_description_id" type="hidden" value="{{interview_description_id}}"/>
-            <input name="contacts" id="{{form.contacts.id_for_label}}" type="hidden" value="{{form.contacts.data}}">
+            {{form.contacts}}
             {% csrf_token %}
         </form>
         <div style="display:none">
@@ -222,6 +221,7 @@ $('#form').on('submit',function(){
 
     return true
 })
+
 
 
 
