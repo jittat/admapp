@@ -84,6 +84,10 @@
                         <label class="custom-file-label" for="{{form.prep_img.id_for_label}}">Choose file</label>
                     </div>
                 </div>
+
+                {% if form.instance.preparation_image %}
+                <img src="{{ form.instance.preparation_image.url }}">
+                {% endif %}
             </div>
 
 
@@ -120,6 +124,9 @@
                         <label class="custom-file-label" for="{{form.interview_img.id_for_label}}">Choose file</label>
                     </div>
                 </div>
+                {% if form.instance.description_image %}
+                <img src="{{ form.instance.description_image.url }}">
+                {% endif %}
             </div>
             <h4 class="mt-3">ข้อมูลการติดต่อ</h4>
             <div id="contact-person-root">
