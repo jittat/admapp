@@ -32,6 +32,9 @@ class InterviewDescriptionForm(forms.ModelForm):
             interview_description.admission_round_id = self.admission_round_id
             interview_description.faculty_id = self.faculty_id
             interview_description.save()
+            AdmissionProjectMajorCuptCodeInterviewDescription.objects.filter(
+                interview_description=interview_description
+            ).delete()
             for project_major in self.cleaned_data["project_majors"]:
                 major_cupt_code_id, admission_project_id = project_major.split("_")[0:2]
                 interview_relation = AdmissionProjectMajorCuptCodeInterviewDescription(
@@ -42,4 +45,3 @@ class InterviewDescriptionForm(forms.ModelForm):
                 interview_relation.save()
 
         return interview_description
-

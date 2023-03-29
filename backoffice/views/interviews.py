@@ -2,6 +2,8 @@ import random
 
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.datastructures import MultiValueDictKeyError
+from django.urls import reverse
+
 
 from appl.models import Faculty, AdmissionProject, AdmissionRound
 from backoffice.decorators import user_login_required
@@ -124,8 +126,19 @@ def interview_form(request, admission_round_id, faculty_id, description_id=None)
         form.faculty_id = faculty_id
         form.fields["project_majors"].choices = project_majors_choices
         if form.is_valid():
-            form.save()
-            pass
+            interview_description = form.save()
+
+            return redirect(
+                reverse(
+                    "backoffice:interviews-edit",
+                    kwargs={
+                        "admission_round_id": admission_round_id,
+                        "faculty_id": faculty_id,
+                        "description_id": interview_description.id,
+                    },
+                ),
+            )
+
         else:
             # print the errors to the console
             print(form.errors)
