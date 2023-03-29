@@ -144,7 +144,7 @@ def interview_form(request, admission_round_id, faculty_id, description_id=None)
             print(form.errors)
     else:
         if description_id is not None:
-            form = InterviewDescriptionForm(instance=interview_description)
+            form = InterviewDescriptionForm(None, instance=interview_description)
         else:
             form = InterviewDescriptionForm()
         form.fields["project_majors"].choices = project_majors_choices
