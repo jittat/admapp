@@ -14,11 +14,10 @@ from criteria.models import MajorCuptCode, CurriculumMajor
 
 
 @user_login_required
-def interview_form(request, admission_round_id, faculty_id, description_id):
-    interview_description_id = None
-    if request.method == "GET" and "interview_id" in request.GET:
-        interview_description_id = int(request.GET["interview_id"])
-        interview_description = get_object_or_404(InterviewDescription, pk=interview_description_id)
+def interview_form(request, admission_round_id, faculty_id, description_id=None):
+    interview_description = None
+    if description_id is not None:
+        interview_description = get_object_or_404(InterviewDescription, pk=description_id)
 
     admission_round = get_object_or_404(AdmissionRound, pk=admission_round_id)
     faculty = get_object_or_404(Faculty, pk=faculty_id)
@@ -94,7 +93,7 @@ def interview_form(request, admission_round_id, faculty_id, description_id):
             is_project_major_selected_by_current_form = (
                 is_project_major_has_interview_description
                 and map_selected_admission_project_major_cupt_code[(major.id, admission_project.id)]
-                == interview_description_id
+                == description_id
             )
 
             is_disabled = (
@@ -119,7 +118,8 @@ def interview_form(request, admission_round_id, faculty_id, description_id):
     major_table.extend(list(zip(majors, round_table)))
 
     if request.method == "POST":
-        form = InterviewDescriptionForm(request.POST, request.FILES, instance=None)
+        form = InterviewDescriptionForm(request.POST, request.FILES, instance=interview_description)
+
         form.admission_round_id = admission_round_id
         form.faculty_id = faculty_id
         form.fields["project_majors"].choices = project_majors_choices
@@ -130,7 +130,7 @@ def interview_form(request, admission_round_id, faculty_id, description_id):
             # print the errors to the console
             print(form.errors)
     else:
-        if interview_description_id is not None:
+        if description_id is not None:
             form = InterviewDescriptionForm(instance=interview_description)
         else:
             form = InterviewDescriptionForm()
@@ -140,7 +140,7 @@ def interview_form(request, admission_round_id, faculty_id, description_id):
         request,
         "backoffice/interviews/description.html",
         {
-            "interview_description_id": interview_description_id,
+            "interview_description_id": description_id,
             "admission_round": admission_round,
             "admission_projects": current_round_project_list,
             "majors": majors,
