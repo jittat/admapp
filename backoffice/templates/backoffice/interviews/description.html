@@ -26,7 +26,8 @@
         </div>
         {% endif %}
 
-        <form method="post" id="form" enctype="multipart/form-data">
+        <form method="post" id="form" action="{% url 'backoffice:interviews-create' admission_round.id faculty.id %}"
+              enctype="multipart/form-data">
             <h3>
                 เลือกโครงการ
             </h3>
@@ -221,7 +222,6 @@ $('#form').on('submit',function(){
 
     return true
 })
-
 
 
 

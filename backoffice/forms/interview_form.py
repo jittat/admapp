@@ -15,7 +15,6 @@ class InterviewDescriptionForm(forms.ModelForm):
     class Meta:
         model = InterviewDescription
         fields = [
-            # TODO: remove the top 3 fields
             "interview_options",
             "interview_date",
             "is_additional_documents_required",
@@ -25,6 +24,30 @@ class InterviewDescriptionForm(forms.ModelForm):
             "description_image",
             "contacts",
         ]
+        widgets = {
+            "interview_options": forms.Select(attrs={"class": "form-control"}),
+            "interview_date": forms.DateTimeInput(attrs={"type": "datetime-local", "class": "form-control"}),
+            "is_additional_documents_required": forms.Select(attrs={"class": "form-control"}, choices=[
+                (False, "ไม่มี"),
+                (
+                    True,
+                    "ต้องส่งเอกสารหรือส่งลิงก์เพิ่มเติม (กรุณาแจ้งรายละเอียดในส่วนการสัมภาษณ์ด้วย)",
+                ),
+            ]),
+            "preparation_descriptions": forms.Textarea(attrs={"class": "form-control", "rows": "2"}),
+            "preparation_image": forms.FileInput(
+                attrs={"class": "custom-file-input img-file-controls", "data-img-id": "prepImgId"}
+            ),
+            "descriptions": forms.Textarea(attrs={"class": "form-control", "rows": "3"}),
+            "description_image": forms.FileInput(
+                attrs={"class": "custom-file-input img-file-controls", "data-img-id": "descImgId"}
+            )
+        }
+        help_texts = {
+            "descriptions": 'ป้อนลายละเอียด เช่น ลิงก์สำหรับสัมภาษณ์ รหัสผ่าน',
+            "description_image": 'รูปจะปรากฏด้านขวาของข้อความ',
+            "preparation_image": 'รูปจะปรากฏด้านขวาของข้อความ'
+        }
 
     def save(self):
         with transaction.atomic():
