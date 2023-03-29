@@ -41,7 +41,8 @@ class InterviewDescriptionForm(forms.ModelForm):
             "descriptions": forms.Textarea(attrs={"class": "form-control", "rows": "3"}),
             "description_image": forms.FileInput(
                 attrs={"class": "custom-file-input img-file-controls", "data-img-id": "descImgId"}
-            )
+            ),
+            "contacts": forms.HiddenInput()
         }
         help_texts = {
             "descriptions": 'ป้อนลายละเอียด เช่น ลิงก์สำหรับสัมภาษณ์ รหัสผ่าน',

@@ -26,7 +26,7 @@
         </div>
         {% endif %}
 
-        <form method="post" id="form" action="{% url 'backoffice:interviews-create' admission_round.id faculty.id %}"
+        <form method="post" id="form"
               enctype="multipart/form-data">
             <h3>
                 เลือกโครงการ
@@ -138,8 +138,7 @@
                     <button class="btn btn-danger ml-2">ลบ</button>
                 </div>
             </div>
-            <input name="interview_description_id" type="hidden" value="{{interview_description_id}}"/>
-            <input name="contacts" id="{{form.contacts.id_for_label}}" type="hidden" value="{{form.contacts.data}}">
+            {{form.contacts}}
             {% csrf_token %}
         </form>
         <div style="display:none">
@@ -182,7 +181,7 @@
  });
 
 let contactsInput = $('#{{form.contacts.id_for_label}}')
-var contacts = contactsInput[0].value === 'None' ? [{}] : JSON.parse(contactsInput[0].value);
+var contacts = contactsInput[0].value === 'null' ? [{}] : JSON.parse(contactsInput[0].value);
 for (var i = 0; i < contacts.length; i++) {
     var contact = contacts[i];
     var contactForm = $('.contact-person-form').last().clone();
@@ -222,6 +221,7 @@ $('#form').on('submit',function(){
 
     return true
 })
+
 
 
 
