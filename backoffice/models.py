@@ -338,7 +338,7 @@ class InterviewDescription(models.Model):
         upload_to="interview_docs", blank=True, verbose_name="รูปประกอบการเตรียมตัว"
     )
 
-    contacts = models.JSONField(blank=True, verbose_name="ข้อมูลการติดต่อ")
+    contacts = models.JSONField(blank=True, default=list, verbose_name="ข้อมูลการติดต่อ")
 
 
 class AdmissionProjectMajorCuptCodeInterviewDescription(models.Model):
