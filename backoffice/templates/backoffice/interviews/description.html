@@ -56,7 +56,10 @@
                     รูปประกอบ
                     <small class="text-muted">รูปจะปรากฏด้านขวาของข้อความ</small>
                     <br>
-                    <img class="img-fluid" id="prepImgId" alt="preparation">
+                    <img width="250px" class="img-fluid" id="prepImgId" alt="preparation"
+                         {% if form.instance.preparation_image %}
+                         src="{% url 'backoffice:interviews-image' admission_round_id=admission_round.id faculty_id=faculty.id description_id=interview_description_id type='preparation' %}"
+                         {% endif %}>
                 </div>
                 <div class="col-md-9">
                     <div class="custom-file">
@@ -65,10 +68,6 @@
                         <label class="custom-file-label" for="{{form.prep_img.id_for_label}}">Choose file</label>
                     </div>
                 </div>
-
-                {% if form.instance.preparation_image %}
-                <img src="{{ form.instance.preparation_image.url }}">
-                {% endif %}
             </div>
 
 
@@ -98,18 +97,18 @@
                     {{form.description_image.label}}
                     <small class="text-muted">{{form.description_image.help_text}}</small>
                     <br>
-                    <img class="img-fluid" id="descImgId" alt="interview details">
+                    <img width="250px" class="img-fluid" id="descImgId" alt="interview details"
+                         {% if form.instance.description_image %}
+                         src="{% url 'backoffice:interviews-image' admission_round_id=admission_round.id faculty_id=faculty.id description_id=interview_description_id type='description' %}"
+                         {% endif %}>
                 </div>
                 <div class="col-md-9">
                     <div class="custom-file">
                         {{form.description_image.errors}}
-                        {{form.description_image}}
+
                         <label class="custom-file-label" for="{{form.interview_img.id_for_label}}">Choose file</label>
                     </div>
                 </div>
-                {% if form.instance.description_image %}
-                <img src="{{ form.instance.description_image.url }}">
-                {% endif %}
             </div>
             <h4 class="mt-3">ข้อมูลการติดต่อ</h4>
             <div id="contact-person-root">
@@ -212,6 +211,9 @@ $('#form').on('submit',function(){
 
     return true
 })
+
+
+
 
 
 
