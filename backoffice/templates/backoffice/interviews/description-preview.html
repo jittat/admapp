@@ -55,7 +55,7 @@
                     {{form.preparation_image.label}}
                     <br>
                     {% if form.instance.preparation_image %}
-                    <img src="{{ form.instance.preparation_image.url }}">
+                    <img src="{% url 'backoffice:interviews-image' admission_round_id=admission_round.id faculty_id=faculty.id description_id=interview_description_id type='preparation' %}">
                     {% endif %}
                 </div>
             </div>
@@ -79,7 +79,7 @@
                     {{form.description_image.label}}
                     <br>
                     {% if form.instance.description_image %}
-                    <img src="{{ form.instance.description_image.url }}">
+                    <img src="{% url 'backoffice:interviews-image' admission_round_id=admission_round.id faculty_id=faculty.id description_id=interview_description_id type='description' %}">
                     {% endif %}
                 </div>
             </div>
