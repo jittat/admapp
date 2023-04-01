@@ -27,13 +27,7 @@ class InterviewDescriptionForm(forms.ModelForm):
         widgets = {
             "interview_options": forms.Select(attrs={"class": "form-control"}),
             "interview_date": forms.DateTimeInput(attrs={"type": "datetime-local", "class": "form-control"}),
-            "is_additional_documents_required": forms.Select(attrs={"class": "form-control"}, choices=[
-                (False, "ไม่มี"),
-                (
-                    True,
-                    "ต้องส่งเอกสารหรือส่งลิงก์เพิ่มเติม (กรุณาแจ้งรายละเอียดในส่วนการสัมภาษณ์ด้วย)",
-                ),
-            ]),
+            "is_additional_documents_required": forms.Select(attrs={"class": "form-control"}),
             "preparation_descriptions": forms.Textarea(attrs={"class": "form-control", "rows": "2"}),
             "preparation_image": forms.FileInput(
                 attrs={"class": "custom-file-input img-file-controls", "data-img-id": "prepImgId"}

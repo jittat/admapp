@@ -6,35 +6,12 @@
         <h2>
             ข้อมูลการสัมภาษณ์ {{ admission_round}} {{ faculty }}
         </h2>
-        {% if form.errors or contact_person_formset.errors %}
-        <div class="alert alert-danger">
-            <h4 class="alert-heading">Form Errors:</h4>
-            <ul>
-                {% for field_errors in form.errors.values %}
-                {% for error in field_errors %}
-                <li>{{ error }}</li>
-                {% endfor %}
-                {% endfor %}
-            </ul>
-            <ul>
-                {% for field_errors in contact_person_formset.errors.errors.values %}
-                {% for error in field_errors %}
-                <li>{{ error }}</li>
-                {% endfor %}
-                {% endfor %}
-            </ul>
-        </div>
-        {% endif %}
 
         <form method="post" id="form"
               enctype="multipart/form-data">
             <h3>
                 เลือกโครงการ
             </h3>
-            <!--            TODO: remove these 3 fields-->
-            {{form.admission_round}}
-            {{form.admission_project}}
-            {{form.faculty}}
             {% include "backoffice/interviews/curriculum_major_table_form.html" %}
 
             <h4>ข้อมูลทั่วไป</h4>
@@ -43,6 +20,7 @@
                     <label for="{{ form.interview_type.id_for_label }}">รูปแบบการสัมภาษณ์</label>
                 </div>
                 <div class="col-md-9">
+                    {{ form.interview_options.errors }}
                     {{ form.interview_options }}
                 </div>
             </div>
@@ -51,6 +29,7 @@
                     <label for="{{form.additional_doc.id_for_label}}">การส่งเอกสารเพิ่มเติม</label>
                 </div>
                 <div class="col-md-9">
+                    {{form.is_additional_documents_required.errors}}
                     {{form.is_additional_documents_required}}
                 </div>
             </div>
@@ -59,6 +38,7 @@
                     <label for="{{form.datetime.id_for_label}}">วันเวลา</label>
                 </div>
                 <div class="col-md-9">
+                    {{form.interview_date.errors}}
                     {{form.interview_date}}
                 </div>
             </div>
@@ -67,6 +47,7 @@
             <div class="form-row">
                 <div class="col-md-12">
                     <label for="{{form.prep_detail.id_for_label}}">รายละเอียดการเตรียมตัว</label>
+                    {{form.preparation_descriptions.errors}}
                     {{form.preparation_descriptions}}
                 </div>
             </div>
@@ -79,7 +60,7 @@
                 </div>
                 <div class="col-md-9">
                     <div class="custom-file">
-
+                        {{form.preparation_image.errors}}
                         {{form.preparation_image}}
                         <label class="custom-file-label" for="{{form.prep_img.id_for_label}}">Choose file</label>
                     </div>
@@ -108,6 +89,7 @@
                 <div class="col-md-12">
                     {{form.descriptions.label}}
                     <small class="text-muted">{{form.descriptions.help_text}}</small>
+                    {{form.descriptions.errors}}
                     {{form.descriptions}}
                 </div>
             </div>
@@ -120,6 +102,7 @@
                 </div>
                 <div class="col-md-9">
                     <div class="custom-file">
+                        {{form.description_image.errors}}
                         {{form.description_image}}
                         <label class="custom-file-label" for="{{form.interview_img.id_for_label}}">Choose file</label>
                     </div>
@@ -145,6 +128,7 @@
                     <button class="btn btn-danger ml-2">ลบ</button>
                 </div>
             </div>
+            {{form.contacts.errors}}
             {{form.contacts}}
             {% csrf_token %}
         </form>

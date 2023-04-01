@@ -325,7 +325,13 @@ class InterviewDescription(models.Model):
     )
 
     is_additional_documents_required = models.BooleanField(
-        verbose_name="การส่งเอกสารเพิ่มเติม", default=False
+        verbose_name="การส่งเอกสารเพิ่มเติม", default=False,
+        choices=[
+            (False, "ไม่มี"),
+            (
+                True,
+                "ต้องส่งเอกสารหรือส่งลิงก์เพิ่มเติม (กรุณาแจ้งรายละเอียดในส่วนการสัมภาษณ์ด้วย)",
+            )]
     )
 
     preparation_descriptions = models.TextField(blank=True, verbose_name="รายละเอียดการเตรียมตัว")
@@ -335,7 +341,7 @@ class InterviewDescription(models.Model):
 
     descriptions = models.TextField(blank=True, verbose_name="รายละเอียดการสัมภาษณ์")
     description_image = models.FileField(
-        upload_to="interview_docs", blank=True, verbose_name="รูปประกอบการเตรียมตัว"
+        upload_to="interview_docs", blank=True, verbose_name="รูปประกอบการสัมภาษณ์"
     )
 
     contacts = models.JSONField(blank=True, default=list, verbose_name="ข้อมูลการติดต่อ")

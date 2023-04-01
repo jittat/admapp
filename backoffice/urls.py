@@ -146,4 +146,9 @@ urlpatterns = [
         interviews.interview_form,
         name="interviews-edit",
     ),
+    path(
+        "interviews/<admission_round_id>/<faculty_id>/<int:description_id>/preview",
+        interviews.interview_form_preview,
+        name="interviews-preview",
+    ),
 ]
