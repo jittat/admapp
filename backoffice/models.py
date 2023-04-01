@@ -294,6 +294,15 @@ class AdjustmentMajorSlot(models.Model):
             if slot.original_slots != slot.current_slots
         ]
 
+def interview_preparation_image_path(instance, filename):
+    return ('documents/interview_description_{0}/preparation/{1}'
+            .format(instance.id,
+                    filename))
+
+def interview_description_image_path(instance, filename):
+    return ('documents/interview_description_{0}/description/{1}'
+            .format(instance.id,
+                    filename))
 
 class InterviewDescription(models.Model):
     OPTION_NO_INTERVIEW = 0
@@ -330,12 +339,12 @@ class InterviewDescription(models.Model):
 
     preparation_descriptions = models.TextField(blank=True, verbose_name="รายละเอียดการเตรียมตัว")
     preparation_image = models.FileField(
-        upload_to="interview_docs", blank=True, verbose_name="รูปประกอบการเตรียมตัว"
+        upload_to=interview_preparation_image_path, blank=True, verbose_name="รูปประกอบการเตรียมตัว"
     )
 
     descriptions = models.TextField(blank=True, verbose_name="รายละเอียดการสัมภาษณ์")
     description_image = models.FileField(
-        upload_to="interview_docs", blank=True, verbose_name="รูปประกอบการเตรียมตัว"
+        upload_to=interview_description_image_path, blank=True, verbose_name="รูปประกอบการเตรียมตัว"
     )
 
     contacts = models.JSONField(blank=True, default=list, verbose_name="ข้อมูลการติดต่อ")
