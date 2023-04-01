@@ -16,6 +16,7 @@ class InterviewDescriptionForm(forms.ModelForm):
         model = InterviewDescription
         fields = [
             "interview_options",
+            "video_conference_platform",
             "interview_date",
             "is_additional_documents_required",
             "preparation_descriptions",

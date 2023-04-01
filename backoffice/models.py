@@ -328,6 +328,10 @@ class InterviewDescription(models.Model):
         ],
     )
 
+    video_conference_platform = models.TextField(
+        blank=True, verbose_name="ช่องทางการสัมภาษณ์ออนไลน์"
+    )
+
     interview_date = models.DateTimeField(
         verbose_name="วันและเวลาการสัมภาษณ์", blank=True, null=True
     )
