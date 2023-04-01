@@ -26,9 +26,13 @@ class InterviewDescriptionForm(forms.ModelForm):
         ]
         widgets = {
             "interview_options": forms.Select(attrs={"class": "form-control"}),
-            "interview_date": forms.DateTimeInput(attrs={"type": "datetime-local", "class": "form-control"}),
+            "interview_date": forms.DateTimeInput(
+                attrs={"type": "datetime-local", "class": "form-control"}
+            ),
             "is_additional_documents_required": forms.Select(attrs={"class": "form-control"}),
-            "preparation_descriptions": forms.Textarea(attrs={"class": "form-control", "rows": "2"}),
+            "preparation_descriptions": forms.Textarea(
+                attrs={"class": "form-control", "rows": "2"}
+            ),
             "preparation_image": forms.FileInput(
                 attrs={"class": "custom-file-input img-file-controls", "data-img-id": "prepImgId"}
             ),
@@ -36,30 +40,31 @@ class InterviewDescriptionForm(forms.ModelForm):
             "description_image": forms.FileInput(
                 attrs={"class": "custom-file-input img-file-controls", "data-img-id": "descImgId"}
             ),
-            "contacts": forms.HiddenInput()
+            "contacts": forms.HiddenInput(),
         }
         help_texts = {
-            "descriptions": 'ป้อนลายละเอียด เช่น ลิงก์สำหรับสัมภาษณ์ รหัสผ่าน',
-            "description_image": 'รูปจะปรากฏด้านขวาของข้อความ',
-            "preparation_image": 'รูปจะปรากฏด้านขวาของข้อความ'
+            "descriptions": "ป้อนลายละเอียด เช่น ลิงก์สำหรับสัมภาษณ์ รหัสผ่าน",
+            "description_image": "รูปจะปรากฏด้านขวาของข้อความ",
+            "preparation_image": "รูปจะปรากฏด้านขวาของข้อความ",
         }
 
-    def save(self):
+    def save(self, commit=True):
         with transaction.atomic():
             interview_description = super(InterviewDescriptionForm, self).save(commit=False)
             interview_description.admission_round_id = self.admission_round_id
             interview_description.faculty_id = self.faculty_id
-            interview_description.save()
-            AdmissionProjectMajorCuptCodeInterviewDescription.objects.filter(
-                interview_description=interview_description
-            ).delete()
-            for project_major in self.cleaned_data["project_majors"]:
-                major_cupt_code_id, admission_project_id = project_major.split("_")[0:2]
-                interview_relation = AdmissionProjectMajorCuptCodeInterviewDescription(
-                    admission_project_id=admission_project_id,
-                    major_cupt_code_id=major_cupt_code_id,
-                    interview_description=interview_description,
-                )
-                interview_relation.save()
+            interview_description.save(commit=commit)
+            if commit:
+                AdmissionProjectMajorCuptCodeInterviewDescription.objects.filter(
+                    interview_description=interview_description
+                ).delete()
+                for project_major in self.cleaned_data["project_majors"]:
+                    major_cupt_code_id, admission_project_id = project_major.split("_")[0:2]
+                    interview_relation = AdmissionProjectMajorCuptCodeInterviewDescription(
+                        admission_project_id=admission_project_id,
+                        major_cupt_code_id=major_cupt_code_id,
+                        interview_description=interview_description,
+                    )
+                    interview_relation.save()
 
         return interview_description
