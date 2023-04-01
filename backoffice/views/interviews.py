@@ -3,6 +3,7 @@ import random
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.datastructures import MultiValueDictKeyError
 from django.urls import reverse
+from django.http import Http404, HttpResponse
 
 
 from appl.models import Faculty, AdmissionProject, AdmissionRound
@@ -13,6 +14,24 @@ from backoffice.models import (
     AdmissionProjectMajorCuptCodeInterviewDescription,
 )
 from criteria.models import MajorCuptCode, CurriculumMajor
+
+
+@user_login_required
+def interview_image(request, admission_round_id, faculty_id, description_id, type):
+    interview_description = get_object_or_404(InterviewDescription, pk=description_id)
+
+    if type == "description":
+        file_model = interview_description.description_image
+    elif type == "preparation":
+        file_model = interview_description.preparation_image
+    else:
+        raise Http404()
+
+    try:
+        with file_model.open("rb") as file:
+            return HttpResponse(file, content_type="image/png")
+    except ValueError:
+        raise Http404()
 
 
 @user_login_required
