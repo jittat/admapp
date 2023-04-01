@@ -8,6 +8,7 @@
         {% endfor %}
     </tr>
     </thead>
+    {{form.project_majors.errors}}
     {% for m, cols in round_major_table %}
     <tr>
         <td>{{ forloop.counter }}</td>
