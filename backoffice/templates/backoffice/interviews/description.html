@@ -145,16 +145,14 @@
             <div class="col-md-3">
                 รูปแบบการสัมภาษณ์
             </div>
-            <div class="col-md-9">
-                {{ form.instance.get_interview_options_display }}
+            <div class="col-md-9" id="preview-interview_options">
+
             </div>
         </div>
         <div class="form-row mt-2">
-            <div class="col-md-3">
-                <label for="{{form.additional_doc.id_for_label}}">การส่งเอกสารเพิ่มเติม</label>
+            <div class="col-md-3">การส่งเอกสารเพิ่มเติม
             </div>
-            <div class="col-md-9">
-                {{form.instance.get_is_additional_documents_required_display}}
+            <div class="col-md-9" id="preview-is_additional_documents_required">
             </div>
         </div>
         <div class="form-row mt-2 form-group">
@@ -315,12 +313,24 @@
       $('#preview-projects').append('<li>' + title + '</li>');
     }
   }
-
+  function previewInterviewOptions(formData) {
+    const selectElem = document.querySelector("#id_interview_options")
+    const selectedIndex = selectElem.selectedIndex
+    const title = selectElem.options[selectedIndex].text
+    document.querySelector("#preview-interview_options").textContent = title
+  }
+  function previewAdditionalDoc(formData) {
+    const selectElem = document.querySelector("#id_is_additional_documents_required")
+    const selectedIndex = selectElem.selectedIndex
+    const title = selectElem.options[selectedIndex].text
+    document.querySelector("#preview-is_additional_documents_required").textContent = title
+  }
   function previewForm() {
-    let form = document.getElementById("form");
-    const formData = new FormData(form);
-
-    previewProjectMajors(formData);
+    const form = document.getElementById("form");
+    const formData = new FormData(form)
+    previewProjectMajors(formData)
+    previewInterviewOptions(formData)
+    previewAdditionalDoc(formData)
   }
 
 </script>
