@@ -16,7 +16,7 @@
         {% for item in cols %}
         <td class="text-center" title="{% if item.is_disabled %}มีข้อมูลแล้ว{% endif %}">
             {% if not item.is_disabled %}
-            <input type="checkbox" name="project_majors" value="{{item.id}}"
+            <input type="checkbox" name="project_majors" value="{{item.id}}" title="{{item.admission_project_name}} - {{item.major_title}}"
                    {% if item.is_checked %}checked{% endif %}
                    {% if item.is_disabled %}disabled{% endif %}>
             {% endif %}

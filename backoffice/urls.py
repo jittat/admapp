@@ -156,9 +156,4 @@ urlpatterns = [
         interviews.interview_image,
         name="interviews-image",
     ),
-    path(
-        "interviews/<admission_round_id>/<faculty_id>/<int:description_id>/preview",
-        interviews.interview_form_preview,
-        name="interviews-preview",
-    ),
 ]

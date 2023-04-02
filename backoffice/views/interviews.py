@@ -121,15 +121,15 @@ def interview_form(request, admission_round_id, faculty_id, description_id=None)
             project_majors_id = str(major.id) + "_" + str(admission_project.id)
             if not is_disabled:
                 project_majors_choices.append(
-                    (project_majors_id, major.title + "_" + str(admission_project.id))
+                    (project_majors_id, str(major) + "_" + str(admission_project))
                 )
             round_table[i][j] = {
                 "id": project_majors_id,
                 "is_disabled": is_disabled,
                 "is_checked": is_project_major_selected_by_current_form,
-                "admission_project_name": admission_project.title,
+                "admission_project_name": admission_project,
                 "admission_project_id": admission_project.pk,
-                "major_title": major.display_title(),
+                "major_title": major,
                 "major_id": major.pk,
                 "url": "url-to-related-interview",
             }
@@ -282,88 +282,3 @@ def interview_description_list(request, admission_round_id, faculty_id):
         },
     )
 
-
-@user_login_required
-def interview_form_preview(request, admission_round_id, faculty_id, description_id=None):
-    interview_description = None
-    if description_id is not None:
-        interview_description = get_object_or_404(InterviewDescription, pk=description_id)
-
-    admission_round = get_object_or_404(AdmissionRound, pk=admission_round_id)
-    faculty = get_object_or_404(Faculty, pk=faculty_id)
-
-    user = request.user
-
-    majors = MajorCuptCode.objects.filter(faculty=faculty_id)
-    curriculum_majors = CurriculumMajor.objects.filter(faculty=faculty).all()
-
-    if not user.profile.is_admission_admin:
-        admission_projects = user.profile.admission_projects.filter(
-            is_visible_in_backoffice=True
-        ).all()
-    else:
-        admission_projects = AdmissionProject.objects.filter(is_visible_in_backoffice=True)
-
-    for admission_project in admission_projects:
-        admission_project.adm_rounds = set([r.id for r in admission_project.admission_rounds.all()])
-
-    selected_project_major_objs = AdmissionProjectMajorCuptCodeInterviewDescription.objects.filter(
-        description_id=description_id
-    )
-
-    selected_project_major_data_list = [
-        {
-            "admission_project_titles": [obj.admission_project.title],
-            "majors": [obj.major_cupt_code.display_title()],
-        }
-        for obj in selected_project_major_objs
-    ]
-
-    current_round_project_list = [
-        admission_project
-        for admission_project in admission_projects
-        if admission_round.id in admission_project.adm_rounds
-    ]
-
-    if request.method == "POST":
-        form = InterviewDescriptionForm(request.POST, request.FILES, instance=interview_description)
-
-        form.admission_round_id = admission_round_id
-        form.faculty_id = faculty_id
-        if form.is_valid():
-            # interview_description = form.save()
-
-            return redirect(
-                reverse(
-                    "backoffice:interviews-edit",
-                    kwargs={
-                        "admission_round_id": admission_round_id,
-                        "faculty_id": faculty_id,
-                        "description_id": interview_description.id,
-                    },
-                ),
-            )
-
-        else:
-            # print the errors to the console
-            print(form.errors)
-    else:
-        if description_id is not None:
-            form = InterviewDescriptionForm(None, instance=interview_description)
-        else:
-            form = InterviewDescriptionForm()
-
-    return render(
-        request,
-        "backoffice/interviews/description-preview.html",
-        {
-            "interview_description_id": description_id,
-            "admission_round": admission_round,
-            "admission_projects": current_round_project_list,
-            "majors": majors,
-            "faculty": faculty,
-            "selected_project_majors": selected_project_major_data_list,
-            "form": form,
-            "contacts": interview_description.contacts,
-        },
-    )
