@@ -127,6 +127,10 @@ def interview_form(request, admission_round_id, faculty_id, description_id=None)
                 "id": project_majors_id,
                 "is_disabled": is_disabled,
                 "is_checked": is_project_major_selected_by_current_form,
+                "admission_project_name": admission_project.title,
+                "admission_project_id": admission_project.pk,
+                "major_title": major.display_title(),
+                "major_id": major.pk,
                 "url": "url-to-related-interview",
             }
 
