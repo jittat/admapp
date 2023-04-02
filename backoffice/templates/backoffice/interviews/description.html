@@ -77,7 +77,7 @@
                     สัมภาษณ์ผ่านทางโปรแกรม
                 </div>
                 <div class="col-md-9">
-                    {% for radio in form.apptype %}
+                    {% for radio in form.video_conference_platform %}
                     <div class="form-check form-check-inline">
                         {{ radio }}
                     </div>
@@ -213,19 +213,15 @@ $('#form').on('submit',function(){
 })
 
 
+// Show the other text input field when the "other" radio button is clicked
+$('#id_video_conference_platform_3').click(function() {
+    $('#other_meeting_type').show()
+})
 
-
-
-
-
-
-
-
-
-
-
-
-
+// Hide the other text input field when any other radio button is clicked
+$('input[name="video_conference_platform"]').not('#id_video_conference_platform_3').click(function() {
+    $('#other_meeting_type').hide()
+})
 
 </script>
 {% endblock %}

@@ -42,6 +42,12 @@ class InterviewDescriptionForm(forms.ModelForm):
                 attrs={"class": "custom-file-input img-file-controls", "data-img-id": "descImgId"}
             ),
             "contacts": forms.HiddenInput(),
+            "video_conference_platform": forms.RadioSelect(choices=[
+                ("webex", "Cisco Webex"),
+                ("zoom", "Zoom"),
+                ("google-meet", "Google Meet"),
+                ("other", "โปรแกรมอื่น (กรุณาระบุในรายละเอียด)"),
+            ])
         }
         help_texts = {
             "descriptions": "ป้อนลายละเอียด เช่น ลิงก์สำหรับสัมภาษณ์ รหัสผ่าน",
@@ -54,8 +60,9 @@ class InterviewDescriptionForm(forms.ModelForm):
             interview_description = super(InterviewDescriptionForm, self).save(commit=False)
             interview_description.admission_round_id = self.admission_round_id
             interview_description.faculty_id = self.faculty_id
-            interview_description.save(commit=commit)
+        
             if commit:
+                interview_description.save()
                 AdmissionProjectMajorCuptCodeInterviewDescription.objects.filter(
                     interview_description=interview_description
                 ).delete()
