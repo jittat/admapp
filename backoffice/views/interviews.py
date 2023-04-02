@@ -180,6 +180,106 @@ def interview_form(request, admission_round_id, faculty_id, description_id=None)
 
 
 @user_login_required
+def interview_description_list(request, admission_round_id, faculty_id):
+
+    admission_round = get_object_or_404(AdmissionRound, pk=admission_round_id)
+    faculty = get_object_or_404(Faculty, pk=faculty_id)
+
+    interview_descriptions = InterviewDescription.objects.filter(
+        admission_round_id=admission_round_id, faculty_id=faculty_id
+    )
+
+    major_project_map = dict()
+    interview_description_data = list()
+
+    for description in interview_descriptions:
+        selected_project_major_objs = (
+            AdmissionProjectMajorCuptCodeInterviewDescription.objects.filter(
+                description_id=description.pk
+            )
+        )
+
+        for obj in selected_project_major_objs:
+            project_majr_key = f"{obj.major_cupt_code.pk}_{obj.admission_project.pk}"
+
+            major_project_map[project_majr_key] = description.pk
+
+        selected_project_major_data_list = [
+            {
+                "admission_project_id": obj.admission_project.pk,
+                "major_cupt_code_id": obj.major_cupt_code.pk,
+                "admission_project_titles": [obj.admission_project.title],
+                "majors": [obj.major_cupt_code.display_title()],
+            }
+            for obj in selected_project_major_objs
+        ]
+
+        description_data = {
+            "description_id": description.pk,
+            "selected_project_major": selected_project_major_data_list,
+        }
+
+        interview_description_data.append(description_data)
+
+    user = request.user
+    majors = MajorCuptCode.objects.filter(faculty=faculty_id)
+
+    if not user.profile.is_admission_admin:
+        admission_projects = user.profile.admission_projects.filter(
+            is_visible_in_backoffice=True
+        ).all()
+    else:
+        admission_projects = AdmissionProject.objects.filter(is_visible_in_backoffice=True)
+
+    for admission_project in admission_projects:
+        admission_project.adm_rounds = set([r.id for r in admission_project.admission_rounds.all()])
+
+    current_round_project_list = [
+        admission_project
+        for admission_project in admission_projects
+        if admission_round.id in admission_project.adm_rounds
+    ]
+
+    major_table = []
+    round_table = []
+    for major in majors:
+        row = []
+        for admission_project in current_round_project_list:
+            row.append(False)
+        round_table.append(row)
+
+    for j, admission_project in enumerate(current_round_project_list):
+        for i, major in enumerate(majors):
+
+            project_majors_id = f"{major.id}_{admission_project.id}"
+
+            selected_description = major_project_map.get(project_majors_id, None)
+
+            round_table[i][j] = {
+                "admission_project_id": admission_project.id,
+                "major_id": major.id,
+                "project_majors_id": project_majors_id,
+                "interview_description_id": selected_description,
+            }
+
+    major_table.extend(list(zip(majors, round_table)))
+
+    return render(
+        request,
+        "backoffice/interviews/description.html",
+        {
+            "admission_round": admission_round,
+            "admission_projects": current_round_project_list,
+            "majors": majors,
+            "faculty": faculty,
+            "round_major_table": major_table,
+            "interview_description_data": interview_description_data,
+            "major_project_map": major_project_map,
+        },
+    )
+
+
+@user_login_required
 def interview_form_preview(request, admission_round_id, faculty_id, description_id=None):
     interview_description = None
     if description_id is not None:
