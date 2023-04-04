@@ -65,7 +65,7 @@
                     <div class="custom-file">
                         {{form.preparation_image.errors}}
                         {{form.preparation_image}}
-                        <label class="custom-file-label" for="{{form.prep_img.id_for_label}}">Choose file</label>
+                        <label class="custom-file-label" for="{{form.preparation_image.id_for_label}}">Choose file</label>
                     </div>
                 </div>
             </div>
@@ -105,8 +105,8 @@
                 <div class="col-md-9">
                     <div class="custom-file">
                         {{form.description_image.errors}}
-
-                        <label class="custom-file-label" for="{{form.interview_img.id_for_label}}">Choose file</label>
+                        {{form.description_image}}
+                        <label class="custom-file-label" for="{{form.description_image.id_for_label}}">Choose file</label>
                     </div>
                 </div>
             </div>
@@ -134,7 +134,7 @@
             {% csrf_token %}
         </form>
         <!--        Preview -->
-        <div style="display:none" id="preview-root"class="card">
+        <div style="display:none" id="preview-root" class="card">
             <div class="card-body">
             <h2 class="card-title">ตัวอย่าง: </h2>
             <p class="card-subtitle mb-4">คลิกดูตัวอย่างอีกครั้งเมื่ออัปเดตข้อมูลแล้ว เพื่ออัปเดตตัวอย่าง</p>
@@ -237,7 +237,14 @@
         </div>
     </div>
 </div>
-
+<style>
+    img.img-fluid {
+    display:none;
+    }
+    img.img-fluid[src] {
+        display: block;
+    }
+</style>
 <script>
   $(function () {
     $('.img-file-controls').change(function () {
