@@ -261,7 +261,8 @@
   });
 
   let contactsInput = $('#{{form.contacts.id_for_label}}')
-  const contacts = contactsInput[0].value === 'null' ? [{}] : JSON.parse(contactsInput[0].value);
+  const contacts = contactsInput[0].value === '[]' ? [{}] : JSON.parse(contactsInput[0].value);
+  console.log(contacts, contactsInput[0].value)
   for (let i = 0; i < contacts.length; i++) {
     const contact = contacts[i];
     const contactForm = $('.contact-person-form').last().clone();
