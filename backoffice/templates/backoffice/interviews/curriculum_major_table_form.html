@@ -8,6 +8,7 @@
         {% endfor %}
     </tr>
     </thead>
+    {{form.project_majors.errors}}
     {% for m, cols in round_major_table %}
     <tr>
         <td>{{ forloop.counter }}</td>
@@ -15,8 +16,8 @@
         {% for item in cols %}
         <td class="text-center" title="{% if item.is_disabled %}มีข้อมูลแล้ว{% endif %}">
             {% if not item.is_disabled %}
-            <input type="checkbox" name="project_majors" value="{{item.id}}"
-                   {% if item.id in form.project_majors.data%}checked{% endif %}
+            <input type="checkbox" name="project_majors" value="{{item.id}}" title="{{item.admission_project_name}} - {{item.major_title}}"
+                   {% if item.is_checked %}checked{% endif %}
                    {% if item.is_disabled %}disabled{% endif %}>
             {% endif %}
         </td>

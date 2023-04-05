@@ -295,17 +295,28 @@ class AdjustmentMajorSlot(models.Model):
         ]
 
 
+def interview_preparation_image_path(instance, filename):
+    return "documents/interview_description_{0}/preparation/{1}".format(instance.id, filename)
+
+
+def interview_description_image_path(instance, filename):
+    return "documents/interview_description_{0}/description/{1}".format(instance.id, filename)
+
+
 class InterviewDescription(models.Model):
     OPTION_NO_INTERVIEW = 0
     OPTION_ONLINE_INTERVIEW = 1
     OPTION_OFFLINE_INTERVIEW = 2
 
+    # TODO: remove admission_round
     admission_round = models.ForeignKey(AdmissionRound, on_delete=models.CASCADE)
 
+    # TODO: remove admission_project
     admission_project = models.ForeignKey(
         AdmissionProject, on_delete=models.CASCADE, blank=True, null=True
     )
 
+    # TODO: remove faculty
     faculty = models.ForeignKey(Faculty, on_delete=models.CASCADE)
 
     interview_options = models.IntegerField(
@@ -317,31 +328,47 @@ class InterviewDescription(models.Model):
         ],
     )
 
+    video_conference_platform = models.TextField(
+        blank=True, verbose_name="ช่องทางการสัมภาษณ์ออนไลน์"
+    )
+
     interview_date = models.DateTimeField(
         verbose_name="วันและเวลาการสัมภาษณ์", blank=True, null=True
     )
 
     is_additional_documents_required = models.BooleanField(
-        verbose_name="การส่งเอกสารเพิ่มเติม", default=False
+        verbose_name="การส่งเอกสารเพิ่มเติม",
+        default=False,
+        choices=[
+            (False, "ไม่มี"),
+            (
+                True,
+                "ต้องส่งเอกสารหรือส่งลิงก์เพิ่มเติม (กรุณาแจ้งรายละเอียดในส่วนการสัมภาษณ์ด้วย)",
+            ),
+        ],
     )
 
     preparation_descriptions = models.TextField(blank=True, verbose_name="รายละเอียดการเตรียมตัว")
     preparation_image = models.FileField(
-        upload_to="interview_docs", blank=True, verbose_name="รูปประกอบการเตรียมตัว"
+        upload_to=interview_preparation_image_path, blank=True, verbose_name="รูปประกอบการเตรียมตัว"
     )
 
     descriptions = models.TextField(blank=True, verbose_name="รายละเอียดการสัมภาษณ์")
     description_image = models.FileField(
-        upload_to="interview_docs", blank=True, verbose_name="รูปประกอบการเตรียมตัว"
+        upload_to=interview_description_image_path, blank=True, verbose_name="รูปประกอบการสัมภาษณ์"
     )
 
-    contacts = models.JSONField(blank=True, verbose_name="ข้อมูลการติดต่อ")
+    contacts = models.JSONField(blank=True, default=list, verbose_name="ข้อมูลการติดต่อ")
 
 
 class AdmissionProjectMajorCuptCodeInterviewDescription(models.Model):
-    admission_project = models.ForeignKey(AdmissionProject, on_delete=models.CASCADE)
+    admission_project = models.ForeignKey(
+        AdmissionProject, on_delete=models.CASCADE, db_constraint=False
+    )
 
-    major_cupt_code = models.ForeignKey(MajorCuptCode, on_delete=models.CASCADE)
+    major_cupt_code = models.ForeignKey(
+        MajorCuptCode, on_delete=models.CASCADE, db_constraint=False
+    )
 
     interview_description = models.ForeignKey(
         InterviewDescription,
@@ -349,7 +376,10 @@ class AdmissionProjectMajorCuptCodeInterviewDescription(models.Model):
         related_name="admission_prject_major_cupt_code",
     )
 
-    models.UniqueConstraint(
-        fields=["admission_project", "major_cupt_code"],
-        name="unique_admission_project_major_cupt_code",
-    )
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["admission_project", "major_cupt_code"],
+                name="unique_admission_project_major_cupt_code",
+            )
+        ]

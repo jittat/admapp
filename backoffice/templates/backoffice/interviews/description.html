@@ -2,23 +2,12 @@
 {% block content %}
 <div class="row">
     <div class="col-md-12">
+
         <h2>
             ข้อมูลการสัมภาษณ์ {{ admission_round}} {{ faculty }}
         </h2>
-        {% if form.errors %}
-        <div class="alert alert-danger">
-            <h4 class="alert-heading">Form Errors:</h4>
-            <ul>
-                {% for field_errors in form.errors.values %}
-                {% for error in field_errors %}
-                <li>{{ error }}</li>
-                {% endfor %}
-                {% endfor %}
-            </ul>
-        </div>
-        {% endif %}
 
-        <form method="post" action="{% url 'backoffice:interviews-create' admission_round.id faculty.id %}"
+        <form method="post" id="form"
               enctype="multipart/form-data">
             <h3>
                 เลือกโครงการ
@@ -31,7 +20,8 @@
                     <label for="{{ form.interview_type.id_for_label }}">รูปแบบการสัมภาษณ์</label>
                 </div>
                 <div class="col-md-9">
-                    {{ form.interview_type }}
+                    {{ form.interview_options.errors }}
+                    {{ form.interview_options }}
                 </div>
             </div>
             <div class="form-row mt-2">
@@ -39,7 +29,8 @@
                     <label for="{{form.additional_doc.id_for_label}}">การส่งเอกสารเพิ่มเติม</label>
                 </div>
                 <div class="col-md-9">
-                    {{form.additional_doc}}
+                    {{form.is_additional_documents_required.errors}}
+                    {{form.is_additional_documents_required}}
                 </div>
             </div>
             <div class="form-row mt-2 form-group">
@@ -47,7 +38,8 @@
                     <label for="{{form.datetime.id_for_label}}">วันเวลา</label>
                 </div>
                 <div class="col-md-9">
-                    {{form.datetime}}
+                    {{form.interview_date.errors}}
+                    {{form.interview_date}}
                 </div>
             </div>
 
@@ -55,7 +47,8 @@
             <div class="form-row">
                 <div class="col-md-12">
                     <label for="{{form.prep_detail.id_for_label}}">รายละเอียดการเตรียมตัว</label>
-                    {{form.prep_detail}}
+                    {{form.preparation_descriptions.errors}}
+                    {{form.preparation_descriptions}}
                 </div>
             </div>
             <div class="form-row mt-2">
@@ -63,13 +56,16 @@
                     รูปประกอบ
                     <small class="text-muted">รูปจะปรากฏด้านขวาของข้อความ</small>
                     <br>
-                    <img class="img-fluid" id="prepImgId" alt="preparation">
+                    <img width="250px" class="img-fluid" id="prepImgId" alt="preparation"
+                         {% if form.instance.preparation_image %}
+                         src="{% url 'backoffice:interviews-image' admission_round_id=admission_round.id faculty_id=faculty.id description_id=interview_description_id type='preparation' %}"
+                         {% endif %}>
                 </div>
                 <div class="col-md-9">
                     <div class="custom-file">
-
-                        {{form.prep_img}}
-                        <label class="custom-file-label" for="{{form.prep_img.id_for_label}}">Choose file</label>
+                        {{form.preparation_image.errors}}
+                        {{form.preparation_image}}
+                        <label class="custom-file-label" for="{{form.preparation_image.id_for_label}}">Choose file</label>
                     </div>
                 </div>
             </div>
@@ -81,7 +77,7 @@
                     สัมภาษณ์ผ่านทางโปรแกรม
                 </div>
                 <div class="col-md-9">
-                    {% for radio in form.apptype %}
+                    {% for radio in form.video_conference_platform %}
                     <div class="form-check form-check-inline">
                         {{ radio }}
                     </div>
@@ -90,53 +86,32 @@
             </div>
             <div class="form-row">
                 <div class="col-md-12">
-                    {{form.interview_detail.label}}
-                    <small class="text-muted">{{form.interview_detail.help_text}}</small>
-                    {{form.interview_detail}}
+                    {{form.descriptions.label}}
+                    <small class="text-muted">{{form.descriptions.help_text}}</small>
+                    {{form.descriptions.errors}}
+                    {{form.descriptions}}
                 </div>
             </div>
             <div class="form-row mt-2">
                 <div class="col-md-3">
-                    {{form.interview_img.label}}
-                    <small class="text-muted">{{form.interview_img.help_text}}</small>
+                    {{form.description_image.label}}
+                    <small class="text-muted">{{form.description_image.help_text}}</small>
                     <br>
-                    <img class="img-fluid" id="descImgId" alt="interview details">
+                    <img width="250px" class="img-fluid" id="descImgId" alt="interview details"
+                         {% if form.instance.description_image %}
+                         src="{% url 'backoffice:interviews-image' admission_round_id=admission_round.id faculty_id=faculty.id description_id=interview_description_id type='description' %}"
+                         {% endif %}>
                 </div>
                 <div class="col-md-9">
                     <div class="custom-file">
-                        {{form.interview_img}}
-                        <label class="custom-file-label" for="{{form.interview_img.id_for_label}}">Choose file</label>
+                        {{form.description_image.errors}}
+                        {{form.description_image}}
+                        <label class="custom-file-label" for="{{form.description_image.id_for_label}}">Choose file</label>
                     </div>
                 </div>
             </div>
             <h4 class="mt-3">ข้อมูลการติดต่อ</h4>
             <div id="contact-person-root">
-                {% for form in contact_person_formset.forms %}
-                <div class="contact-person-form">
-                    <div class="form-row">
-                        <div class="col-md-4">ชื่อผู้ติดต่อ</div>
-                        <div class="col-md-3">อีเมล</div>
-                        <div class="col-md-3">โทรศัพท์</div>
-                        <div class="col-md-2"></div>
-                    </div>
-                    <div class="form-row">
-                        <div class="col-md-4">
-                            {{form.name}}
-                        </div>
-                        <div class="col-md-3">
-                            {{form.email}}
-                        </div>
-                        <div class="col-md-3">
-                            {{form.tel}}
-                        </div>
-                        <div class="col-md-2">
-                            {% if not forloop.first %}
-                            <button class="btn-sm btn-danger delete-contact-person" type="button">ลบ</button>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-                {% endfor %}
             </div>
             <div class="form-row mt-2">
                 <div class="col-md-12">
@@ -146,16 +121,100 @@
 
             <div class="form-row bg-light mt-2 p-2 rounded">
                 <div class="col">
-                    <button class="btn btn-outline-primary">ดูตัวอย่าง</button>
+                    <button class="btn btn-outline-primary" id="preview-button" type="button" onclick="previewForm()">
+                        ดูตัวอย่าง
+                    </button>
                     <button class="btn btn-success">จัดเก็บ</button>
                     <button class="btn btn-warning">ยกเลิกการแก้ไข</button>
                     <button class="btn btn-danger ml-2">ลบ</button>
                 </div>
             </div>
-            {{ contact_person_formset.management_form }}
+            {{form.contacts.errors}}
+            {{form.contacts}}
             {% csrf_token %}
         </form>
-        <div id="empty-contact-person-form" style="display: none;">
+        <!--        Preview -->
+        <div style="display:none" id="preview-root" class="card">
+            <div class="card-body">
+            <h2 class="card-title">ตัวอย่าง: </h2>
+            <p class="card-subtitle mb-4">คลิกดูตัวอย่างอีกครั้งเมื่ออัปเดตข้อมูลแล้ว เพื่ออัปเดตตัวอย่าง</p>
+            <h3>
+                โครงการ
+            </h3>
+            <ol id="preview-projects">
+            </ol>
+
+            <h4>ข้อมูลทั่วไป</h4>
+            <div class="form-row">
+                <div class="col-md-3">
+                    รูปแบบการสัมภาษณ์
+                </div>
+                <div class="col-md-9" id="preview-interview_options">
+
+                </div>
+            </div>
+            <div class="form-row mt-2">
+                <div class="col-md-3">การส่งเอกสารเพิ่มเติม
+                </div>
+                <div class="col-md-9" id="preview-is_additional_documents_required">
+                </div>
+            </div>
+            <div class="form-row mt-2 form-group">
+                <div class="col-md-3">
+                    วันเวลา
+                </div>
+                <div class="col-md-9" id="preview-interview_date">
+                </div>
+            </div>
+
+            <h4 class="mt-3">การเตรียมตัวก่อนสัมภาษณ์</h4>
+            <div class="form-row">
+                <div class="col-md-12">
+                    รายละเอียดการเตรียมตัว
+                    <p id="preview-preparation_descriptions"></p>
+                </div>
+            </div>
+            <div class="form-row mt-2">
+                <div class="col-md-3 pr-2">
+                    {{form.preparation_image.label}}
+                    <br>
+                    <div id="preview-preparation_image"></div>
+                </div>
+            </div>
+
+
+            <h4 class="mt-3">รายละเอียดการสัมภาษณ์ออนไลน์</h4>
+            <div class="form-row">
+                <div class="col-md-3">
+                    สัมภาษณ์ผ่านทางโปรแกรม
+                </div>
+                <div class="col-md-9" id="preview-video_conference_platform">
+                </div>
+            </div>
+            <div class="form-row mt-2">
+                <div class="col-md-3">
+                    {{form.description_image.label}}
+                    <br>
+                    <div id="preview-description_image"></div>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="col-md-12">
+                    {{form.descriptions.label}}
+                    <p id="preview-descriptions">
+
+                    </p>
+                </div>
+            </div>
+            <h4 class="mt-3">ข้อมูลการติดต่อ</h4>
+            <div>
+                <ol id="preview-contacts">
+                </ol>
+            </div>
+            </div>
+        </div>
+
+        <div style="display:none">
             <div class="contact-person-form">
                 <div class="form-row">
                     <div class="col-md-4">ชื่อผู้ติดต่อ</div>
@@ -165,11 +224,11 @@
                 </div>
                 <div class="form-row">
                     <div class="col-md-4">
-                        <input class="form-control" type="text" name="contact_person-__prefix__-name"></div>
+                        <input type="text" name="name" class="form-control"></div>
                     <div class="col-md-3">
-                        <input class="form-control" type="text" name="contact_person-__prefix__-email"></div>
+                        <input type="text" name="email" class="form-control"></div>
                     <div class="col-md-3">
-                        <input class="form-control" type="text" name="contact_person-__prefix__-tel"></div>
+                        <input type="text" name="tel" class="form-control"></div>
                     <div class="col-md-2">
                         <button class="btn-sm btn-danger delete-contact-person" type="button">ลบ</button>
                     </div>
@@ -178,79 +237,158 @@
         </div>
     </div>
 </div>
+<style>
+    img.img-fluid {
+    display:none;
+    }
+    img.img-fluid[src] {
+        display: block;
+    }
+</style>
 <script>
- $(function(){
-   $('.img-file-controls').change(function(){
-     var imgId = $(this).data('imgId');
-     var file = this.files[0];
-     if(file) {
-       var reader = new FileReader();
-       reader.onload = function(event){
-	 $('#' + imgId).attr('src', event.target.result);
-       };
-       reader.readAsDataURL(file);
-     }
-   });
- });
-
- $(function() {
-    $(document).ready(function () {
-        function renumberContactPersonRows() {
-            $('.contact-person-form').each(function(index) {
-                $(this).find(':input').each(function() {
-                    var curId = $(this).attr('id');
-                    if (curId) {
-                        var newId = curId.replace(/\d+/g, index);
-                        $(this).attr('id', newId);
-                    }
-                    var curName = $(this).attr('name');
-                    if (curName) {
-                        var newName = curName.replace(/\d+/g, index);
-                        $(this).attr('name', newName);
-                    }
-                });
-            });
-        }
-
-        // get the contact person formset
-        var contactPersonFormset = $('#contact-person-root');
-        // get the add button
-        var addButton = $('#add-contact-person');
-        // get the total forms input field
-        var totalFormsInput = $('#id_contact_person-TOTAL_FORMS');
-        // get the empty contact person form
-        var emptyForm = $('#empty-contact-person-form').html();
-
-        // set the initial form count
-        var formCount = totalFormsInput.val();
-
-        // add the click event handler to the add button
-        addButton.on('click', function (e) {
-            // prevent the default form submission
-            e.preventDefault();
-            // append the empty contact person form to the formset
-            contactPersonFormset.append(emptyForm.replace(/__prefix__/g, formCount));
-            // increment the form count and update the total forms input field
-            formCount++;
-            renumberContactPersonRows()
-            totalFormsInput.val(formCount);
-        });
-
-        // add the click event handler to the delete button
-        contactPersonFormset.on('click', '.delete-contact-person', function (e) {
-            // prevent the default form submission
-            e.preventDefault();
-            // remove the contact person form from the formset
-            $(this).parents('.contact-person-form').remove();
-            // decrement the form count and update the total forms input field
-            formCount--;
-            renumberContactPersonRows()
-            totalFormsInput.val(formCount);
-        });
+  $(function () {
+    $('.img-file-controls').change(function () {
+      const imgId = $(this).data('imgId');
+      const file = this.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function (event) {
+          $('#' + imgId).attr('src', event.target.result);
+        };
+        reader.readAsDataURL(file);
+      }
     });
- });
+  });
 
+  let contactsInput = $('#{{form.contacts.id_for_label}}')
+  const contacts = contactsInput[0].value === '[]' ? [{}] : JSON.parse(contactsInput[0].value);
+  console.log(contacts, contactsInput[0].value)
+  for (let i = 0; i < contacts.length; i++) {
+    const contact = contacts[i];
+    const contactForm = $('.contact-person-form').last().clone();
+    contactForm.find('input[name="name"]').val(contact.name);
+    contactForm.find('input[name="email"]').val(contact.email);
+    contactForm.find('input[name="tel"]').val(contact.tel);
+    if (i === 0) {
+      contactForm.find('.delete-contact-person').remove()
+    }
+    $('#contact-person-root').append(contactForm);
+  }
 
+  $('#add-contact-person').on('click', function () {
+    const contactForm = $('.contact-person-form').last().clone();
+    contactForm.find('input[name="name"]').val('');
+    contactForm.find('input[name="email"]').val('');
+    contactForm.find('input[name="tel"]').val('');
+    $('#contact-person-root').append(contactForm);
+  });
+  $(document).on('click', '.delete-contact-person', function () {
+    $(this).closest('.contact-person-form').remove();
+  });
 
+  function updateContactsValue() {
+    const contacts = [];
+
+    const contactForms = $('.contact-person-form')
+    for (let i = 0; i < contactForms.length - 1; i++) {
+      const name = contactForms[i].querySelector('input[name="name"]').value;
+      const tel = contactForms[i].querySelector('input[name="tel"]').value;
+      const email = contactForms[i].querySelector('input[name="email"]').value;
+      contacts.push({name, tel, email});
+    }
+    contactsInput.val(JSON.stringify(contacts))
+  }
+
+  $('#form').on('submit', function () {
+    updateContactsValue();
+    return true
+  })
+
+  function previewForm() {
+    $('#preview-root').show()
+    updateContactsValue()
+    const form = document.getElementById("form");
+    const formData = new FormData(form)
+    previewProjectMajors(formData)
+    previewInterviewOptions()
+    previewAdditionalDoc()
+    previewInterviewDate(formData)
+    previewTextField(formData, 'preparation_descriptions')
+    previewTextField(formData, 'descriptions')
+    previewVideoConferencePlatform()
+    previewPrepImage()
+    previewDescImage()
+    previewContacts(formData)
+    console.log(formData.get('contacts'))
+  }
+
+  function previewProjectMajors(formData) {
+    const project_majors = formData.getAll('project_majors')
+    $('#preview-projects').empty()
+    for (let p of project_majors) {
+      const title = $(`input[name='project_majors'][value='${p}']`).attr('title')
+      $('#preview-projects').append('<li>' + title + '</li>');
+    }
+  }
+
+  function previewInterviewOptions() {
+    const selectElem = document.querySelector("#id_interview_options")
+    const selectedIndex = selectElem.selectedIndex
+    const title = selectElem.options[selectedIndex].text
+    document.querySelector("#preview-interview_options").textContent = title
+  }
+
+  function previewAdditionalDoc() {
+    const selectElem = document.querySelector("#id_is_additional_documents_required")
+    const selectedIndex = selectElem.selectedIndex
+    const title = selectElem.options[selectedIndex].text
+    document.querySelector("#preview-is_additional_documents_required").textContent = title
+  }
+
+  function previewInterviewDate(formData) {
+    const date = formData.get('interview_date')
+    let text = date ? new Date(date).toLocaleString() : '-'
+    document.querySelector("#preview-interview_date").textContent = text
+  }
+
+  function previewTextField(formData, fieldName) {
+    const text = formData.get(fieldName)
+    document.querySelector(`#preview-${fieldName}`).textContent = text
+  }
+
+  function previewVideoConferencePlatform() {
+    const selectedValue = document.querySelector('input[name="video_conference_platform"]:checked').nextSibling.textContent.trim();
+    document.getElementById("preview-video_conference_platform").textContent = selectedValue;
+  }
+
+  function previewPrepImage() {
+    const sourceElement = document.getElementById('prepImgId');
+    const targetElement = document.getElementById('preview-preparation_image');
+    const clonedElement = sourceElement.cloneNode(true);
+    $(targetElement).empty()
+    targetElement.appendChild(clonedElement);
+  }
+
+  function previewDescImage() {
+    const sourceElement = document.getElementById('descImgId');
+    const targetElement = document.getElementById('preview-description_image');
+    const clonedElement = sourceElement.cloneNode(true);
+    $(targetElement).empty()
+    targetElement.appendChild(clonedElement);
+  }
+
+  function previewContacts(formData) {
+    const contacts = JSON.parse(formData.get('contacts'))
+    console.log(contacts)
+
+    const rootEl = $('#preview-contacts')
+    rootEl.empty()
+    for (let contact of contacts) {
+      const name = 'ชื่อ: ' + contact.name || ''
+      const tel = 'โทร: ' + contact.tel || ''
+      const email = 'อีเมล: ' + contact.email || ''
+      rootEl.append('<li>' + `${name} ${email} ${tel}` + '</li>')
+    }
+  }
 </script>
 {% endblock %}
