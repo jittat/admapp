@@ -65,7 +65,7 @@ def interview_form(request, admission_round_id, faculty_id, description_id=None)
     map_selected_admission_project_major_cupt_code = dict()
 
     for (
-            selected_admission_project_major_cupt_code
+        selected_admission_project_major_cupt_code
     ) in selected_admission_project_major_cupt_code_list:
         considered_obj_admission_project_id = (
             selected_admission_project_major_cupt_code.admission_project.id
@@ -104,21 +104,21 @@ def interview_form(request, admission_round_id, faculty_id, description_id=None)
         )
         for i, major in enumerate(majors):
             is_project_major_has_interview_description = (
-                                                             major.id,
-                                                             admission_project.id,
-                                                         ) in map_selected_admission_project_major_cupt_code
+                major.id,
+                admission_project.id,
+            ) in map_selected_admission_project_major_cupt_code
 
             project_majors_id = get_project_major_id(major.id, admission_project.id)
             is_project_major_preselect = project_majors_id == preselect_project_major
             is_project_major_selected_by_current_form = (
-                    is_project_major_has_interview_description
-                    and map_selected_admission_project_major_cupt_code[(major.id, admission_project.id)]
-                    == description_id
+                is_project_major_has_interview_description
+                and map_selected_admission_project_major_cupt_code[(major.id, admission_project.id)]
+                == description_id
             )
 
             is_disabled = (
-                    is_project_major_has_interview_description
-                    and not is_project_major_selected_by_current_form
+                is_project_major_has_interview_description
+                and not is_project_major_selected_by_current_form
             )
 
             if not is_disabled:
@@ -128,7 +128,8 @@ def interview_form(request, admission_round_id, faculty_id, description_id=None)
             round_table[i][j] = {
                 "id": project_majors_id,
                 "is_disabled": is_disabled,
-                "is_checked": is_project_major_selected_by_current_form or is_project_major_preselect,
+                "is_checked": is_project_major_selected_by_current_form
+                or is_project_major_preselect,
                 "admission_project_name": admission_project,
                 "admission_project_id": admission_project.pk,
                 "major_title": major,
@@ -140,12 +141,21 @@ def interview_form(request, admission_round_id, faculty_id, description_id=None)
 
     major_table.extend(list(zip(majors, round_table)))
 
+    project_choices = [("None", "ไม่ระบุ")] + [
+        (str(admission_project.id), admission_project.title)
+        for admission_project in admission_projects
+    ]
+
+    major_choices = [("", "ไม่ระบุ")] + [(str(major.id), major.__str__()) for major in majors]
+
     if request.method == "POST":
         form = InterviewDescriptionForm(request.POST, request.FILES, instance=interview_description)
 
         form.admission_round_id = admission_round_id
         form.faculty_id = faculty_id
         form.fields["project_majors"].choices = project_majors_choices
+        form.fileds["selected_project"].choices = project_choices
+        form.fields["selected_major"].choices = major_choices
         if form.is_valid():
             interview_description = form.save()
 
@@ -169,6 +179,8 @@ def interview_form(request, admission_round_id, faculty_id, description_id=None)
         else:
             form = InterviewDescriptionForm()
         form.fields["project_majors"].choices = project_majors_choices
+        form.fileds["selected_project"].choices = project_choices
+        form.fields["selected_major"].choices = major_choices
 
     return render(
         request,
@@ -192,8 +204,8 @@ def get_project_major_id(major_id, project_id):
 def get_preselect_project_major(request):
     if request.method == "POST":
         return None
-    project_id = request.GET.get('project_id')
-    major_id = request.GET.get('major_id')
+    project_id = request.GET.get("project_id")
+    major_id = request.GET.get("major_id")
     return get_project_major_id(major_id, project_id)
 
 

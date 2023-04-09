@@ -10,6 +10,10 @@ from backoffice.models import (
 class InterviewDescriptionForm(forms.ModelForm):
     admission_round_id = None
     faculty_id = None
+
+    selected_major = forms.ChoiceField(choices=())
+    selected_project = forms.ChoiceField(choices=())
+
     project_majors = forms.MultipleChoiceField(choices=(), widget=forms.CheckboxSelectMultiple)
 
     class Meta:
@@ -42,12 +46,14 @@ class InterviewDescriptionForm(forms.ModelForm):
                 attrs={"class": "custom-file-input img-file-controls", "data-img-id": "descImgId"}
             ),
             "contacts": forms.HiddenInput(),
-            "video_conference_platform": forms.RadioSelect(choices=[
-                ("webex", "Cisco Webex"),
-                ("zoom", "Zoom"),
-                ("google-meet", "Google Meet"),
-                ("other", "โปรแกรมอื่น (กรุณาระบุในรายละเอียด)"),
-            ])
+            "video_conference_platform": forms.RadioSelect(
+                choices=[
+                    ("webex", "Cisco Webex"),
+                    ("zoom", "Zoom"),
+                    ("google-meet", "Google Meet"),
+                    ("other", "โปรแกรมอื่น (กรุณาระบุในรายละเอียด)"),
+                ]
+            ),
         }
         help_texts = {
             "descriptions": "ป้อนลายละเอียด เช่น ลิงก์สำหรับสัมภาษณ์ รหัสผ่าน",
@@ -60,18 +66,46 @@ class InterviewDescriptionForm(forms.ModelForm):
             interview_description = super(InterviewDescriptionForm, self).save(commit=False)
             interview_description.admission_round_id = self.admission_round_id
             interview_description.faculty_id = self.faculty_id
-        
+
+            selected_project_majors = list()
+
+            selected_project = self.cleaned_data["selected_project"]
+            considered_project_ids = (
+                [selected_project[0]]
+                if len(selected_project[0]) > 0
+                else [project[0] for project in self.fileds["selected_project"].choices]
+            )
+
+            selected_major = self.changed_data["selected_major"]
+            considered_major_ids = (
+                [selected_major[0]]
+                if len(selected_major[0]) > 0
+                else [major[0] for major in self.fileds["selected_major"].choices]
+            )
+
+            for major_id in considered_major_ids:
+                for project_id in considered_project_ids:
+                    selected_project_majors.append(major_id, project_id)
+
+            for project_major in self.cleaned_data["project_majors"]:
+                major_cupt_code_id, admission_project_id = project_major.split("_")[0:2]
+                selected_project_majors.append(major_cupt_code_id, admission_project_id)
+
+            # cast it to set to removing duplictae pair of (major, project)
+            selected_project_majors = set(selected_project_majors)
+
             if commit:
                 interview_description.save()
                 AdmissionProjectMajorCuptCodeInterviewDescription.objects.filter(
                     interview_description=interview_description
                 ).delete()
-                for project_major in self.cleaned_data["project_majors"]:
-                    major_cupt_code_id, admission_project_id = project_major.split("_")[0:2]
-                    interview_relation = AdmissionProjectMajorCuptCodeInterviewDescription(
-                        admission_project_id=admission_project_id,
-                        major_cupt_code_id=major_cupt_code_id,
-                        interview_description=interview_description,
+                for major_cupt_code_id, admission_project_id in selected_project_majors:
+                    interview_relation = (
+                        AdmissionProjectMajorCuptCodeInterviewDescription.objects.update_or_create(
+                            admission_project_id=admission_project_id,
+                            major_cupt_code_id=major_cupt_code_id,
+                            defaults={"interview_description": interview_description},
+                        )
                     )
                     interview_relation.save()
 
