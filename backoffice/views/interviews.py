@@ -154,8 +154,8 @@ def interview_form(request, admission_round_id, faculty_id, description_id=None)
         form.admission_round_id = admission_round_id
         form.faculty_id = faculty_id
         form.fields["project_majors"].choices = project_majors_choices
-        form.fileds["selected_project"].choices = project_choices
-        form.fields["selected_major"].choices = major_choices
+        #form.fields["selected_project"].choices = project_choices
+        #form.fields["selected_major"].choices = major_choices
         if form.is_valid():
             interview_description = form.save()
 
@@ -179,8 +179,8 @@ def interview_form(request, admission_round_id, faculty_id, description_id=None)
         else:
             form = InterviewDescriptionForm()
         form.fields["project_majors"].choices = project_majors_choices
-        form.fileds["selected_project"].choices = project_choices
-        form.fields["selected_major"].choices = major_choices
+        #form.fields["selected_project"].choices = project_choices
+        #form.fields["selected_major"].choices = major_choices
 
     return render(
         request,

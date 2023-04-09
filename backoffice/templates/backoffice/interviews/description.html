@@ -12,26 +12,26 @@
             <h3>
                 เลือกสาขาและโครงการ
             </h3>
-<!--            {% include "backoffice/interviews/curriculum_major_table_form.html" %}-->
-            <div class="form-group">
+            {% include "backoffice/interviews/curriculum_major_table_form.html" %}
+            <div class="d-none form-group">
                 <div class="form-check">
                     <input class="form-check-input" type="radio" name="options" id="option1" value="all-majors">
                     <label class="form-check-label" for="option1">ทุกสาขาในโครงการ A</label>
                 </div>
             </div>
-            <div class="form-group">
+            <div class="d-none form-group">
                 <div class="form-check">
                     <input class="form-check-input" type="radio" name="options" id="option2" value="all-projects">
                     <label class="form-check-label" for="option2">สาขา B ในทุกโครงการ</label>
                 </div>
             </div>
-            <div class="form-group">
+            <div class="d-none form-group">
                 <div class="form-check">
                     <input class="form-check-input" type="radio" name="options" id="option3" value="major-project">
                     <label class="form-check-label" for="option2">เลือกสาขาและโครงการเดียว</label>
                 </div>
             </div>
-            <div class="row">
+            <div class="d-none row">
                 <div class="col-md-6">
                     <label for="select1">โครงการ</label>
                     <select class="form-control" id="select1">

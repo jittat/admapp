@@ -11,8 +11,8 @@ class InterviewDescriptionForm(forms.ModelForm):
     admission_round_id = None
     faculty_id = None
 
-    selected_major = forms.ChoiceField(choices=())
-    selected_project = forms.ChoiceField(choices=())
+    #selected_major = forms.ChoiceField(choices=())
+    #selected_project = forms.ChoiceField(choices=())
 
     project_majors = forms.MultipleChoiceField(choices=(), widget=forms.CheckboxSelectMultiple)
 
@@ -69,6 +69,7 @@ class InterviewDescriptionForm(forms.ModelForm):
 
             selected_project_majors = list()
 
+            """
             selected_project = self.cleaned_data["selected_project"]
             considered_project_ids = (
                 [selected_project[0]]
@@ -86,14 +87,15 @@ class InterviewDescriptionForm(forms.ModelForm):
             for major_id in considered_major_ids:
                 for project_id in considered_project_ids:
                     selected_project_majors.append(major_id, project_id)
-
+            """
+            
             for project_major in self.cleaned_data["project_majors"]:
                 major_cupt_code_id, admission_project_id = project_major.split("_")[0:2]
-                selected_project_majors.append(major_cupt_code_id, admission_project_id)
+                selected_project_majors.append((major_cupt_code_id, admission_project_id))
 
             # cast it to set to removing duplictae pair of (major, project)
             selected_project_majors = set(selected_project_majors)
-
+            
             if commit:
                 interview_description.save()
                 AdmissionProjectMajorCuptCodeInterviewDescription.objects.filter(
@@ -101,10 +103,10 @@ class InterviewDescriptionForm(forms.ModelForm):
                 ).delete()
                 for major_cupt_code_id, admission_project_id in selected_project_majors:
                     interview_relation = (
-                        AdmissionProjectMajorCuptCodeInterviewDescription.objects.update_or_create(
+                        AdmissionProjectMajorCuptCodeInterviewDescription(
                             admission_project_id=admission_project_id,
                             major_cupt_code_id=major_cupt_code_id,
-                            defaults={"interview_description": interview_description},
+                            interview_description=interview_description,
                         )
                     )
                     interview_relation.save()
