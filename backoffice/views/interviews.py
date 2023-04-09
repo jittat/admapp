@@ -11,6 +11,17 @@ from backoffice.models import (
 )
 from criteria.models import MajorCuptCode, CurriculumMajor
 
+def get_project_major_cupt_code_id(major_cupt_code_id, project_id):
+    return str(major_cupt_code_id) + "_" + str(project_id)
+
+
+def get_preselect_project_major(request):
+    if request.method == "POST":
+        return None
+    project_id = request.GET.get("project_id")
+    major_cupt_code_id = request.GET.get("major_cupt_code_id")
+    return get_project_major_cupt_code_id(major_cupt_code_id, project_id)
+
 
 @user_login_required
 def interview_image(request, admission_round_id, faculty_id, description_id, type):
@@ -42,7 +53,7 @@ def interview_form(request, admission_round_id, faculty_id, description_id=None)
 
     user = request.user
 
-    majors = MajorCuptCode.objects.filter(faculty=faculty_id)
+    major_cupt_codes = MajorCuptCode.objects.filter(faculty=faculty_id)
     curriculum_majors = CurriculumMajor.objects.filter(faculty=faculty).all()
 
     if not user.profile.is_admission_admin:
@@ -87,7 +98,7 @@ def interview_form(request, admission_round_id, faculty_id, description_id=None)
 
     round_table = []
     project_majors_choices = []
-    for major in majors:
+    for major_cupt_code in major_cupt_codes:
         row = []
         for admission_project in current_round_project_list:
             row.append(False)
@@ -102,18 +113,17 @@ def interview_form(request, admission_round_id, faculty_id, description_id=None)
                 if cm.admission_project_id == admission_project.id
             ]
         )
-        for i, major in enumerate(majors):
+        for i, major_cupt_code in enumerate(major_cupt_codes):
             is_project_major_has_interview_description = (
-                major.id,
+                major_cupt_code.id,
                 admission_project.id,
             ) in map_selected_admission_project_major_cupt_code
 
-            project_majors_id = get_project_major_id(major.id, admission_project.id)
+            project_majors_id = get_project_major_cupt_code_id(major_cupt_code.id, admission_project.id)
             is_project_major_preselect = project_majors_id == preselect_project_major
             is_project_major_selected_by_current_form = (
                 is_project_major_has_interview_description
-                and map_selected_admission_project_major_cupt_code[(major.id, admission_project.id)]
-                == description_id
+                and map_selected_admission_project_major_cupt_code[(major_cupt_code.id, admission_project.id)] == description_id
             )
 
             is_disabled = (
@@ -123,7 +133,7 @@ def interview_form(request, admission_round_id, faculty_id, description_id=None)
 
             if not is_disabled:
                 project_majors_choices.append(
-                    (project_majors_id, str(major) + "_" + str(admission_project))
+                    (project_majors_id, str(major_cupt_code) + "_" + str(admission_project))
                 )
             round_table[i][j] = {
                 "id": project_majors_id,
@@ -132,21 +142,21 @@ def interview_form(request, admission_round_id, faculty_id, description_id=None)
                 or is_project_major_preselect,
                 "admission_project_name": admission_project,
                 "admission_project_id": admission_project.pk,
-                "major_title": major,
-                "major_id": major.pk,
+                "major_title": str(major_cupt_code),
+                "major_id": major_cupt_code.id,
                 "url": "url-to-related-interview",
             }
 
         j += 1
 
-    major_table.extend(list(zip(majors, round_table)))
+    major_table.extend(list(zip(major_cupt_codes, round_table)))
 
     project_choices = [("None", "ไม่ระบุ")] + [
         (str(admission_project.id), admission_project.title)
         for admission_project in admission_projects
     ]
 
-    major_choices = [("", "ไม่ระบุ")] + [(str(major.id), major.__str__()) for major in majors]
+    major_choices = [("", "ไม่ระบุ")] + [(str(major_cupt_code.id), major_cupt_code.__str__()) for major_cupt_code in major_cupt_codes]
 
     if request.method == "POST":
         form = InterviewDescriptionForm(request.POST, request.FILES, instance=interview_description)
@@ -189,24 +199,12 @@ def interview_form(request, admission_round_id, faculty_id, description_id=None)
             "interview_description_id": description_id,
             "admission_round": admission_round,
             "admission_projects": current_round_project_list,
-            "majors": majors,
+            "majors": major_cupt_codes,
             "faculty": faculty,
             "round_major_table": major_table,
             "form": form,
         },
     )
-
-
-def get_project_major_id(major_id, project_id):
-    return str(major_id) + "_" + str(project_id)
-
-
-def get_preselect_project_major(request):
-    if request.method == "POST":
-        return None
-    project_id = request.GET.get("project_id")
-    major_id = request.GET.get("major_id")
-    return get_project_major_id(major_id, project_id)
 
 
 @user_login_required

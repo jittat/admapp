@@ -308,15 +308,19 @@ class InterviewDescription(models.Model):
     OPTION_ONLINE_INTERVIEW = 1
     OPTION_OFFLINE_INTERVIEW = 2
 
-    # TODO: remove admission_round
+    OPTION_DOC_NO_NEW_DOC = 0
+    OPTION_DOC_UPLOAD_ON_ADMAPP = 1
+    OPTION_DOC_UPLOAD_OTHER = 2
+    
+    # -- don't remove, jittat // TODO: remove admission_round
     admission_round = models.ForeignKey(AdmissionRound, on_delete=models.CASCADE)
 
-    # TODO: remove admission_project
+    # -- don't remove, jittat //  TODO: remove admission_project
     admission_project = models.ForeignKey(
         AdmissionProject, on_delete=models.CASCADE, blank=True, null=True
     )
 
-    # TODO: remove faculty
+    # -- don't remove, jittat //  TODO: remove faculty
     faculty = models.ForeignKey(Faculty, on_delete=models.CASCADE)
 
     interview_options = models.IntegerField(
@@ -336,14 +340,20 @@ class InterviewDescription(models.Model):
         verbose_name="วันและเวลาการสัมภาษณ์", blank=True, null=True
     )
 
-    is_additional_documents_required = models.BooleanField(
+    additional_documents_option = models.IntegerField(
         verbose_name="การส่งเอกสารเพิ่มเติม",
-        default=False,
+        default=OPTION_DOC_NO_NEW_DOC,
         choices=[
-            (False, "ไม่มี"),
             (
-                True,
-                "ต้องส่งเอกสารหรือส่งลิงก์เพิ่มเติม (กรุณาแจ้งรายละเอียดในส่วนการสัมภาษณ์ด้วย)",
+                OPTION_DOC_NO_NEW_DOC, "ไม่มี"
+            ),
+            (
+                OPTION_DOC_UPLOAD_ON_ADMAPP,
+                "ต้องส่งเอกสารหรือส่งลิงก์เพิ่มเติม (อัพโหลดในระบบ)",
+            ),
+            (
+                OPTION_DOC_UPLOAD_OTHER,
+                "ต้องส่งเอกสารหรือส่งลิงก์เพิ่มเติม (ส่งทางอื่น กรุณาแจ้งในรายละเอียดการเตรียมตัว)",
             ),
         ],
     )

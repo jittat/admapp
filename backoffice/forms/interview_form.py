@@ -22,7 +22,7 @@ class InterviewDescriptionForm(forms.ModelForm):
             "interview_options",
             "video_conference_platform",
             "interview_date",
-            "is_additional_documents_required",
+            "additional_documents_option",
             "preparation_descriptions",
             "preparation_image",
             "descriptions",
@@ -34,7 +34,7 @@ class InterviewDescriptionForm(forms.ModelForm):
             "interview_date": forms.DateTimeInput(
                 attrs={"type": "datetime-local", "class": "form-control"}
             ),
-            "is_additional_documents_required": forms.Select(attrs={"class": "form-control"}),
+            "additional_documents_option": forms.Select(attrs={"class": "form-control"}),
             "preparation_descriptions": forms.Textarea(
                 attrs={"class": "form-control", "rows": "2"}
             ),
