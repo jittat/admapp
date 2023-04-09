@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.http import Http404, HttpResponse
 
-from appl.models import Faculty, AdmissionProject, AdmissionRound
+from appl.models import Faculty, AdmissionProject, AdmissionRound, Major
 from backoffice.decorators import user_login_required
 from backoffice.forms.interview_form import InterviewDescriptionForm
 from backoffice.models import (
@@ -47,6 +47,17 @@ def interview_form(request, admission_round_id, faculty_id, description_id=None)
     interview_description = None
     if description_id is not None:
         interview_description = get_object_or_404(InterviewDescription, pk=description_id)
+
+    major_id = request.GET.get("major_id",None)
+    major = None
+    if interview_description:
+        major = interview_description.major
+    if major_id:
+        major = Major.objects.get(pk=major_id)
+    if major:
+        current_admission_project = major.admission_project
+    else:
+        current_admission_project = None
 
     admission_round = get_object_or_404(AdmissionRound, pk=admission_round_id)
     faculty = get_object_or_404(Faculty, pk=faculty_id)
@@ -133,7 +144,7 @@ def interview_form(request, admission_round_id, faculty_id, description_id=None)
 
             if not is_disabled:
                 project_majors_choices.append(
-                    (project_majors_id, str(major_cupt_code) + "_" + str(admission_project))
+                    (project_majors_id, str(major_cupt_code.id) + "_" + str(admission_project))
                 )
             round_table[i][j] = {
                 "id": project_majors_id,
@@ -167,7 +178,12 @@ def interview_form(request, admission_round_id, faculty_id, description_id=None)
         #form.fields["selected_project"].choices = project_choices
         #form.fields["selected_major"].choices = major_choices
         if form.is_valid():
-            interview_description = form.save()
+            if not interview_description:
+                interview_description = form.save()
+                interview_description.major = Major.objects.get(pk=major_id)
+                interview_description.save()
+            else:
+                interview_description = form.save()
 
             return redirect(
                 reverse(
@@ -202,6 +218,10 @@ def interview_form(request, admission_round_id, faculty_id, description_id=None)
             "majors": major_cupt_codes,
             "faculty": faculty,
             "round_major_table": major_table,
+
+            "current_major": major,
+            "current_admission_project": current_admission_project,
+
             "form": form,
         },
     )

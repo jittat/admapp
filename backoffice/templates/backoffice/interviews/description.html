@@ -10,7 +10,11 @@
         <form method="post" id="form"
               enctype="multipart/form-data">
             <h3>
-                เลือกสาขาและโครงการ
+	      {% if current_major %}
+		{{ current_major }} โครงการ{{ current_admission_project }}
+	      {% else %}
+		เลือกสาขาและโครงการ
+	      {% endif %}
             </h3>
             {% include "backoffice/interviews/curriculum_major_table_form.html" %}
             <div class="d-none form-group">
