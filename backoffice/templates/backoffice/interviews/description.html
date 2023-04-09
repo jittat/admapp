@@ -10,10 +10,45 @@
         <form method="post" id="form"
               enctype="multipart/form-data">
             <h3>
-                เลือกโครงการ
+                เลือกสาขาและโครงการ
             </h3>
-            {% include "backoffice/interviews/curriculum_major_table_form.html" %}
-
+<!--            {% include "backoffice/interviews/curriculum_major_table_form.html" %}-->
+            <div class="form-group">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="options" id="option1" value="all-majors">
+                    <label class="form-check-label" for="option1">ทุกสาขาในโครงการ A</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="options" id="option2" value="all-projects">
+                    <label class="form-check-label" for="option2">สาขา B ในทุกโครงการ</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="options" id="option3" value="major-project">
+                    <label class="form-check-label" for="option2">เลือกสาขาและโครงการเดียว</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="select1">โครงการ</label>
+                    <select class="form-control" id="select1">
+                        <option value="project1">โครงการ 1</option>
+                        <option value="project2">โครงการ 2</option>
+                        <option value="project3">โครงการ 3</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="select2">สาขา</label>
+                    <select class="form-control" id="select2">
+                        <option value="majorA">สาขา A</option>
+                        <option value="majorB">สาขา B</option>
+                        <option value="majorC">สาขา C</option>
+                    </select>
+                </div>
+            </div>
             <h4>ข้อมูลทั่วไป</h4>
             <div class="form-row">
                 <div class="col-md-3">
