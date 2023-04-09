@@ -319,6 +319,9 @@ class InterviewDescription(models.Model):
     admission_project = models.ForeignKey(
         AdmissionProject, on_delete=models.CASCADE, blank=True, null=True
     )
+    major = models.ForeignKey(
+        Major, on_delete=models.CASCADE, blank=True, null=True
+    )
 
     # -- don't remove, jittat //  TODO: remove faculty
     faculty = models.ForeignKey(Faculty, on_delete=models.CASCADE)
