@@ -14,7 +14,7 @@ class InterviewDescriptionForm(forms.ModelForm):
     #selected_major = forms.ChoiceField(choices=())
     #selected_project = forms.ChoiceField(choices=())
 
-    project_majors = forms.MultipleChoiceField(choices=(), widget=forms.CheckboxSelectMultiple)
+    project_majors = forms.MultipleChoiceField(choices=(), widget=forms.CheckboxSelectMultiple, required=False)
 
     class Meta:
         model = InterviewDescription
