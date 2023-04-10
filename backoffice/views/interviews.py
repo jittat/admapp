@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.http import Http404, HttpResponse
+from django.contrib import messages
 
 from appl.models import Faculty, AdmissionProject, AdmissionRound, Major
 from backoffice.decorators import user_login_required
@@ -201,7 +202,7 @@ def interview_form(request, admission_round_id, faculty_id, description_id=None)
                 interview_description.save()
             else:
                 interview_description = form.save()
-
+            messages.success(request, 'บันทึกข้อมูลสำเร็จ!')
             return redirect(
                 reverse(
                     "backoffice:interviews-edit",
@@ -252,6 +253,7 @@ def delete(request, description_id):
     admission_round_id = interview_description.admission_round_id
 
     interview_description.delete()
+    messages.info(request, 'ลบข้อมูลรายละเอียดเรียบร้อยแล้ว')
     
     return redirect(reverse('backoffice:projects-index', args=[current_admission_project.id, admission_round_id]))
 

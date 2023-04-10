@@ -2,6 +2,7 @@
 {% block content %}
   <div class="row">
     <div class="col-md-12">
+      {% include "backoffice/messages_alert.html" %}
       <h2>
         โครงการ{{ project.title }} ({{ admission_round }})
         {% if faculty %}
