@@ -136,6 +136,11 @@ urlpatterns = [
     path("adjustment/<major_full_code>/", adjustment.major_index, name="adjustment-major"),
     re_path(r"^criteria/", include("criteria.urls")),
     path(
+        "interviews/delete/<int:description_id>/",
+        interviews.delete,
+        name="interviews-delete",
+    ),
+    path(
         "interviews/<admission_round_id>/<faculty_id>/",
         interviews.interview_form,
         {"description_id": None},
@@ -156,4 +161,5 @@ urlpatterns = [
         interviews.interview_image,
         name="interviews-image",
     ),
+
 ]

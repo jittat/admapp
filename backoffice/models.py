@@ -312,10 +312,8 @@ class InterviewDescription(models.Model):
     OPTION_DOC_UPLOAD_ON_ADMAPP = 1
     OPTION_DOC_UPLOAD_OTHER = 2
     
-    # -- don't remove, jittat // TODO: remove admission_round
     admission_round = models.ForeignKey(AdmissionRound, on_delete=models.CASCADE)
 
-    # -- don't remove, jittat //  TODO: remove admission_project
     admission_project = models.ForeignKey(
         AdmissionProject, on_delete=models.CASCADE, blank=True, null=True
     )
@@ -323,7 +321,6 @@ class InterviewDescription(models.Model):
         Major, on_delete=models.CASCADE, blank=True, null=True
     )
 
-    # -- don't remove, jittat //  TODO: remove faculty
     faculty = models.ForeignKey(Faculty, on_delete=models.CASCADE)
 
     interview_options = models.IntegerField(

@@ -168,8 +168,12 @@
                         ดูตัวอย่าง
                     </button>
                     <button class="btn btn-success">จัดเก็บ</button>
-                    <a href="{% url 'backoffice:projects-index' current_admission_project.id admission_round.id %}"><button class="btn btn-warning" type="button">ยกเลิกการแก้ไข</button></a>
-                    <button class="btn btn-danger ml-2">ลบ</button>
+                    <a href="{% url 'backoffice:projects-index' current_admission_project.id admission_round.id %}">
+                        <button class="btn btn-warning" type="button">ยกเลิกการแก้ไข</button>
+                    </a>
+                    {% if interview_description_id %}
+                    <button class="btn btn-danger" type="button" onclick="deleteDescription()">ลบ</button>
+                    {% endif %}
                 </div>
             </div>
             {{form.contacts.errors}}
@@ -442,6 +446,18 @@
       const tel = 'โทร: ' + contact.tel || ''
       const email = 'อีเมล: ' + contact.email || ''
       rootEl.append('<li>' + `${name} ${email} ${tel}` + '</li>')
+    }
+  }
+
+  function deleteDescription() {
+    if (confirm("กด OK เพื่อยืนยันลบข้อมูลการสัมภาษณ์")) {
+      var form = document.getElementById('form');
+      {% if interview_description_id %}
+      form.action = '{% url 'backoffice:interviews-delete' description_id=interview_description_id %}'; // Update with your delete URL
+      {% else %}
+      return
+      {%endif %}
+      form.submit();
     }
   }
 </script>

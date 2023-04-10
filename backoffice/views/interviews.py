@@ -246,6 +246,17 @@ def interview_form(request, admission_round_id, faculty_id, description_id=None)
 
 
 @user_login_required
+def delete(request, description_id):
+    interview_description = get_object_or_404(InterviewDescription, pk=description_id)
+    current_admission_project = interview_description.major.admission_project
+    admission_round_id = interview_description.admission_round_id
+
+    interview_description.delete()
+    
+    return redirect(reverse('backoffice:projects-index', args=[current_admission_project.id, admission_round_id]))
+
+
+@user_login_required
 def interview_description_list(request, admission_round_id, faculty_id):
     admission_round = get_object_or_404(AdmissionRound, pk=admission_round_id)
     faculty = get_object_or_404(Faculty, pk=faculty_id)
