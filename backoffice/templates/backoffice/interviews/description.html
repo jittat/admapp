@@ -168,7 +168,7 @@
                         ดูตัวอย่าง
                     </button>
                     <button class="btn btn-success">จัดเก็บ</button>
-                    <a href="{% url 'backoffice:projects-index' current_admission_project.id admission_round.id %}">
+                    <a href="{% url 'backoffice:projects-index' admission_round.id faculty.id %}">
                         <button class="btn btn-warning" type="button">ยกเลิกการแก้ไข</button>
                     </a>
                     {% if interview_description_id %}
