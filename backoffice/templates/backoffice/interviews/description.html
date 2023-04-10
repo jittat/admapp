@@ -376,7 +376,6 @@
     previewPrepImage()
     previewDescImage()
     previewContacts(formData)
-    console.log(formData.get('contacts'))
   }
 
   function previewProjectMajors(formData) {
@@ -414,10 +413,10 @@
   }
 
   function previewVideoConferencePlatform() {
-    try {
-      const selectedValue = document.querySelector('input[name="video_conference_platform"]:checked').nextSibling.textContent.trim();
+    const selectedValue = document.querySelector('input[name="video_conference_platform"]:checked')?.nextSibling.textContent.trim();
+    if (selectedValue) {
       document.getElementById("preview-video_conference_platform").textContent = selectedValue;
-    } catch (error) {
+    } else {
       document.getElementById("preview-video_conference_platform").textContent = '-';
     }
   }
