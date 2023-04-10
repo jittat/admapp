@@ -98,6 +98,7 @@ class InterviewDescriptionForm(forms.ModelForm):
             
             if commit:
                 interview_description.save()
+                print(interview_description, interview_description.interview_date)
                 AdmissionProjectMajorCuptCodeInterviewDescription.objects.filter(
                     interview_description=interview_description
                 ).delete()

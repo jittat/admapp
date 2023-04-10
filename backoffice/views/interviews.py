@@ -220,7 +220,8 @@ def interview_form(request, admission_round_id, faculty_id, description_id=None)
         if description_id is not None:
             form = InterviewDescriptionForm(instance=interview_description)
         else:
-            form = InterviewDescriptionForm(initial={'interview_date': '2023-04-26 08:30'})
+            from datetime import datetime
+            form = InterviewDescriptionForm(initial={'interview_date': datetime.fromisoformat('2023-04-26T08:30:00')})
         form.fields["project_majors"].choices = project_majors_choices
         # form.fields["selected_project"].choices = project_choices
         # form.fields["selected_major"].choices = major_choices
