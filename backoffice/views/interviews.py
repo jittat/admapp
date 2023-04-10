@@ -11,6 +11,7 @@ from backoffice.models import (
 )
 from criteria.models import MajorCuptCode, CurriculumMajor
 
+
 def get_project_major_cupt_code_id(major_cupt_code_id, project_id):
     return str(major_cupt_code_id) + "_" + str(project_id)
 
@@ -22,12 +23,14 @@ def get_preselect_project_major(request):
     major_cupt_code_id = request.GET.get("major_cupt_code_id")
     return get_project_major_cupt_code_id(major_cupt_code_id, project_id)
 
+
 def get_major_cupt_code_id(program_code):
     codes = MajorCuptCode.objects.filter(program_code=program_code)
-    if len(codes)!=0:
+    if len(codes) != 0:
         return codes[0].id
     else:
         return 0
+
 
 @user_login_required
 def interview_image(request, admission_round_id, faculty_id, description_id, type):
@@ -54,7 +57,7 @@ def interview_form(request, admission_round_id, faculty_id, description_id=None)
     if description_id is not None:
         interview_description = get_object_or_404(InterviewDescription, pk=description_id)
 
-    major_id = request.GET.get("major_id",None)
+    major_id = request.GET.get("major_id", None)
     major = None
     if interview_description:
         major = interview_description.major
@@ -62,7 +65,7 @@ def interview_form(request, admission_round_id, faculty_id, description_id=None)
         major = Major.objects.get(pk=major_id)
     if major:
         current_admission_project = major.admission_project
-        if preselect_project_major==get_project_major_cupt_code_id(None,None):
+        if preselect_project_major == get_project_major_cupt_code_id(None, None):
             preselect_project_major = get_project_major_cupt_code_id(
                 get_major_cupt_code_id(major.cupt_full_code),
                 major.admission_project_id)
@@ -97,7 +100,7 @@ def interview_form(request, admission_round_id, faculty_id, description_id=None)
     map_selected_admission_project_major_cupt_code = dict()
 
     for (
-        selected_admission_project_major_cupt_code
+            selected_admission_project_major_cupt_code
     ) in selected_admission_project_major_cupt_code_list:
         considered_obj_admission_project_id = (
             selected_admission_project_major_cupt_code.admission_project.id
@@ -136,20 +139,21 @@ def interview_form(request, admission_round_id, faculty_id, description_id=None)
         )
         for i, major_cupt_code in enumerate(major_cupt_codes):
             is_project_major_has_interview_description = (
-                major_cupt_code.id,
-                admission_project.id,
-            ) in map_selected_admission_project_major_cupt_code
+                                                             major_cupt_code.id,
+                                                             admission_project.id,
+                                                         ) in map_selected_admission_project_major_cupt_code
 
             project_majors_id = get_project_major_cupt_code_id(major_cupt_code.id, admission_project.id)
             is_project_major_preselect = project_majors_id == preselect_project_major
             is_project_major_selected_by_current_form = (
-                is_project_major_has_interview_description
-                and map_selected_admission_project_major_cupt_code[(major_cupt_code.id, admission_project.id)] == description_id
+                    is_project_major_has_interview_description
+                    and map_selected_admission_project_major_cupt_code[
+                        (major_cupt_code.id, admission_project.id)] == description_id
             )
 
             is_disabled = (
-                is_project_major_has_interview_description
-                and not is_project_major_selected_by_current_form
+                    is_project_major_has_interview_description
+                    and not is_project_major_selected_by_current_form
             )
 
             if not is_disabled:
@@ -160,7 +164,7 @@ def interview_form(request, admission_round_id, faculty_id, description_id=None)
                 "id": project_majors_id,
                 "is_disabled": is_disabled,
                 "is_checked": is_project_major_selected_by_current_form
-                or is_project_major_preselect,
+                              or is_project_major_preselect,
                 "admission_project_name": admission_project,
                 "admission_project_id": admission_project.pk,
                 "major_title": str(major_cupt_code),
@@ -177,7 +181,8 @@ def interview_form(request, admission_round_id, faculty_id, description_id=None)
         for admission_project in admission_projects
     ]
 
-    major_choices = [("", "ไม่ระบุ")] + [(str(major_cupt_code.id), major_cupt_code.__str__()) for major_cupt_code in major_cupt_codes]
+    major_choices = [("", "ไม่ระบุ")] + [(str(major_cupt_code.id), major_cupt_code.__str__()) for major_cupt_code in
+                                         major_cupt_codes]
 
     if request.method == "POST":
         form = InterviewDescriptionForm(request.POST, request.FILES, instance=interview_description)
@@ -185,8 +190,8 @@ def interview_form(request, admission_round_id, faculty_id, description_id=None)
         form.admission_round_id = admission_round_id
         form.faculty_id = faculty_id
         form.fields["project_majors"].choices = project_majors_choices
-        #form.fields["selected_project"].choices = project_choices
-        #form.fields["selected_major"].choices = major_choices
+        # form.fields["selected_project"].choices = project_choices
+        # form.fields["selected_major"].choices = major_choices
         if form.is_valid():
             if not interview_description:
                 interview_description = form.save()
@@ -215,10 +220,10 @@ def interview_form(request, admission_round_id, faculty_id, description_id=None)
         if description_id is not None:
             form = InterviewDescriptionForm(instance=interview_description)
         else:
-            form = InterviewDescriptionForm(initial={'interview_date':'2023-04-26 08:30'})
+            form = InterviewDescriptionForm(initial={'interview_date': '2023-04-26 08:30'})
         form.fields["project_majors"].choices = project_majors_choices
-        #form.fields["selected_project"].choices = project_choices
-        #form.fields["selected_major"].choices = major_choices
+        # form.fields["selected_project"].choices = project_choices
+        # form.fields["selected_major"].choices = major_choices
 
     return render(
         request,
