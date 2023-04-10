@@ -72,27 +72,38 @@
                     {{form.additional_documents_option}}
                 </div>
             </div>
-            <div class="form-row mt-2 form-group">
+            <div class="form-row mt-2 form-group interview-date-groups">
                 <div class="col-md-3">
                     <label for="{{form.datetime.id_for_label}}">วันเวลา</label>
                 </div>
                 <div class="col-md-9">
-                    {{form.interview_date.errors}}
-                    <input type="datetime-local" name="interview_date"
-                           value="{{form.interview_date.value|date:'Y-m-d\\TH:i'}}" class="form-control"
-                           id="id_interview_date">
+                  {{form.interview_date.errors}}
+                  <input type="datetime-local" name="interview_date"
+                         value="{{form.interview_date.value|date:'Y-m-d\\TH:i'}}" class="form-control"
+                         id="id_interview_date">
                 </div>
             </div>
 
-            <h4 class="mt-3">การเตรียมตัวก่อนสัมภาษณ์</h4>
-            <div class="form-row">
+	    <div class="form-row mt-2 no-interview-no-doc-groups">
+	      <div class="col-md-12">
+		<p>ผู้ผ่านการคัดเลือกจะได้รับการประกาศรายชื่อเป็นผู้ผ่านการสอบสัมภาษณ์</p>
+	      </div>
+	    </div>
+	    <div class="form-row mt-2 no-interview-upload-groups">
+	      <div class="col-md-12">
+		<p>กรรมการจะพิจารณาเอกสารที่ส่งเพิ่มเติมในการตัดสินผลการสอบสัมภาษณ์</p>
+	      </div>
+	    </div>
+	    
+            <h4 class="mt-3 interview-prep-groups">การเตรียมตัวก่อนสัมภาษณ์</h4>
+            <div class="form-row interview-prep-groups">
                 <div class="col-md-12">
                     <label for="{{form.prep_detail.id_for_label}}">รายละเอียดการเตรียมตัว</label>
                     {{form.preparation_descriptions.errors}}
                     {{form.preparation_descriptions}}
                 </div>
             </div>
-            <div class="form-row mt-2">
+            <div class="form-row mt-2 interview-prep-groups">
                 <div class="col-md-3 pr-2">
                     รูปประกอบข้อมูลการเตรียมตัว
                     <small class="text-muted">รูปจะปรากฏด้านขวาของข้อความ</small>
@@ -106,15 +117,14 @@
                     <div class="custom-file">
                         {{form.preparation_image.errors}}
                         {{form.preparation_image}}
-                        <label class="custom-file-label"
-                               for="{{form.preparation_image.id_for_label}}">เลือกไฟล์รูป</label>
+                      <label class="custom-file-label"
+                             for="{{form.preparation_image.id_for_label}}">เลือกไฟล์รูป</label>
                     </div>
                 </div>
             </div>
 
-
-            <h4 class="mt-3"><span class="interview-format-headers">รายละเอียดการสัมภาษณ์ออนไลน์</span></h4>
-            <div class="form-row online-platform-forms">
+            <h4 class="mt-3 interview-info-groups"><span class="interview-format-headers">รายละเอียดการสัมภาษณ์ออนไลน์</span></h4>
+            <div class="form-row online-platform-forms interview-info-groups">
                 <div class="col-md-3">
                     สัมภาษณ์ผ่านทางโปรแกรม
                 </div>
@@ -126,7 +136,7 @@
                     {% endfor %}
                 </div>
             </div>
-            <div class="form-row">
+            <div class="form-row interview-info-groups">
                 <div class="col-md-12">
                     {{form.descriptions.label}}
                     <small class="text-muted">{{form.descriptions.help_text}}</small>
@@ -134,7 +144,7 @@
                     {{form.descriptions}}
                 </div>
             </div>
-            <div class="form-row mt-2">
+            <div class="form-row mt-2 interview-info-groups">
                 <div class="col-md-3">
                     รูปประกอบข้อมูลการสัมภาษณ์
                     <small class="text-muted">{{form.description_image.help_text}}</small>
@@ -153,10 +163,10 @@
                     </div>
                 </div>
             </div>
-            <h4 class="mt-3">ข้อมูลการติดต่อ</h4>
-            <div id="contact-person-root">
+            <h4 class="mt-3 interview-contact-groups">ข้อมูลการติดต่อ</h4>
+            <div id="contact-person-root" class="interview-contact-groups">
             </div>
-            <div class="form-row mt-2">
+            <div class="form-row mt-2 interview-contact-groups">
                 <div class="col-md-12">
                     <button class="btn btn-secondary" type="button" id="add-contact-person">เพิ่มผู้ติดต่อ</button>
                 </div>
@@ -168,11 +178,17 @@
                         ดูตัวอย่าง
                     </button>
                     <button class="btn btn-success">จัดเก็บ</button>
-                    <a href="{% url 'backoffice:projects-index' admission_round.id faculty.id %}">
-                        <button class="btn btn-warning" type="button">ยกเลิกการแก้ไข</button>
-                    </a>
+		    {% if current_major %}
+                      <a href="{% url 'backoffice:projects-index' current_admission_project.id admission_round.id %}">
+                        <button class="btn btn-warning" type="button">กลับไปหน้าหลักและยกเลิกการแก้ไข</button>
+                      </a>
+		    {% else %}
+                      <a href="{% url 'backoffice:index' %}">
+                        <button class="btn btn-warning" type="button">กลับไปหน้าหลักและยกเลิกการแก้ไข</button>
+                      </a>
+		    {% endif %}
                     {% if interview_description_id %}
-                    <button class="btn btn-danger" type="button" onclick="deleteDescription()">ลบ</button>
+                      <button class="btn btn-danger" type="button" onclick="deleteDescription()">ลบ</button>
                     {% endif %}
                 </div>
             </div>
@@ -206,7 +222,7 @@
                     <div class="col-md-9" id="preview-is_additional_documents_required">
                     </div>
                 </div>
-                <div class="form-row mt-2 form-group">
+                <div class="form-row mt-2 form-group interview-date-groups">
                     <div class="col-md-3">
                         วันเวลา
                     </div>
@@ -214,26 +230,37 @@
                     </div>
                 </div>
 
-                <h4 class="mt-3">การเตรียมตัวก่อนสัมภาษณ์</h4>
-                <div class="form-row">
+		<div class="form-row mt-2 no-interview-no-doc-groups">
+		  <div class="col-md-12">
+		    <p>ผู้ผ่านการคัดเลือกจะได้รับการประกาศรายชื่อเป็นผู้ผ่านการสอบสัมภาษณ์</p>
+		  </div>
+		</div>
+		<div class="form-row mt-2 no-interview-upload-groups">
+		  <div class="col-md-12">
+		    <p>กรรมการจะพิจารณาเอกสารที่ส่งเพิ่มเติมในการตัดสินผลการสอบสัมภาษณ์</p>
+		  </div>
+		</div>
+		
+		
+                <h4 class="mt-3 interview-prep-groups">การเตรียมตัวก่อนสัมภาษณ์</h4>
+                <div class="form-row interview-prep-groups">
                     <div class="col-md-9">
                         <p id="preview-preparation_descriptions"></p>
                     </div>
                     <div class="col-md-3 pr-2">
-                        <div id="preview-preparation_image"></div>
+                      <div id="preview-preparation_image"></div>
                     </div>
                 </div>
 
-
-                <h4 class="mt-3"><span class="interview-format-headers">รายละเอียดการสัมภาษณ์ออนไลน์</span></h4>
-                <div class="form-row online-platform-forms">
+                <h4 class="mt-3 interview-info-groups"><span class="interview-format-headers">รายละเอียดการสัมภาษณ์ออนไลน์</span></h4>
+                <div class="form-row online-platform-forms interview-info-groups">
                     <div class="col-md-3">
                         สัมภาษณ์ผ่านทางโปรแกรม
                     </div>
                     <div class="col-md-9" id="preview-video_conference_platform">
                     </div>
                 </div>
-                <div class="form-row mt-2">
+                <div class="form-row mt-2 interview-info-groups">
                     <div class="col-md-9">
                         <p id="preview-descriptions">
 
@@ -244,8 +271,8 @@
                         <div id="preview-description_image"></div>
                     </div>
                 </div>
-                <h4 class="mt-3">ข้อมูลการติดต่อ</h4>
-                <div>
+                <h4 class="mt-3 interview-contact-groups">ข้อมูลการติดต่อ</h4>
+                <div class="interview-contact-groups">
                     <ol id="preview-contacts">
                     </ol>
                 </div>
@@ -292,15 +319,56 @@
     '1': 'รายละเอียดการสัมภาษณ์ออนไลน์',
     '2': 'รายละเอียดการสัมภาษณ์'
   };
+ 
+  const formSectionDisplay = {
+    '0-nodoc': {
+      'show': ['.no-interview-no-doc-groups'],
+      'hide': ['.online-platform-forms', '.interview-date-groups',
+	       '.interview-prep-groups', '.interview-info-groups',
+	       '.interview-contact-groups', '.no-interview-upload-groups']
+    },
+    '0-upload': {
+      'show': ['.interview-prep-groups', '.interview-contact-groups', '.no-interview-upload-groups'],
+      'hide': ['.online-platform-forms', '.interview-date-groups',
+	       '.interview-info-groups', '.no-interview-no-doc-groups']
+    },
+    '1': {
+      'show': ['.online-platform-forms', '.interview-date-groups',
+	       '.interview-prep-groups', '.interview-info-groups',
+	       '.interview-contact-groups'],
+      'hide': ['.no-interview-no-doc-groups', '.no-interview-upload-groups']
+    },
+    '2': {
+      'show': ['.interview-date-groups', '.interview-prep-groups',
+	       '.interview-info-groups', '.interview-contact-groups'],
+      'hide': ['.online-platform-forms', '.no-interview-no-doc-groups',
+	       '.no-interview-upload-groups']
+    }
+  }
 
   function updateInterviewFormatHeader() {
-    const formatSelectValue = $('#id_interview_options').val();
-    $('.interview-format-headers').text(interviewFormatHeaders[formatSelectValue]);
-    if (formatSelectValue == '1') {
-      $('.online-platform-forms').show();
-    } else {
-      $('.online-platform-forms').hide();
+    var formatSelectValue = $('#id_interview_options').val();
+    const documentUploadValue = $('#id_additional_documents_option').val();
+    
+    if (formatSelectValue == '') {
+      formatSelectValue = '1';
     }
+    $('.interview-format-headers').text(interviewFormatHeaders[formatSelectValue]);
+    var displayValue = formatSelectValue;
+    if (formatSelectValue == '0') {
+      if (documentUploadValue == '0') {
+	displayValue = '0-nodoc';
+      } else {
+	displayValue = '0-upload';
+      }
+    }
+    
+    formSectionDisplay[displayValue]['show'].forEach(function(sel) {
+      $(sel).show();
+    });
+    formSectionDisplay[displayValue]['hide'].forEach(function(sel) {
+      $(sel).hide();
+    });
   }
 
   $(function () {
@@ -316,9 +384,8 @@
       }
     });
     updateInterviewFormatHeader();
-    $('#id_interview_options').change(function () {
-      updateInterviewFormatHeader();
-    });
+    $('#id_interview_options').change(updateInterviewFormatHeader);
+    $('#id_additional_documents_option').change(updateInterviewFormatHeader);
   });
 
   const contactsInput = $('#{{form.contacts.id_for_label}}')
