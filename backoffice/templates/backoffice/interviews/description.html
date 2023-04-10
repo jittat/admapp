@@ -168,7 +168,7 @@
                         ดูตัวอย่าง
                     </button>
                     <button class="btn btn-success">จัดเก็บ</button>
-                    <button class="btn btn-warning">ยกเลิกการแก้ไข</button>
+                    <a href="{% url 'backoffice:projects-index' current_admission_project.id admission_round.id %}"><button class="btn btn-warning" type="button">ยกเลิกการแก้ไข</button></a>
                     <button class="btn btn-danger ml-2">ลบ</button>
                 </div>
             </div>
