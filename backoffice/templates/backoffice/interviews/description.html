@@ -106,7 +106,8 @@
                     <div class="custom-file">
                         {{form.preparation_image.errors}}
                         {{form.preparation_image}}
-                        <label class="custom-file-label" for="{{form.preparation_image.id_for_label}}">เลือกไฟล์รูป</label>
+                        <label class="custom-file-label"
+                               for="{{form.preparation_image.id_for_label}}">เลือกไฟล์รูป</label>
                     </div>
                 </div>
             </div>
@@ -135,7 +136,7 @@
             </div>
             <div class="form-row mt-2">
                 <div class="col-md-3">
-		    รูปประกอบข้อมูลการสัมภาษณ์
+                    รูปประกอบข้อมูลการสัมภาษณ์
                     <small class="text-muted">{{form.description_image.help_text}}</small>
                     <br>
                     <img width="250px" class="img-fluid" id="descImgId" alt="interview details"
@@ -147,7 +148,8 @@
                     <div class="custom-file">
                         {{form.description_image.errors}}
                         {{form.description_image}}
-                        <label class="custom-file-label" for="{{form.description_image.id_for_label}}">เลือกไฟล์รูป</label>
+                        <label class="custom-file-label"
+                               for="{{form.description_image.id_for_label}}">เลือกไฟล์รูป</label>
                     </div>
                 </div>
             </div>
@@ -208,41 +210,41 @@
                     </div>
                 </div>
 
-            <h4 class="mt-3">การเตรียมตัวก่อนสัมภาษณ์</h4>
-            <div class="form-row">
-                <div class="col-md-9">
-                    <p id="preview-preparation_descriptions"></p>
+                <h4 class="mt-3">การเตรียมตัวก่อนสัมภาษณ์</h4>
+                <div class="form-row">
+                    <div class="col-md-9">
+                        <p id="preview-preparation_descriptions"></p>
+                    </div>
+                    <div class="col-md-3 pr-2">
+                        <div id="preview-preparation_image"></div>
+                    </div>
                 </div>
-                <div class="col-md-3 pr-2">
-                    <div id="preview-preparation_image"></div>
-                </div>
-            </div>
 
 
-            <h4 class="mt-3"><span class="interview-format-headers">รายละเอียดการสัมภาษณ์ออนไลน์</span></h4>
-            <div class="form-row online-platform-forms">
-                <div class="col-md-3">
-                    สัมภาษณ์ผ่านทางโปรแกรม
+                <h4 class="mt-3"><span class="interview-format-headers">รายละเอียดการสัมภาษณ์ออนไลน์</span></h4>
+                <div class="form-row online-platform-forms">
+                    <div class="col-md-3">
+                        สัมภาษณ์ผ่านทางโปรแกรม
+                    </div>
+                    <div class="col-md-9" id="preview-video_conference_platform">
+                    </div>
                 </div>
-                <div class="col-md-9" id="preview-video_conference_platform">
-                </div>
-            </div>
-            <div class="form-row mt-2">
-                <div class="col-md-9">
-                  <p id="preview-descriptions">
+                <div class="form-row mt-2">
+                    <div class="col-md-9">
+                        <p id="preview-descriptions">
 
-                  </p>
+                        </p>
+                    </div>
+                    <div class="col-md-3">
+                        <br>
+                        <div id="preview-description_image"></div>
+                    </div>
                 </div>
-                <div class="col-md-3">
-                  <br>
-                  <div id="preview-description_image"></div>
+                <h4 class="mt-3">ข้อมูลการติดต่อ</h4>
+                <div>
+                    <ol id="preview-contacts">
+                    </ol>
                 </div>
-            </div>
-            <h4 class="mt-3">ข้อมูลการติดต่อ</h4>
-            <div>
-                <ol id="preview-contacts">
-                </ol>
-            </div>
             </div>
         </div>
 
@@ -296,7 +298,7 @@
       $('.online-platform-forms').hide();
     }
   }
- 
+
   $(function () {
     $('.img-file-controls').change(function () {
       const imgId = $(this).data('imgId');
@@ -310,7 +312,7 @@
       }
     });
     updateInterviewFormatHeader();
-    $('#id_interview_options').change(function() {
+    $('#id_interview_options').change(function () {
       updateInterviewFormatHeader();
     });
   });
@@ -420,7 +422,7 @@
     }
   }
 
- function previewPrepImage() {
+  function previewPrepImage() {
     const sourceElement = document.getElementById('prepImgId');
     const targetElement = document.getElementById('preview-preparation_image');
     const clonedElement = sourceElement.cloneNode(true);
