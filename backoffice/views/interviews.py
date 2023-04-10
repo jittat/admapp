@@ -10,6 +10,7 @@ from backoffice.models import (
     InterviewDescription,
     AdmissionProjectMajorCuptCodeInterviewDescription,
 )
+from backoffice.views.permissions import can_user_view_applicants_in_major
 from criteria.models import MajorCuptCode, CurriculumMajor
 
 
@@ -94,7 +95,9 @@ def interview_form(request, admission_round_id, faculty_id, description_id=None)
     faculty = get_object_or_404(Faculty, pk=faculty_id)
 
     user = request.user
-
+    if major and (not can_user_view_applicants_in_major(user, major.admission_project, major)):
+        return redirect(reverse('backoffice:index'))
+    
     major_cupt_codes = MajorCuptCode.objects.filter(faculty=faculty_id)
     curriculum_majors = CurriculumMajor.objects.filter(faculty=faculty).all()
 
