@@ -317,9 +317,8 @@
     });
   });
 
-  let contactsInput = $('#{{form.contacts.id_for_label}}')
+  const contactsInput = $('#{{form.contacts.id_for_label}}')
   const contacts = contactsInput[0].value === '[]' ? [{}] : JSON.parse(contactsInput[0].value);
-  console.log(contacts, contactsInput[0].value)
   for (let i = 0; i < contacts.length; i++) {
     const contact = contacts[i];
     const contactForm = $('.contact-person-form').last().clone();
@@ -403,7 +402,7 @@
 
   function previewInterviewDate(formData) {
     const date = formData.get('interview_date')
-    let text = date ? new Date(date).toLocaleString() : '-'
+    const text = date ? new Date(date).toLocaleString() : '-'
     document.querySelector("#preview-interview_date").textContent = text
   }
 
@@ -413,12 +412,8 @@
   }
 
   function previewVideoConferencePlatform() {
-    const selectedValue = document.querySelector('input[name="video_conference_platform"]:checked')?.nextSibling.textContent.trim();
-    if (selectedValue) {
-      document.getElementById("preview-video_conference_platform").textContent = selectedValue;
-    } else {
-      document.getElementById("preview-video_conference_platform").textContent = '-';
-    }
+    const selectedValue = document.querySelector('input[name="video_conference_platform"]:checked')?.nextSibling.textContent.trim() || '-'
+    document.getElementById("preview-video_conference_platform").textContent = selectedValue || '-'
   }
 
   function previewPrepImage() {
@@ -439,7 +434,6 @@
 
   function previewContacts(formData) {
     const contacts = JSON.parse(formData.get('contacts'))
-    console.log(contacts)
 
     const rootEl = $('#preview-contacts')
     rootEl.empty()
