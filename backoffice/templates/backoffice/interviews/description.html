@@ -378,7 +378,7 @@
   }
 
   function previewAdditionalDoc() {
-    const selectElem = document.querySelector("#id_is_additional_documents_required")
+    const selectElem = document.querySelector("#id_additional_documents_option")
     const selectedIndex = selectElem.selectedIndex
     const title = selectElem.options[selectedIndex].text
     document.querySelector("#preview-is_additional_documents_required").textContent = title
@@ -396,11 +396,15 @@
   }
 
   function previewVideoConferencePlatform() {
-    const selectedValue = document.querySelector('input[name="video_conference_platform"]:checked').nextSibling.textContent.trim();
-    document.getElementById("preview-video_conference_platform").textContent = selectedValue;
+    try {
+      const selectedValue = document.querySelector('input[name="video_conference_platform"]:checked').nextSibling.textContent.trim();
+      document.getElementById("preview-video_conference_platform").textContent = selectedValue;
+    } catch (error) {
+      document.getElementById("preview-video_conference_platform").textContent = '-';
+    }
   }
 
-  function previewPrepImage() {
+ function previewPrepImage() {
     const sourceElement = document.getElementById('prepImgId');
     const targetElement = document.getElementById('preview-preparation_image');
     const clonedElement = sourceElement.cloneNode(true);
