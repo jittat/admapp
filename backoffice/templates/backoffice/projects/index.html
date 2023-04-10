@@ -62,6 +62,8 @@
               <td></td>
               <td></td>
               <td colspan="1000"></td>
+	    {% else %}
+              <td colspan="1000"></td>
             {% endif %}
           </tr>
         </thead>
@@ -127,6 +129,15 @@
                   <a target="_blank" class="xx-none btn btn-sm btn-outline-secondary" rel="noopener noreferrer" href="{% url 'backoffice:projects-show-applicant' project.id admission_round.id major.number 1 %}">พิจารณาผู้สมัคร</a>
                 {% endif %}
               </td>
+	      <td>
+                {% if user_major_number == any_major or user_major_number == major.number %}
+		  {% if major.interview_description %}
+                    <a target="_blank" class="xx-none btn btn-sm btn-outline-secondary" rel="noopener noreferrer" href="{% url 'backoffice:interviews-edit' admission_round.id major.faculty_id major.interview_description.id %}">รายละเอียดสัมภาษณ์</a>
+		  {% else %}
+                    <a target="_blank" class="xx-none btn btn-sm btn-outline-secondary" rel="noopener noreferrer" href="{% url 'backoffice:interviews-create' admission_round.id major.faculty_id %}?major_id={{ major.id }}">รายละเอียดสัมภาษณ์</a>
+		  {% endif %}
+                {% endif %}
+	      </td>
               <td class="d-none">
                 {% if user_major_number == any_major or user_major_number == major.number %}
                   <a target="_blank" class="xx-none btn btn-sm btn-outline-secondary" rel="noopener noreferrer" href="{% url 'backoffice:projects-show-scores' project.id admission_round.id major.number %}">ดูคะแนนสอบ</a>
@@ -161,6 +172,16 @@
                   </div>
                 {% endif %}
               </td>
+	    {% else %}
+	      <td>
+                {% if user_major_number == any_major or user_major_number == major.number %}
+		  {% if major.interview_description %}
+                    <a target="_blank" class="xx-none btn btn-sm btn-outline-secondary" rel="noopener noreferrer" href="{% url 'backoffice:interviews-edit' admission_round.id major.faculty_id major.interview_description.id %}">รายละเอียดสัมภาษณ์</a>
+		  {% else %}
+                    <a target="_blank" class="xx-none btn btn-sm btn-outline-secondary" rel="noopener noreferrer" href="{% url 'backoffice:interviews-create' admission_round.id major.faculty_id %}?major_id={{ major.id }}">รายละเอียดสัมภาษณ์</a>
+		  {% endif %}
+                {% endif %}
+	      </td>
             {% endif %}
           </tr>
         {% endfor %}

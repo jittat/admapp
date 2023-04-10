@@ -9,7 +9,7 @@ from appl.models import AdmissionProject, AdmissionRound
 from appl.models import ProjectApplication, Payment, Major, AdmissionResult, Faculty
 from appl.models import ProjectUploadedDocument, UploadedDocument, ExamScoreProvider, MajorInterviewDescription
 from backoffice.decorators import user_login_required
-from backoffice.models import CheckMarkGroup, JudgeComment, MajorInterviewCallDecision
+from backoffice.models import CheckMarkGroup, JudgeComment, MajorInterviewCallDecision, InterviewDescription
 from backoffice.views.permissions import can_user_view_project, can_user_view_applicant_in_major, \
     can_user_view_applicants_in_major
 from regis.models import Applicant, LogItem
@@ -364,6 +364,21 @@ def load_accepted_applicant_counts(admission_round, admission_project, majors):
                 majors[midx].accepted_for_interview_count = decision.interview_call_count
 
 
+def load_interview_descriptions(admission_round, project, faculty, majors):
+    interview_descriptions = InterviewDescription.objects.filter(admission_project=project)
+    if faculty:
+        interview_descriptions = interview_descriptions.filter(faculty=faculty)
+
+    print(interview_descriptions)
+    
+    major_map = { i.major_id:i for i in interview_descriptions }
+    for m in majors:
+        if m.id in major_map:
+            m.interview_description = major_map[m.id]
+        else:
+            m.interview_description = None
+
+
 @user_login_required
 def index(request, project_id, round_id):
     user = request.user
@@ -407,6 +422,11 @@ def index(request, project_id, round_id):
         load_accepted_applicant_counts(admission_round,
                                        project,
                                        majors)
+
+    load_interview_descriptions(admission_round,
+                                project,
+                                faculty,
+                                majors)
 
     return render(request,
                   'backoffice/projects/index.html',

@@ -22,6 +22,12 @@ def get_preselect_project_major(request):
     major_cupt_code_id = request.GET.get("major_cupt_code_id")
     return get_project_major_cupt_code_id(major_cupt_code_id, project_id)
 
+def get_major_cupt_code_id(program_code):
+    codes = MajorCuptCode.objects.filter(program_code=program_code)
+    if len(codes)!=0:
+        return codes[0].id
+    else:
+        return 0
 
 @user_login_required
 def interview_image(request, admission_round_id, faculty_id, description_id, type):
@@ -56,6 +62,10 @@ def interview_form(request, admission_round_id, faculty_id, description_id=None)
         major = Major.objects.get(pk=major_id)
     if major:
         current_admission_project = major.admission_project
+        if preselect_project_major==get_project_major_cupt_code_id(None,None):
+            preselect_project_major = get_project_major_cupt_code_id(
+                get_major_cupt_code_id(major.cupt_full_code),
+                major.admission_project_id)
     else:
         current_admission_project = None
 
@@ -180,7 +190,9 @@ def interview_form(request, admission_round_id, faculty_id, description_id=None)
         if form.is_valid():
             if not interview_description:
                 interview_description = form.save()
-                interview_description.major = Major.objects.get(pk=major_id)
+                this_major = Major.objects.get(pk=major_id)
+                interview_description.major = this_major
+                interview_description.admission_project = this_major.admission_project
                 interview_description.save()
             else:
                 interview_description = form.save()
@@ -201,9 +213,9 @@ def interview_form(request, admission_round_id, faculty_id, description_id=None)
             print(form.errors)
     else:
         if description_id is not None:
-            form = InterviewDescriptionForm(None, instance=interview_description)
+            form = InterviewDescriptionForm(instance=interview_description)
         else:
-            form = InterviewDescriptionForm()
+            form = InterviewDescriptionForm(initial={'interview_date':'2023-04-26 08:30'})
         form.fields["project_majors"].choices = project_majors_choices
         #form.fields["selected_project"].choices = project_choices
         #form.fields["selected_major"].choices = major_choices
