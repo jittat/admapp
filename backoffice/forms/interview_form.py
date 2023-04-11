@@ -19,6 +19,7 @@ class InterviewDescriptionForm(forms.ModelForm):
     class Meta:
         model = InterviewDescription
         fields = [
+            "span_option",
             "interview_options",
             "video_conference_platform",
             "interview_date",
@@ -30,6 +31,7 @@ class InterviewDescriptionForm(forms.ModelForm):
             "contacts",
         ]
         widgets = {
+            "span_option": forms.RadioSelect(),
             "interview_options": forms.Select(attrs={"class": "form-control"}),
             "interview_date": forms.DateTimeInput(
                 attrs={"type": "datetime-local", "class": "form-control"}
