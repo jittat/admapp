@@ -311,17 +311,33 @@ class InterviewDescription(models.Model):
     OPTION_DOC_NO_NEW_DOC = 0
     OPTION_DOC_UPLOAD_ON_ADMAPP = 1
     OPTION_DOC_UPLOAD_OTHER = 2
+
+    OPTION_SPAN_NOEXTRA = 0
+    OPTION_SPAN_SAME_PROJECT = 1
+    OPTION_SPAN_SAME_CUPT_CODE = 2
     
-    admission_round = models.ForeignKey(AdmissionRound, on_delete=models.CASCADE)
+    admission_round = models.ForeignKey(AdmissionRound,
+                                        on_delete=models.CASCADE)
 
-    admission_project = models.ForeignKey(
-        AdmissionProject, on_delete=models.CASCADE, blank=True, null=True
-    )
-    major = models.ForeignKey(
-        Major, on_delete=models.CASCADE, blank=True, null=True
-    )
+    admission_project = models.ForeignKey(AdmissionProject,
+                                          on_delete=models.CASCADE,
+                                          blank=True,
+                                          null=True)
+    major = models.ForeignKey(Major,
+                              on_delete=models.CASCADE,
+                              blank=True,
+                              null=True)
 
-    faculty = models.ForeignKey(Faculty, on_delete=models.CASCADE)
+    span_option = models.IntegerField(verbose_name='การเชื่อมโยงรายละเอียดการสัมภาษณ์',
+                                      default=OPTION_SPAN_NOEXTRA,
+                                      choices=[
+                                          (OPTION_SPAN_NOEXTRA, 'เชื่อมโยงแยกโครงการ-สาขา'),
+                                          (OPTION_SPAN_SAME_PROJECT, 'เชื่อมโยงทุกสาขาในโครงการนี้'),
+                                          (OPTION_SPAN_SAME_CUPT_CODE, 'เชื่อมโยงทุกโครงการของสาขานี้'),
+                                      ])
+    
+    faculty = models.ForeignKey(Faculty,
+                                on_delete=models.CASCADE)
 
     interview_options = models.IntegerField(
         verbose_name="ทางเลือกการสัมภาษณ์",
@@ -345,7 +361,8 @@ class InterviewDescription(models.Model):
         default=OPTION_DOC_NO_NEW_DOC,
         choices=[
             (
-                OPTION_DOC_NO_NEW_DOC, "ไม่มี"
+                OPTION_DOC_NO_NEW_DOC,
+                "ไม่มี"
             ),
             (
                 OPTION_DOC_UPLOAD_ON_ADMAPP,
@@ -360,31 +377,27 @@ class InterviewDescription(models.Model):
 
     preparation_descriptions = models.TextField(blank=True, verbose_name="รายละเอียดการเตรียมตัว")
     preparation_image = models.FileField(
-        upload_to=interview_preparation_image_path, blank=True, verbose_name="รูปประกอบการเตรียมตัว"
-    )
+        upload_to=interview_preparation_image_path, blank=True, verbose_name="รูปประกอบการเตรียมตัว")
 
     descriptions = models.TextField(blank=True, verbose_name="รายละเอียดการสัมภาษณ์")
     description_image = models.FileField(
-        upload_to=interview_description_image_path, blank=True, verbose_name="รูปประกอบการสัมภาษณ์"
-    )
+        upload_to=interview_description_image_path, blank=True, verbose_name="รูปประกอบการสัมภาษณ์")
 
     contacts = models.JSONField(blank=True, default=list, verbose_name="ข้อมูลการติดต่อ")
 
 
 class AdmissionProjectMajorCuptCodeInterviewDescription(models.Model):
-    admission_project = models.ForeignKey(
-        AdmissionProject, on_delete=models.CASCADE, db_constraint=False
-    )
+    admission_project = models.ForeignKey(AdmissionProject,
+                                          on_delete=models.CASCADE,
+                                          db_constraint=False)
 
-    major_cupt_code = models.ForeignKey(
-        MajorCuptCode, on_delete=models.CASCADE, db_constraint=False
-    )
+    major_cupt_code = models.ForeignKey(MajorCuptCode,
+                                        on_delete=models.CASCADE,
+                                        db_constraint=False)
 
-    interview_description = models.ForeignKey(
-        InterviewDescription,
-        on_delete=models.CASCADE,
-        related_name="admission_prject_major_cupt_code",
-    )
+    interview_description = models.ForeignKey(InterviewDescription,
+                                              on_delete=models.CASCADE,
+                                              related_name="admission_prject_major_cupt_code")
 
     class Meta:
         constraints = [
