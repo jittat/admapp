@@ -81,7 +81,7 @@ def interview_form(request, admission_round_id, faculty_id, description_id=None)
         ),
         'title': major_cupt_code.__str__(),
         'is_disabled': get_is_disabled(current_admission_project, description_id, major_cupt_code,
-                                       map_selected_admission_project_major_cupt_code),
+                                       map_selected_admission_project_major_cupt_code, preselect_project_major),
         'is_checked': get_is_checked(current_admission_project, description_id, major_cupt_code,
                                      map_selected_admission_project_major_cupt_code, preselect_project_major)
     } for major_cupt_code in major_cupt_codes]
@@ -243,12 +243,13 @@ def get_is_checked(admission_project, description_id, major_cupt_code, map_selec
     return is_in_this_description or is_preselected
 
 
-def get_is_disabled(admission_project, description_id, major_cupt_code, map_selected_admission_project_major_cupt_code):
+def get_is_disabled(admission_project, description_id, major_cupt_code, map_selected_admission_project_major_cupt_code, preselect_project_major):
     is_in_other_description = (major_cupt_code.id,
                                admission_project.id,) in map_selected_admission_project_major_cupt_code and not \
                                   map_selected_admission_project_major_cupt_code[
                                       (major_cupt_code.id, admission_project.id)] == description_id
-    return is_in_other_description
+    is_preselected = get_project_major_cupt_code_id(major_cupt_code.id, admission_project.id) == preselect_project_major
+    return is_in_other_description or is_preselected
 
 
 @user_login_required
