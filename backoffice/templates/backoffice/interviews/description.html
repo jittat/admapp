@@ -22,7 +22,7 @@
             {{ form.span_option }}
             {{ form.project_majors.id_for_label }}
             <div class="ml-4" id="id_project_majors">
-            {% for item in major_choices_additional %}
+            {% for item in major_choices_data %}
             <div>
                 <label for="project_majors_{{item.id}}">
                     <input type="checkbox" name="project_majors" id="project_majors_{{item.id}}" value="{{item.id}}"
