@@ -312,9 +312,10 @@ class InterviewDescription(models.Model):
     OPTION_DOC_UPLOAD_ON_ADMAPP = 1
     OPTION_DOC_UPLOAD_OTHER = 2
 
-    OPTION_SPAN_NOEXTRA = 0
+    OPTION_SPAN_NO_SPAN = 0
     OPTION_SPAN_SAME_PROJECT = 1
     OPTION_SPAN_SAME_CUPT_CODE = 2
+    OPTION_SPAN_INDIVIDUAL = 3
     
     admission_round = models.ForeignKey(AdmissionRound,
                                         on_delete=models.CASCADE)
@@ -329,11 +330,12 @@ class InterviewDescription(models.Model):
                               null=True)
 
     span_option = models.IntegerField(verbose_name='การเชื่อมโยงรายละเอียดการสัมภาษณ์',
-                                      default=OPTION_SPAN_NOEXTRA,
+                                      default=OPTION_SPAN_NO_SPAN,
                                       choices=[
-                                          (OPTION_SPAN_NOEXTRA, 'เชื่อมโยงแยกโครงการ-สาขา'),
+                                          (OPTION_SPAN_NO_SPAN, 'ไม่มีการเชื่อมโยงไปยังสาขาหรือโครงการอื่น'),
                                           (OPTION_SPAN_SAME_PROJECT, 'เชื่อมโยงทุกสาขาในโครงการนี้'),
                                           (OPTION_SPAN_SAME_CUPT_CODE, 'เชื่อมโยงทุกโครงการของสาขานี้'),
+                                          (OPTION_SPAN_INDIVIDUAL, 'เชื่อมโยงแยกโครงการ-สาขา'),
                                       ])
     
     faculty = models.ForeignKey(Faculty,
