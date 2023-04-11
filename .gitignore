@@ -21,3 +21,6 @@ main/static/react/node_modules/*
 .vscode
 .python-version
 .DS_Store
+
+/MEDIA_BACKUP_ID
+/backupmedia
