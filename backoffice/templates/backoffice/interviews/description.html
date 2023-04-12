@@ -592,6 +592,12 @@
     const projectMajor = getProjectMajorData(projectId, majorId)
     const {title, id} = projectMajor
 
+    // don't add if it's disabled
+    if (projectMajor.is_disabled) {
+      alert('ไม่สามารถเพิ่มได้ สาขาและโครงการที่ระบุ ถูกผูกกับรายละเอียดอันอื่นไปแล้ว')
+      return
+    }
+
     // don't add if already there
     const formData = getFormData()
     const selected = formData.getAll('project_majors')
