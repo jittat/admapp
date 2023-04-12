@@ -90,7 +90,7 @@ def interview_form(request, admission_round_id, faculty_id, description_id=None)
 
             is_disabled = get_is_disabled(admission_project, description_id, major_cupt_code,
                                           map_selected_admission_project_major_cupt_code)
-            title = str(admission_project) + str(major_cupt_code)
+            title = str(admission_project) + ' / ' + str(major_cupt_code)
 
             if not is_disabled:
                 project_majors_choices.append(
@@ -105,19 +105,6 @@ def interview_form(request, admission_round_id, faculty_id, description_id=None)
                 "admission_project_id": admission_project.pk,
                 "major_id": major_cupt_code.id,
             })
-
-    major_choices_data = [{
-        'id': get_project_major_cupt_code_id(
-            major_cupt_code.id, current_admission_project.id
-        ),
-        'title': major_cupt_code.__str__(),
-        'is_disabled': get_is_disabled(current_admission_project, description_id, major_cupt_code,
-                                       map_selected_admission_project_major_cupt_code),
-        'is_checked': get_is_checked(current_admission_project, description_id, major_cupt_code,
-                                     map_selected_admission_project_major_cupt_code, preselect_project_major),
-        'readonly': get_project_major_cupt_code_id(major_cupt_code.id,
-                                                   current_admission_project.id) == preselect_project_major
-    } for major_cupt_code in major_cupt_codes]
 
     if request.method == "POST":
         form = InterviewDescriptionForm(request.POST, request.FILES, instance=interview_description)
@@ -172,7 +159,6 @@ def interview_form(request, admission_round_id, faculty_id, description_id=None)
             "current_major": major,
             "current_admission_project": current_admission_project,
             "form": form,
-            "major_choices_data": major_choices_data,
             "project_majors_data": project_majors_data,
             "major_choices": major_choices,
             "project_choices": project_choices

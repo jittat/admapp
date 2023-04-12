@@ -21,34 +21,37 @@
             {{ form.span_option.errors }}
             {{ form.span_option }}
             {{ form.project_majors.id_for_label }}
-            <div class="form-row ml-2">
-                <div class="col-md-4">
-                    <label for="select-project">โครงการ</label>
+
+            <div class="" id="project-majors-root" style="display:none;">
+                <div class="form-row ml-2">
+                    <div class="col-md-4">
+                        <label for="select-project">โครงการ</label>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="select-major">สาขา</label>
+                    </div>
                 </div>
-                <div class="col-md-4">
-                    <label for="select-major">สาขา</label>
+                <div class="form-row ml-2">
+                    <div class="col-md-4">
+                        <select class="form-control" id="select-project">
+                            {% for project in project_choices %}
+                            <option value="{{project.id}}">{{project.title}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <select class="form-control" id="select-major">
+                            {% for major in major_choices %}
+                            <option value="{{major.id}}">{{major.title}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button class="btn btn-primary" id="add-project-major" type="button"
+                                onclick="addProjectMajor()">เพิ่ม
+                        </button>
+                    </div>
                 </div>
-            </div>
-            <div class="form-row ml-2">
-                <div class="col-md-4">
-                    <select class="form-control" id="select-project">
-                        {% for project in project_choices %}
-                        <option value="{{project.id}}">{{project.title}}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="col-md-4">
-                    <select class="form-control" id="select-major">
-                        {% for major in major_choices %}
-                        <option value="{{major.id}}">{{major.title}}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="col-md-2">
-                    <button class="btn btn-primary" id="add-project-major" type="button" onclick="addProjectMajor()">เพิ่ม</button>
-                </div>
-            </div>
-            <div class="" id="project-majors-root">
                 <ol>
                     <li class="selected-project-major">
                         <div>
@@ -69,20 +72,6 @@
                         </div>
                     </li>
                 </ol>
-            </div>
-            <div class="ml-4" id="id_project_majors" style="display:none;">
-                {% for item in major_choices_data %}
-                <div>
-                    <label for="project_majors_{{item.id}}">
-                        <input type="checkbox" name="project_majors" id="project_majors_{{item.id}}" value="{{item.id}}"
-                               title="{{item.title}}"
-                               {% if item.is_checked %}checked{% endif %}
-                               {% if item.is_disabled %}disabled{% endif %}
-                               {% if item.readonly %}readonly{% endif %}>
-                        {{item.title}}
-                    </label>
-                </div>
-                {% endfor %}
             </div>
 
             <h4>ข้อมูลทั่วไป</h4>
@@ -596,29 +585,28 @@
     const formData = getFormData();
     const selectedValue = formData.get('span_option')
     if (selectedValue === OPTION_SPAN_INDIVIDUAL) {
-      $('#id_project_majors').show()
+      $('#project-majors-root').show()
     } else {
-      $('#id_project_majors').hide()
+      $('#project-majors-root').hide()
     }
   }
-  const major_choices_data = JSON.parse($('#major_choices_data').html())
+
   const project_majors_data = JSON.parse($('#project_majors_data').html())
-  const project_choices = JSON.parse($('#project_choices').html())
-  const major_choices = JSON.parse($('#major_choices').html())
-  console.log(project_choices,major_choices)
-  // <input name="project_majors" id="project_majors_9_1" value="9_1" type="hidden"
-  //        title="วท.บ. สาขาวิชาอาหาร โภชนาการ และการกำหนดอาหาร (ภาษาไทย ปกติ)" checked>
   function addProjectMajor() {
     const projectId = $('#select-project').val()
     const majorId = $('#select-major').val()
-    const projectMajorId = `${majorId}_${projectId}`
-    const title = 'title1234'
+    const projectMajor = getProjectMajorData(projectId, majorId)
+    const {title, id} = projectMajor
 
     const el = $('.selected-project-major').first().clone();
-    el.find('input').val(projectMajorId)
+    el.find('input').val(id)
     el.find('.selected-project-major-title').text(title)
     $('#project-majors-root > ol').append(el);
-    // const
   }
+
+  function getProjectMajorData(projectId, majorId) {
+    return project_majors_data[projectId].find(({major_id}) => major_id === +majorId)
+  }
+
 </script>
 {% endblock %}
