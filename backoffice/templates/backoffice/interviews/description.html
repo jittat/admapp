@@ -21,6 +21,55 @@
             {{ form.span_option.errors }}
             {{ form.span_option }}
             {{ form.project_majors.id_for_label }}
+            <div class="form-row ml-2">
+                <div class="col-md-4">
+                    <label for="select1">โครงการ</label>
+                </div>
+                <div class="col-md-4">
+                    <label for="select2">สาขา</label>
+                </div>
+            </div>
+            <div class="form-row ml-2">
+                <div class="col-md-4">
+                    <select class="form-control" id="select1">
+                        <option value="project1">โครงการ 1</option>
+                        <option value="project2">โครงการ 2</option>
+                        <option value="project3">โครงการ 3</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <select class="form-control" id="select2">
+                        <option value="majorA">สาขา A</option>
+                        <option value="majorB">สาขา B</option>
+                        <option value="majorC">สาขา C</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-primary" id="add-project-major" type="button" onclick="addProjectMajor()">เพิ่ม</button>
+                </div>
+            </div>
+            <div class="" id="project-majors-root">
+                <ol>
+                    <li class="selected-project-major">
+                        <div>
+                            <span class="selected-project-major-title">วท.บ. สาขาวิชาอาหาร โภชนาการ และการกำหนดอาหาร (ภาษาไทย ปกติ)</span>
+                            <span class="ml-2">
+<!--                                <button class="btn btn-danger">ลบ</button>-->
+                            </span>
+                            <input type="hidden" name="project-majors">
+                        </div>
+                    </li>
+                    <li class="selected-project-major">
+                        <div>
+                            <span class="selected-project-major-title">วท.บ. สาขาวิชาอาหาร โภชนาการ และการกำหนดอาหาร (ภาษาไทย ปกติ)</span>
+                            <span class="ml-2">
+<!--                                <button class="btn btn-danger">ลบ</button>-->
+                            </span>
+                            <input type="hidden" name="project-majors">
+                        </div>
+                    </li>
+                </ol>
+            </div>
             <div class="ml-4" id="id_project_majors" style="display:none;">
                 {% for item in major_choices_data %}
                 <div>
@@ -299,6 +348,7 @@
         pointer-events: none;
     }
 </style>
+{{major_choices_data|json_script:'major_choices_data'}}
 <script>
 
   const OPTION_SPAN_INDIVIDUAL = '3'
@@ -533,6 +583,12 @@
     return formData;
   }
 
+  $("input[name='span_option']").change(showHideProjectMajors)
+
+  $(document).ready(function () {
+    showHideProjectMajors()
+  });
+
   function showHideProjectMajors() {
     const formData = getFormData();
     const selectedValue = formData.get('span_option')
@@ -542,12 +598,20 @@
       $('#id_project_majors').hide()
     }
   }
+  const major_choices_data = JSON.parse($('#major_choices_data').html())
+  // <input name="project_majors" id="project_majors_9_1" value="9_1" type="hidden"
+  //        title="วท.บ. สาขาวิชาอาหาร โภชนาการ และการกำหนดอาหาร (ภาษาไทย ปกติ)" checked>
+  function addProjectMajor() {
+    const projectId = $('#select1').val()
+    const majorId = $('#select2').val()
+    const projectMajorId = `${projectId}_${majorId}`
+    const title = 'title1234'
 
-  $("input[name='span_option']").change(showHideProjectMajors)
-
-  $(document).ready(function () {
-    showHideProjectMajors()
-  });
-
+    const el = $('.selected-project-major').first().clone();
+    el.find('input').val(projectMajorId)
+    el.find('.selected-project-major-title').text(title)
+    $('#project-majors-root > ol').append(el);
+    // const
+  }
 </script>
 {% endblock %}
