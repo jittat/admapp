@@ -23,25 +23,25 @@
             {{ form.project_majors.id_for_label }}
             <div class="form-row ml-2">
                 <div class="col-md-4">
-                    <label for="select1">โครงการ</label>
+                    <label for="select-project">โครงการ</label>
                 </div>
                 <div class="col-md-4">
-                    <label for="select2">สาขา</label>
+                    <label for="select-major">สาขา</label>
                 </div>
             </div>
             <div class="form-row ml-2">
                 <div class="col-md-4">
-                    <select class="form-control" id="select1">
-                        <option value="project1">โครงการ 1</option>
-                        <option value="project2">โครงการ 2</option>
-                        <option value="project3">โครงการ 3</option>
+                    <select class="form-control" id="select-project">
+                        {% for project in project_choices %}
+                        <option value="{{project.id}}">{{project.title}}</option>
+                        {% endfor %}
                     </select>
                 </div>
                 <div class="col-md-4">
-                    <select class="form-control" id="select2">
-                        <option value="majorA">สาขา A</option>
-                        <option value="majorB">สาขา B</option>
-                        <option value="majorC">สาขา C</option>
+                    <select class="form-control" id="select-major">
+                        {% for major in major_choices %}
+                        <option value="{{major.id}}">{{major.title}}</option>
+                        {% endfor %}
                     </select>
                 </div>
                 <div class="col-md-2">
@@ -349,6 +349,9 @@
     }
 </style>
 {{major_choices_data|json_script:'major_choices_data'}}
+{{project_majors_data|json_script:'project_majors_data'}}
+{{project_choices|json_script:'project_choices'}}
+{{major_choices|json_script:'major_choices'}}
 <script>
 
   const OPTION_SPAN_INDIVIDUAL = '3'
@@ -599,12 +602,16 @@
     }
   }
   const major_choices_data = JSON.parse($('#major_choices_data').html())
+  const project_majors_data = JSON.parse($('#project_majors_data').html())
+  const project_choices = JSON.parse($('#project_choices').html())
+  const major_choices = JSON.parse($('#major_choices').html())
+  console.log(project_choices,major_choices)
   // <input name="project_majors" id="project_majors_9_1" value="9_1" type="hidden"
   //        title="วท.บ. สาขาวิชาอาหาร โภชนาการ และการกำหนดอาหาร (ภาษาไทย ปกติ)" checked>
   function addProjectMajor() {
-    const projectId = $('#select1').val()
-    const majorId = $('#select2').val()
-    const projectMajorId = `${projectId}_${majorId}`
+    const projectId = $('#select-project').val()
+    const majorId = $('#select-major').val()
+    const projectMajorId = `${majorId}_${projectId}`
     const title = 'title1234'
 
     const el = $('.selected-project-major').first().clone();
