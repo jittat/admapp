@@ -57,11 +57,10 @@
                         <li class="selected-project-major">
                             <div>
                                 <span class="selected-project-major-title">{{item.title}}</span>
-                                {% if not item.readonly %}
-<!--                                <span class="ml-2">-->
-<!--                                    <button class="btn btn-danger">ลบ</button>-->
-<!--                                </span>-->
-                                {% endif %}
+                                <span class="ml-2 project-major-delete-btn" {% if item.readonly %}style="display:none"{% endif %}>
+                                    <button class="btn btn-danger btn-xsm">ลบ</button>
+                                </span>
+
                                 <input type="hidden" name="project_majors" value="{{item.id}}">
                             </div>
                         </li>
@@ -452,7 +451,7 @@
   }
 
   function unselectAllProjectMajors() {
-    $("input[name='project_majors']").prop("checked", false);
+    $("input[name='project_majors']").prop("disabled", true);
   }
 
   $('#form').on('submit', function () {
@@ -593,7 +592,13 @@
     const projectMajor = getProjectMajorData(projectId, majorId)
     const {title, id} = projectMajor
 
+    // don't add if already there
+    const formData = getFormData()
+    const selected = formData.getAll('project_majors')
+    if (selected.includes(id)) return
+
     const el = $('.selected-project-major').first().clone();
+    el.find('.project-major-delete-btn').show()
     el.find('input').val(id)
     el.find('.selected-project-major-title').text(title)
     $('#project-majors-root > ol').append(el);
@@ -602,6 +607,11 @@
   function getProjectMajorData(projectId, majorId) {
     return project_majors_data[projectId].find(({major_id}) => major_id === +majorId)
   }
+
+
+  $(document).on('click', '.project-major-delete-btn', function () {
+    $(this).closest('.selected-project-major').remove();
+  });
 
 </script>
 {% endblock %}
