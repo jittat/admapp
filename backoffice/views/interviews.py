@@ -69,50 +69,11 @@ def interview_form(request, admission_round_id, faculty_id, description_id=None)
     map_selected_admission_project_major_cupt_code = get_map_selected_admission_project_major_cupt_code(
         admission_round_id, faculty_id)
 
-    project_choices = [
-        {'id': str(admission_project.id), 'title': admission_project.title}
-        for admission_project in current_round_project_list
-    ]
-
-    major_choices = [
-        {'id': str(major_cupt_code.id), 'title': str(major_cupt_code)}
-        for major_cupt_code in major_cupt_codes
-    ]
-
-    project_majors_data = {}
-    project_majors_choices = []
-    selected_project_majors = []
-    for admission_project in current_round_project_list:
-        project_majors_data[admission_project.id] = []
-        for i, major_cupt_code in enumerate(major_cupt_codes):
-            project_majors_id = get_project_major_cupt_code_id(
-                major_cupt_code.id, admission_project.id
-            )
-
-            is_disabled = get_is_disabled(admission_project, description_id, major_cupt_code,
-                                          map_selected_admission_project_major_cupt_code)
-            title = str(admission_project) + ' / ' + str(major_cupt_code)
-
-            if not is_disabled:
-                project_majors_choices.append(
-                    (project_majors_id, title)
-                )
-            is_preselected = get_is_preselected(admission_project, major_cupt_code, preselect_project_major)
-            is_checked = get_is_checked(admission_project, description_id, is_preselected, major_cupt_code,
-                                        map_selected_admission_project_major_cupt_code)
-            project_majors_data[admission_project.id].append({
-                "id": project_majors_id,
-                "title": title,
-                "is_disabled": is_disabled,
-                "is_checked": is_checked,
-                "admission_project_id": admission_project.pk,
-                "major_id": major_cupt_code.id,
-                "readonly": is_preselected
-            })
-            if is_checked:
-                selected_project_majors.append(
-                    {'id': project_majors_id, 'title': title, 'readonly': is_preselected}
-                )
+    project_choices = get_project_choices(current_round_project_list)
+    major_choices = get_major_choices(major_cupt_codes)
+    project_majors_choices, project_majors_data, selected_project_majors = calculate_project_majors(
+        current_round_project_list, description_id, major_cupt_codes, map_selected_admission_project_major_cupt_code,
+        preselect_project_major)
 
     if request.method == "POST":
         form = InterviewDescriptionForm(request.POST, request.FILES, instance=interview_description)
@@ -173,6 +134,59 @@ def interview_form(request, admission_round_id, faculty_id, description_id=None)
             "selected_project_majors": selected_project_majors
         },
     )
+
+
+def get_major_choices(major_cupt_codes):
+    return [
+        {'id': str(major_cupt_code.id), 'title': str(major_cupt_code)}
+        for major_cupt_code in major_cupt_codes
+    ]
+
+
+def get_project_choices(current_round_project_list):
+    return [
+        {'id': str(admission_project.id), 'title': admission_project.title}
+        for admission_project in current_round_project_list
+    ]
+
+
+def calculate_project_majors(current_round_project_list, description_id, major_cupt_codes,
+                             map_selected_admission_project_major_cupt_code, preselect_project_major):
+    project_majors_data = {}
+    project_majors_choices = []
+    selected_project_majors = []
+    for admission_project in current_round_project_list:
+        project_majors_data[admission_project.id] = []
+        for i, major_cupt_code in enumerate(major_cupt_codes):
+            project_majors_id = get_project_major_cupt_code_id(
+                major_cupt_code.id, admission_project.id
+            )
+
+            is_disabled = get_is_disabled(admission_project, description_id, major_cupt_code,
+                                          map_selected_admission_project_major_cupt_code)
+            title = str(admission_project) + ' / ' + str(major_cupt_code)
+
+            if not is_disabled:
+                project_majors_choices.append(
+                    (project_majors_id, title)
+                )
+            is_preselected = get_is_preselected(admission_project, major_cupt_code, preselect_project_major)
+            is_checked = get_is_checked(admission_project, description_id, is_preselected, major_cupt_code,
+                                        map_selected_admission_project_major_cupt_code)
+            project_majors_data[admission_project.id].append({
+                "id": project_majors_id,
+                "title": title,
+                "is_disabled": is_disabled,
+                "is_checked": is_checked,
+                "admission_project_id": admission_project.pk,
+                "major_id": major_cupt_code.id,
+                "readonly": is_preselected
+            })
+            if is_checked:
+                selected_project_majors.append(
+                    {'id': project_majors_id, 'title': title, 'readonly': is_preselected}
+                )
+    return project_majors_choices, project_majors_data, selected_project_majors
 
 
 def get_is_preselected(admission_project, major_cupt_code, preselect_project_major):
