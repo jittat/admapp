@@ -53,24 +53,19 @@
                     </div>
                 </div>
                 <ol>
-                    <li class="selected-project-major">
-                        <div>
-                            <span class="selected-project-major-title">วท.บ. สาขาวิชาอาหาร โภชนาการ และการกำหนดอาหาร (ภาษาไทย ปกติ)</span>
-                            <span class="ml-2">
-<!--                                <button class="btn btn-danger">ลบ</button>-->
-                            </span>
-                            <input type="hidden" name="project-majors">
-                        </div>
-                    </li>
-                    <li class="selected-project-major">
-                        <div>
-                            <span class="selected-project-major-title">วท.บ. สาขาวิชาอาหาร โภชนาการ และการกำหนดอาหาร (ภาษาไทย ปกติ)</span>
-                            <span class="ml-2">
-<!--                                <button class="btn btn-danger">ลบ</button>-->
-                            </span>
-                            <input type="hidden" name="project-majors">
-                        </div>
-                    </li>
+                    {% for item in selected_project_majors %}
+                        <li class="selected-project-major">
+                            <div>
+                                <span class="selected-project-major-title">{{item.title}}</span>
+                                {% if not item.readonly %}
+<!--                                <span class="ml-2">-->
+<!--                                    <button class="btn btn-danger">ลบ</button>-->
+<!--                                </span>-->
+                                {% endif %}
+                                <input type="hidden" name="project_majors" value="{{item.id}}">
+                            </div>
+                        </li>
+                    {% endfor %}
                 </ol>
             </div>
 

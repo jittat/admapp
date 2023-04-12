@@ -11,7 +11,7 @@ from backoffice.models import (
     AdmissionProjectMajorCuptCodeInterviewDescription,
 )
 from backoffice.views.permissions import can_user_view_applicants_in_major
-from criteria.models import MajorCuptCode, CurriculumMajor
+from criteria.models import MajorCuptCode
 
 
 @user_login_required
@@ -81,6 +81,7 @@ def interview_form(request, admission_round_id, faculty_id, description_id=None)
 
     project_majors_data = {}
     project_majors_choices = []
+    selected_project_majors = []
     for admission_project in current_round_project_list:
         project_majors_data[admission_project.id] = []
         for i, major_cupt_code in enumerate(major_cupt_codes):
@@ -96,15 +97,22 @@ def interview_form(request, admission_round_id, faculty_id, description_id=None)
                 project_majors_choices.append(
                     (project_majors_id, title)
                 )
+            is_preselected = get_is_preselected(admission_project, major_cupt_code, preselect_project_major)
+            is_checked = get_is_checked(admission_project, description_id, is_preselected, major_cupt_code,
+                                        map_selected_admission_project_major_cupt_code)
             project_majors_data[admission_project.id].append({
                 "id": project_majors_id,
                 "title": title,
                 "is_disabled": is_disabled,
-                "is_checked": get_is_checked(admission_project, description_id, major_cupt_code,
-                                             map_selected_admission_project_major_cupt_code, preselect_project_major),
+                "is_checked": is_checked,
                 "admission_project_id": admission_project.pk,
                 "major_id": major_cupt_code.id,
+                "readonly": is_preselected
             })
+            if is_checked:
+                selected_project_majors.append(
+                    {'id': project_majors_id, 'title': title, 'readonly': is_preselected}
+                )
 
     if request.method == "POST":
         form = InterviewDescriptionForm(request.POST, request.FILES, instance=interview_description)
@@ -161,9 +169,34 @@ def interview_form(request, admission_round_id, faculty_id, description_id=None)
             "form": form,
             "project_majors_data": project_majors_data,
             "major_choices": major_choices,
-            "project_choices": project_choices
+            "project_choices": project_choices,
+            "selected_project_majors": selected_project_majors
         },
     )
+
+
+def get_is_preselected(admission_project, major_cupt_code, preselect_project_major):
+    return get_project_major_cupt_code_id(major_cupt_code.id, admission_project.id) == preselect_project_major
+
+
+def get_is_checked(admission_project, description_id, is_preselected, major_cupt_code,
+                   map_selected_admission_project_major_cupt_code):
+    is_in_this_description = (
+                                 major_cupt_code.id,
+                                 admission_project.id,) in map_selected_admission_project_major_cupt_code and \
+                             map_selected_admission_project_major_cupt_code[
+                                 (major_cupt_code.id, admission_project.id)] == description_id
+    is_checked = is_in_this_description or is_preselected
+    return is_checked
+
+
+def get_is_disabled(admission_project, description_id, major_cupt_code, map_selected_admission_project_major_cupt_code):
+    is_in_other_description = (major_cupt_code.id,
+                               admission_project.id,) in map_selected_admission_project_major_cupt_code and not \
+                                  map_selected_admission_project_major_cupt_code[
+                                      (major_cupt_code.id, admission_project.id)] == description_id
+    is_disabled = is_in_other_description
+    return is_disabled
 
 
 def get_project_major_cupt_code_id(major_cupt_code_id, project_id):
@@ -252,25 +285,6 @@ def get_map_selected_admission_project_major_cupt_code(admission_round_id, facul
             (considered_obj_major_cupt_code_id, considered_obj_admission_project_id)
         ] = selected_admission_project_major_cupt_code.interview_description.id
     return map_selected_admission_project_major_cupt_code
-
-
-def get_is_checked(admission_project, description_id, major_cupt_code, map_selected_admission_project_major_cupt_code,
-                   preselect_project_major):
-    is_in_this_description = (
-                                 major_cupt_code.id,
-                                 admission_project.id,) in map_selected_admission_project_major_cupt_code and \
-                             map_selected_admission_project_major_cupt_code[
-                                 (major_cupt_code.id, admission_project.id)] == description_id
-    is_preselected = get_project_major_cupt_code_id(major_cupt_code.id, admission_project.id) == preselect_project_major
-    return is_in_this_description or is_preselected
-
-
-def get_is_disabled(admission_project, description_id, major_cupt_code, map_selected_admission_project_major_cupt_code):
-    is_in_other_description = (major_cupt_code.id,
-                               admission_project.id,) in map_selected_admission_project_major_cupt_code and not \
-                                  map_selected_admission_project_major_cupt_code[
-                                      (major_cupt_code.id, admission_project.id)] == description_id
-    return is_in_other_description
 
 
 @user_login_required
