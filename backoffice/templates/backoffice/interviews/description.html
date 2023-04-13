@@ -4,9 +4,14 @@
     <div class="col-md-12">
         {% include "backoffice/messages_alert.html" %}
         <h2>
-            ข้อมูลการสัมภาษณ์ {{ admission_round}} {{ faculty }}
-        </h2>
+          ข้อมูลการสัมภาษณ์ {{ admission_round}} {{ faculty }}
+	</h2>
 
+	<div class="alert alert-warning">
+	  <span class="badge badge-warning">ประกาศ</span>
+	  <b>การกรอกข้อมูลสัมภาษณ์ รอบที่ 2.</b> ขณะนี้สาขาสามารถกรอกข้อมูลสัมภาษณ์ได้แล้ว ขณะนี้สามารถกรอกฟอร์มแยกตามสาขาวิชาและโครงการได้แล้ว &nbsp;&nbsp; ภายในวันที่ 14 เม.ย. 66 <del>12 เม.ย. 66</del> ผู้ประสานงานระดับคณะจะสามารถแก้ไขข้อมูลและกรอกแบบฟอร์มที่มีการใช้ข้อมูลร่วมกันของหลายสาขาและหลายโครงการ (เช่น ระบุให้ทุกสาขาในโครงการรับไม่ต้องสัมภาษณ์ หรือระบุให้บางสาขาของทุกโครงการมีรูปแบบการสัมภาษณ์แบบเดียวกัน เป็นต้น) &nbsp;&nbsp; ทีมงานขออภัยในความล่าช้า มา ณ ที่นี้
+	</div>
+      
         <form method="post" id="form"
               enctype="multipart/form-data">
             <h3>
@@ -113,8 +118,9 @@
             <h4 class="mt-3 interview-prep-groups">การเตรียมตัวก่อนสัมภาษณ์</h4>
             <div class="form-row interview-prep-groups">
                 <div class="col-md-12">
-                    <label for="{{form.prep_detail.id_for_label}}">รายละเอียดการเตรียมตัว</label>
-                    {{form.preparation_descriptions.errors}}
+                  <label for="{{form.prep_detail.id_for_label}}">รายละเอียดการเตรียมตัว</label>
+		  <small class="text-muted">สามารถใส่ลิงก์ (URL) ในข้อความได้ ผู้สมัครจะเห็นลิงก์ที่สามารถคลิ็กได้</small>
+                  {{form.preparation_descriptions.errors}}
                     {{form.preparation_descriptions}}
                 </div>
             </div>
@@ -155,7 +161,7 @@
             <div class="form-row interview-info-groups">
                 <div class="col-md-12">
                     {{form.descriptions.label}}
-                    <small class="text-muted">{{form.descriptions.help_text}}</small>
+                  <small class="text-muted">{{form.descriptions.help_text}} ผู้สมัครจะเห็นลิงก์ที่สามารถคลิ็กได้</small>
                     {{form.descriptions.errors}}
                     {{form.descriptions}}
                 </div>
