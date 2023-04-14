@@ -65,15 +65,20 @@ def interview_form(request, admission_round_id, faculty_id, description_id=None)
         return redirect(reverse('backoffice:index'))
 
     major_cupt_codes = MajorCuptCode.objects.filter(faculty=faculty_id)
-    current_round_project_list = get_current_round_project_list(admission_round, user)
+    current_round_projects = admission_round.get_available_projects()
+
+    project_majors = get_faculty_project_majors(faculty, admission_round, current_round_projects)
+    
     map_selected_admission_project_major_cupt_code = get_map_selected_admission_project_major_cupt_code(
         admission_round_id, faculty_id)
-
-    project_choices = get_project_choices(current_round_project_list)
+    available_projects = [project_majors[pid]['project'] for pid in project_majors]
+    project_choices = get_project_choices(available_projects)
     major_choices = get_major_choices(major_cupt_codes)
+
     project_majors_choices, project_majors_data, selected_project_majors = calculate_project_majors(
-        current_round_project_list, description_id, major_cupt_codes, map_selected_admission_project_major_cupt_code,
-        preselect_project_major)
+        available_projects, description_id, major_cupt_codes, map_selected_admission_project_major_cupt_code,
+        preselect_project_major,
+        project_majors)
 
     if request.method == "POST":
         form = InterviewDescriptionForm(request.POST, request.FILES, instance=interview_description)
@@ -122,7 +127,7 @@ def interview_form(request, admission_round_id, faculty_id, description_id=None)
         {
             "interview_description_id": description_id,
             "admission_round": admission_round,
-            "admission_projects": current_round_project_list,
+            "admission_projects": current_round_projects,
             "majors": major_cupt_codes,
             "faculty": faculty,
             "current_major": major,
@@ -136,6 +141,24 @@ def interview_form(request, admission_round_id, faculty_id, description_id=None)
     )
 
 
+def get_faculty_project_majors(faculty, admission_round, current_round_projects):
+    project_map = { p.id : p for p in current_round_projects }
+    faculty_majors = Major.objects.filter(faculty=faculty).order_by('admission_project')
+    projects = {}
+    for m in faculty_majors:
+        if m.admission_project_id not in project_map:
+            continue
+
+        p = project_map[m.admission_project_id]
+        if p.id not in projects:
+            projects[p.id] = {
+                'project': p,
+                'majors': []
+            }
+            projects[p.id]['majors'].append(m)
+    return projects
+
+
 def get_major_choices(major_cupt_codes):
     return [
         {'id': str(major_cupt_code.id), 'title': str(major_cupt_code)}
@@ -143,21 +166,27 @@ def get_major_choices(major_cupt_codes):
     ]
 
 
-def get_project_choices(current_round_project_list):
+def get_project_choices(current_round_projects):
     return [
         {'id': str(admission_project.id), 'title': admission_project.title}
-        for admission_project in current_round_project_list
+        for admission_project in current_round_projects
     ]
 
 
-def calculate_project_majors(current_round_project_list, description_id, major_cupt_codes,
-                             map_selected_admission_project_major_cupt_code, preselect_project_major):
+def calculate_project_majors(current_round_projects, description_id, major_cupt_codes,
+                             map_selected_admission_project_major_cupt_code, preselect_project_major,
+                             project_majors):
     project_majors_data = {}
     project_majors_choices = []
     selected_project_majors = []
-    for admission_project in current_round_project_list:
+
+    major_cupt_code_map = { major_cupt_code.program_code:major_cupt_code for major_cupt_code in major_cupt_codes }
+    
+    for admission_project in current_round_projects:
         project_majors_data[admission_project.id] = []
-        for i, major_cupt_code in enumerate(major_cupt_codes):
+        for major in project_majors[admission_project.id]['majors']:
+            major_cupt_code = major_cupt_code_map[major.cupt_full_code]
+        
             project_majors_id = get_project_major_cupt_code_id(
                 major_cupt_code.id, admission_project.id
             )
@@ -261,23 +290,6 @@ def get_default_preselect_project_major(major):
     )
 
 
-def get_current_round_project_list(admission_round, user):
-    if not user.profile.is_admission_admin:
-        admission_projects = user.profile.admission_projects.filter(
-            is_visible_in_backoffice=True
-        ).all()
-    else:
-        admission_projects = AdmissionProject.objects.filter(is_visible_in_backoffice=True)
-    for admission_project in admission_projects:
-        admission_project.adm_rounds = set([r.id for r in admission_project.admission_rounds.all()])
-    current_round_project_list = [
-        admission_project
-        for admission_project in admission_projects
-        if admission_round.id in admission_project.adm_rounds
-    ]
-    return current_round_project_list
-
-
 def get_map_selected_admission_project_major_cupt_code(admission_round_id, faculty_id):
     map_selected_admission_project_major_cupt_code = dict()
     selected_admission_project_major_cupt_code_list = (
@@ -290,14 +302,14 @@ def get_map_selected_admission_project_major_cupt_code(admission_round_id, facul
             selected_admission_project_major_cupt_code
     ) in selected_admission_project_major_cupt_code_list:
         considered_obj_admission_project_id = (
-            selected_admission_project_major_cupt_code.admission_project.id
+            selected_admission_project_major_cupt_code.admission_project_id
         )
         considered_obj_major_cupt_code_id = (
-            selected_admission_project_major_cupt_code.major_cupt_code.id
+            selected_admission_project_major_cupt_code.major_cupt_code_id
         )
         map_selected_admission_project_major_cupt_code[
             (considered_obj_major_cupt_code_id, considered_obj_admission_project_id)
-        ] = selected_admission_project_major_cupt_code.interview_description.id
+        ] = selected_admission_project_major_cupt_code.interview_description_id
     return map_selected_admission_project_major_cupt_code
 
 
