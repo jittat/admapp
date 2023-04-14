@@ -22,57 +22,59 @@
                 {% endif %}
             </h3>
 
-            <label for="{{ form.span_option.id_for_label }}">เลือกสาขาและโครงการ</label>
-            {{ form.span_option.errors }}
-            {{ form.span_option }}
-            {{ form.project_majors.id_for_label }}
+	    <div class="border p-2 mb-2">
+              <h4>การเชื่อมโยงข้อมูลสัมภาษณ์</h4>
+              {{ form.span_option.errors }}
+              {{ form.span_option }}
+              {{ form.project_majors.id_for_label }}
 
-            <div class="" id="project-majors-root" style="display:none;">
+              <div class="" id="project-majors-root" style="display:none;">
                 <div class="form-row ml-2">
-                    <div class="col-md-4">
-                        <label for="select-project">โครงการ</label>
-                    </div>
-                    <div class="col-md-4">
-                        <label for="select-major">สาขา</label>
-                    </div>
+                  <div class="col-md-4">
+                    <label for="select-project">โครงการ</label>
+                  </div>
+                  <div class="col-md-4">
+                    <label for="select-major">สาขา</label>
+                  </div>
                 </div>
                 <div class="form-row ml-2">
-                    <div class="col-md-4">
-                        <select class="form-control" id="select-project">
-                            {% for project in project_choices %}
-                            <option value="{{project.id}}">{{project.title}}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="col-md-4">
-                        <select class="form-control" id="select-major">
-                            {% for major in major_choices %}
-                            <option value="{{major.id}}">{{major.title}}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="col-md-2">
-                        <button class="btn btn-primary" id="add-project-major" type="button"
-                                onclick="addProjectMajor()">เพิ่ม
-                        </button>
-                    </div>
+                  <div class="col-md-4">
+                    <select class="form-control" id="select-project">
+                      {% for project in project_choices %}
+                        <option value="{{project.id}}">{{project.title}}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                  <div class="col-md-4">
+                    <select class="form-control" id="select-major">
+                      {% for major in major_choices %}
+                        <option value="{{major.id}}">{{major.title}}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                  <div class="col-md-2">
+                    <button class="btn btn-primary" id="add-project-major" type="button"
+                            onclick="addProjectMajor()">เพิ่ม
+                    </button>
+                  </div>
                 </div>
                 <ol>
-                    {% for item in selected_project_majors %}
-                        <li class="selected-project-major">
-                            <div>
-                                <span class="selected-project-major-title">{{item.title}}</span>
-                                <span class="ml-2 project-major-delete-btn" {% if item.readonly %}style="display:none"{% endif %}>
-                                    <button class="btn btn-danger btn-xsm">ลบ</button>
-                                </span>
-
-                                <input type="hidden" name="project_majors" value="{{item.id}}">
-                            </div>
-                        </li>
-                    {% endfor %}
+                  {% for item in selected_project_majors %}
+                    <li class="selected-project-major">
+                      <div>
+                        <span class="selected-project-major-title">{{item.title}}</span>
+                        <span class="ml-2 project-major-delete-btn" {% if item.readonly %}style="display:none"{% endif %}>
+                          <button class="btn btn-danger btn-xsm">ลบ</button>
+                        </span>
+			
+                        <input type="hidden" name="project_majors" value="{{item.id}}">
+                      </div>
+                    </li>
+                  {% endfor %}
                 </ol>
-            </div>
-
+              </div>
+	    </div>
+	    
             <h4>ข้อมูลทั่วไป</h4>
             <div class="form-row">
                 <div class="col-md-3">
@@ -341,7 +343,10 @@
 {{project_majors_data|json_script:'project_majors_data'}}
 {{project_choices|json_script:'project_choices'}}
 {{major_choices|json_script:'major_choices'}}
+{{major_choices_for_projects|json_script:'major_choices_for_projects'}}
 <script>
+
+  const majorChoicesForProjects = JSON.parse($('#major_choices_for_projects').html());
 
   const OPTION_SPAN_INDIVIDUAL = '3'
   const interviewFormatHeaders = {
@@ -401,6 +406,23 @@
     });
   }
 
+  function escapeHtml(html){
+    var text = document.createTextNode(html);
+    var p = document.createElement('p');
+    p.appendChild(text);
+    return p.innerHTML;
+  }
+
+  function updateProjectMajorChoices() {
+    var projectValue = $('#select-project').val();
+    if (projectValue != '') {
+      $('#select-major option').remove();
+      majorChoicesForProjects[projectValue].forEach(function (item) {
+	$('#select-major').append('<option value="' + item[0] + '">' + escapeHtml(item[1]) + '</option>')
+      });
+    }
+  } 
+ 
   $(function () {
     $('.img-file-controls').change(function () {
       const imgId = $(this).data('imgId');
@@ -416,6 +438,8 @@
     updateInterviewFormatHeader();
     $('#id_interview_options').change(updateInterviewFormatHeader);
     $('#id_additional_documents_option').change(updateInterviewFormatHeader);
+    updateProjectMajorChoices();
+    $('#select-project').change(updateProjectMajorChoices);
   });
 
   const contactsInput = $('#{{form.contacts.id_for_label}}')

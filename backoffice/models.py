@@ -335,7 +335,7 @@ class InterviewDescription(models.Model):
                                           (OPTION_SPAN_NO_SPAN, 'ไม่มีการเชื่อมโยงไปยังสาขาหรือโครงการอื่น'),
                                           (OPTION_SPAN_SAME_PROJECT, 'เชื่อมโยงทุกสาขาในโครงการนี้'),
                                           (OPTION_SPAN_SAME_CUPT_CODE, 'เชื่อมโยงทุกโครงการของสาขานี้'),
-                                          (OPTION_SPAN_INDIVIDUAL, 'เชื่อมโยงแยกโครงการ-สาขา'),
+                                          (OPTION_SPAN_INDIVIDUAL, 'เชื่อมโยงโดยระบุโครงการ-สาขา'),
                                       ])
     
     faculty = models.ForeignKey(Faculty,

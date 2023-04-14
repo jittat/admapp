@@ -14,8 +14,12 @@ def main():
     for admission_project in admission_projects:
         for major in admission_project.major_set.all():
             try:
-                full_code = major.detail_items_csv.split(",")[-2]
-                major.cupt_full_code = full_code
+                program_code = major.detail_items_csv.split(",")[-2].strip()
+                major_code = major.detail_items_csv.split(",")[-1].strip()
+                if major_code != '':
+                    major.cupt_full_code = program_code + '0' + major_code
+                else:
+                    major.cupt_full_code = program_code
                 major.save()
                 count += 1
                 print(count, major)

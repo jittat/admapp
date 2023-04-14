@@ -75,10 +75,15 @@ def interview_form(request, admission_round_id, faculty_id, description_id=None)
     project_choices = get_project_choices(available_projects)
     major_choices = get_major_choices(major_cupt_codes)
 
-    project_majors_choices, project_majors_data, selected_project_majors = calculate_project_majors(
-        available_projects, description_id, major_cupt_codes, map_selected_admission_project_major_cupt_code,
-        preselect_project_major,
-        project_majors)
+    (project_majors_choices,
+     project_majors_data,
+     selected_project_majors,
+     major_choices_for_projects) = calculate_project_majors(available_projects,
+                                                            description_id,
+                                                            major_cupt_codes,
+                                                            map_selected_admission_project_major_cupt_code,
+                                                            preselect_project_major,
+                                                            project_majors)
 
     if request.method == "POST":
         form = InterviewDescriptionForm(request.POST, request.FILES, instance=interview_description)
@@ -136,7 +141,8 @@ def interview_form(request, admission_round_id, faculty_id, description_id=None)
             "project_majors_data": project_majors_data,
             "major_choices": major_choices,
             "project_choices": project_choices,
-            "selected_project_majors": selected_project_majors
+            "selected_project_majors": selected_project_majors,
+            "major_choices_for_projects": major_choices_for_projects,
         },
     )
 
@@ -155,7 +161,7 @@ def get_faculty_project_majors(faculty, admission_round, current_round_projects)
                 'project': p,
                 'majors': []
             }
-            projects[p.id]['majors'].append(m)
+        projects[p.id]['majors'].append(m)
     return projects
 
 
@@ -179,10 +185,13 @@ def calculate_project_majors(current_round_projects, description_id, major_cupt_
     project_majors_data = {}
     project_majors_choices = []
     selected_project_majors = []
+    major_choices_for_projects = {}
 
-    major_cupt_code_map = { major_cupt_code.program_code:major_cupt_code for major_cupt_code in major_cupt_codes }
+    major_cupt_code_map = { major_cupt_code.get_program_major_code_as_str():major_cupt_code for major_cupt_code in major_cupt_codes }
     
     for admission_project in current_round_projects:
+        major_choices_for_projects[admission_project.id] = []
+        
         project_majors_data[admission_project.id] = []
         for major in project_majors[admission_project.id]['majors']:
             major_cupt_code = major_cupt_code_map[major.cupt_full_code]
@@ -199,6 +208,9 @@ def calculate_project_majors(current_round_projects, description_id, major_cupt_
                 project_majors_choices.append(
                     (project_majors_id, title)
                 )
+
+            major_choices_for_projects[admission_project.id].append((major_cupt_code.id, str(major_cupt_code)))
+                
             is_preselected = get_is_preselected(admission_project, major_cupt_code, preselect_project_major)
             is_checked = get_is_checked(admission_project, description_id, is_preselected, major_cupt_code,
                                         map_selected_admission_project_major_cupt_code)
@@ -215,7 +227,10 @@ def calculate_project_majors(current_round_projects, description_id, major_cupt_
                 selected_project_majors.append(
                     {'id': project_majors_id, 'title': title, 'readonly': is_preselected}
                 )
-    return project_majors_choices, project_majors_data, selected_project_majors
+    return (project_majors_choices,
+            project_majors_data,
+            selected_project_majors,
+            major_choices_for_projects)
 
 
 def get_is_preselected(admission_project, major_cupt_code, preselect_project_major):
@@ -255,8 +270,11 @@ def get_preselect_project_major(request, major):
     return get_project_major_cupt_code_id(major_cupt_code_id, project_id)
 
 
-def get_major_cupt_code_id(program_code):
-    codes = MajorCuptCode.objects.filter(program_code=program_code)
+def get_major_cupt_code_id(full_code):
+    if len(full_code) == 15:
+        codes = MajorCuptCode.objects.filter(program_code=full_code)
+    else:
+        codes = MajorCuptCode.objects.filter(program_code=full_code[:15], major_code=full_code[-1])
     if len(codes) != 0:
         return codes[0].id
     else:
