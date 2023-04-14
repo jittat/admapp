@@ -22,14 +22,19 @@
                 {% endif %}
             </h3>
 
-	    <div class="border p-2 mb-2">
-              <h4>การเชื่อมโยงข้อมูลสัมภาษณ์</h4>
+	    <div class="border p-2 mb-2 span-option-form-section">
+              <h4>
+		การเชื่อมโยงข้อมูลสัมภาษณ์
+	      </h4>
+	      {% if not span_option_editable %}
+		<small class="text-muted">คุณไม่สามารถแก้ไขในส่วนนี้ได้ ผู้ดูแลระดับคณะเท่านั้นที่สามารถแก้ไขได้</small>
+	      {% endif %}
               {{ form.span_option.errors }}
               {{ form.span_option }}
               {{ form.project_majors.id_for_label }}
 
               <div class="" id="project-majors-root" style="display:none;">
-                <div class="form-row ml-2">
+                <div class="form-row ml-2 indv-span-forms">
                   <div class="col-md-4">
                     <label for="select-project">โครงการ</label>
                   </div>
@@ -37,7 +42,7 @@
                     <label for="select-major">สาขา</label>
                   </div>
                 </div>
-                <div class="form-row ml-2">
+                <div class="form-row ml-2 indv-span-forms">
                   <div class="col-md-4">
                     <select class="form-control" id="select-project">
                       {% for project in project_choices %}
@@ -52,7 +57,7 @@
                       {% endfor %}
                     </select>
                   </div>
-                  <div class="col-md-2">
+                  <div class="col-md-2 indv-span-forms">
                     <button class="btn btn-primary" id="add-project-major" type="button"
                             onclick="addProjectMajor()">เพิ่ม
                     </button>
@@ -64,7 +69,7 @@
                       <div>
                         <span class="selected-project-major-title">{{item.title}}</span>
                         <span class="ml-2 project-major-delete-btn" {% if item.readonly %}style="display:none"{% endif %}>
-                          <button class="btn btn-danger btn-xsm">ลบ</button>
+                          <button class="btn btn-danger btn-xsm indv-span-forms">ลบ</button>
                         </span>
 			
                         <input type="hidden" name="project_majors" value="{{item.id}}">
@@ -671,5 +676,13 @@
     $(this).closest('.selected-project-major').remove();
   });
 
+  {% if not span_option_editable %}
+    $('#id_span_option :radio').click(() => { return false; });
+    $('.indv-span-forms').hide();
+    {% if form.span_option.value == 0 %}
+      $('.span-option-form-section').hide();
+    {% endif %}
+  {% endif %}
+ 
 </script>
 {% endblock %}

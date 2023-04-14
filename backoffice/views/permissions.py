@@ -73,3 +73,26 @@ def can_user_confirm_major_adjustment(user, major):
 
     return (profile.faculty == major.faculty and
             (profile.adjustment_major_number == '0'))
+
+
+def can_user_edit_interview_description_span_option(user, project, major):
+    if is_super_admin(user):
+        return True
+
+    profile = Profile.get_profile_for(user)
+
+    if not profile:
+        return False
+
+    if profile.admission_projects.filter(id=project.id).count() == 1:
+        if profile.is_admission_admin:
+            return True
+        else:
+            if major.faculty_id == profile.faculty_id:
+                return profile.major_number == profile.ANY_MAJOR
+            else:
+                return False
+    else:
+        return False
+
+

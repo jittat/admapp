@@ -10,7 +10,7 @@ from backoffice.models import (
     InterviewDescription,
     AdmissionProjectMajorCuptCodeInterviewDescription,
 )
-from backoffice.views.permissions import can_user_view_applicants_in_major
+from backoffice.views.permissions import can_user_view_applicants_in_major, can_user_edit_interview_description_span_option
 from criteria.models import MajorCuptCode
 
 
@@ -60,6 +60,8 @@ def interview_form(request, admission_round_id, faculty_id, description_id=None)
     preselect_project_major = get_preselect_project_major(request, major)
     current_admission_project = get_current_admission_project(major)
     user = request.user
+
+    span_option_editable = can_user_edit_interview_description_span_option(user, major.admission_project, major)
 
     if major and (not can_user_view_applicants_in_major(user, major.admission_project, major)):
         return redirect(reverse('backoffice:index'))
@@ -143,6 +145,8 @@ def interview_form(request, admission_round_id, faculty_id, description_id=None)
             "project_choices": project_choices,
             "selected_project_majors": selected_project_majors,
             "major_choices_for_projects": major_choices_for_projects,
+
+            "span_option_editable": span_option_editable,
         },
     )
 
