@@ -226,7 +226,7 @@
                 <h2 class="card-title">ตัวอย่าง: </h2>
                 <p class="card-subtitle mb-4">คลิกดูตัวอย่างอีกครั้งเมื่ออัปเดตข้อมูลแล้ว เพื่ออัปเดตตัวอย่าง</p>
                 <h3>
-                    โครงการ
+                    โครงการและสาขา
                 </h3>
                 <ol id="preview-projects">
                 </ol>
@@ -515,8 +515,30 @@
   function previewProjectMajors(formData) {
     const project_majors = formData.getAll('project_majors')
     $('#preview-projects').empty()
-    for (let p of project_majors) {
-      const title = $(`input[name='project_majors'][value='${p}']`).attr('title')
+    var spanOption = 0;
+    [1,2,3,4].forEach((oid) => {
+      if ($('#id_span_option_'+oid).prop('checked')) {
+	spanOption = oid;
+      }
+    });
+    if (spanOption == 3) {
+      for (let p of project_majors) {
+	var projId = p.split("_")[1];
+	var title = '';
+	project_majors_data[projId].forEach((elt) => {
+	  if (elt.id == p) {
+	    title = elt.title;
+	  }
+	});
+	$('#preview-projects').append('<li>' + title + '</li>');
+      }
+    } else {
+      var title = "{{ current_admission_project }} / {{ current_major }}";
+      if (spanOption == 1) {
+	title += "<br>และทุกสาขาในโครงการ{{ current_admission_project }}";
+      } else if (spanOption == 2) {
+	title += "<br>และสาขา {{ current_major }} ในทุกโครงการในรอบนี้";
+      }
       $('#preview-projects').append('<li>' + title + '</li>');
     }
   }
