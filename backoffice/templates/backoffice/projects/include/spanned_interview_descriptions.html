@@ -1,0 +1,11 @@
+<small>
+  มีรายละเอียดแล้ว
+  <button
+    type="button"
+    class="btn btn-sm btn-outline-secondary"
+    data-container="body"
+    data-toggle="popover"
+    data-placement="right"
+    title="ระบุโดย"
+    data-content="{% for i in major.spanned_interview_descriptions %}{{ forloop.counter }}. {{ i.admission_project }} / {{ i.major }}{% if not forloop.last %},&nbsp;&nbsp;&nbsp;{% endif %}{% endfor %}">&#x1F6C8;</button>
+</small>

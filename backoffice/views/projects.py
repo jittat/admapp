@@ -9,7 +9,7 @@ from appl.models import AdmissionProject, AdmissionRound
 from appl.models import ProjectApplication, Payment, Major, AdmissionResult, Faculty
 from appl.models import ProjectUploadedDocument, UploadedDocument, ExamScoreProvider, MajorInterviewDescription
 from backoffice.decorators import user_login_required
-from backoffice.models import CheckMarkGroup, JudgeComment, MajorInterviewCallDecision, InterviewDescription
+from backoffice.models import CheckMarkGroup, JudgeComment, MajorInterviewCallDecision, InterviewDescription, AdmissionProjectMajorCuptCodeInterviewDescription
 from backoffice.views.permissions import can_user_view_project, can_user_view_applicant_in_major, \
     can_user_view_applicants_in_major
 from regis.models import Applicant, LogItem
@@ -365,18 +365,53 @@ def load_accepted_applicant_counts(admission_round, admission_project, majors):
 
 
 def load_interview_descriptions(admission_round, project, faculty, majors):
-    interview_descriptions = InterviewDescription.objects.filter(admission_project=project)
+    interview_descriptions = InterviewDescription.objects.filter(admission_round=admission_round)
     if faculty:
         interview_descriptions = interview_descriptions.filter(faculty=faculty)
 
-    print(interview_descriptions)
-    
     major_map = { i.major_id:i for i in interview_descriptions }
     for m in majors:
+        m.spanned_interview_descriptions = []
         if m.id in major_map:
             m.interview_description = major_map[m.id]
         else:
             m.interview_description = None
+
+    faculty_majors = {}
+    for m in majors:
+        if m.faculty_id not in faculty_majors:
+            faculty_majors[m.faculty_id] = []
+        faculty_majors[m.faculty_id].append(m)
+
+    # span individually
+    for i in interview_descriptions:
+        if ((i.span_option == InterviewDescription.OPTION_SPAN_INDIVIDUAL) and
+            (i.faculty_id in faculty_majors)):
+            for project_cupt_code_description in AdmissionProjectMajorCuptCodeInterviewDescription.objects.filter(interview_description=i):
+                if project_cupt_code_description.admission_project_id != project.id:
+                    continue
+                cupt_full_code = project_cupt_code_description.major_cupt_code.get_program_major_code_as_str()
+                for m in faculty_majors[i.faculty_id]:
+                    if m.cupt_full_code == cupt_full_code:
+                        m.spanned_interview_descriptions.append(i)
+                        
+    # spans same code
+    for i in interview_descriptions:
+        if ((i.span_option == InterviewDescription.OPTION_SPAN_SAME_CUPT_CODE) and
+            (i.faculty_id in faculty_majors)):
+            interview_major = i.major
+            for m in faculty_majors[i.faculty_id]:
+                if m.cupt_full_code == interview_major.cupt_full_code:
+                    m.spanned_interview_descriptions.append(i)
+
+    # spans same project
+    for i in interview_descriptions:
+        if ((i.span_option == InterviewDescription.OPTION_SPAN_SAME_PROJECT) and
+            (i.admission_project_id == project.id) and
+            (i.faculty_id in faculty_majors)):
+            for m in faculty_majors[i.faculty_id]:
+                m.spanned_interview_descriptions.append(i)
+                        
 
 
 @user_login_required
