@@ -13,50 +13,6 @@
   score_type: UNIT_FOREIGN
 - description: เรียนรายวิชาในกลุ่มสาระการเรียนรู้วิทยาศาสตร์
   score_type: UNIT_SCI
-- description: O-NET(5กลุ่มสาระวิชา)
-  score_type: ONET
-- description: O-NET(01)ภาษาไทย
-  score_type: ONET_THA
-- description: O-NET(02)สังคมศึกษา
-  score_type: ONET_SOC
-- description: O-NET(03)ภาษาอังกฤษ
-  score_type: ONET_ENG
-- description: O-NET(04)คณิตศาสตร์
-  score_type: ONET_MAT
-- description: O-NET(05)วิทยาศาสตร์
-  score_type: ONET_SCI
-- description: GAT
-  score_type: GAT
-- description: GATส่วน1
-  score_type: GAT_1
-- description: GATส่วน2
-  score_type: GAT_2
-- description: PAT1
-  score_type: PAT_1
-- description: PAT2
-  score_type: PAT_2
-- description: PAT3
-  score_type: PAT_3
-- description: PAT4
-  score_type: PAT_4
-- description: PAT5
-  score_type: PAT_5
-- description: PAT6
-  score_type: PAT_6
-- description: PAT7.1
-  score_type: PAT_7_1
-- description: PAT7.2
-  score_type: PAT_7_2
-- description: PAT7.3
-  score_type: PAT_7_3
-- description: PAT7.4
-  score_type: PAT_7_4
-- description: PAT7.5
-  score_type: PAT_7_5
-- description: PAT7.6
-  score_type: PAT_7_6
-- description: PAT7.7
-  score_type: PAT_7_7
 - description: TOEFLPBT/ITP
   score_type: TOEFL_PBT_ITP
 - description: TOEFLCBT
@@ -69,39 +25,10 @@
   score_type: OOPT
 - description: KU-EPT
   score_type: KU_EPT
-- description: วิชาสามัญ9วิชา
-  score_type: 9SUB
-- description: วิชาสามัญภาษาไทย(09)
-  score_type: UDAT_09
-- description: วิชาสามัญสังคมศึกษา(19)
-  score_type: UDAT_19
-- description: วิชาสามัญภาษาอังกฤษ(29)
-  score_type: UDAT_29
-- description: วิชาสามัญคณิตศาสตร์1(39)
-  score_type: UDAT_39
-- description: วิชาสามัญฟิสิกส์(49)
-  score_type: UDAT_49
-- description: วิชาสามัญเคมี(59)
-  score_type: UDAT_59
-- description: วิชาสามัญชีววิทยา(69)
-  score_type: UDAT_69
-- description: วิชาสามัญคณิตศาสตร์2(89)
-  score_type: UDAT_89
-- description: วิชาสามัญวิทยาศาสตร์ทั่วไป(99)
-  score_type: UDAT_99
-#
-# For TCAS64 - Ad2
-#
-- description: 7(รูปแบบที่1):****ยังไม่ได้เลือกPAT****กลุ่ม7ครุศาสตร์ศึกษาศาสตร์พลศึกษาสุขศึกษา(รูปแบบที่1)
-  score_type: CW701
-- description: 7(รูปแบบที่1)กลุ่ม7ครุศาสตร์ศึกษาศาสตร์พลศึกษาสุขศึกษา(รูปแบบที่1)
-  score_type: CW701
-- description: 1.4:กลุ่ม1วิทยาศาสตร์สุขภาพ-สัตวแพทย์ศาสตร์
-  score_type: CW140
-- description: 1.1:กลุ่ม1วิทยาศาสตร์สุขภาพ-สัตวแพทย์ศาสตร์สหเวชศาสตร์สาธารณสุขศาสตร์เทคนิคการแพทย์พยาบาลศาสตร์วิทยาศาสตร์การกีฬา
-  score_type: CW110
-- description: ผลการเรียนเฉลี่ยรวมของกลุ่มสาระการเรียนรู้ภาษาไทย
-  score_type: MIN_GPA21
+- score_type: MIN_GPA21
+  descriptions:
+    - ผลการเรียนเฉลี่ยรวมของกลุ่มสาระการเรียนรู้ภาษาไทย
+    - คะแนนเฉลี่ยรายวิชากลุ่มสาระการเรียนรู้ภาษาไทย
 - score_type: MIN_GPA22
   descriptions:
     - คะแนนเฉลี่ยกลุ่มสาระคณิตศาสตร์
@@ -116,99 +43,94 @@
   descriptions:
     - มีคะแนนเฉลี่ยกลุ่มสาระภาษาต่างประเทศ
     - ผลการเรียนเฉลี่ยรวมของกลุ่มสาระการเรียนรู้ภาษาต่างประเทศ
-#
-# More tags from TCAS64 - Ad2 (from criteria form)
-#
-- description: 1.1:กลุ่ม1วิทยาศาสตร์สุขภาพ-สหเวชศาสตร์สาธารณสุขศาสตร์เทคนิคการแพทย์พยาบาลศาสตร์วิทยาศาสตร์การกีฬา
-  score_type: CW110
-- description: 1.2:กลุ่ม1วิทยาศาสตร์สุขภาพ-ทันตแพทย์ศาสตร์
-  score_type: CW120
-- description: 1.3:กลุ่ม1วิทยาศาสตร์สุขภาพ-เภสัชศาสตร์
-  score_type: CW130
-- description: 1.4:กลุ่ม1วิทยาศาสตร์สุขภาพ-สัตวแพทย์ศาสตร์
-  score_type: CW140
-- description: 2.1:กลุ่ม2วิทยาศาสตร์กายภาพและชีวภาพ-วิทยาศาสตร์ทรัพยากรธรรมชาติ
-  score_type: CW210
-- description: 2.2:กลุ่ม2วิทยาศาสตร์กายภาพและชีวภาพ-เทคโนโลยีสารสนเทศ
-  score_type: CW220
-- description: 3:กลุ่ม3วิศวกรรมศาสตร์
-  score_type: CW300
-- description: 4:กลุ่ม4สถาปัตยกรรมศาสตร์
-  score_type: CW400
-- description: 5:กลุ่ม5เกษตรศาสตร์-เกษตรศาสตร์อุตสาหกรรมเกษตรวนศาสตร์เทคโนโลยีการเกษตร
-  score_type: CW500
-- description: 6.1:กลุ่ม6-บริหารธุรกิจพาณิชยศาสตร์การบัญชีเศรษฐศาสตร์
-  score_type: CW610
-- description: 6.2(รูปแบบที่1):กลุ่ม6-การท่องเที่ยวและการโรงแรม(รูปแบบที่1)
-  score_type: CW621
-- description: 6.2(รูปแบบที่2):****ยังไม่ได้เลือกPAT7****กลุ่ม6-การท่องเที่ยวและการโรงแรม(รูปแบบที่2)
-  score_type: CW622
-- description: 6.2(รูปแบบที่2PAT7.1ฝรั่งเศษ):กลุ่ม6-การท่องเที่ยวและการโรงแรม(รูปแบบที่2)
-  score_type: CW62271
-- description: 6.2(รูปแบบที่2PAT7.2เยอรมัน):กลุ่ม6-การท่องเที่ยวและการโรงแรม(รูปแบบที่2)
-  score_type: CW62272
-- description: 6.2(รูปแบบที่2PAT7.3ญี่ปุ่น):กลุ่ม6-การท่องเที่ยวและการโรงแรม(รูปแบบที่2)
-  score_type: CW62273
-- description: 6.2(รูปแบบที่2PAT7.4จีน):กลุ่ม6-การท่องเที่ยวและการโรงแรม(รูปแบบที่2)
-  score_type: CW62274
-- description: 6.2(รูปแบบที่2PAT7.5อาหรับ):กลุ่ม6-การท่องเที่ยวและการโรงแรม(รูปแบบที่2)
-  score_type: CW62275
-- description: 6.2(รูปแบบที่2PAT7.6บาลี):กลุ่ม6-การท่องเที่ยวและการโรงแรม(รูปแบบที่2)
-  score_type: CW62276
-- description: 6.2(รูปแบบที่2PAT7.7เกาหลี):กลุ่ม6-การท่องเที่ยวและการโรงแรม(รูปแบบที่2)
-  score_type: CW62277
-- description: 7(รูปแบบที่1):กลุ่ม7ครุศาสตร์ศึกษาศาสตร์พลศึกษาสุขศึกษา(รูปแบบที่1)
-  score_type: CW701
-- description: 7(รูปแบบที่2PAT1คณิตศาสตร์):กลุ่ม7ครุศาสตร์ศึกษาศาสตร์พลศึกษาสุขศึกษา(รูปแบบที่2)
-  score_type: CW7021
-- description: 7(รูปแบบที่2PAT2วิทยาศาสตร์):กลุ่ม7ครุศาสตร์ศึกษาศาสตร์พลศึกษาสุขศึกษา(รูปแบบที่2)
-  score_type: CW7022
-- description: 7(รูปแบบที่2PAT3วิศวกรรมศาสตร์):กลุ่ม7ครุศาสตร์ศึกษาศาสตร์พลศึกษาสุขศึกษา(รูปแบบที่2)
-  score_type: CW7023
-- description: 7(รูปแบบที่2PAT4สถาปัตยกรรมศาสตร์):กลุ่ม7ครุศาสตร์ศึกษาศาสตร์พลศึกษาสุขศึกษา(รูปแบบที่2)
-  score_type: CW7024
-- description: 7(รูปแบบที่2PAT6ศิลปกรรมศาสตร์):กลุ่ม7ครุศาสตร์ศึกษาศาสตร์พลศึกษาสุขศึกษา(รูปแบบที่2)
-  score_type: CW7026
-- description: 7(รูปแบบที่2PAT7.1ฝรั่งเศส):กลุ่ม7ครุศาสตร์ศึกษาศาสตร์พลศึกษาสุขศึกษา(รูปแบบที่2)
-  score_type: CW70271
-- description: 7(รูปแบบที่2PAT7.2เยอรมัน):กลุ่ม7ครุศาสตร์ศึกษาศาสตร์พลศึกษาสุขศึกษา(รูปแบบที่2)
-  score_type: CW70272
-- description: 7(รูปแบบที่2PAT7.3ญี่ปุ่น):กลุ่ม7ครุศาสตร์ศึกษาศาสตร์พลศึกษาสุขศึกษา(รูปแบบที่2)
-  score_type: CW70273
-- description: 7(รูปแบบที่2PAT7.4จีน):กลุ่ม7ครุศาสตร์ศึกษาศาสตร์พลศึกษาสุขศึกษา(รูปแบบที่2)
-  score_type: CW70274
-- description: 7(รูปแบบที่2PAT7.5อาหรับ):กลุ่ม7ครุศาสตร์ศึกษาศาสตร์พลศึกษาสุขศึกษา(รูปแบบที่2)
-  score_type: CW70275
-- description: 7(รูปแบบที่2PAT7.6บาลี):กลุ่ม7ครุศาสตร์ศึกษาศาสตร์พลศึกษาสุขศึกษา(รูปแบบที่2)
-  score_type: CW70276
-- description: 7(รูปแบบที่2PAT7.7เกาหลี):กลุ่ม7ครุศาสตร์ศึกษาศาสตร์พลศึกษาสุขศึกษา(รูปแบบที่2)
-  score_type: CW70277
-- description: 8:****ยังไม่ได้เลือกPAT****กลุ่ม8ศิลปกรรมศาสตร์
-  score_type: CW800
-- description: 8:(เลือกPAT4)กลุ่ม8ศิลปกรรมศาสตร์
-  score_type: CW8004
-- description: 8:(เลือกPAT6)กลุ่ม8ศิลปกรรมศาสตร์
-  score_type: CW8006
-- description: 9.1:กลุ่ม9มนุษย์ศาสตร์และสังคมศาสตร์-พื้นฐานวิทยาศาสตร์
-  score_type: CW910
-- description: 9.2(รูปแบบที่1):กลุ่ม9มนุษย์ศาสตร์และสังคมศาสตร์-พื้นฐานศิลปศาสตร์(รูปแบบที่1)
-  score_type: CW921
-- description: 9.2(รูปแบบที่2):****ยังไม่ได้เลือกPAT7****กลุ่ม9มนุษย์ศาสตร์และสังคมศาสตร์-พื้นฐานศิลปศาสตร์(รูปแบบที่2)
-  score_type: CW922
-- description: 9.2(รูปแบบที่2PAT7.1ฝรั่งเศส):กลุ่ม9มนุษย์ศาสตร์และสังคมศาสตร์-พื้นฐานศิลปศาสตร์(รูปแบบที่2)
-  score_type: CW92271
-- description: 9.2(รูปแบบที่2PAT7.2เยอรมัน):กลุ่ม9มนุษย์ศาสตร์และสังคมศาสตร์-พื้นฐานศิลปศาสตร์(รูปแบบที่2)
-  score_type: CW92272
-- description: 9.2(รูปแบบที่2PAT7.3ญี่ปุ่น):กลุ่ม9มนุษย์ศาสตร์และสังคมศาสตร์-พื้นฐานศิลปศาสตร์(รูปแบบที่2)
-  score_type: CW92273
-- description: 9.2(รูปแบบที่2PAT7.4จีน):กลุ่ม9มนุษย์ศาสตร์และสังคมศาสตร์-พื้นฐานศิลปศาสตร์(รูปแบบที่2)
-  score_type: CW92274
-- description: 9.2(รูปแบบที่2PAT7.5อาหรับ):กลุ่ม9มนุษย์ศาสตร์และสังคมศาสตร์-พื้นฐานศิลปศาสตร์(รูปแบบที่2)
-  score_type: CW92275
-- description: 9.2(รูปแบบที่2PAT7.6บาลี):กลุ่ม9มนุษย์ศาสตร์และสังคมศาสตร์-พื้นฐานศิลปศาสตร์(รูปแบบที่2)
-  score_type: CW92276
-- description: 9.2(รูปแบบที่2PAT7.7เกาหลี):กลุ่ม9มนุษย์ศาสตร์และสังคมศาสตร์-พื้นฐานศิลปศาสตร์(รูปแบบที่2)
-  score_type: CW92277
+- score_type: TGAT
+  description: TGAT ความถนัดทั่วไป
+- score_type: TGAT1
+  description: TGAT1 การสื่อสารภาษาอังกฤษ
+- score_type: TGAT2
+  description: TGAT2 การคิดอย่างมีเหตุผล
+- score_type: TGAT3
+  description: TGAT3 สมรรถนะการทำงาน
+- score_type: TPAT1
+  description: TPAT1 วิชาเฉพาะ กสพท
+- score_type: TPAT2
+  description: TPAT2 ความถนัดศิลปกรรมศาสตร์
+- score_type: TPAT21
+  description: TPAT21 ทัศนศิลป์
+- score_type: TPAT22
+  description: TPAT22 ดนตรี
+- score_type: TPAT23
+  description: TPAT23 นาฏศิลป์
+- score_type: TPAT3
+  description: TPAT3 ความถนัดวิทยาศาสตร์ เทคโนโลยี วิศวกรรมศาสตร์
+- score_type: TPAT4
+  description: TPAT4 ความถนัดสถาปัตยกรรมศาสตร์
+- score_type: TPAT5
+  description: TPAT5 ความถนัดครุศาสตร์-ศึกษาศาสตร์
+- score_type: A61Math1
+  description: A-Level Math1 คณิตศาสตร์ประยุกต์ 1
+- score_type: A62Math2
+  description: A-Level Math2 คณิตศาสตร์ประยุกต์ 2
+- score_type: A63Sci
+  description: A-Level Sci วิทยาศาสตร์ประยุกต์
+- score_type: A64Phy
+  description: A-Level Phy ฟิสิกส์
+- score_type: A65Chem
+  description: A-Level Chem เคมี
+- score_type: A66Bio
+  description: A-Level Bio ชีววิทยา
+- score_type: A70Soc
+  description: A-Level Soc สังคมศาสตร์
+- score_type: A81Thai
+  description: A-Level Thai ภาษาไทย
+- score_type: A82Eng
+  description: A-Level Eng ภาษาอังกฤษ
+- score_type: A83Fre
+  description: A-Level Fre ภาษาฝรั่งเศส
+- score_type: A84Ger
+  description: A-Level Ger ภาษาเยอรมัน
+- score_type: A85Jap
+  description: A-Level Jap ภาษาญี่ปุ่น
+- score_type: A86Kor
+  description: A-Level Kor ภาษาเกาหลี
+- score_type: A87Chi
+  description: A-Level Chi ภาษาจีน
+- score_type: A88Bal
+  description: A-Level Bal ภาษาบาลี
+- score_type: A89Spn
+  description: A-Level Spn ภาษาสเปน
+- score_type: VNET
+  description: V-NET (รวมทุกทักษะ)
+- score_type: TOEFL_PBT_ITP
+  description: TOEFL PBT/ITP
+- score_type: TOEFL_CBT
+  description: TOEFL CBT
+- score_type: TOEFL_IBT
+  description: TOEFL IBT
+- score_type: IELTS
+  description: IELTS
+- score_type: TOEIC
+  description: TOEIC
+- score_type: OOPT
+  description: OOPT
+- score_type: KU_EPT
+  description: KU-EPT
+- score_type: CU_TEP
+  description: CU-TEP
+- score_type: TU_GET
+  description: TU-GET
+- score_type: KKU_KEPT
+  description: KKU-KEPT
+- score_type: PSU_TEP
+  description: PSU-TEP
+- score_type: CMU_ETEGS
+  description: CMU-eTEGS
+- score_type: SWU_SET
+  description: SWU-SET
+- score_type: DET
+  description: Duolingo English Test
+- score_type: MU_ELT
+  description: MU-ELT
 #
 # HACK 1
 #
@@ -216,29 +138,6 @@
   descriptions:
     - ผลการเรียนเฉลี่ยสะสม(GPAX)6ภาคเรียน
     - ผลการเรียนเฉลี่ยสะสม(GPAX)ไม่ต่ำกว่า
-#
-- score_type: ONET_ENG
-  descriptions:
-    - O-NET03ภาษาอังกฤษ
-    - O-NET(03)
-    - O-NET(03)ภาษาอังกฤษไม่ต่ำกว่า
-#
-- description: O-NET(04)วิชาคณิตศาสตร์
-  score_type: ONET_MAT
-#
-- score_type: GAT
-  descriptions:
-    - GAT85
-    - GATไม่ตำ่กว่า
-    - GAT(85):วิชาความถนัดทั่วไป
-- score_type: PAT_1
-  descriptions:
-    - PATIความถนัดทางคณิตศาสตร์
-    - PAT1(71):วิชาความถนัดทางคณิตศาสตร์
-- description: PAT2(72):วิชาความถนัดทางวิทยาศาสตร์
-  score_type: PAT_2
-- description: PAT5ไม่ต่ำกว่า
-  score_type: PAT_5
 #
 - score_type: UNIT_MATH
   descriptions:
@@ -251,6 +150,7 @@
     - เรียนรายวิชาในกลุ่มสาระการเรียนรู้คณิตศาสตร์ต้องเรียนรายวิชาพื้นฐานและรายวิชาเพิ่มเติมรวมกัน
     - หน่วยกิจกลุ่มสาระคณิตศาสตร์
     - หน่วยกิตกลุ่มสาระคณิตศาสตร์
+    - หน่วยกิตกลุ่มสาระการเรียนรู้คณิตศาสตร์
 - score_type: UNIT_FOREIGN
   descriptions:
     - กลุ่มสาระการเรียนรู้ภาษาต่างประเทศ
@@ -258,6 +158,8 @@
     - เรียนรายวิชาในกลุ่มสาระการเรียนรู้ภาษาต่างประเทศ(ภาษาอังกฤษ)
     - หน่วยกิจกลุ่มสาระภาษาต่างประเทศ
     - หน่วยกิตกลุ่มสาระภาษาต่างประเทศ
+    - หน่วยกิตกลุ่มสาระการเรียนรู้ภาษาต่างประเทศ (ภาษาอังกฤษ)
+    - หน่วยกิตกลุ่มสาระการเรียนรู้ภาษาต่างประเทศ
 - score_type: UNIT_SCI
   descriptions:
     - กลุ่มสาระการเรียนรู้วิทยาศาสตร์
@@ -267,6 +169,7 @@
     - เรียนรายวิชาในกลุ่มสาระการเรียนรู้วิทยาศาสตร์ต้องเรียนรายวิชาพื้นฐานและรายวิชาเพิ่มเติมรวมกัน
     - เรียนรายวิชาในกลุ่มสาระการเรียนรู้วิทยาศาสตร์ต้องเรียนวิชาพื้นฐานและรายวิชาเพิ่มเติมรวมกัน
     - หน่วยกิตกลุ่มสาระวิทยาศาสตร์
+    - หน่วยกิตกลุ่มสาระการเรียนรู้วิทยาศาสตร์
 - score_type: GAT_2
   descriptions:
     - GAT(ตอน2ภาษาอังกฤษ)
@@ -274,26 +177,6 @@
     - GATGeneral(English)
 - description: ผลการเรียนเฉลี่ยสะสม(GPAX)5ภาคเรียน
   score_type: GPAX
-- description: วิชา09
-  score_type: UDAT_09
-- description: วิชา19
-  score_type: UDAT_19
-- description: วิชา29
-  score_type: UDAT_29
-- description: '29'
-  score_type: UDAT_29
-- description: วิชา39
-  score_type: UDAT_39
-- description: วิชา49
-  score_type: UDAT_49
-- description: วิชา59
-  score_type: UDAT_59
-- description: วิชา69
-  score_type: UDAT_69
-- description: วิชา89
-  score_type: UDAT_89
-- description: วิชา99
-  score_type: UDAT_99
 - project_id: 13
   score_tags:
     - score_type: IGNORE
@@ -305,5 +188,10 @@
     - score_type: IGNORE
       descriptions:
       - ผลการเรียนสำหรับผู้มีผลงานด้านกิจกรรมดีเด่น
-      - นักเรียนชั้น ม.6 ของโรงเรียนสาธิตแห่ง มก.
+      - เป็นนักเรียนระดับชั้นมัธยมศึกษาปีที่ 6 ของโรงเรียนสาธิตแห่งมหาวิทยาลัยเกษตรศาสตร์ ศูนย์วิจัยและพัฒนาการศึกษา บางเขน วิทยาเขตกำแพงแสน และโครงการการศึกษาพหุภาษา จังหวัดชลบุรี
       - ผลการเรียนสำหรับผู้มีผลงานด้านวิชาการดีเด่น
+- project_id: 16
+  score_tags:
+    - score_type: IGNORE
+      descriptions:
+      - เป็นนักเรียนที่กำลังศึกษาอยู่ชั้นมัธยมศึกษาปีที่ 6 สายสามัญ ของโรงเรียนที่ตั้งอยู่ในจังหวัดนนทบุรี ปทุมธานี นครปฐม สมุทรปราการ สมุทรสาคร กาญจนบุรี ประจวบคีรีขันธ์ เพชรบุรี ราชบุรี สมุทรสงคราม สุพรรณบุรี ชัยนาท พระนครศรีอยุธยา ลพบุรี สระบุรี สิงห์บุรี อ่างทอง อุทัยธานี ฉะเชิงเทรา ชลบุรี นครนายก ปราจีนบุรี สระแก้ว ระยอง จันทบุรี ตราด นครสวรรค์ พิจิตร ชัยภูมิ และเพชรบูรณ์ รวม 30 จังหวัด
