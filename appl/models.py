@@ -1129,7 +1129,10 @@ class ExamScore(models.Model):
             elif sitems[i] == '':
                 sc = ExamScore.NO_SCORE
             else:
-                sc = float(sitems[i])
+                try:
+                    sc = float(sitems[i])
+                except:
+                    sc = sitems[i]
             self._scores.append(sc)
             self._exam_scores[eitems[i]] = sc
 
@@ -1175,7 +1178,7 @@ class ExamScoreProvider(object):
     def process_alevel8x(self, arr):
         scores = []
         items = []
-        for j in range(1, 10):
+        for j in range(3, 10):
             key = 'a_lv_8' + str(j)
             if key in arr:
                 if arr[key][0] != -1:
