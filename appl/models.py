@@ -1172,6 +1172,20 @@ class ExamScoreProvider(object):
                 scores.append('-')
         return scores
 
+    def process_alevel8x(self, arr):
+        scores = []
+        items = []
+        for j in range(1, 10):
+            key = 'a_lv_8' + str(j)
+            if key in arr:
+                if arr[key][0] != -1:
+                    items.append('8' + str(j) + '=' + ('%.2f' % arr[key][0]))
+        if len(items) > 0:
+            scores.append(', '.join(items))
+        else:
+            scores.append('-')
+        return scores
+
     def load_scores(self, scores=None):
         if scores == None:
             self.scores = self.applicant.examscore_set.all()
@@ -1192,13 +1206,13 @@ class ExamScoreProvider(object):
                     darr[ex] = []
                 darr[ex].append(s.get_exam_score(ex))
 
-        self.gatpat_rounds = [s.exam_round
-                              for s in self.scores
-                              if s.exam_type == 'gatpat']
+        # self.gatpat_rounds = [s.exam_round
+        #                       for s in self.scores
+        #                       if s.exam_type == 'gatpat']
 
-        if hasattr(self, 'gatpat_array'):
-            ar = getattr(self, 'gatpat_array')
-            ar['pat7'] = self.process_pat7(ar)
+        if hasattr(self, 'alevel'):
+            ar = getattr(self, 'alevel_array')
+            ar['a_lv_8x'] = self.process_alevel8x(ar)
 
     def get_gatpat_round_count(self):
         return len(self.gatpat_rounds)

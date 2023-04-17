@@ -15,6 +15,7 @@
       {% endif %}
       <th>GPAX</th>
       {% include "backoffice/projects/include/score_table/tgattpat_header.html" %}
+      {% include "backoffice/projects/include/score_table/alevel_header.html" %}
       {% comment %}
       {% include "backoffice/projects/include/score_table/onet_header.html" %}
       {% include "backoffice/projects/include/score_table/gatpat_header.html" %}
@@ -75,6 +76,16 @@
           <td class="gatpat-odd">{{ applicant.get_all_exam_scores.tgattpat.tpat3|score }}</td>
           <td class="gatpat-even">{{ applicant.get_all_exam_scores.tgattpat.tpat4|score }}</td>
           <td class="gatpat-odd">{{ applicant.get_all_exam_scores.tgattpat.tpat5|score }}</td>
+
+          <td class="udat-odd alevel-scores">{{ applicant.get_all_exam_scores.alevel.a_lv_61|score }}</td>
+          <td class="udat-even alevel-scores">{{ applicant.get_all_exam_scores.alevel.a_lv_62|score }}</td>
+          <td class="udat-odd alevel-scores">{{ applicant.get_all_exam_scores.alevel.a_lv_63|score }}</td>
+          <td class="udat-even alevel-scores">{{ applicant.get_all_exam_scores.alevel.a_lv_64|score }}</td>
+          <td class="udat-odd alevel-scores">{{ applicant.get_all_exam_scores.alevel.a_lv_65|score }}</td>
+          <td class="udat-even alevel-scores">{{ applicant.get_all_exam_scores.alevel.a_lv_66|score }}</td>
+          <td class="udat-odd alevel-scores">{{ applicant.get_all_exam_scores.alevel.a_lv_70|score }}</td>
+          <td class="udat-even alevel-scores">{{ applicant.get_all_exam_scores.alevel_array.a_lv_8x|round_array}}</td>
+
 	  {% comment %}
           <td class="xonet-odd xonet-extra" style="display: none;">{{ applicant.get_all_exam_scores.onet.x01|score }}</td>
           <td class="xonet-even xonet-extra" style="display: none;">{{ applicant.get_all_exam_scores.onet.x02|score }}</td>
