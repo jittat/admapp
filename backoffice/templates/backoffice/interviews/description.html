@@ -569,11 +569,11 @@
   }
 
   function previewTextField(formData, fieldName) {
-    const text = formData.get(fieldName)
-    document.querySelector(`#preview-${fieldName}`).textContent = text
+    var text = formData.get(fieldName)
+    document.querySelector(`#preview-${fieldName}`).innerHTML = linkifyHtml(escapeHtml(text).replaceAll("\n","<br>"))
   }
 
-  function previewVideoConferencePlatform() {
+ function previewVideoConferencePlatform() {
     const selectedValue = document.querySelector('input[name="video_conference_platform"]:checked')?.nextSibling.textContent.trim() || '-'
     document.getElementById("preview-video_conference_platform").textContent = selectedValue || '-'
   }
@@ -685,4 +685,6 @@
   {% endif %}
  
 </script>
+<script src="https://cdn.jsdelivr.net/npm/linkifyjs@4.1.1/dist/linkify.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/linkify-html@4.1.1/dist/linkify-html.min.js"></script>
 {% endblock %}
