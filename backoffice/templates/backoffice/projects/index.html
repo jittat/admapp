@@ -31,36 +31,36 @@
               สาขา
             </td>
             <td class="text-right">
-              จำนวนรับ
+              จำนวน&#8203;รับ
             </td>
             {% if applicant_info_viewable %}
               {% if has_criteria_check %}
                 <td class="text-right">
-                  ผ่านเกณฑ์
+                  ผ่าน&#8203;เกณฑ์
                 </td>
               {% endif %}
               <td class="text-right">
-                ผ่านขั้นต่ำ
+                ผ่าน&#8203;ขั้นต่ำ
               </td>
               <td class="text-right">
-                เรียกสัมภาษณ์
+                เรียก&#8203;สัม&#8203;ภาษณ์
               </td>
               <td class="text-right">
-                รับจริง
+                รับ&#8203;จริง
               </td>
               <td class="text-right">
-                ไม่รับ
+                ไม่&#8203;รับ
               </td>
               <td class="text-right">
-                ขาดสอบ
+                ขาด&#8203;สอบ
               </td>
               <td class="text-right">
-                ยืนยัน
+                ยืน&#8203;ยัน
               </td>
             {% endif %}
             {% for r in ranks %}
               <td class="text-right">
-                จำนวนผู้สมัคร
+                จำนวน&#8203;ผู้&#8203;สมัคร
                 <!-- อันดับ {{ r }} -->
               </td>
             {% endfor %}
@@ -127,12 +127,19 @@
                   <a class="btn btn-sm btn-outline-secondary" href="{% url 'backoffice:projects-list-applicants-for-acceptance-calls' project.id admission_round.id major.number %}">กรอกผลสัมภาษณ์</a>
                 {% endif %}
               </td>
-              <td class="xx-none">
+              <td class="xx-none d-inline-block" style="width:160px;">
                 {% if user_major_number == any_major or user_major_number == major.number %}
                   {% if major.has_any_applications and applicant_score_viewable %}
-                    <a target="_blank" class="d-none btn btn-sm btn-outline-secondary" rel="noopener noreferrer" href="{% url 'backoffice:projects-show-scores' project.id admission_round.id major.number %}">เรียกสัมภาษณ์</a>
+                    <a target="_blank" class="xx-none btn btn-sm btn-outline-primary" rel="noopener noreferrer" href="{% url 'backoffice:projects-show-scores' project.id admission_round.id major.number %}">เรียกสัมภาษณ์</a>
+		    <div class="dropdown d-inline">
+                      <a class="btn btn-sm btn-outline-secondary dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></a>
+                      <div class="dropdown-menu">
+			<a target="_blank" class="dropdown-item" href="{% url 'backoffice:projects-show-applicant' project.id admission_round.id major.number 1 %}">พิจารณาผู้สมัคร</a>
+		      </div>
+		    </div>
+		  {% else %}
+                    <a target="_blank" class="xx-none btn btn-sm btn-outline-secondary" rel="noopener noreferrer" href="{% url 'backoffice:projects-show-applicant' project.id admission_round.id major.number 1 %}">พิจารณาผู้สมัคร</a>
                   {% endif %}
-                  <a target="_blank" class="xx-none btn btn-sm btn-outline-secondary" rel="noopener noreferrer" href="{% url 'backoffice:projects-show-applicant' project.id admission_round.id major.number 1 %}">พิจารณาผู้สมัคร</a>
                 {% endif %}
               </td>
 	      <td>
