@@ -18,23 +18,34 @@ def main():
             
             if len(items) < 4:
                 continue
-            if items[0] == '':
+            if items[0].strip() == '':
                 continue
 
-            project_id = int(items[1])
-            number = int(items[2])
+            try:
+                project_id = int(items[0])
+            except:
+                project_id = 0
+
+            if project_id == 0:
+                continue
+            
+            cupt_full_code = items[3]
 
             majors = Major.objects.filter(admission_project_id=project_id,
-                                          number=number).all()
+                                          cupt_full_code=cupt_full_code).all()
             if len(majors)!=1:
-                print('ERROR: major error', project_id, number, majors)
+                print('ERROR: major error', project_id, cupt_full_code, majors)
                 continue
 
             major = majors[0]
-            major.slots = int(items[6])
-            major.save()
+            old_slot = major.slots
+            new_slot = int(items[7])
+            major.slots = int(items[7])
+            #if major.title != items[5].strip():
+            #    print('ERROR not match', major.title, items[5])
+            #major.save()
 
-            print(f'{major.admission_project} - {major.number} {major}')
+            print(f'{major.admission_project} - {major.number} {major} - {old_slot} - {new_slot}')
             counter += 1
 
     print('Imported',counter,'majors')
