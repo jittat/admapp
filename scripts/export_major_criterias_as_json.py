@@ -244,6 +244,18 @@ def min_score_vector_from_criterias(score_criterias, curriculum_major):
             
     is_error = False
     for c in score_criterias:
+        if isinstance(c,list):
+            this_criterias = min_score_vector_from_criterias(c[1:], curriculum_major)
+            this_non_zero_criterias = { k:this_criterias[k] for k in this_criterias if this_criterias[k] > 0 }
+            if len(this_non_zero_criterias) == 0:
+                continue
+            if len(this_non_zero_criterias) == 1:
+                k = list(this_non_zero_criterias.keys())[0]
+                value_vectors[k] = this_non_zero_criterias[k]
+            else:
+                value_vectors['OR(' + ','.join([f'{k}={this_criterias[k]}' for k in this_criterias if this_criterias[k] > 0]) + ')'] = 1
+            continue
+        
         score_type = c.score_type
         if score_type == 'OTHER':
             score_type = reverse_score_type(c, curriculum_major)
@@ -283,14 +295,8 @@ def min_score_vectors(admission_criteria, curriculum_major):
         if c.has_children():
             if c.relation != 'AND':
                 if c.relation == 'OR':
-                    or_count += 1
-                    for child in c.childs.all():
-                        or_criterias.append(child)
-                if (or_count > 1) or (c.relation != 'OR'):
-                    print_error('Error type (or too many OR):', c.relation)
-                    for child in c.childs.all():
-                        print_error(f"    - {child}")
-                    is_error = True
+                    score_criterias.append(
+                        ['OR'] + [child for child in c.childs.all()])
             else:
                 for child in c.childs.all():
                     score_criterias.append(child)
