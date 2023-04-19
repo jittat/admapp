@@ -564,7 +564,7 @@
 
   function previewInterviewDate(formData) {
     const date = formData.get('interview_date')
-    const text = date ? new Date(date).toLocaleString() : '-'
+    const text = date ? new Date(date).toLocaleString('th-TH') : '-'
     document.querySelector("#preview-interview_date").textContent = text
   }
 
