@@ -27,7 +27,7 @@ def interview(request, description_id):
 
 
 @user_login_required
-def interview_image(request, admission_round_id, faculty_id, description_id, type):
+def interview_image(request, description_id, type):
     interview_description = get_object_or_404(InterviewDescription, pk=description_id)
 
     if type == "description":

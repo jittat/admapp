@@ -45,11 +45,16 @@
                 <div class="col-md-9">
                     <p id="preview-preparation_descriptions">
                         {{interview_description.descriptions}}
-
                     </p>
                 </div>
                 <div class="col-md-3 pr-2">
-                    <div id="preview-preparation_image"></div>
+                    <div id="preview-preparation_image">
+                        {% if interview_description.preparation_image %}
+                        <img width="250px" class="img-fluid" id="prepImgId" alt="preparation"
+                             src="{% url 'backoffice:interviews-image' description_id=interview_description.id type='preparation' %}"
+                        >
+                        {% endif %}
+                    </div>
                 </div>
             </div>
 
@@ -73,7 +78,13 @@
                 </div>
                 <div class="col-md-3">
                     <br>
-                    <div id="preview-description_image"></div>
+                    <div id="preview-description_image">
+                        {% if interview_description.description_image %}
+                        <img width="250px" class="img-fluid" id="descImgId" alt="preparation"
+                             src="{% url 'backoffice:interviews-image' description_id=interview_description.id type='description' %}"
+                        >
+                        {% endif %}
+                    </div>
                 </div>
             </div>
             <h4 class="mt-3 interview-contact-groups">ข้อมูลการติดต่อ</h4>
@@ -118,5 +129,21 @@
     input[readonly], label:has(input[readonly]) {
         pointer-events: none;
     }
+
 </style>
+<script>
+
+  $(document).ready(function () {
+
+    function linkify(element) {
+      const text = element.innerHTML
+      element.innerHTML = linkifyHtml(text.replaceAll("\n", "<br>"))
+    }
+    linkify(document.getElementById('preview-descriptions'))
+    linkify(document.getElementById('preview-preparation_descriptions'))
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/linkifyjs@4.1.1/dist/linkify.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/linkify-html@4.1.1/dist/linkify-html.min.js"></script>
 {% endblock %}

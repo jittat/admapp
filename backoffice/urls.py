@@ -157,7 +157,7 @@ urlpatterns = [
         name="interviews-edit",
     ),
     path(
-        "interviews-image/<admission_round_id>/<faculty_id>/<int:description_id>/<str:type>",
+        "interviews-image/<int:description_id>/<str:type>",
         interviews.interview_image,
         name="interviews-image",
     ),

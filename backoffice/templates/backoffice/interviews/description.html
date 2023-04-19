@@ -138,7 +138,7 @@
                     <br>
                     <img width="250px" class="img-fluid" id="prepImgId" alt="preparation"
                          {% if form.instance.preparation_image %}
-                         src="{% url 'backoffice:interviews-image' admission_round_id=admission_round.id faculty_id=faculty.id description_id=interview_description_id type='preparation' %}"
+                         src="{% url 'backoffice:interviews-image' description_id=interview_description_id type='preparation' %}"
                          {% endif %}>
                 </div>
                 <div class="col-md-9">
@@ -180,7 +180,7 @@
                     <br>
                     <img width="250px" class="img-fluid" id="descImgId" alt="interview details"
                          {% if form.instance.description_image %}
-                         src="{% url 'backoffice:interviews-image' admission_round_id=admission_round.id faculty_id=faculty.id description_id=interview_description_id type='description' %}"
+                         src="{% url 'backoffice:interviews-image' description_id=interview_description_id type='description' %}"
                          {% endif %}>
                 </div>
                 <div class="col-md-9">
