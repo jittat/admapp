@@ -156,5 +156,10 @@ urlpatterns = [
         interviews.interview_image,
         name="interviews-image",
     ),
-
+    path(
+        "interviews-list/<admission_round_id>/<faculty_id>/",
+        interviews.list_interview_forms,
+        {"description_id": None},
+        name="interviews-list",
+    ),
 ]
