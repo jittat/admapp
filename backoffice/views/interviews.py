@@ -399,9 +399,16 @@ def list_interview_forms(request, admission_round_id, faculty_id):
     interview_descriptions = InterviewDescription.objects.filter(
         faculty_id=faculty_id, admission_round_id=admission_round_id
     )
-
     major_cupt_codes = MajorCuptCode.objects.filter(faculty=faculty_id)
     current_round_projects = admission_round.get_available_projects()
+
+    project_ids = [project.id for project in current_round_projects]
+    major_cupt_codes_ids = [cupt_code.id for cupt_code in major_cupt_codes]
+    interview_description_reliations = (
+        AdmissionProjectMajorCuptCodeInterviewDescription.objects.filter(
+            major_cupt_codes_id__in=major_cupt_codes_ids, admission_project_id__in=project_ids
+        )
+    )
 
     return render(
         request,
@@ -411,6 +418,8 @@ def list_interview_forms(request, admission_round_id, faculty_id):
             "admission_projects": current_round_projects,
             "majors": major_cupt_codes,
             "faculty": faculty,
+            "interview_descriptions": interview_descriptions,
+            "interview_description_reliations": interview_description_reliations,
         },
     )
 
