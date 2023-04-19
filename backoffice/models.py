@@ -351,7 +351,13 @@ class InterviewDescription(models.Model):
     )
 
     video_conference_platform = models.TextField(
-        blank=True, verbose_name="ช่องทางการสัมภาษณ์ออนไลน์"
+        blank=True, verbose_name="ช่องทางการสัมภาษณ์ออนไลน์",
+        choices=[
+                            ("webex", "Cisco Webex"),
+                            ("zoom", "Zoom"),
+                            ("google-meet", "Google Meet"),
+                            ("other", "โปรแกรมอื่น (กรุณาระบุในรายละเอียด)"),
+                        ]
     )
 
     interview_date = models.DateTimeField(

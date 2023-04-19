@@ -1,0 +1,122 @@
+{% extends 'backoffice/base.html' %}
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        {% include "backoffice/messages_alert.html" %}
+        <h2>
+            ข้อมูลการสัมภาษณ์
+        </h2>
+
+        <div id="preview-root">
+            <h3>
+                โครงการและสาขา
+            </h3>
+            <ol id="preview-projects">
+            </ol>
+
+            <h4>ข้อมูลทั่วไป</h4>
+            <div class="form-row">
+                <div class="col-md-3">
+                    รูปแบบการสัมภาษณ์
+                </div>
+                <div class="col-md-9" id="preview-interview_options">
+                    {{interview_description.get_interview_options_display}}
+                </div>
+            </div>
+            <div class="form-row mt-2">
+                <div class="col-md-3">การส่งเอกสารเพิ่มเติม
+                </div>
+                <div class="col-md-9" id="preview-is_additional_documents_required">
+                    {{interview_description.get_additional_documents_option_display}}
+
+                </div>
+            </div>
+            <div class="form-row mt-2 form-group interview-date-groups">
+                <div class="col-md-3">
+                    วันเวลา
+                </div>
+                <div class="col-md-9" id="preview-interview_date">
+                    {{interview_description.interview_date|date:'d/m/Y\\ H:i'}}
+
+                </div>
+            </div>
+            <h4 class="mt-3 interview-prep-groups">การเตรียมตัวก่อนสัมภาษณ์</h4>
+            <div class="form-row interview-prep-groups">
+                <div class="col-md-9">
+                    <p id="preview-preparation_descriptions">
+                        {{interview_description.descriptions}}
+
+                    </p>
+                </div>
+                <div class="col-md-3 pr-2">
+                    <div id="preview-preparation_image"></div>
+                </div>
+            </div>
+
+            <h4 class="mt-3 interview-info-groups"><span
+                    class="interview-format-headers">รายละเอียดการสัมภาษณ์ออนไลน์</span>
+            </h4>
+            <div class="form-row online-platform-forms interview-info-groups">
+                <div class="col-md-3">
+                    สัมภาษณ์ผ่านทางโปรแกรม
+                </div>
+                <div class="col-md-9" id="preview-video_conference_platform">
+                    {{interview_description.get_video_conference_platform_display}}
+
+                </div>
+            </div>
+            <div class="form-row mt-2 interview-info-groups">
+                <div class="col-md-9">
+                    <p id="preview-descriptions">
+                        {{interview_description.preparation_descriptions}}
+                    </p>
+                </div>
+                <div class="col-md-3">
+                    <br>
+                    <div id="preview-description_image"></div>
+                </div>
+            </div>
+            <h4 class="mt-3 interview-contact-groups">ข้อมูลการติดต่อ</h4>
+            <div class="interview-contact-groups">
+                <ol id="preview-contacts">
+                </ol>
+            </div>
+        </div>
+
+        <div style="display:none">
+            <div class="contact-person-form">
+                <div class="form-row">
+                    <div class="col-md-4">ชื่อผู้ติดต่อ</div>
+                    <div class="col-md-3">อีเมล</div>
+                    <div class="col-md-3">โทรศัพท์</div>
+                    <div class="col-md-2"></div>
+                </div>
+                <div class="form-row">
+                    <div class="col-md-4">
+                        <input type="text" name="name" class="form-control"></div>
+                    <div class="col-md-3">
+                        <input type="text" name="email" class="form-control"></div>
+                    <div class="col-md-3">
+                        <input type="text" name="tel" class="form-control"></div>
+                    <div class="col-md-2">
+                        <button class="btn-sm btn-danger delete-contact-person" type="button">ลบ</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    img.img-fluid {
+        display: none;
+    }
+
+    img.img-fluid[src] {
+        display: block;
+    }
+
+    input[readonly], label:has(input[readonly]) {
+        pointer-events: none;
+    }
+</style>
+{% endblock %}

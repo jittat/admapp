@@ -141,6 +141,11 @@ urlpatterns = [
         name="interviews-delete",
     ),
     path(
+        "interviews/<int:description_id>/",
+        interviews.interview,
+        name="interviews-view",
+        ),
+    path(
         "interviews/<admission_round_id>/<faculty_id>/",
         interviews.interview_form,
         {"description_id": None},

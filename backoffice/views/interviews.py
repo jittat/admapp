@@ -18,6 +18,15 @@ from criteria.models import MajorCuptCode
 
 
 @user_login_required
+def interview(request, description_id):
+    interview_description = get_interview_description(description_id)
+    return render(request, "backoffice/interviews/description_view.html",
+                  {
+                      "interview_description": interview_description}
+                  )
+
+
+@user_login_required
 def interview_image(request, admission_round_id, faculty_id, description_id, type):
     interview_description = get_object_or_404(InterviewDescription, pk=description_id)
 
@@ -190,12 +199,12 @@ def get_project_choices(current_round_projects):
 
 
 def calculate_project_majors(
-    current_round_projects,
-    description_id,
-    major_cupt_codes,
-    map_selected_admission_project_major_cupt_code,
-    preselect_project_major,
-    project_majors,
+        current_round_projects,
+        description_id,
+        major_cupt_codes,
+        map_selected_admission_project_major_cupt_code,
+        preselect_project_major,
+        project_majors,
 ):
     project_majors_data = {}
     project_majors_choices = []
@@ -268,49 +277,49 @@ def calculate_project_majors(
 
 def get_is_preselected(admission_project, major_cupt_code, preselect_project_major):
     return (
-        get_project_major_cupt_code_id(major_cupt_code.id, admission_project.id)
-        == preselect_project_major
+            get_project_major_cupt_code_id(major_cupt_code.id, admission_project.id)
+            == preselect_project_major
     )
 
 
 def get_is_checked(
-    admission_project,
-    description_id,
-    is_preselected,
-    major_cupt_code,
-    map_selected_admission_project_major_cupt_code,
+        admission_project,
+        description_id,
+        is_preselected,
+        major_cupt_code,
+        map_selected_admission_project_major_cupt_code,
 ):
     is_in_this_description = (
-        (
-            major_cupt_code.id,
-            admission_project.id,
-        )
-        in map_selected_admission_project_major_cupt_code
-        and map_selected_admission_project_major_cupt_code[
-            (major_cupt_code.id, admission_project.id)
-        ]
-        == description_id
+            (
+                major_cupt_code.id,
+                admission_project.id,
+            )
+            in map_selected_admission_project_major_cupt_code
+            and map_selected_admission_project_major_cupt_code[
+                (major_cupt_code.id, admission_project.id)
+            ]
+            == description_id
     )
     is_checked = is_in_this_description or is_preselected
     return is_checked
 
 
 def get_is_disabled(
-    admission_project,
-    description_id,
-    major_cupt_code,
-    map_selected_admission_project_major_cupt_code,
+        admission_project,
+        description_id,
+        major_cupt_code,
+        map_selected_admission_project_major_cupt_code,
 ):
     is_in_other_description = (
-        (
-            major_cupt_code.id,
-            admission_project.id,
-        )
-        in map_selected_admission_project_major_cupt_code
-        and not map_selected_admission_project_major_cupt_code[
-            (major_cupt_code.id, admission_project.id)
-        ]
-        == description_id
+            (
+                major_cupt_code.id,
+                admission_project.id,
+            )
+            in map_selected_admission_project_major_cupt_code
+            and not map_selected_admission_project_major_cupt_code[
+                        (major_cupt_code.id, admission_project.id)
+                    ]
+                    == description_id
     )
     is_disabled = is_in_other_description
     return is_disabled
@@ -378,7 +387,7 @@ def get_map_selected_admission_project_major_cupt_code(admission_round_id, facul
         )
     )
     for (
-        selected_admission_project_major_cupt_code
+            selected_admission_project_major_cupt_code
     ) in selected_admission_project_major_cupt_code_list:
         considered_obj_admission_project_id = (
             selected_admission_project_major_cupt_code.admission_project_id
@@ -404,7 +413,7 @@ def list_interview_forms(request, admission_round_id, faculty_id):
 
     project_ids = [project.id for project in current_round_projects]
     major_cupt_codes_ids = [cupt_code.id for cupt_code in major_cupt_codes]
-    interview_description_reliations = (
+    interview_description_relations = (
         AdmissionProjectMajorCuptCodeInterviewDescription.objects.filter(
             major_cupt_codes_id__in=major_cupt_codes_ids, admission_project_id__in=project_ids
         )
@@ -419,7 +428,7 @@ def list_interview_forms(request, admission_round_id, faculty_id):
             "majors": major_cupt_codes,
             "faculty": faculty,
             "interview_descriptions": interview_descriptions,
-            "interview_description_reliations": interview_description_reliations,
+            "interview_description_relations": interview_description_relations,
         },
     )
 
