@@ -353,11 +353,12 @@ class InterviewDescription(models.Model):
     video_conference_platform = models.TextField(
         blank=True, verbose_name="ช่องทางการสัมภาษณ์ออนไลน์",
         choices=[
-                            ("webex", "Cisco Webex"),
-                            ("zoom", "Zoom"),
-                            ("google-meet", "Google Meet"),
-                            ("other", "โปรแกรมอื่น (กรุณาระบุในรายละเอียด)"),
-                        ]
+            ("webex", "Cisco Webex"),
+            ("zoom", "Zoom"),
+            ("google-meet", "Google Meet"),
+            ("other", "โปรแกรมอื่น (กรุณาระบุในรายละเอียด)"),
+            ("", "ไม่ระบุ"),
+        ]
     )
 
     interview_date = models.DateTimeField(
@@ -393,6 +394,17 @@ class InterviewDescription(models.Model):
 
     contacts = models.JSONField(blank=True, default=list, verbose_name="ข้อมูลการติดต่อ")
 
+    def get_additional_documents_option_user_display(self):
+        mesgs = {
+            InterviewDescription.OPTION_DOC_NO_NEW_DOC: 'ไม่มีเอกสารต้องอัพโหลดเพิ่มเติม',
+            InterviewDescription.OPTION_DOC_UPLOAD_ON_ADMAPP: 'ต้องอัพโหลดเอกสารเพิ่มเติม โดยอัพโหลดในระบบ อ่านรายละเอียดในส่วนการเตรียมตัว',
+            InterviewDescription.OPTION_DOC_UPLOAD_OTHER: 'ต้องอัพโหลดเอกสารเพิ่มเติม โดยส่งทางช่องทางที่ระบุในรายละเอียดส่วนการเตรียมตัว',
+        }
+        if self.additional_documents_option in mesgs:
+            return mesgs[self.additional_documents_option]
+        else:
+            return ''
+    
 
 class AdmissionProjectMajorCuptCodeInterviewDescription(models.Model):
     admission_project = models.ForeignKey(AdmissionProject,

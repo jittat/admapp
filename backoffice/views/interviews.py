@@ -1,3 +1,4 @@
+import json
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.http import Http404, HttpResponse
@@ -19,9 +20,28 @@ from criteria.models import MajorCuptCode
 
 @user_login_required
 def interview(request, description_id):
-    interview_description = get_interview_description(description_id)
-    return render(request, "backoffice/interviews/description_view.html",
-                  { "interview_description": interview_description })
+    interview_description = get_object_or_404(InterviewDescription,pk=description_id)
+    major_id = request.GET.get("major_id", None)
+
+    if major_id:
+        major = get_object_or_404(Major, pk=major_id)
+        admission_project = major.admission_project
+    else:
+        major = None
+        admission_project = None
+
+    contacts = []
+    try:
+        contacts = interview_description.contacts
+    except:
+        pass
+        
+    return render(request, "backoffice/interviews/description_view.html", {
+        "interview_description": interview_description,
+        "major": major,
+        "admission_project": admission_project,
+        "contacts": contacts,
+    })
 
 
 @user_login_required

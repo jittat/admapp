@@ -367,7 +367,7 @@ def load_accepted_applicant_counts(admission_round, admission_project, majors):
 def load_interview_descriptions(admission_round, project, faculty, majors):
     interview_descriptions = InterviewDescription.objects.filter(admission_round=admission_round)
     if faculty:
-        interview_descriptions = interview_descriptions.filter(faculty=faculty)
+        interview_descriptions = interview_descriptions.filter(faculty=faculty).order_by('-id')
 
     major_map = { i.major_id:i for i in interview_descriptions }
     for m in majors:
