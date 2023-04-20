@@ -22,12 +22,14 @@
         {% comment %}
         {% include "appl/include/project_accepted_for_interview_result_info_hooks.html" %}
         {% endcomment %}
-	{% if interview_description %}
-	  {% with interview_description.major as major %}
-	    {% with interview_description.admission_project as admission_project %}
-	      {% include 'appl/include/interview_description.html' %}
+	{% if active_application.admission_project.id != 51 %} <!--  HACK for 51 spe  -->
+	  {% if interview_description %}
+	    {% with interview_description.major as major %}
+	      {% with interview_description.admission_project as admission_project %}
+		{% include 'appl/include/interview_description.html' %}
+	      {% endwith %}
 	    {% endwith %}
-	  {% endwith %}
+	  {% endif %}
 	{% endif %}
         {% if major_interview_descriptions %}
           <div>
@@ -41,8 +43,6 @@
           <h3>{% trans 'ขอแสดงความเสียใจด้วย' %}</h3>
           {% blocktrans %}
             คุณไม่ผ่านการพิจารณาคัดเลือกให้เข้าสอบสัมภาษณ์ มหาวิทยาลัยเกษตรศาสตร์ขอขอบคุณผู้สมัครที่สนใจเข้าศึกษาต่อที่มหาวิทยาลัยเกษตรศาสตร์ นอกจากโครงการนี้แล้วยังมีโครงการรับสมัครในรอบการคัดเลือกอื่น ๆ อีก สามารถติดตามข้อมูลได้จากเว็บไซต์ admission.ku.ac.th
-	    <br>
-	    <div class="d-none"><b>ในการรับเข้าปีการศึกษา 2564 การรับรอบที่ 1 ในหลาย ๆ สาขาจากหลายโครงการจะมีการรับสองครั้ง สามารถติดตามข้อมูลได้จากเว็บไซต์  การรับรอบที่ 1 ครั้งที่ 2 จะมีระหว่างวันที่ 2 - 6 ก.พ. 2564</b></div>
           {% endblocktrans %}
         {% else %}
           <h3>ขอแสดงความเสียใจด้วย</h3>
