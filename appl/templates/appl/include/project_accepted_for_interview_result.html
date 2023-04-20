@@ -15,23 +15,24 @@
                 {% if result.has_interview_rank %}
                   ({% trans 'สัมภาษณ์ลำดับที่' %} {{ result.interview_rank }})
                 {% endif %}
-
-		{% if result.major.faculty_id == 7 %}
-		  <div class="alert alert-warning">
-		    <span class="badge badge-info">ประกาศ</span> ขณะนี้ทีมงานได้แก้ไขประกาศรายละเอียดการสัมภาษณ์คณะศึกษาศาสตร์ที่มีปัญหาเรียบร้อยแล้ว ผู้สมัครสามารถดาวน์โหลดข้อมูลและใช้ QR ในประกาศได้แล้ว ทีมงานขออภัยในความไม่สะดวกนี้ด้วย
-		  </div>
-		{% endif %}
               </li>
             {% endif %}
           {% endfor %}
         </ul>
         {% comment %}
-          {% include "appl/include/project_accepted_for_interview_result_info_hooks.html" %}
+        {% include "appl/include/project_accepted_for_interview_result_info_hooks.html" %}
         {% endcomment %}
-        {% if interview_descriptions %}
+	{% if interview_description %}
+	  {% with interview_description.major as major %}
+	    {% with interview_description.admission_project as admission_project %}
+	      {% include 'appl/include/interview_description.html' %}
+	    {% endwith %}
+	  {% endwith %}
+	{% endif %}
+        {% if major_interview_descriptions %}
           <div>
             <h4>รายละเอียดการสอบสัมภาษณ์</h4>
-            {% include "appl/include/interview_descriptions.html" %}
+            {% include "appl/include/major_interview_descriptions.html" %}
           </div>
         {% endif %}
         {{ project_round.accepted_for_interview_instructions|safe }}

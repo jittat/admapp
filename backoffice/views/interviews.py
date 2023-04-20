@@ -44,8 +44,13 @@ def interview(request, description_id):
     })
 
 
-@user_login_required
+#@user_login_required
 def interview_image(request, description_id, type):
+    if not request.user.is_authenticated:
+        h = request.GET.get('h',None)
+        if (not h) or (int(h) != InterviewDescription.get_interview_description_id_hash(int(description_id))):
+            raise Http404()
+    
     interview_description = get_object_or_404(InterviewDescription, pk=description_id)
 
     if type == "description":

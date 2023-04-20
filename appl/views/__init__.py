@@ -13,13 +13,14 @@ from appl.models import Eligibility
 from appl.models import Payment
 from appl.models import ProjectApplication
 from appl.models import ProjectUploadedDocument
+from appl.models import MajorInterviewDescriptionCache
 from appl.qrpayment import generate_ku_qr, generate_empty_img
 from appl.views.upload import upload_form_for
 from regis.decorators import appl_login_required
 from regis.models import CuptConfirmation, CuptRequestQueueItem
 from regis.models import LogItem
 from supplements.models import load_supplement_configs_with_instance
-
+from backoffice.models import InterviewDescription
 
 def prepare_uploaded_document_forms(applicant, project_uploaded_documents):
     for d in project_uploaded_documents:
@@ -193,7 +194,8 @@ def index_with_active_application(request, active_application, admission_round=N
         is_accepted_for_interview = False
         is_accepted = False
         accepted_result = None
-        interview_descriptions = None
+        major_interview_descriptions = None
+        interview_description = None
 
         for res in admission_results:
             if res.is_accepted_for_interview:
@@ -213,14 +215,22 @@ def index_with_active_application(request, active_application, admission_round=N
                 else:
                     major.is_accepted_for_interview = mresults[major.id].is_accepted_for_interview
                     if major.is_accepted_for_interview:
-                        interview_descriptions = (
-                            MajorInterviewDescription.find_by_major_and_admission_round(major,
-                                                                                        admission_round))
+                        if admission_round.number != 1:
+                            interview_description = MajorInterviewDescriptionCache.get_interview_description_by_major(major)
+                            interview_description.major = major
+                            interview_description.admission_project = admission_project
+                        else:
+                            interview_description = None
+                            major_interview_descriptions = (
+                                MajorInterviewDescription.find_by_major_and_admission_round(major,
+                                                                                            admission_round))
 
     else:
         admission_results = []
         is_accepted_for_interview = False
-        interview_descriptions = None
+        major_interview_descriptions = None
+        interview_description = None
+        
         is_accepted = False
         accepted_result = None
 
@@ -237,6 +247,10 @@ def index_with_active_application(request, active_application, admission_round=N
     else:
         sport_option = last_log.message[-1]
 
+    interview_description_hash = ''
+    if interview_description:
+        interview_description_hash = InterviewDescription.get_interview_description_id_hash(interview_description.id)
+        
     return render(request,
                   'appl/index.html',
                   { 'notice': notice,
@@ -271,7 +285,9 @@ def index_with_active_application(request, active_application, admission_round=N
                     'accepted_for_interview_result_shown': project_round.accepted_for_interview_result_shown,
                     'admission_results': admission_results,
                     'is_accepted_for_interview': is_accepted_for_interview,
-                    'interview_descriptions': interview_descriptions,
+                    'major_interview_descriptions': major_interview_descriptions,   # legacy should be deleted in 2567
+                    'interview_description': interview_description,
+                    'interview_description_hash': interview_description_hash,
 
                     'accepted_result_shown': project_round.accepted_result_shown,
                     'is_accepted': is_accepted,

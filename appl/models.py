@@ -1226,10 +1226,10 @@ class MajorInterviewDescriptionCache(models.Model):
     interview_description = models.ForeignKey('backoffice.InterviewDescription', on_delete=models.CASCADE)
 
     @staticmethod
-    def get_by_major(major):
-        caches = MajorInterviewDescriptionCache.object.filter(major=major)
+    def get_interview_description_by_major(major):
+        caches = MajorInterviewDescriptionCache.objects.filter(major=major)
         if len(caches) > 0:
-            return caches[0]
+            return caches[0].interview_description
         else:
             return None
 

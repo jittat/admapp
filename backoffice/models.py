@@ -404,7 +404,10 @@ class InterviewDescription(models.Model):
             return mesgs[self.additional_documents_option]
         else:
             return ''
-    
+
+    @staticmethod
+    def get_interview_description_id_hash(id):
+        return (id * 683789 + 963046) % 1001933
 
 class AdmissionProjectMajorCuptCodeInterviewDescription(models.Model):
     admission_project = models.ForeignKey(AdmissionProject,
