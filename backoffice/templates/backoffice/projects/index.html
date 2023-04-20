@@ -142,10 +142,11 @@
                   {% endif %}
                 {% endif %}
               </td>
-	      <td>
+	      <td style="width: 230px;">
                 {% if user_major_number == any_major or user_major_number == major.number %}
 		  {% if major.interview_description %}
-                    <a target="_blank" class="xx-none btn btn-sm btn-secondary" rel="noopener noreferrer" href="{% url 'backoffice:interviews-edit' admission_round.id major.faculty_id major.interview_description.id %}">แก้ไขรายละเอียดสัมภาษณ์</a>
+                    <a target="_blank" class="xx-none btn btn-sm btn-secondary" rel="noopener noreferrer" href="{% url 'backoffice:interviews-edit' admission_round.id major.faculty_id major.interview_description.id %}">แก้รายละเอียดสัมภาษณ์</a>
+		    <a class="btn btn-sm btn-outline-secondary interview-description-preview-buttons" href="{% url 'backoffice:interviews-view' major.interview_description.id %}?major_id={{ major.id }}"><i class="fa fa-eye"></i></a>
 		  {% else %}
 		    {% if major.spanned_interview_descriptions %}
 		      {% include "backoffice/projects/include/spanned_interview_descriptions.html" %}
@@ -190,10 +191,11 @@
                 {% endif %}
               </td>
 	    {% else %}
-	      <td>
+	      <td style="width: 230px;">
                 {% if user_major_number == any_major or user_major_number == major.number %}
 		  {% if major.interview_description %}
-                    <a target="_blank" class="xx-none btn btn-sm btn-secondary" rel="noopener noreferrer" href="{% url 'backoffice:interviews-edit' admission_round.id major.faculty_id major.interview_description.id %}">แก้ไขรายละเอียดสัมภาษณ์</a>
+                    <a target="_blank" class="xx-none btn btn-sm btn-secondary" rel="noopener noreferrer" href="{% url 'backoffice:interviews-edit' admission_round.id major.faculty_id major.interview_description.id %}">แก้รายละเอียดสัมภาษณ์</a>
+		    <a class="btn btn-sm btn-outline-secondary interview-description-preview-buttons" href="{% url 'backoffice:interviews-view' major.interview_description.id %}?major_id={{ major.id }}"><i class="fa fa-eye"></i></a>
 		  {% else %}
 		    {% if major.spanned_interview_descriptions %}
 		      {% include "backoffice/projects/include/spanned_interview_descriptions.html" %}
