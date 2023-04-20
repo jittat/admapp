@@ -1219,3 +1219,18 @@ class ExamScoreProvider(object):
 
     def get_gatpat_round_count(self):
         return len(self.gatpat_rounds)
+
+
+class MajorInterviewDescriptionCache(models.Model):
+    major = models.ForeignKey('Major',on_delete=models.CASCADE)
+    interview_description = models.ForeignKey('backoffice.InterviewDescription', on_delete=models.CASCADE)
+
+    @staticmethod
+    def get_by_major(major):
+        caches = MajorInterviewDescriptionCache.object.filter(major=major)
+        if len(caches) > 0:
+            return caches[0]
+        else:
+            return None
+
+            
