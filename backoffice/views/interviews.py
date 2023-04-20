@@ -21,9 +21,7 @@ from criteria.models import MajorCuptCode
 def interview(request, description_id):
     interview_description = get_interview_description(description_id)
     return render(request, "backoffice/interviews/description_view.html",
-                  {
-                      "interview_description": interview_description}
-                  )
+                  { "interview_description": interview_description })
 
 
 @user_login_required
@@ -401,6 +399,7 @@ def get_map_selected_admission_project_major_cupt_code(admission_round_id, facul
     return map_selected_admission_project_major_cupt_code
 
 
+@user_login_required
 def list_interview_forms(request, admission_round_id, faculty_id):
     admission_round = get_object_or_404(AdmissionRound, pk=admission_round_id)
     faculty = get_object_or_404(Faculty, pk=faculty_id)
@@ -439,6 +438,10 @@ def delete(request, description_id):
     current_admission_project = interview_description.major.admission_project
     admission_round_id = interview_description.admission_round_id
 
+    major = interview_description.major
+    if major and (not can_user_view_applicants_in_major(request.user, major.admission_project, major)):
+        return redirect(reverse("backoffice:index"))
+    
     interview_description.delete()
     messages.info(request, "ลบข้อมูลรายละเอียดเรียบร้อยแล้ว")
 
