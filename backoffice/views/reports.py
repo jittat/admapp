@@ -369,37 +369,6 @@ def download_applicants_interview_sheet(request, project_id, round_id, major_num
     return response
 
 
-def major_with_udat(major):
-    MAJORS = {
-        11: [12],
-        12: [11, 22, 23],
-        13: [3, 5, 6, 63],
-        14: [2, 3, 45],
-        16: [13,14],
-        23: [1],
-        25: [2],
-        31: [25, 26],
-    }
-    if major.admission_project_id in MAJORS:
-        return major.number in MAJORS[major.admission_project_id]
-    else:
-        return False
-
-def major_with_full_onet(major):
-    MAJORS = {
-        12: [51],
-        13: [61],
-        14: [53],
-        16: [58, 83],
-        31: [8, 21, 24],
-    }
-    if major.admission_project_id in MAJORS:
-        return major.number in MAJORS[major.admission_project_id]
-    else:
-        return False
-
-
-
 def write_score_report_header(sheet, major, cell_format):
     items = [
         'ลำดับ',
@@ -412,14 +381,26 @@ def write_score_report_header(sheet, major, cell_format):
     ]
     items += [
         'TGAT',
-        'TGAT1','TGAT2','TGAT3',
+        'TG1','TG2','TG3',
+        'TP1',
         'TP2',
         'TP21','TP22','TP23',
-        'TP3','TP4','TP5'
+        'TP3','TP4','TP5',
+        'A61\nMa1',
+        'A62\nMa2',
+        'A63\nSci',
+        'A64\nPhy',
+        'A65\nChm',
+        'A66\nBio',
+        'A70\nSoc',
+        'A81\nTha',
+        'A81\nEng',
+        'A8x',
     ]
     write_sheet_row(sheet,2,
                     items,
-                    cell_format)
+                    cell_format,
+                    row_height=2)
 
 def write_score_report_sheet(sheet, project, applicants, major, cell_format):
     from backoffice.templatetags.score_extras import score as score_filter
@@ -428,10 +409,12 @@ def write_score_report_sheet(sheet, project, applicants, major, cell_format):
     
     sheet.set_landscape()
     set_column_widths(sheet,[3,11,6,9,14,4,8,
-                             4,
-                             5,5,5,5,5,5,5,5,5,
-                             3.5,3.5,3.5,3.5,3.5,3.5,3.5,
-                             5])
+                             3.6,3.6,3.6,3.6,         #TGAT
+                             3.6,3.6,3.6,3.6,3.6,     #TPAT1-2
+                             3.6,3.6,3.6,             #TPAT3-4-5
+                             3.6,3.6,3.6,3.6,3.6,3.6, #A61-66
+                             3.6,3.6,3.6,7,         #A70,81,82,8x
+                             7])
     sheet.write(0,0,'รายงานคะแนนโครงการ' + project.title)
     sheet.write(1,0, 'สาขา' + major.title)
 
@@ -458,6 +441,7 @@ def write_score_report_sheet(sheet, project, applicants, major, cell_format):
                 score_filter(scores.tgattpat['tgat1']),
                 score_filter(scores.tgattpat['tgat2']),
                 score_filter(scores.tgattpat['tgat3']),
+                score_filter(scores.tgattpat['tpat1']),
                 score_filter(scores.tgattpat['tpat2']),
                 score_filter(scores.tgattpat['tpat21']),
                 score_filter(scores.tgattpat['tpat22']),
@@ -467,9 +451,25 @@ def write_score_report_sheet(sheet, project, applicants, major, cell_format):
                 score_filter(scores.tgattpat['tpat5']),
             ]
         else:
-            items += [' '] * 11
-        #items += [ score_filter(applicant.admission_result.calculated_score) ]
-        items += [ "-" ]
+            items += [' '] * 12
+            
+        if hasattr(scores,'alevel'):
+            items += [
+                score_filter(scores.alevel['a_lv_61']),
+                score_filter(scores.alevel['a_lv_62']),
+                score_filter(scores.alevel['a_lv_63']),
+                score_filter(scores.alevel['a_lv_64']),
+                score_filter(scores.alevel['a_lv_65']),
+                score_filter(scores.alevel['a_lv_66']),
+                score_filter(scores.alevel['a_lv_70']),
+                score_filter(scores.alevel['a_lv_81']),
+                score_filter(scores.alevel['a_lv_82']),
+                round_array_filter(scores.alevel_array['a_lv_8x']),
+            ]
+        else:
+            items += [' '] * 10
+            
+        items += [ score_filter(applicant.admission_result.calculated_score) ]
 
         write_sheet_row(sheet, r + 2, items, cell_format)
 
