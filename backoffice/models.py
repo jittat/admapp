@@ -398,7 +398,7 @@ class InterviewDescription(models.Model):
         mesgs = {
             InterviewDescription.OPTION_DOC_NO_NEW_DOC: 'ไม่มีเอกสารต้องอัพโหลดเพิ่มเติม',
             InterviewDescription.OPTION_DOC_UPLOAD_ON_ADMAPP: 'ต้องอัพโหลดเอกสารเพิ่มเติม โดยอัพโหลดในระบบ อ่านรายละเอียดในส่วนการเตรียมตัว',
-            InterviewDescription.OPTION_DOC_UPLOAD_OTHER: 'ต้องอัพโหลดเอกสารเพิ่มเติม โดยส่งทางช่องทางที่ระบุในรายละเอียดส่วนการเตรียมตัว',
+            InterviewDescription.OPTION_DOC_UPLOAD_OTHER: 'ต้องส่งเอกสารเพิ่มเติม โดยส่งทางช่องทางที่ระบุในรายละเอียดส่วนการเตรียมตัว',
         }
         if self.additional_documents_option in mesgs:
             return mesgs[self.additional_documents_option]
