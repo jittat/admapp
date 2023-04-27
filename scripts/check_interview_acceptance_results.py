@@ -91,7 +91,7 @@ def main():
                 else:
                     counters['none'] += 1
             if counters['none'] > 0:
-                print(m, counters)
+                print(m.admission_project, m, counters)
 
 if __name__ == '__main__':
     main()
