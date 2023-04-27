@@ -75,21 +75,25 @@ def main():
         if not m.interview_description:
             continue
 
+        results = AdmissionResult.objects.filter(major=m, is_accepted_for_interview=True).all()
+        counters = {'accepted':0, 'rejected':0, 'missed':0, 'none':0}
+        for r in results:
+            if r.is_interview_absent == True:
+                counters['missed'] += 1
+            elif r.is_accepted:
+                counters['accepted'] += 1
+            elif r.is_accepted == False:
+                counters['rejected'] += 1
+            else:
+                counters['none'] += 1
+
         interview_description = m.interview_description
         if interview_description.interview_options == InterviewDescription.OPTION_NO_INTERVIEW:
-            pass
+            if (counters['rejected'] > 0) or (counters['missed'] > 0):
+                print('[rejected/missed]',m.admission_project, m, counters)
+            elif counters['none'] > 0:
+                print('[need clicks]',m.admission_project, m, counters)
         else:
-            results = AdmissionResult.objects.filter(major=m, is_accepted_for_interview=True).all()
-            counters = {'accepted':0, 'rejected':0, 'missed':0, 'none':0}
-            for r in results:
-                if r.is_interview_absent == True:
-                    counters['missed'] += 1
-                elif r.is_accepted:
-                    counters['accepted'] += 1
-                elif r.is_accepted == False:
-                    counters['rejected'] += 1
-                else:
-                    counters['none'] += 1
             if counters['none'] > 0:
                 print(m.admission_project, m, counters)
 
