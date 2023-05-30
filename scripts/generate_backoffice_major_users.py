@@ -110,6 +110,9 @@ PROJECT_CODENAMES = {
         50: 'int2',
         51: 'spe',
     },
+    3: {
+        28: 'kuad',
+    },
 }
     
 def main():

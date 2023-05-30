@@ -10,7 +10,7 @@ from django.urls import reverse
 from django.utils.text import format_lazy
 from django.utils.translation import gettext_lazy as _
 
-from appl.models import PersonalProfile, EducationalProfile
+from appl.models import PersonalProfile, EducationalProfile, AdmissionRound
 from appl.models import School
 from regis.decorators import appl_login_required
 
@@ -251,6 +251,8 @@ def personal_profile(request):
 
 @appl_login_required
 def education_profile(request):
+    admission_round = AdmissionRound.get_available()
+    
     applicant = request.applicant
     profile = applicant.get_educational_profile()
     if profile is None:
@@ -284,4 +286,5 @@ def education_profile(request):
                   { 'form': form,
                     'instruction_step': instruction_step,
                     'applicant': applicant,
+                    'admission_round': admission_round,
                   })

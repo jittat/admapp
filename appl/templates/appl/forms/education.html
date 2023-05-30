@@ -21,6 +21,12 @@
     </div>
 </div>
 <script>
+ {% if admission_round and admission_round.number == 4 %}
+ $(function(){
+   $("#hint_id_gpa").html("สำหรับการคัดเลือกรอบที่ 4 <b>ให้กรอกเกรดเฉลี่ย 6 ภาคการศึกษา</b>");
+ });
+ {% endif %}
+ 
   var schoolSelectStr = '<select id="id_topschool_select" class="select form-control" style="display:none;"></select>';
 
   var copySchoolToSelect = function() {

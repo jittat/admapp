@@ -37,7 +37,9 @@
         <li>
           {% trans 'โรงเรียน' %}: {{ educational_profile.school_title }}<br />
           {% trans 'แผนการเรียน' %}: {{ educational_profile.get_education_plan_display }} (หน่วยกิตกลุ่มสาระ - วิทย์ {{ educational_profile.sci_credit|floatformat:"-2" }}, คณิต {{ educational_profile.math_credit|floatformat:"-2" }}, ภาษาต่างประเทศ {{ educational_profile.lang_credit|floatformat:"-2" }}), GPAX: {{ educational_profile.gpa|floatformat:"2" }}<br />
-	  <span class="d-none"><small><span class="badge badge-info">คำเตือน</span> ถ้าเคยกรอกข้อมูลไว้ในการสมัครรอบก่อน อย่าลืมปรับเกรดเฉลี่ย (GPAX) เป็นเกรดเฉลี่ย 6 ภาคการศึกษา</small><br/></span>
+	  {% if admission_round.number == 4 %}
+	    <span class="xnone"><small><span class="badge badge-info">คำเตือน</span> ถ้าเคยกรอกข้อมูลไว้ในการสมัครรอบก่อน <b>อย่าลืมปรับเกรดเฉลี่ย (GPAX) เป็นเกรดเฉลี่ย 6 ภาคการศึกษา</b></small><br/></span>
+	  {% endif %}
           <a class="btn btn-sm btn-secondary" href="{% url 'appl:education-profile' %}">{% trans 'แก้ไขข้อมูลการศึกษา' %}</a>
         </li>
       {% else %}
