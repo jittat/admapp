@@ -196,6 +196,25 @@ def show(request, national_id, project_id=None):
 
 
 @user_login_required
+def cancel_confirmed_application(request, national_id):
+    user = request.user
+    if not request.method == 'POST':
+        return HttpResponseForbidden()
+    if not user.is_super_admin:
+        return HttpResponseForbidden()
+
+    applicant = get_object_or_404(Applicant, national_id=national_id)
+
+    if applicant.confirmed_application_id != None:
+        LogItem.create('Removed confirmed application ({0})'.format(applicant.confirmed_application_id), applicant, request)
+    
+        applicant.confirmed_application_id = None
+        applicant.save()
+
+    return redirect(reverse('backoffice:show-applicant', args=[applicant.national_id]))
+
+
+@user_login_required
 def new_password(request, national_id):
     user = request.user
     

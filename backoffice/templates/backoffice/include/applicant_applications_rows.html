@@ -9,6 +9,15 @@
     <td>
       {{ app.admission_project }}
       {% if user.is_super_admin %}({{ app.get_verification_number }}){% endif %}
+      {% if applicant.confirmed_application_id == app.id %}
+	<span class="badge badge-info" id="app_cancel_toggle_id">ยืนยัน</span>
+	{% if user.is_super_admin %}
+	  <button class="btn btn-sm btn-danger d-none" id="app_cancel_id">ยกเลิก</button>
+	  <form class="d-none" id="app_cancel_form_id" method="post" action="{% url 'backoffice:update-applicant-cancel-confirmed-app' applicant.national_id %}">
+	    {% csrf_token %}
+	  </form>
+	{% endif %}
+      {% endif %}
       <br />
       {% if app.supplement_configs %}
         {% with app.supplement_configs as supplement_configs %}
@@ -26,3 +35,15 @@
     </td>
   </tr>
 {% endfor %}
+<script>
+ $(function(){
+   $("#app_cancel_toggle_id").click(function(){
+     $("#app_cancel_id").removeClass('d-none');
+   });
+   $("#app_cancel_id").click(function(){
+     if(confirm("แน่ใจที่จะยกเลิกการยืนยัน")) {
+       $("#app_cancel_form_id").trigger("submit");
+     }
+   });
+ });
+</script>

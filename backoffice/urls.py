@@ -16,7 +16,9 @@ urlpatterns = [
     re_path(r"^$", views.index, name="index"),
     re_path(r"^payment/$", payments.index, name="payment-index"),
     re_path(r"^payment/update/(?P<payment_id>\d+)/$", payments.update, name="payment-update"),
+
     re_path(r"^applicants/([0-9a-zA-Z\d]\d+)/$", views.show, name="show-applicant"),
+    re_path(r"^applicants/([0-9a-zA-Z\d]\d+)/cancel-confirmation/$", views.cancel_confirmed_application, name="update-applicant-cancel-confirmed-app"),
     re_path(r"^applicants/(\d+)/([0-9a-zA-Z]\d*)/$", views.show, name="show-applicant-in-project"),
     re_path(r"^new_password/([0-9a-zA-Z]\d+)/$", views.new_password, name="new-password"),
     re_path(r"^update/([0-9a-zA-Z]\d+)/$", views.update_applicant, name="update-applicant"),
