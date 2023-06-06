@@ -127,21 +127,27 @@
                   <a class="btn btn-sm btn-outline-secondary" href="{% url 'backoffice:projects-list-applicants-for-acceptance-calls' project.id admission_round.id major.number %}">กรอกผลสัมภาษณ์</a>
                 {% endif %}
               </td>
-              <td class="xx-none d-inline-block" style="">
-                {% if user_major_number == any_major or user_major_number == major.number %}
-                  {% if major.has_any_applications and applicant_score_viewable %}
-                    <a target="_blank" class="d-none btn btn-sm btn-outline-primary" rel="noopener noreferrer" href="{% url 'backoffice:projects-show-scores' project.id admission_round.id major.number %}">เรียกสัมภาษณ์</a>
+
+              {% if user_major_number == any_major or user_major_number == major.number %}
+                {% if major.has_any_applications and applicant_score_viewable %}
+		  <td>
+                    <a target="_blank" class="xx-none btn btn-sm btn-outline-primary" rel="noopener noreferrer" href="{% url 'backoffice:projects-show-scores' project.id admission_round.id major.number %}">เรียกสัมภาษณ์</a>
+		  </td>
+		  <td>
 		    <div class="dropdown d-inline">
                       <a class="btn btn-sm btn-outline-secondary dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></a>
                       <div class="dropdown-menu">
 			<a target="_blank" class="dropdown-item" href="{% url 'backoffice:projects-show-applicant' project.id admission_round.id major.number 1 %}">พิจารณาผู้สมัคร</a>
 		      </div>
 		    </div>
-		  {% else %}
+		  </td>
+		{% else %}
+		  <td colspan="2">
                     <a target="_blank" class="xx-none btn btn-sm btn-outline-secondary" rel="noopener noreferrer" href="{% url 'backoffice:projects-show-applicant' project.id admission_round.id major.number 1 %}">พิจารณาผู้สมัคร</a>
-                  {% endif %}
+		  </td>
                 {% endif %}
-              </td>
+              {% endif %}
+	      
               {% if user_major_number == any_major or user_major_number == major.number %}
 		{% if major.interview_description %}
 		  <td>
