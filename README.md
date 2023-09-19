@@ -13,7 +13,7 @@
 ```
     ./manage.py migrate
     ./manage.py migrate --run-syncdb
-    ./manage.py loaddata campuses faculties provinces
+    ./manage.py loaddata campuses faculties provinces admission_rounds
 ```
 
 

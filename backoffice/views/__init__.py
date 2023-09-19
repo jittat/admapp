@@ -48,8 +48,12 @@ def compute_project_stats(admission_projects):
         if k in stat_keys:
             project, c = stat_keys[k]
             project.admission_round_stats[c][1]['num_applicants'] += 1
-            
 
+            
+def sort_admission_projects(admission_projects):
+    return [p for _,_,p in sorted([(p.admission_rounds.all()[0].id, p.id,p) for p in admission_projects])]
+
+            
 @user_login_required
 def index(request):
     user = request.user
@@ -72,6 +76,8 @@ def index(request):
         stats['applicant_count'] = Applicant.objects.count()
         stats['project_application_count'] = ProjectApplication.objects.filter(is_canceled=False).count()
 
+    admission_projects = sort_admission_projects(admission_projects)
+        
     compute_project_stats(admission_projects)
         
     return render(request,
