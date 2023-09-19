@@ -358,5 +358,15 @@
   "ku_code": "",
   "cupt_code": ""
  }
+},
+{
+ "model": "appl.faculty",
+ "pk": 37,
+ "fields": {
+  "title": "คณะแพทยศาสตร์",
+  "campus": 1,
+  "ku_code": "",
+  "cupt_code": ""
+ }
 }
 ]

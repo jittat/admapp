@@ -11,10 +11,9 @@
 หลังจากนั้น นำเข้าข้อมูลเริ่มต้นใน fixtures
 
 ```
-    ./manage.py makemigrations
     ./manage.py migrate
     ./manage.py migrate --run-syncdb
-    ./manage.py loaddata campuses faculties majors provinces admission_rounds
+    ./manage.py loaddata campuses faculties provinces
 ```
 
 
