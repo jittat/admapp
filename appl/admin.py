@@ -38,7 +38,8 @@ class AdmissionProjectAdmin(admin.ModelAdmin):
                     'max_num_selections',
                     'base_fee',
                     'is_available',
-                    'is_visible_in_backoffice']
+                    'is_visible_in_backoffice',
+                    'admission_student_type',]
     ordering = ['id']
     actions = [make_available, make_visible]
     inlines = (ProjectUploadedDocumentInline,)
