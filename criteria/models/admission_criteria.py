@@ -27,7 +27,7 @@ class AdmissionCriteria(models.Model):
     STUDENT_CURRICULUM_TYPE_CHOICE_COUNT = 5
 
     INITIAL_GRADUATE_YEAR_FLAG = '*'
-    DEFAULT_GRADUATE_YEAR_FLAG = '1'
+    DEFAULT_GRADUATE_YEAR_FLAG = '1,2'
     
     STUDENT_GRADUATE_YEAR_CHOICES = {
         1: ('current','กำลังศึกษา ม.6', 'ม.6', 'badge-success'),
