@@ -135,6 +135,9 @@ class AdmissionProject(models.Model):
                                                             verbose_name='อนุญาตให้แก้ไขประเภทหลักสูตรโรงเรียนได้')
     is_custom_add_limit_criteria = models.BooleanField(default=False,
                                                        verbose_name='ให้ระบุจำนวนรับเพิ่มในกรณีที่ผู้สมัครเกินและมีคะแนนเท่ากัน')
+    is_custom_graduate_year_allowed = models.BooleanField(default=False,
+                                                          verbose_name='อนุญาตให้เลือกรูปแบบปีที่จบการศึกษาของผู้สมัคร')
+    
     is_criteria_edit_allowed = models.BooleanField(default=True,
                                                    verbose_name='อนุญาตให้ผู้ดูแลโครงการแก้ไขเงื่อนไขการรับ')
 

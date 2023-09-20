@@ -26,6 +26,12 @@ class AdmissionCriteria(models.Model):
     }
     STUDENT_CURRICULUM_TYPE_CHOICE_COUNT = 5
 
+    STUDENT_GRADUATE_YEAR_CHOICES = {
+        1: ('current','กำลังศึกษา ม.6', 'ม.6', 'badge-primary'),
+        2: ('graduated','จบ ม.6 ในปีที่แล้ว', 'จบปีก่อน', 'badge-success'),
+    }
+    STUDENT_GRADUATE_YEAR_CHOICE_COUNT = 2
+    
     admission_project = models.ForeignKey(AdmissionProject,
                                           on_delete=models.CASCADE)
     faculty = models.ForeignKey(
@@ -42,6 +48,9 @@ class AdmissionCriteria(models.Model):
     accepted_student_curriculum_type_flags = models.CharField(max_length=10,
                                                               default=INITIAL_CURR_TYPE_FLAG,
                                                               blank=True)
+    accepted_graduate_year_flags = models.CharField(max_length=10,
+                                                    default='',
+                                                    blank=True)
 
     curriculum_majors_json = models.TextField(blank=True)
 
