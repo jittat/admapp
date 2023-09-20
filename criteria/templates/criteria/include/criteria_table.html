@@ -234,5 +234,32 @@
 						    return false;
    });
    
+   $('.accepted-graduate-year-form-holders').on('click',
+						'.accepted-graduate-year-toggles',
+						function() {
+						  var acid = $(this).data('acid');
+						  var ytypeid = $(this).data('ytypeid');
+						  var url = $(this).attr('href');
+						  var formId = 'accepted_graduate_year_form_holder_id_' + acid;
+						    
+						  $('#accepted_graduate_year_spinner_id_' + acid).show();
+						  jQuery.post(url,
+							      { csrfmiddlewaretoken: '{{ csrf_token }}'},
+							      function(data) {
+								$('#' + formId).html(data);
+								$('#accepted_graduate_year_choices_id_' + acid).show();
+						  });
+						  return false;
+   });
+   
+   $('.accepted-graduate-year-form-holders').on('click',
+						'.accepted-graduate-year-form-toggles',
+						function() {
+						  var acid = $(this).data('acid');
+						  var formId = 'accepted_graduate_year_choices_id_' + acid;
+						  $('#' + formId).slideToggle();
+						  return false;
+   });
+   
  });
 </script>

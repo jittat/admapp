@@ -1,8 +1,22 @@
 <div class="border-top border-bottom pb-1 pt-1">
   <small>
-    เงื่อนไขผู้สมัคร: {{ project.get_admission_student_type_display }} &nbsp;|&nbsp;
-    <span class="d-none">เงื่อนไขประเภทโรงเรียน: {{ project.get_admission_school_type_display }} &nbsp;|&nbsp;</span>
-    <span class="text-muted">ถ้าต้องการแก้ไขกรุณาแจ้งฝ่ายรับสมัคร</span>
+    {% if project.is_custom_graduate_year_allowed %}
+      สามารถแก้สถานะการเรียนชั้น ม.6 ข้อผู้สมัครได้จากหน้ารายการเงื่อนไข &nbsp;|&nbsp;
+    {% else %}
+      เงื่อนไขผู้สมัคร: {{ project.get_admission_student_type_display }} &nbsp;|&nbsp;
+    {% endif %}
+    {% if project.is_custom_curriculum_type_allowed %}
+      เงื่อนไขประเภทหลักสูตรสามารถแก้ไขได้ที่หน้ารายการเงื่อนไข &nbsp;|&nbsp;
+    {% else %}
+      <span>เงื่อนไขประเภทโรงเรียน: {{ project.get_admission_school_type_display }} &nbsp;|&nbsp;</span>
+    {% endif %}
+    {% if not project.is_custom_curriculum_type_allowed %}
+      <span class="text-muted">ถ้าต้องการแก้ไขกรุณาแจ้งฝ่ายรับสมัคร</span>
+    {% else %}
+      {% if not project.is_custom_graduate_year_allowed %}
+	<span class="text-muted">ถ้าต้องการแก้ไขกรุณาแจ้งฝ่ายรับสมัคร</span>
+      {% endif %}
+    {% endif %}
   </small>
 </div>
 

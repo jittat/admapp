@@ -1,0 +1,8 @@
+ผู้สมัครที่รับ:
+{% if  admission_criteria.get_accepted_graduate_years|length == 0 %}
+  <span class="badge badge-danger">ไม่ได้เลือก</span>
+{% else %}
+  {% for cur in admission_criteria.get_accepted_graduate_years %}
+    <span class="badge {{ cur.3 }}">{{ cur.2 }}</span>
+  {% endfor %}
+{% endif %}

@@ -1,0 +1,22 @@
+<div class="bg-light p-1 mb-2" id="accepted_graduate_year_form_id_{{ admission_criteria.id }}">
+  <span class="accepted-graduate-yearw" id="accepted_graduate_year_id_{{ admission_criteria.id }}">
+    {% include "criteria/include/graduate_year_display.html" %}
+  </span>
+  {% if is_edit_link_hidden %}
+  {% else %}
+    |
+    <a href="#" data-acid="{{ admission_criteria.id }}" class="badge badge-info accepted-graduate-year-form-toggles"><i class="fa fa-pencil"></i> แก้ไข</a>
+  {% endif %}
+  <div id="accepted_graduate_year_choices_id_{{ admission_criteria.id }}" style="display: none;">
+    <small>กรุณาเลือก</small> <span id="accepted_graduate_year_spinner_id_{{ admission_criteria.id }}" style="display:none;"><small><i class="fa fa-spinner fa-spin"></i></small></span><br>
+    <div class="btn-group-vertical">
+      {% for k,v,c in admission_criteria.get_graduate_year_choices_with_acceptance %}
+	{% if v %}
+	  <a href="{% url 'backoffice:criteria:update-accepted-graduate-year' project.id admission_round.id admission_criteria.id k %}" data-acid="{{ admission_criteria.id }}" data-ytypeid="{{ k }}" data-cval="1" class="accepted-graduate-year-toggles btn btn-sm btn-success"><i class="fa fa-check"></i> {{ c.1 }}</a>
+	{% else %}
+	  <a href="{% url 'backoffice:criteria:update-accepted-graduate-year' project.id admission_round.id admission_criteria.id k %}" data-acid="{{ admission_criteria.id }}" data-ytypeid="{{ k }}" data-cval="0" class="accepted-graduate-year-toggles btn btn-sm btn-outline-secondary"><i class="fa fa-times"></i> {{ c.1 }}</a>
+	{% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</div>

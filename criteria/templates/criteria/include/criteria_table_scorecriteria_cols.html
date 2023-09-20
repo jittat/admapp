@@ -7,6 +7,12 @@
     </div>
   {% endif %}
   
+  {% if project.is_custom_graduate_year_allowed %}
+    <div class="accepted-graduate-year-form-holders" id="accepted_graduate_year_form_holder_id_{{ admission_criteria.id }}">
+      {% include "criteria/include/graduate_year_form.html" %}
+    </div>
+  {% endif %}
+  
   {% with scorecriterias=admission_criteria.get_all_required_score_criteria %}
     {% include "criteria/include/scorecriteria_list.html" %}
   {% endwith %}

@@ -26,9 +26,12 @@ class AdmissionCriteria(models.Model):
     }
     STUDENT_CURRICULUM_TYPE_CHOICE_COUNT = 5
 
+    INITIAL_GRADUATE_YEAR_FLAG = '*'
+    DEFAULT_GRADUATE_YEAR_FLAG = '1'
+    
     STUDENT_GRADUATE_YEAR_CHOICES = {
-        1: ('current','กำลังศึกษา ม.6', 'ม.6', 'badge-primary'),
-        2: ('graduated','จบ ม.6 ในปีที่แล้ว', 'จบปีก่อน', 'badge-success'),
+        1: ('current','กำลังศึกษา ม.6', 'ม.6', 'badge-success'),
+        2: ('graduated','จบ ม.6 ในปีที่แล้ว', 'จบปีก่อน', 'badge-warning'),
     }
     STUDENT_GRADUATE_YEAR_CHOICE_COUNT = 2
     
@@ -49,7 +52,7 @@ class AdmissionCriteria(models.Model):
                                                               default=INITIAL_CURR_TYPE_FLAG,
                                                               blank=True)
     accepted_graduate_year_flags = models.CharField(max_length=10,
-                                                    default='',
+                                                    default=INITIAL_GRADUATE_YEAR_FLAG,
                                                     blank=True)
 
     curriculum_majors_json = models.TextField(blank=True)
@@ -123,26 +126,44 @@ class AdmissionCriteria(models.Model):
             for sc in lst:
                 sc.cache_children(all_score_criterias)
 
-    def get_accepted_student_curriculum_type_ids(self):
-        if self.accepted_student_curriculum_type_flags == AdmissionCriteria.INITIAL_CURR_TYPE_FLAG:
-            flags = AdmissionCriteria.DEFAULT_TYPE_FLAG
-        else:
-            flags = self.accepted_student_curriculum_type_flags
+    def get_flag_ids(self, flags, initial, default):
+        if flags == initial:
+            flags = default
 
         if flags == '':
             return []
         else:
             return [int(x.strip()) for x in flags.split(',')]
 
+    def get_accepted_student_curriculum_type_ids(self):
+        return self.get_flag_ids(self.accepted_student_curriculum_type_flags,
+                                 AdmissionCriteria.INITIAL_CURR_TYPE_FLAG,
+                                 AdmissionCriteria.DEFAULT_TYPE_FLAG)
+
+    def get_accepted_graduate_year_ids(self):
+        return self.get_flag_ids(self.accepted_graduate_year_flags,
+                                 AdmissionCriteria.INITIAL_GRADUATE_YEAR_FLAG,
+                                 AdmissionCriteria.DEFAULT_GRADUATE_YEAR_FLAG)
+
     def get_accepted_student_curriculum_types(self):
         return [AdmissionCriteria.STUDENT_CURRICULUM_TYPE_CHOICES[i] for i in
                 self.get_accepted_student_curriculum_type_ids()]
 
+    def get_choices_with_acceptance(self, choices, accepted_choices):
+        return [(k, k in accepted_choices, v) for k, v in choices]
+        
     def get_curriculum_type_choices_with_acceptance(self):
-        accepted_types = self.get_accepted_student_curriculum_type_ids()
-        return [(k, k in accepted_types, v) for k, v in
-                AdmissionCriteria.STUDENT_CURRICULUM_TYPE_CHOICES.items()]
+        return self.get_choices_with_acceptance(AdmissionCriteria.STUDENT_CURRICULUM_TYPE_CHOICES.items(),
+                                                self.get_accepted_student_curriculum_type_ids())
+    
+    def get_accepted_graduate_years(self):
+        return [AdmissionCriteria.STUDENT_GRADUATE_YEAR_CHOICES[i] for i in
+                self.get_accepted_graduate_year_ids()]
 
+    def get_graduate_year_choices_with_acceptance(self):
+        return self.get_choices_with_acceptance(AdmissionCriteria.STUDENT_GRADUATE_YEAR_CHOICES.items(),
+                                                self.get_accepted_graduate_year_ids())
+    
     def is_curriculum_type_accepted(self, curriculum_type):
         if self.accepted_student_curriculum_type_flags == AdmissionCriteria.INITIAL_CURR_TYPE_FLAG:
             flags = AdmissionCriteria.DEFAULT_TYPE_FLAG
@@ -164,3 +185,11 @@ class AdmissionCriteria(models.Model):
         else:
             accepted_types.append(cur_type)
         self.accepted_student_curriculum_type_flags = ','.join([str(t) for t in sorted(accepted_types)])
+
+    def toggle_accepted_graduate_year(self, year):
+        accepted_years = self.get_accepted_graduate_year_ids()
+        if year in accepted_years:
+            accepted_years = [t for t in accepted_years if t != year]
+        else:
+            accepted_years.append(year)
+        self.accepted_graduate_year_flags = ','.join([str(t) for t in sorted(accepted_years)])

@@ -640,6 +640,36 @@ def update_accepted_curriculum_type(request, project_id, round_id, acid, ctypeid
 
 
 @user_login_required
+def update_accepted_graduate_year(request, project_id, round_id, acid, ytypeid):
+    user = request.user
+    project = get_object_or_404(AdmissionProject, pk=project_id)
+    admission_round = get_object_or_404(AdmissionRound, pk=round_id)
+    admission_criteria = get_object_or_404(AdmissionCriteria, pk=acid)
+    year_type = int(ytypeid)
+
+    if not can_user_view_project(user, project):
+        return redirect_to_project_index(project_id, round_id)
+
+    faculty, faculty_choices = extract_user_faculty(request, user)
+    if admission_criteria.admission_project.id != project_id or (
+            not user.profile.is_admission_admin and faculty.id != admission_criteria.faculty.id):
+        return redirect_to_project_index(project_id, round_id)
+
+    if request.method != 'POST':
+        return HttpResponseForbidden()
+
+    admission_criteria.toggle_accepted_graduate_year(year_type)
+    admission_criteria.save()
+
+    return render(request,
+                  'criteria/include/graduate_year_form.html',
+                  {'project': project,
+                   'admission_round': admission_round,
+                   'admission_criteria': admission_criteria,
+                   })
+
+
+@user_login_required
 def select_curriculum_majors(request, project_id, round_id, code_id=0, value='none'):
     user = request.user
     project = get_object_or_404(AdmissionProject, pk=project_id)
