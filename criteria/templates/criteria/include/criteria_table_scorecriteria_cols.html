@@ -1,4 +1,4 @@
-<td rowspan="{{ major_count }}">
+<td rowspan="{% if major_count %}{{ major_count }}{% else %}1{% endif %}">
   <span class="criteria-ids" style="display: none;">#{{ admission_criteria.id }}<br></span>
 
   {% if project.is_custom_curriculum_type_allowed %}
@@ -25,12 +25,12 @@
     คำอธิบายเงื่อนไขเพิ่มเติม สำหรับผู้สมัคร: {{ admission_criteria.additional_condition }}<br>
   {% endif %}
 </td>
-<td rowspan="{{ major_count }}">
+<td rowspan="{% if major_count %}{{ major_count }}{% else %}1{% endif %}">
   {% with scorecriterias=admission_criteria.get_all_scoring_score_criteria %}
     {% include "criteria/include/scorecriteria_list.html" %}
   {% endwith %}
 </td>
-<td rowspan="{{ major_count }}">
+<td rowspan="{% if major_count %}{{ major_count }}{% else %}1{% endif %}">
   {% if is_edit_link_hidden %}
   {% else %}
     <a href="{% url 'backoffice:criteria:create' project.id admission_round.id %}?duplicate_score_id={{admission_criteria.id}}{% if faculty_choices %}&faculty_id={{ faculty.id }}{% endif %}"
