@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import MajorCuptCode, CuptExportConfig
+from .models import MajorCuptCode, CuptExportConfig, CuptExportLog
 
 
 class MajorCuptCodeAdmin(admin.ModelAdmin):
@@ -10,3 +10,4 @@ class MajorCuptCodeAdmin(admin.ModelAdmin):
 
 admin.site.register(MajorCuptCode, MajorCuptCodeAdmin)
 admin.site.register(CuptExportConfig)
+admin.site.register(CuptExportLog)

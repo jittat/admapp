@@ -21,6 +21,7 @@ from .cuptexport_fields import CONDITION_FILE_MIN_ZERO_FIELD_STR, SCORING_FILE_S
 from .cuptexport_fields import EXAM_FIELD_MAP
 from .cuptexport_fields import SCORING_FILE_FIELD_STR, SCORING_FILE_ZERO_FIELD_STR
 
+from criteria.models import CuptExportLog
 
 def combine_slots(curriculum_major_rows):
     if len(curriculum_major_rows) == 0:
@@ -643,11 +644,18 @@ def extract_condition_rows(project, admission_criterias):
         if project.is_cupt_export_only_major_list:
             rows = group_condition_rows(rows)
         return rows
-    
-    return extract_rows(project, admission_criterias,
-                        convert_to_base_row,
-                        condition_extract_f,
-                        condition_postprocess_f)
+
+    # extract messages
+    all_messages = []
+    if not project.is_cupt_export_only_major_list:
+        for admission_criteria in admission_criterias:
+            all_messages += [ str(admission_criteria.id) + '-' + m for m in admission_criteria.extracted_required_criteria[1]]
+            
+    return (extract_rows(project, admission_criterias,
+                         convert_to_base_row,
+                         condition_extract_f,
+                         condition_postprocess_f),
+            all_messages)
 
 def export_options_as_dict(config):
     d = {}
@@ -744,18 +752,20 @@ def export_required_csv(request):
     writer.writeheader()
 
     all_rows = []
-
+    all_messages = []
+    
     admission_projects = AdmissionProject.objects.filter(is_visible_in_backoffice=True).all()
     admission_criterias = load_all_criterias()
-    
+
     for project in admission_projects:
-        rows = extract_condition_rows(project, admission_criterias[project.id])
+        rows, messages = extract_condition_rows(project, admission_criterias[project.id])
 
         update_project_information(project, rows)
 
         fill_zero_min_scores(rows)
         
         all_rows += rows
+        all_messages += [str(project.id) + '-' + m for m in  messages]
 
     zero_fields = [x.strip() for x in CONDITION_FILE_ZERO_FIELD_STR.split() if x.strip() != '']
         
@@ -763,9 +773,24 @@ def export_required_csv(request):
 
     if uses_adjustment_slots:
         rows = update_slots(rows, only_diff)
-    
+
+    rcount = 0
     for r in rows:
-        write_condition_row(writer, r, zero_fields)
+        rcount += 1
+
+        filtered_r = r.copy()
+
+        EXTRA_FIELDS = ['ERROR-OTHER', 'ERROR-GPAX_5_SEMESTER', ]
+        for f in EXTRA_FIELDS:
+            if f in filtered_r:
+                all_messages.append(f'writer: {rcount} {f} - ' + str(r)[:100])
+                del filtered_r[f]
+        
+        write_condition_row(writer, filtered_r, zero_fields)
+
+    log = CuptExportLog(output_filename=csv_filename,
+                        message='\n'.join(all_messages))
+    log.save()
     
     return response
 
@@ -788,11 +813,17 @@ def extract_scoring_rows(project, admission_criterias):
 
     def scoring_postprocess_f(rows, project):
         return rows
-    
-    return extract_rows(project, admission_criterias,
-                        convert_to_base_row,
-                        scoring_extract_f,
-                        scoring_postprocess_f)
+
+    # extract messages
+    all_messages = []
+    for admission_criteria in admission_criterias:
+        all_messages += [ str(admission_criteria.id) + '-' + m for m in admission_criteria.extracted_scoring_criteria[1]]
+            
+    return (extract_rows(project, admission_criterias,
+                         convert_to_base_row,
+                         scoring_extract_f,
+                         scoring_postprocess_f),
+            all_messages)
 
 
 def write_scoring_row(writer, row, zero_fields):
@@ -843,26 +874,44 @@ def export_scoring_csv(request):
     writer.writeheader()
 
     all_rows = []
+    all_messages = []
 
     admission_projects = AdmissionProject.objects.filter(is_visible_in_backoffice=True).all()
     admission_criterias = load_all_criterias()
     
     for project in admission_projects:
         if not project.is_cupt_export_only_major_list:
-            rows = extract_scoring_rows(project, admission_criterias[project.id])
+            rows, messages = extract_scoring_rows(project, admission_criterias[project.id])
 
             update_project_information(project, rows)
 
             fill_zero_scoring_scores(rows)
         
             all_rows += rows
+            all_messages += [str(project.id) + '-' + m for m in  messages]
 
     zero_fields = [x.strip() for x in SCORING_FILE_ZERO_FIELD_STR.split() if x.strip() != '']
         
     rows = sort_csv_rows(all_rows)
+
+    rcount = 0
     for r in rows:
-        write_scoring_row(writer, r, zero_fields)
-    
+        rcount += 1
+
+        filtered_r = r.copy()
+
+        EXTRA_FIELDS = ['ERROR-OTHER','ERROR-INTERVIEW_ENGLISH']
+        for f in EXTRA_FIELDS:
+            if f in filtered_r:
+                all_messages.append(f'writer: {rcount} {f} - ' + str(r)[:100])
+                del filtered_r[f]
+        
+        write_scoring_row(writer, filtered_r, zero_fields)
+
+    log = CuptExportLog(output_filename=csv_filename,
+                        message='\n'.join(all_messages))
+    log.save()
+        
     return response
 
 def import_file(request):
