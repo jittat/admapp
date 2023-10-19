@@ -229,7 +229,7 @@ def extract_required_criteria(admission_criteria):
                 if msg != None:
                     messages.append(msg)
             else:
-                messages.append('ERROR: other relation ' + c.relation)
+                messages.append('ERROR: other relation ' + str(c.relation))
             
     return required_scores, messages
 
@@ -287,7 +287,7 @@ def extract_scoring_criteria(admission_criteria):
                 if msg != None:
                     messages.append(msg)
             else:
-                messages.append('ERROR: other relation ' + c.relation)
+                messages.append('ERROR: other relation ' + str(c.relation))
             
     return scoring_scores, messages
 
