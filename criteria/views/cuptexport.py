@@ -6,6 +6,7 @@ from django.db.models import Q
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
+from django.conf import settings
 
 from appl.models import AdmissionProject, AdmissionRound
 from appl.models import Faculty
@@ -292,11 +293,16 @@ def extract_scoring_criteria(admission_criteria):
     return scoring_scores, messages
 
 def get_project_type(project):
+    try:
+        admission_year_str = str(settings.ADMISSION_YEAR)
+    except:
+        admission_year_str = '2566'
+
     TYPE_MAP = {
-        'A': '1_2566',
-        'B': '2_2566',
-        'C': '3_2566',
-        'D': '4_2566',
+        'A': '1_' + admission_year_str,
+        'B': '2_' + admission_year_str,
+        'C': '3_' + admission_year_str,
+        'D': '4_' + admission_year_str,
     }
     if project.cupt_code[0] in TYPE_MAP:
         return TYPE_MAP[project.cupt_code[0]]
