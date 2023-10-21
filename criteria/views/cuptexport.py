@@ -679,14 +679,20 @@ def update_project_information(project, rows):
     if 'custom_comments' in project_export_config:
         comments = export_options_as_dict(project_export_config['custom_comments'])
         for r in rows:
-            if (r['project_id'],r['program_id']) in comments:
-                r['condition'] = comments[(r['project_id'],r['program_id'])]
+            pkey = r['program_id']
+            if r['major_id'] != '':
+                pkey = r['program_id'] + '0' + r['major_id']
+            if (r['project_id'],pkey) in comments:
+                r['condition'] = comments[(r['project_id'],pkey)]
 
     if 'custom_options' in project_export_config:
         options = export_options_as_dict(project_export_config['custom_options'])
         for r in rows:
-            if (r['project_id'],r['program_id']) in options:
-                option = options[(r['project_id'],r['program_id'])]
+            pkey = r['program_id']
+            if r['major_id'] != '':
+                pkey = r['program_id'] + '0' + r['major_id']
+            if (r['project_id'],pkey) in options:
+                option = options[(r['project_id'],pkey)]
 
                 if 'accepts_male_only' in option:
                     if option['accepts_male_only'] == 1:
