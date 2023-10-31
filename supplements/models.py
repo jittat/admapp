@@ -162,7 +162,7 @@ def is_tcas5_gpa_form_required(applicant,
     return False
     
 PROJECT_SUPPLEMENTS = {
-    'นักกีฬาทีมชาติและเยาวชนทีมชาติ': [
+    'รับนักกีฬาดีเด่น': [
         ProjectSupplementConfig('sport_type',
                                 'ประเภทกีฬาและระดับ',
                                 True,
@@ -180,7 +180,7 @@ PROJECT_SUPPLEMENTS = {
                                 'supplements.views.forms.nat_sport.process_sport_history_form',
                                 'supplements/backoffice/nat_sport/sport_history.html'),
     ],
-    'นักกีฬาดีเด่นฯ': [
+    'โควตานักกีฬา': [
         ProjectSupplementConfig('gen_sport_type',
                                 'ประเภทกีฬาและระดับ',
                                 True,
