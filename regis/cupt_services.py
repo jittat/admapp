@@ -1,9 +1,34 @@
 import json
 import ssl
 
+import json
+
 import suds
+import requests
 from django.conf import settings
 
+def cupt_check_status(national_id, first_name, last_name):
+    url = getattr(settings,'CUPT_SERVICE_URL','')
+    secret_key = getattr(settings,'CUPT_SECRET_KEY','')
+
+    headers = {'secretKey': secret_key}
+    data = {
+        'citizen_id': national_id,
+        'first_name': first_name,
+        'last_name': last_name,
+    }
+
+    r = requests.get(url, headers=headers, params=data)
+    result = {}
+    messages = ''
+    try:
+        result = json.loads(r.text)
+        messages = r.text
+    except:
+        pass
+
+    return result, messages
+    
 
 def create_cupt_client():
     url = getattr(settings,'CUPT_SERVICE_URL','')
