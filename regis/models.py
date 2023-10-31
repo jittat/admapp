@@ -206,7 +206,10 @@ class CuptConfirmation(models.Model):
                                    blank=True)
     passport_number = models.CharField(max_length=20,
                                        blank=True)
+    has_registered = models.BooleanField(default=False)
     has_confirmed = models.BooleanField(default=False)
+    api_result_code = models.IntegerField(default=0)
+    
     updated_at = models.DateTimeField()
 
     STATUS_NOT_REQUIRED = 0
