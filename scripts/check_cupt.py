@@ -11,7 +11,7 @@ from regis.cupt_services import cupt_check_status
 import sys
 import time
 
-INTERVAL_WAIT = 1
+INTERVAL_WAIT = 0.2
 
 def main():
     queue_item = CuptRequestQueueItem.objects.first()
@@ -24,14 +24,14 @@ def main():
 
         national_id = applicant.national_id
         if applicant.has_registered_with_passport():
-            national_id = applicant.passport_number
+            national_id = applicant.passport_number.upper()
         first_name = applicant.first_name
         last_name = applicant.last_name
             
         result, messages = cupt_check_status(national_id, first_name, last_name)
         print(national_id, result)
 
-        REGISTERED_CODES = [1,2]
+        REGISTERED_CODES = [1,2,3]
         has_registered = False
         has_confirmed = False
         
