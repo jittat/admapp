@@ -6,74 +6,42 @@ from datetime import datetime
 from regis.models import CuptConfirmation, CuptRequestQueueItem
 from regis.models import LogItem
 
-from regis.cupt_services import create_cupt_client, get_token, check_permission
+from regis.cupt_services import cupt_check_status
 
 import sys
+import time
 
-def read_token(filename):
-    try:
-        lines = open(filename).readlines()
-        return lines[0].strip()
-    except:
-        return None
-
-def save_token(filename, token):
-    f = open(filename,'w')
-    f.write(token)
-    f.close()
+INTERVAL_WAIT = 1
 
 def main():
-    token_filename = ''
-    if len(sys.argv) >= 2:
-        token_filename = sys.argv[1]
-
-    if token_filename != '':
-        token = read_token(token_filename)
-    else:
-        token = None
-        
     queue_item = CuptRequestQueueItem.objects.first()
 
     if not queue_item:
         return
     
-    client = create_cupt_client()
-
-    if not token:
-        token = get_token(client)
-        if token_filename != '':
-            save_token(token_filename, token)
-            
     while queue_item:
         applicant = queue_item.applicant
 
         national_id = applicant.national_id
         if applicant.has_registered_with_passport():
             national_id = applicant.passport_number
+        first_name = applicant.first_name
+        last_name = applicant.last_name
             
-        ok, result = check_permission(client, token, national_id)
-        print(ok, result)
+        result, messages = cupt_check_status(national_id, first_name, last_name)
+        print(national_id, result)
 
-        has_confirmed = True
+        REGISTERED_CODES = [1,2]
+        has_registered = False
+        has_confirmed = False
         
-        if not ok:
-            if result == 'token-expired':
-                token = get_token(client)
-                if token_filename != '':
-                    save_token(token_filename, token)
-                    
-                ok, result = check_permission(client, token, national_id)
-            elif result == 'id-not-valid':
-                ok = True
-                has_confirmed = False
+        if 'code' in result:
+            if result['code'] in REGISTERED_CODES:
+                has_registered = True
+        
+        LogItem.create('CUPT QUERY result = ' + messages, applicant)
 
-        if ok:
-            if result == '0' or result == 'X':
-                has_confirmed = False
-
-        LogItem.create('CUPT QUERY result = ' + result, applicant)
-
-        if ok:
+        if 'code' in result:
             if hasattr(applicant,'cupt_confirmation'):
                 cupt_confirmation = applicant.cupt_confirmation
             else:
@@ -83,10 +51,14 @@ def main():
             cupt_confirmation.passport_number = applicant.passport_number
             cupt_confirmation.updated_at = datetime.now()
             cupt_confirmation.has_confirmed = has_confirmed
-            cupt_confirmation.save()
+            cupt_confirmation.has_registered = has_registered
+            cupt_confirmation.api_result_code = result['code']
+            cupt_confirmation.save()            
 
         queue_item.delete()
         queue_item = CuptRequestQueueItem.objects.first()
+
+        time.sleep(INTERVAL_WAIT)
             
 if __name__ == '__main__':
     main()
