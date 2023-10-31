@@ -420,6 +420,14 @@ def apply_project(request, project_id, admission_round_id):
     eligibility = Eligibility.check(project, applicant)
     if not eligibility.is_eligible:
         return HttpResponseForbidden()
+
+    if getattr(settings,'VERIFY_CUPT_CONFIRMATION',False):
+        if applicant.has_cupt_confirmation_result():
+            cupt_confirmation_status = applicant.cupt_confirmation.get_status()
+            if (not cupt_confirmation_status.is_registered()) or (not cupt_confirmation_status.is_free()):
+                return redirect(reverse('appl:index'))
+        else:
+            return redirect(reverse('appl:index'))
     
     application = applicant.apply_to_project(project, admission_round)
 

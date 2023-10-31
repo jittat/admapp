@@ -218,8 +218,9 @@ class CuptConfirmation(models.Model):
     STATUS_CONFIRMED = 3
 
     class CuptConfirmationStatus():
-        def __init__(self, status):
+        def __init__(self, status, has_registered=False):
             self.status = status
+            self.has_registered = has_registered
 
         def is_not_required(self):
             return self.status == CuptConfirmation.STATUS_NOT_REQUIRED
@@ -227,17 +228,23 @@ class CuptConfirmation(models.Model):
         def is_wait(self):
             return self.status == CuptConfirmation.STATUS_WAIT
 
-        def is_free(self):
-            return self.status == CuptConfirmation.STATUS_FREE
+        def is_free(self):    # must have registered
+            if not self.has_registered:
+                return False
+            else:
+                return self.status == CuptConfirmation.STATUS_FREE
 
         def is_confirmed(self):
             return self.status == CuptConfirmation.STATUS_CONFIRMED
+
+        def is_registered(self):
+            return self.has_registered
         
     def get_status(self):
         if self.has_confirmed:
-            return self.CuptConfirmationStatus(self.STATUS_CONFIRMED)
+            return self.CuptConfirmationStatus(self.STATUS_CONFIRMED, self.has_registered)
         else:
-            return self.CuptConfirmationStatus(self.STATUS_FREE)
+            return self.CuptConfirmationStatus(self.STATUS_FREE, self.has_registered)
 
     @classmethod
     def get_wait_status(cls):

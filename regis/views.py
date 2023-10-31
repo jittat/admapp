@@ -342,10 +342,12 @@ def reset_cupt_confirmation(request):
     applicant = request.applicant
     if hasattr(applicant,'cupt_confirmation'):
         confirmation = applicant.cupt_confirmation
-        wait_start_time = datetime.now() - timedelta(hours=2)
+        wait_start_time = datetime.now() - timedelta(minutes=10)
         if confirmation.updated_at < wait_start_time:
             confirmation.delete()
-
+        else:
+            request.session['notice'] = 'ยังไม่สามารถตรวจสอบการลงทะเบียนหรือสิทธิ์การสมัครใหม่ได้ กรุณารอ 10 นาที'
+            
     return redirect('appl:index')
 
 @appl_login_required    

@@ -7,11 +7,17 @@
   <div class="alert alert-warning">
     สำหรับการสมัครเข้าศึกษาต่อปีการศึกษา 2567 นี้ ผู้สมัครจะต้องลงทะเบียนในระบบ <a href="https://www.mytcas.com/" target="_blank">mytcas</a> ของทปอ. ให้เรียบร้อยก่อนจึงจะสามารถสมัครได้ &nbsp; นอกจากนี้ก่อนการสมัครแต่ละรอบ ระบบจะมีการตรวจสอบสิทธิ์การสมัครจากระบบ mytcas ด้วย
   </div>
-  {% if cupt_confirmation_status.is_wait %}
-    {% include 'appl/include/cupt_confirmation_wait.html' %}
-  {% else %}
-    {% if not cupt_confirmation_status.is_free and not cupt_confirmation_status.is_not_required %}
-      {% include 'appl/include/cupt_confirmation_not_free.html' %}
+  {% if not cupt_confirmation_status.is_not_required %}
+    {% if cupt_confirmation_status.is_wait %}
+      {% include 'appl/include/cupt_confirmation_wait.html' %}
+    {% else %}
+      {% if not cupt_confirmation_status.is_registered %}
+	{% include 'appl/include/cupt_confirmation_not_registered.html' %}
+      {% else %}
+	{% if not cupt_confirmation_status.is_free %}
+	  {% include 'appl/include/cupt_confirmation_not_free.html' %}
+	{% endif %}
+      {% endif %}
     {% endif %}
   {% endif %}
   {% for project in admission_projects %}
@@ -47,8 +53,12 @@
           {% if cupt_confirmation_status.is_wait %}
             (รอตรวจสอบสิทธิ์)
           {% else %}
-            <span class="badge badge-danger">ไม่สามารถสมัครได้</span> (ยืนยันสิทธิ์แล้วในการสมัครรอบอื่น)
-          {% endif %}
+	    {% if not cupt_confirmation_status.is_registered %}
+              <span class="badge badge-warning">ยังไม่สามารถสมัครได้</span> <small>(ยังไม่ได้ลงทะเบียนระบบ mytcas)</small>
+	    {% else %}
+              <span class="badge badge-danger">ไม่สามารถสมัครได้</span> <small>(ยืนยันสิทธิ์แล้วในการสมัครรอบอื่น)</small>
+            {% endif %}
+	  {% endif %}
         {% endif %}
       </div>
     {% endif %}
