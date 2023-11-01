@@ -7,7 +7,7 @@
     {% trans 'ผู้สมัคร' %}: {{ applicant }}
     <br />
     <div class="text-center">
-      <img width="460px" src="{% url 'appl:payment-qrcode' application.id barcode_stub %}">
+      <img class="img-fluid" id="paymentQrImgId" src="{% url 'appl:payment-qrcode' application.id barcode_stub %}">
     </div>
     <div>
       <div style="float: right;">
@@ -21,7 +21,7 @@
       <small>เมื่อชำระเงินแล้ว ระบบจะกลับไปหน้าหลักโดยอัตโนมัติ</small>
       <div id="fee-spin-id" style="display:none;"><i class="fas fa-circle-notch fa-spin"></i></div>
     </div>
-    <a class="btn btn-success btn-block" href="{% url 'appl:index' %}">กลับหน้าหลัก</a>
+    <a class="btn btn-success btn-block" id="backButtonId" href="{% url 'appl:index' %}">กลับหน้าหลัก</a>
   </div>
 </div>
 <div class="modal" id="paymentInstrModal" tabindex="-1" role="dialog">
@@ -51,25 +51,31 @@
   </div>
 </div>
 <script>
-  var refreshInterval = 5000;
-  var currentPayment = {{ payment_amount }};
-  var amountRefreshUrl = "{% url 'appl:payment-fee-amount' %}";
-  var indexUrl = "{% url 'appl:index' %}";
-  
-  var refreshAmount = function() {
-    $("#fee-spin-id").show();
-    jQuery.get(amountRefreshUrl,
-               function(json) {
-                 $("#fee-spin-id").hide();
-                 var addPayment = json.additionalPayment;
-                 if(addPayment == 0) {
-                   window.location = indexUrl;
-                 } else if(addPayment != currentPayment) {
-                   document.location.reload();
-                 }
-               });
-  };
-  
-  setInterval(refreshAmount, refreshInterval);
+ var refreshInterval = 5000;
+ var currentPayment = {{ payment_amount }};
+ var amountRefreshUrl = "{% url 'appl:payment-fee-amount' %}";
+ var indexUrl = "{% url 'appl:index' %}";
+ 
+ var refreshAmount = function() {
+   $("#fee-spin-id").show();
+   jQuery.get(amountRefreshUrl,
+              function(json) {
+                $("#fee-spin-id").hide();
+                var addPayment = json.additionalPayment;
+                if(addPayment == 0) {
+                  window.location = indexUrl;
+                } else if(addPayment != currentPayment) {
+                  document.location.reload();
+                }
+   });
+ };
+ 
+ setInterval(refreshAmount, refreshInterval);
+
+ $(function(){
+   if($('#backButtonId').width() > 510) {
+     $('#paymentQrImgId').removeClass('img-fluid').width(510);
+   }
+ });
 </script>
 {% endblock %}
