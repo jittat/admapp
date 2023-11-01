@@ -7,7 +7,7 @@
     {% trans 'ผู้สมัคร' %}: {{ applicant }}
     <br />
     <div class="text-center">
-      <img class="img-fluid" src="{% url 'appl:payment-qrcode' application.id barcode_stub %}">
+      <img width="460px" src="{% url 'appl:payment-qrcode' application.id barcode_stub %}">
     </div>
     <div>
       <div style="float: right;">
