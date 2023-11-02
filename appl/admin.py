@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from .models import ProjectUploadedDocument, AdmissionProject, AdmissionRound, AdmissionProjectRound, Faculty
-
+from .models import School, Province
 
 class ProjectUploadedDocumentInline(admin.StackedInline):
     model = ProjectUploadedDocument.admission_projects.through
@@ -57,8 +57,15 @@ class AdmissionProjectRoundAdmin(admin.ModelAdmin):
     actions = [make_project_round_started,
                make_project_round_stopped]
 
+class SchoolAdmin(admin.ModelAdmin):
+    list_display = ['code', 'title']
+    search_fields = ['title','code']
+    
 admin.site.register(AdmissionProject, AdmissionProjectAdmin)
 admin.site.register(AdmissionRound)
 admin.site.register(AdmissionProjectRound, AdmissionProjectRoundAdmin)
 admin.site.register(ProjectUploadedDocument, ProjectUploadedDocumentAdmin)
 admin.site.register(Faculty)
+
+admin.site.register(School, SchoolAdmin)
+admin.site.register(Province)
