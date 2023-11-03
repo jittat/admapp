@@ -138,6 +138,8 @@ def extract_additional_projects(config):
 
 score_type_reverse_map = { item['description'].replace(' ',''): item['score_type'] for item in
                            REQUIRED_SCORE_TYPE_TAGS + SCORING_SCORE_TYPE_TAGS }
+score_type_description_map = { item['score_type']: item['description'] for item in 
+                               REQUIRED_SCORE_TYPE_TAGS + SCORING_SCORE_TYPE_TAGS }
 
 def normalize_score_type(description):
     description = description.replace(' ','')
@@ -159,11 +161,13 @@ def check_other_score_type(score_criterias):
                     ch.score_type = normalize_score_type(ch.description)
                     if ch.score_type == 'OTHER':
                         messages.append("child: " + ch.score_type + ": " + ch.description)
-        else:
+        elif c.score_type == 'OTHER':
+            c.score_type = normalize_score_type(c.description)
             if c.score_type == 'OTHER':
-                c.score_type = normalize_score_type(c.description)
-                if c.score_type == 'OTHER':
-                    messages.append(c.score_type + ": " + c.description)
+                messages.append(c.score_type + ": " + c.description)
+        else:
+            if (c.description != score_type_description_map[c.score_type]):
+                messages.append('ERROR:MISMATCH-SCORETYPE: ' + c.score_type + ' and ' + c.description)
 
     return score_criterias, messages
     
