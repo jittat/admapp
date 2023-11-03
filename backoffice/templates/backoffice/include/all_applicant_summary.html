@@ -3,6 +3,10 @@
 </div>
 <h2>ผู้สมัครทั้งหมด</h2>
 <ul>
-  <li>ผู้สมัครที่ลงทะเบียนแล้วทั้งหมด: {{ applicant_stats.applicant_count }} คน</li>
+  <li>
+    ผู้สมัครที่ลงทะเบียนแล้วทั้งหมด: {{ applicant_stats.applicant_count }} คน ||
+    สถิติการตรวจสอบสิทธิ์จากทปอ. queue: {{ applicant_stats.confirmation.queue_count }},
+    results: {% for k, v in applicant_stats.confirmation.counters %}{{ k }}: {{ v }} &nbsp;&nbsp; {% endfor %}
+  </li>
   <li>ผู้สมัครที่เลือกโครงการแล้ว: {{ applicant_stats.project_application_count }} คน</li>  
 </ul>

@@ -8,7 +8,7 @@ from admapp.emails import send_forget_password_email
 from appl.models import AdmissionProject, ProjectApplication, Payment
 from backoffice.decorators import user_login_required, super_admin_login_required
 from backoffice.models import Profile
-from regis.models import Applicant, LogItem
+from regis.models import Applicant, LogItem, CuptRequestQueueItem
 from supplements.models import load_supplement_configs_with_instance
 from supplements.views import render_supplement_for_backoffice
 from .permissions import can_user_view_project
@@ -53,6 +53,21 @@ def compute_project_stats(admission_projects):
 def sort_admission_projects(admission_projects):
     return [p for _,_,p in sorted([(p.admission_rounds.all()[0].id, p.id,p) for p in admission_projects])]
 
+
+def compute_cupt_confirmation_stats():
+    counters = {}
+    for a in Applicant.objects.prefetch_related('cupt_confirmation').all():
+        if a.has_cupt_confirmation_result():
+            code = a.cupt_confirmation.api_result_code
+        else:
+            code = -1
+        if code not in counters:
+            counters[code] = 0
+        counters[code] += 1
+    return {
+        'counters': [(k,counters[k]) for k in sorted(counters.keys())],
+        'queue_count': CuptRequestQueueItem.objects.count(),
+    }
             
 @user_login_required
 def index(request):
@@ -74,6 +89,7 @@ def index(request):
         is_application_admin = True
         admission_projects = AdmissionProject.objects.filter(Q(is_available=True) | Q(is_visible_in_backoffice=True)).all()
         stats['applicant_count'] = Applicant.objects.count()
+        stats['confirmation'] = compute_cupt_confirmation_stats()
         stats['project_application_count'] = ProjectApplication.objects.filter(is_canceled=False).count()
 
     admission_projects = sort_admission_projects(admission_projects)
