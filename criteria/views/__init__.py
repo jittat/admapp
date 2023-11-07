@@ -530,9 +530,9 @@ def render_edit_criteria(admission_criteria, admission_round, faculty, majors, p
                    'uses_component_weights': uses_component_weights,
                    'component_weight_type_choices': component_weight_type_choices,
 
-                   'data_required': json.dumps(data_required),
-                   'data_scoring': json.dumps(data_scoring),
-                   'data_selected_majors': json.dumps(data_selected_majors),
+                   'data_required': json.dumps(data_required).replace("'","&#39;"),
+                   'data_scoring': json.dumps(data_scoring).replace("'","&#39;"),
+                   'data_selected_majors': json.dumps(data_selected_majors).replace("'","&#39;"),
 
                    'additional_interview_condition': admission_criteria.additional_interview_condition,
                    })
