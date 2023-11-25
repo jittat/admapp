@@ -93,6 +93,16 @@ def export_num_adjustment_faculty_users(projects, codenames):
                                 True)
 
 PROJECT_CODENAMES = {
+    1: {
+        1: 'ele',
+        2: 'ap',
+        3: 'inter',
+        4: 'nspr',
+        8: 'dpst',
+        9: 'posn',
+        32: 'steam',
+        33: 'smt',
+    },
     2: {
         11: 'kus',
         12: 'seed',
