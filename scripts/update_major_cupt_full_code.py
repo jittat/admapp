@@ -16,6 +16,11 @@ def main():
             try:
                 program_code = major.detail_items_csv.split(",")[-2].strip()
                 major_code = major.detail_items_csv.split(",")[-1].strip()
+
+                if len(major_code) > 5:  # fix major code missing error
+                    program_code = major_code
+                    major_code = ''
+                    
                 if major_code != '':
                     major.cupt_full_code = program_code + '0' + major_code
                 else:
