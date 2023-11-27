@@ -8,7 +8,7 @@ from admapp.emails import send_forget_password_email
 from appl.models import AdmissionProject, ProjectApplication, Payment
 from backoffice.decorators import user_login_required, super_admin_login_required
 from backoffice.models import Profile
-from regis.models import Applicant, LogItem, CuptRequestQueueItem
+from regis.models import Applicant, LogItem, CuptRequestQueueItem, CuptConfirmation
 from supplements.models import load_supplement_configs_with_instance
 from supplements.views import render_supplement_for_backoffice
 from .permissions import can_user_view_project
@@ -56,9 +56,10 @@ def sort_admission_projects(admission_projects):
 
 def compute_cupt_confirmation_stats():
     counters = {}
-    for a in Applicant.objects.prefetch_related('cupt_confirmation').all():
-        if a.has_cupt_confirmation_result():
-            code = a.cupt_confirmation.api_result_code
+    confirmations = { c.applicant_id:c for c in CuptConfirmation.objects.all() }
+    for a in Applicant.objects.all():
+        if a.id in confirmations:
+            code = confirmations[a.id].api_result_code
         else:
             code = -1
         if code not in counters:

@@ -221,14 +221,12 @@ def get_project_choices(current_round_projects):
     ]
 
 
-def calculate_project_majors(
-        current_round_projects,
-        description_id,
-        major_cupt_codes,
-        map_selected_admission_project_major_cupt_code,
-        preselect_project_major,
-        project_majors,
-):
+def calculate_project_majors(current_round_projects,
+                             description_id,
+                             major_cupt_codes,
+                             map_selected_admission_project_major_cupt_code,
+                             preselect_project_major,
+                             project_majors):
     project_majors_data = {}
     project_majors_choices = []
     selected_project_majors = []

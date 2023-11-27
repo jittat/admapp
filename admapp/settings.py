@@ -70,6 +70,7 @@ DEBUG_TOOLBAR_PANELS = [
     'debug_toolbar.panels.logging.LoggingPanel',
     'debug_toolbar.panels.redirects.RedirectsPanel',
     'template_timings_panel.panels.TemplateTimings.TemplateTimings',
+    'debug_toolbar.panels.profiling.ProfilingPanel',
 ]
 
 X_FRAME_OPTIONS = 'SAMEORIGIN'
