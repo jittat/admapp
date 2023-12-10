@@ -21,12 +21,17 @@ class AdvancedPlacementApplicant(models.Model):
 class AdvancedPlacementResult(models.Model):
     SUBJECT_TITLE = {
         '01134001': 'หลักการตลาด',
+        '01134111': 'หลักการตลาด (ภาษาไทย)',
         '01355001': 'English For Everyday Life',
+        '01355101': 'English For Everyday Life',
+        '01355102': 'English For University Life',
         '01403000': 'เคมี',
         '01417000': 'คณิตศาสตร์',
         '01420000': 'ฟิสิกส์',
         '01424000': 'ชีววิทยา',
+        '01424111': 'ชีววิทยา',
         '11134001': 'หลักการตลาด (Inter Program KUBIM)',
+        '11134111': 'หลักการตลาด (ภาษาอังกฤษ)',
     }
     
     ap_applicant = models.ForeignKey(AdvancedPlacementApplicant,

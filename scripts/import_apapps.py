@@ -54,7 +54,7 @@ def main():
             res = AdvancedPlacementResult(ap_applicant=app,
                                           subject_id=items[5],
                                           section_id=1,
-                                          grade=items[6])
+                                          grade=items[12])
             res.save()
             
             counter += 1
