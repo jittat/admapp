@@ -80,6 +80,7 @@ def select(request, admission_round_id):
 
             return redirect(reverse('appl:index'))
 
+        selected_majors = []
     else:
         selected_majors = major_selection.get_majors()
     
