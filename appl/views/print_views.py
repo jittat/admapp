@@ -119,7 +119,13 @@ def sport_print(request):
     educational_profile = applicant.get_educational_profile()
 
     active_application = applicant.get_active_application(admission_round)
+
+    if not active_application:
+        return HttpResponseForbidden()
+    
     admission_project = active_application.admission_project
+    if admission_project.id != 4:
+        return HttpResponseForbidden()
 
     major_selection = active_application.get_major_selection()
     majors = major_selection.get_majors()
