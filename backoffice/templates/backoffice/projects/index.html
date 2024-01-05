@@ -13,6 +13,9 @@
       <p>
         ผู้สมัครทั้งหมด {{ applicant_count }} ผู้สมัครที่ชำระเงินแล้ว {{ paid_applicant_count }}
         รายละเอียดแยกตามสาขาแสดงด้านล่าง (แสดงจำนวนที่ชำระเงินแล้ว / จำนวนที่เลือกทั้งหมด)
+	{% if project.max_num_selections != 1 %}
+          <a class="btn btn-sm btn-primary" href="{% url 'backoffice:projects-list-by-majors' project.id admission_round.id %}">แสดงรายการผู้สมัครทั้งหมด (ตามสาขา)</a>
+	{% endif %}
         <a class="btn btn-sm btn-primary" href="{% url 'backoffice:projects-list' project.id admission_round.id %}">แสดงรายการผู้สมัครทั้งหมด</a>
         <a class="btn btn-sm btn-secondary" href="{% url 'backoffice:projects-list-majors' project.id admission_round.id %}">แสดงข้อมูลสาขาที่รับ</a>
       </p>

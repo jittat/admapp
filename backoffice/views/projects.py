@@ -629,6 +629,52 @@ def list_applicants(request, project_id, round_id):
                   })
 
 
+@user_login_required
+def list_applicants_by_majors(request, project_id, round_id):
+    user = request.user
+    project = get_object_or_404(AdmissionProject, pk=project_id)
+    admission_round = get_object_or_404(AdmissionRound, pk=round_id)
+    project_round = project.get_project_round_for(admission_round)
+
+    if not can_user_view_project(user, project):
+        return redirect(reverse('backoffice:index'))
+
+    if not user.profile.is_admission_admin:
+        faculty = user.profile.faculty
+        user_major_number = user.profile.major_number
+    else:
+        faculty = None
+        user_major_number = user.profile.ANY_MAJOR
+
+    applicant_info_viewable = project_round.applicant_info_viewable
+        
+    majors = {m.number: m for m in project.major_set.all()}
+    for num in majors:
+        majors[num].applicants = []
+        
+    applicants = load_project_applicants(project, admission_round, faculty)
+    for a in applicants:
+        r = 1
+        for m in a.majors:
+            majors[m.number].applicants.append({'applicant': a, 'rank': r, 'paid': a.has_paid})
+            r += 1
+    for num in majors:
+       sorted_applicants = sorted([(not a['paid'],a['rank'],a['applicant'].national_id,a) for a in majors[num].applicants])
+       majors[num].applicants = [item[3] for item in sorted_applicants]
+            
+    return render(request,
+                  'backoffice/projects/list_applicants_by_majors.html',
+                  { 'project': project,
+                    'faculty': faculty,
+                    'admission_round': admission_round,
+                    'applicants': applicants,
+                    'majors': majors.values(),
+
+                    'has_criteria_check': project_round.criteria_check_required,
+                    'applicant_info_viewable': applicant_info_viewable,
+                  })
+
+
 def load_all_judge_comments(application,
                             admission_project,
                             admission_round,

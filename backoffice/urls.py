@@ -38,6 +38,7 @@ urlpatterns = [
     ),
     re_path(r"^projects/(\d+)/(\d+)/$", projects.index, name="projects-index"),
     re_path(r"^projects/(\d+)/(\d+)/list/$", projects.list_applicants, name="projects-list"),
+    re_path(r"^projects/(\d+)/(\d+)/list-by-majors/$", projects.list_applicants_by_majors, name="projects-list-by-majors"),
     re_path(
         r"^projects/(\d+)/(\d+)/majors/$", projects.list_major_details, name="projects-list-majors"
     ),
