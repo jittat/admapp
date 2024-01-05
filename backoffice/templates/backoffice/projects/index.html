@@ -117,7 +117,7 @@
               </td>
             {% endfor %}
             {% if applicant_info_viewable %}
-              <td class="x-none">
+              <td class="d-none">
                 {% if user_major_number == any_major or user_major_number == major.number %}
                   <a class="btn btn-sm btn-outline-secondary" href="{% url 'backoffice:projects-list-applicants-for-acceptance-calls' project.id admission_round.id major.number %}">กรอกผลสัมภาษณ์</a>
                 {% endif %}
@@ -188,7 +188,7 @@
                     <div class="dropdown-menu">
                       <a class="dropdown-item" href="{% url 'backoffice:projects-download-app-sheet' project.id admission_round.id major.number %}">ข้อมูลทั่วไป</a>
                       <a class="d-none dropdown-item" href="{% url 'backoffice:projects-download-app-score-sheet' project.id admission_round.id major.number %}">รายงานคะแนนสอบ TGAT/TPAT</a>
-                      <a class="x-none dropdown-item" href="{% url 'backoffice:projects-download-app-sheet-only-interview' project.id admission_round.id major.number %}">ข้อมูลผู้มีสิทธิ์สอบสัมภาษณ์</a>
+                      <a class="d-none dropdown-item" href="{% url 'backoffice:projects-download-app-sheet-only-interview' project.id admission_round.id major.number %}">ข้อมูลผู้มีสิทธิ์สอบสัมภาษณ์</a>
                       <a class="d-none dropdown-item" href="{% url 'backoffice:projects-download-app-interview-score-sheet' project.id admission_round.id major.number %}">ดาวน์โหลดรายงานคะแนน</a>
                       <a class="d-none dropdown-item" href="{% url 'backoffice:projects-download-app-interview-sheet' project.id admission_round.id major.number %}">ฟอร์มสัมภาษณ์</a>
                     </div>
