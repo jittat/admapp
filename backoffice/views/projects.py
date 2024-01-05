@@ -647,8 +647,14 @@ def list_applicants_by_majors(request, project_id, round_id):
         user_major_number = user.profile.ANY_MAJOR
 
     applicant_info_viewable = project_round.applicant_info_viewable
+
+    if faculty == None:
+        majors = {m.number: m for m in project.major_set.all()}
+    elif user_major_number == 0:
+        majors = {m.number: m for m in project.major_set.all() if m.faculty_id == faculty.id}
+    else:
+        majors = {m.number: m for m in project.major_set.all() if m.faculty_id == faculty.id and m.number == user_major_number}
         
-    majors = {m.number: m for m in project.major_set.all()}
     for num in majors:
         majors[num].applicants = []
         
@@ -656,7 +662,8 @@ def list_applicants_by_majors(request, project_id, round_id):
     for a in applicants:
         r = 1
         for m in a.majors:
-            majors[m.number].applicants.append({'applicant': a, 'rank': r, 'paid': a.has_paid})
+            if m.number in majors:
+                majors[m.number].applicants.append({'applicant': a, 'rank': r, 'paid': a.has_paid})
             r += 1
     for num in majors:
        sorted_applicants = sorted([(not a['paid'],a['rank'],a['applicant'].national_id,a) for a in majors[num].applicants])
