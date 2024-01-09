@@ -468,8 +468,11 @@ def write_score_report_sheet(sheet, project, applicants, major, cell_format):
             ]
         else:
             items += [' '] * 10
-            
-        items += [ score_filter(applicant.admission_result.calculated_score) ]
+
+        if applicant.admission_result != None:
+            items += [ score_filter(applicant.admission_result.calculated_score) ]
+        else:
+            items += [' ']
 
         write_sheet_row(sheet, r + 2, items, cell_format)
 
@@ -591,7 +594,7 @@ def download_applicants_score_sheet(request,
                                      admission_round,
                                      project_round)
 
-    applicants = sorted_by_name(all_applicants)
+    applicants = [a for a in sorted_by_name(all_applicants) if a.has_paid]
 
     for a in applicants:
         if a.national_id.startswith('T'):
