@@ -270,9 +270,14 @@ def load_applicant_ap_results(applicant,
             '01417000': 1,
             '01420000': 2,
             '01424000': 3,
+            '01424111': 3,
             '01355001': 4,
-            '01134001': 5,
-            '11134001': 6,
+            '01355101': 4,
+            '01355102': 5,
+            '01134001': 6,
+            '01134111': 6,
+            '11134001': 7,
+            '11134111': 7,
         }
         
         ap_course_results = {}
@@ -282,7 +287,7 @@ def load_applicant_ap_results(applicant,
             national_id = ap_applicants[res.ap_applicant_id].national_id
             if national_id not in ap_course_results:
                 ap_app = ap_applicants[res.ap_applicant_id]
-                ap_app.course_results = ['-','-','-','-','-','-','-']
+                ap_app.course_results = ['-','-','-','-','-','-','-','-']
                 ap_course_results[ap_app.national_id] = ap_app
 
             ap_app = ap_course_results[national_id]
