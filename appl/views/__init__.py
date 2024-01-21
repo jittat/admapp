@@ -215,17 +215,10 @@ def index_with_active_application(request, active_application, admission_round=N
                 else:
                     major.is_accepted_for_interview = mresults[major.id].is_accepted_for_interview
                     if major.is_accepted_for_interview:
-                        if admission_round.number != 1:
-                            interview_description = MajorInterviewDescriptionCache.get_interview_description_by_major(major)
-                            if interview_description:
-                                interview_description.major = major
-                                interview_description.admission_project = admission_project
-                        else:
-                            interview_description = None
-                            major_interview_descriptions = (
-                                MajorInterviewDescription.find_by_major_and_admission_round(major,
-                                                                                            admission_round))
-
+                        interview_description = MajorInterviewDescriptionCache.get_interview_description_by_major(major)
+                        if interview_description:
+                            interview_description.major = major
+                            interview_description.admission_project = admission_project
     else:
         admission_results = []
         is_accepted_for_interview = False
