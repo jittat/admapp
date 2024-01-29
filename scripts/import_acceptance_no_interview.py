@@ -70,11 +70,11 @@ def main():
                     print('ERROR', nat_id,'major not found',major_num)
                     continue
             elif major_num == -1:
-                fac_title = items[2].strip()
-                major_title = items[3].strip()
+                fac_title = items[2].strip().replace(' ','')
+                major_title = items[3].strip().replace(' ','')
                 accepted_major = None
                 for m in majors:
-                    if m.title == major_title and m.faculty.title == fac_title:
+                    if m.title.replace(' ','') == major_title and m.faculty.title.replace(' ','') == fac_title:
                         accepted_major = m
                 if not accepted_major:
                     print(majors)
