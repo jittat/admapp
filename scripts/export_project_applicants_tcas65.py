@@ -121,11 +121,17 @@ def main():
     project_id = sys.argv[1]
     round_id = sys.argv[2]
 
-    if (len(sys.argv) >= 4) and (sys.argv[3] != '-'):
+    if (len(sys.argv) >= 4) and (not sys.argv[3].startswith('-')):
         tcas_data_filename = sys.argv[3]
         tcas_data = load_tcas_data(tcas_data_filename)
     else:
         tcas_data = {}
+
+    if (len(sys.argv) >= 5) and (not sys.argv[4].startswith('-')):
+        update_json_filename = sys.argv[4]
+        update_data = json.loads(open(update_json_filename).read())
+    else:
+        update_data = {}
 
     #major_map_files = [f for f in sys.argv[4:] if not f.startswith('--')]
     #major_map = load_major_map(major_map_files)
@@ -172,9 +178,7 @@ def main():
               'applicant_status',
               'interview_reason',]
 
-    print(','.join(header))
-    
-    app_type = '1_2565'
+    app_type = '1_2567'
     
     for app in project_applications:
         if app.has_paid():
@@ -196,8 +200,17 @@ def main():
                     applicant.prefix = tcas_data[nat]['prefix']
                     applicant.first_name = tcas_data[nat]['first_name']
                     applicant.last_name = tcas_data[nat]['last_name']
-                
-                
+
+            UPDATE_FIELD_MAP = {
+                'first_name_th': 'first_name',
+                'last_name_th': 'last_name',
+                'first_name_en': 'first_name_english',
+                'last_name_en': 'last_name_english',
+            }
+            if nat in update_data:
+                for f in update_data[nat]:
+                    setattr(applicant, UPDATE_FIELD_MAP[f], update_data[nat][f])
+                    
             profile = applicant.get_personal_profile()
             app_date = '%02d/%02d/%04d' % (app.applied_at.day,
                                            app.applied_at.month,
