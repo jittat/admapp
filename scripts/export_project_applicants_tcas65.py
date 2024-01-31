@@ -4,7 +4,7 @@ bootstrap()
 import sys
 import json
 
-from appl.models import AdmissionProject, AdmissionRound, ProjectApplication, AdmissionResult
+from appl.models import AdmissionProject, AdmissionRound, ProjectApplication, AdmissionResult, PersonalProfile
 
 def load_tcas_data(filename):
     lines = open(filename).readlines()
@@ -54,6 +54,9 @@ def print_csv_line(applicant, application, personal_profile, app_date, cupt_majo
                    header):
     university_id = '002'
 
+    if personal_profile == None:
+        personal_profile = PersonalProfile()
+    
     data = {
         'university_id': university_id,
         'program_id': cupt_major['program_id'],
