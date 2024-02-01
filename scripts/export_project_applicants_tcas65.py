@@ -218,12 +218,12 @@ def main():
                     update_f = UPDATE_FIELD_MAP[f]
                     if not update_f.startswith('p'):
                         if getattr(applicant, update_f) != update_data[nat][f]['original']:
-                            print("MISMATCH", update_data, file=sys.stderr)
+                            print("MISMATCH", update_data[nat], file=sys.stderr)
                         setattr(applicant, update_f, update_data[nat][f]['update'])
                     else:
                         update_f = update_f.split('.')[1]
                         if getattr(profile, update_f) != update_data[nat][f]['original']:
-                            print("MISMATCH", update_data, file=sys.stderr)
+                            print("MISMATCH", update_data[nat], file=sys.stderr)
                         setattr(profile, update_f, update_data[nat][f]['update'])
                     
             app_date = '%02d/%02d/%04d' % (app.applied_at.day,
