@@ -181,6 +181,7 @@ def main():
               'applicant_status',
               'interview_reason',]
 
+    print(','.join(header))
     app_type = '1_2567'
     
     for app in project_applications:
@@ -204,17 +205,27 @@ def main():
                     applicant.first_name = tcas_data[nat]['first_name']
                     applicant.last_name = tcas_data[nat]['last_name']
 
+            profile = applicant.get_personal_profile()
+
             UPDATE_FIELD_MAP = {
                 'first_name_th': 'first_name',
                 'last_name_th': 'last_name',
-                'first_name_en': 'first_name_english',
-                'last_name_en': 'last_name_english',
+                'first_name_en': 'p.first_name_english',
+                'last_name_en': 'p.last_name_english',
             }
             if nat in update_data:
                 for f in update_data[nat]:
-                    setattr(applicant, UPDATE_FIELD_MAP[f], update_data[nat][f])
+                    update_f = UPDATE_FIELD_MAP[f]
+                    if not update_f.startswith('p'):
+                        if getattr(applicant, update_f) != update_data[nat][f]['original']:
+                            print("MISMATCH", update_data, file=sys.stderr)
+                        setattr(applicant, update_f, update_data[nat][f]['update'])
+                    else:
+                        update_f = update_f.split('.')[1]
+                        if getattr(profile, update_f) != update_data[nat][f]['original']:
+                            print("MISMATCH", update_data, file=sys.stderr)
+                        setattr(profile, update_f, update_data[nat][f]['update'])
                     
-            profile = applicant.get_personal_profile()
             app_date = '%02d/%02d/%04d' % (app.applied_at.day,
                                            app.applied_at.month,
                                            app.applied_at.year + 543)
