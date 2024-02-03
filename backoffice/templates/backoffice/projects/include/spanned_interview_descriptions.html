@@ -1,12 +1,15 @@
+{% load menu_flags %}
 <small>
-  มีรายละเอียดแล้ว
-  <button
-    type="button"
-    class="btn btn-sm btn-outline-secondary"
-    data-container="body"
-    data-toggle="popover"
-    data-placement="right"
-    title="ระบุโดย{% if major.spanned_interview_descriptions|length > 1 %} [ระบุมากกว่า 1 ชุด จะใช้ข้อมูลแรก]{% endif %}"
-    data-content="{% for i in major.spanned_interview_descriptions %}{{ forloop.counter }}. {{ i.admission_project }} / {{ i.major }}{% if forloop.first and major.spanned_interview_descriptions|length > 1 %} (**){% endif %}{% if not forloop.last %},&nbsp;&nbsp;&nbsp;{% endif %}{% endfor %}"><i class="fa fa-info-circle"></i></button>
+  <span class="{% dnone_flag menu_flags 'interview-form-edit' %}">
+    มีรายละเอียดแล้ว
+    <button
+      type="button"
+      class="btn btn-sm btn-outline-secondary"
+      data-container="body"
+      data-toggle="popover"
+      data-placement="right"
+      title="ระบุโดย{% if major.spanned_interview_descriptions|length > 1 %} [ระบุมากกว่า 1 ชุด จะใช้ข้อมูลแรก]{% endif %}"
+      data-content="{% for i in major.spanned_interview_descriptions %}{{ forloop.counter }}. {{ i.admission_project }} / {{ i.major }}{% if forloop.first and major.spanned_interview_descriptions|length > 1 %} (**){% endif %}{% if not forloop.last %},&nbsp;&nbsp;&nbsp;{% endif %}{% endfor %}"><i class="fa fa-info-circle"></i></button>
+  </span>
   <a class="btn btn-sm btn-outline-secondary interview-description-preview-buttons" href="{% url 'backoffice:interviews-view' major.spanned_interview_descriptions.0.id %}?major_id={{ major.id }}"><i class="fa fa-eye"></i></a>
 </small>

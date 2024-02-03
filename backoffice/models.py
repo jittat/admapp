@@ -10,6 +10,7 @@ from appl.models import Major, AdmissionResult, ExamScore
 from criteria.models import MajorCuptCode
 from regis.models import Applicant
 
+from .ui_models import ProjectMenuConfig
 
 class Profile(models.Model):
     ANY_MAJOR = 0
@@ -429,3 +430,5 @@ class AdmissionProjectMajorCuptCodeInterviewDescription(models.Model):
                 name="unique_admission_project_major_cupt_code",
             )
         ]
+
+    

@@ -1,4 +1,5 @@
 {% extends 'backoffice/base.html' %}
+{% load menu_flags %}
 {% block content %}
   <div class="row">
     <div class="col-md-12">
@@ -120,7 +121,7 @@
               </td>
             {% endfor %}
             {% if applicant_info_viewable %}
-              <td class="x-none">
+              <td class="{% dnone_flag menu_flags 'td-interview-result' %}">
                 {% if user_major_number == any_major or user_major_number == major.number %}
                   <a class="btn btn-sm btn-outline-secondary" href="{% url 'backoffice:projects-list-applicants-for-acceptance-calls' project.id admission_round.id major.number %}">กรอกผลสัมภาษณ์</a>
                 {% endif %}
@@ -141,7 +142,7 @@
 		  </td>
 		{% else %}
 		  <td colspan="2">
-                    <a target="_blank" class="xx-none btn btn-sm btn-outline-secondary" rel="noopener noreferrer" href="{% url 'backoffice:projects-show-applicant' project.id admission_round.id major.number 1 %}">พิจารณาผู้สมัคร</a>
+                    <a target="_blank" class="{% dnone_flag menu_flags 'not-score-viewable-show-applicant' %} btn btn-sm btn-outline-secondary" rel="noopener noreferrer" href="{% url 'backoffice:projects-show-applicant' project.id admission_round.id major.number 1 %}">พิจารณาผู้สมัคร</a>
 		  </td>
                 {% endif %}
               {% endif %}
@@ -149,7 +150,7 @@
               {% if user_major_number == any_major or user_major_number == major.number %}
 		{% if major.interview_description %}
 		  <td>
-                    <a target="_blank" class="xx-none btn btn-sm btn-secondary" rel="noopener noreferrer" href="{% url 'backoffice:interviews-edit' admission_round.id major.faculty_id major.interview_description.id %}">แก้รายละเอียดสัมภาษณ์</a>
+                    <a target="_blank" class="{% dnone_flag menu_flags 'interview-form-edit' %} btn btn-sm btn-secondary" rel="noopener noreferrer" href="{% url 'backoffice:interviews-edit' admission_round.id major.faculty_id major.interview_description.id %}">แก้รายละเอียดสัมภาษณ์</a>
 		  </td>
 		  <td>
 		    <a class="btn btn-sm btn-outline-secondary interview-description-preview-buttons" href="{% url 'backoffice:interviews-view' major.interview_description.id %}?major_id={{ major.id }}"><i class="fa fa-eye"></i></a>
@@ -159,7 +160,7 @@
 		    {% if major.spanned_interview_descriptions %}
 		      {% include "backoffice/projects/include/spanned_interview_descriptions.html" %}
 		    {% else %}
-                      <a target="_blank" class="xx-none btn btn-sm btn-outline-secondary" rel="noopener noreferrer" href="{% url 'backoffice:interviews-create' admission_round.id major.faculty_id %}?major_id={{ major.id }}">เพิ่มรายละเอียดสัมภาษณ์</a>
+                      <a target="_blank" class="{% dnone_flag menu_flags 'interview-form-edit' %} btn btn-sm btn-outline-secondary" rel="noopener noreferrer" href="{% url 'backoffice:interviews-create' admission_round.id major.faculty_id %}?major_id={{ major.id }}">เพิ่มรายละเอียดสัมภาษณ์</a>
 		    {% endif %}
 		  </td>
 		{% endif %}
@@ -191,6 +192,7 @@
                     <div class="dropdown-menu">
                       <a class="dropdown-item" href="{% url 'backoffice:projects-download-app-sheet' project.id admission_round.id major.number %}">ข้อมูลทั่วไป</a>
                       <a class="x-none dropdown-item" href="{% url 'backoffice:projects-download-app-score-sheet' project.id admission_round.id major.number %}">รายงานคะแนนสอบ TGAT/TPAT</a>
+                      <a class="d-none dropdown-item" href="{% url 'backoffice:projects-download-app-score-sheet' project.id admission_round.id major.number %}">รายงานคะแนน</a>
                       <a class="x-none dropdown-item" href="{% url 'backoffice:projects-download-app-sheet-only-interview' project.id admission_round.id major.number %}">ข้อมูลผู้มีสิทธิ์สอบสัมภาษณ์</a>
                       <a class="d-none dropdown-item" href="{% url 'backoffice:projects-download-app-interview-score-sheet' project.id admission_round.id major.number %}">ดาวน์โหลดรายงานคะแนน</a>
                       <a class="d-none dropdown-item" href="{% url 'backoffice:projects-download-app-interview-sheet' project.id admission_round.id major.number %}">ฟอร์มสัมภาษณ์</a>
@@ -202,7 +204,7 @@
               {% if user_major_number == any_major or user_major_number == major.number %}
 		{% if major.interview_description %}
 		  <td>
-                    <a target="_blank" class="xx-none btn btn-sm btn-secondary" rel="noopener noreferrer" href="{% url 'backoffice:interviews-edit' admission_round.id major.faculty_id major.interview_description.id %}">แก้รายละเอียดสัมภาษณ์</a>
+                    <a target="_blank" class="{% dnone_flag menu_flags 'interview-form-edit' %} btn btn-sm btn-secondary" rel="noopener noreferrer" href="{% url 'backoffice:interviews-edit' admission_round.id major.faculty_id major.interview_description.id %}">แก้รายละเอียดสัมภาษณ์</a>
 		  </td>
 		  <td>
 		    <a class="btn btn-sm btn-outline-secondary interview-description-preview-buttons" href="{% url 'backoffice:interviews-view' major.interview_description.id %}?major_id={{ major.id }}"><i class="fa fa-eye"></i></a>
@@ -212,7 +214,7 @@
 		    {% if major.spanned_interview_descriptions %}
 		      {% include "backoffice/projects/include/spanned_interview_descriptions.html" %}
 		    {% else %}
-                      <a target="_blank" class="xx-none btn btn-sm btn-outline-secondary" rel="noopener noreferrer" href="{% url 'backoffice:interviews-create' admission_round.id major.faculty_id %}?major_id={{ major.id }}">เพิ่มรายละเอียดสัมภาษณ์</a>
+                      <a target="_blank" class="{% dnone_flag menu_flags 'interview-form-edit' %} btn btn-sm btn-outline-secondary" rel="noopener noreferrer" href="{% url 'backoffice:interviews-create' admission_round.id major.faculty_id %}?major_id={{ major.id }}">เพิ่มรายละเอียดสัมภาษณ์</a>
 		    {% endif %}
 		  </td>
 		{% endif %}

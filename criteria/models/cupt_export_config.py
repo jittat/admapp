@@ -11,6 +11,12 @@ class CuptExportConfig(models.Model):
     def __str__(self):
         return self.admission_project.title
 
+    def clean(self):
+        try:
+            json.loads(self.config_json)
+        except:
+            raise ValidationError('Incorrect JSON config')
+
 
 class CuptExportLog(models.Model):
     output_filename = models.CharField(max_length=100)

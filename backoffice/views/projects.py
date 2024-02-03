@@ -9,7 +9,7 @@ from appl.models import AdmissionProject, AdmissionRound
 from appl.models import ProjectApplication, Payment, Major, AdmissionResult, Faculty
 from appl.models import ProjectUploadedDocument, UploadedDocument, ExamScoreProvider, MajorInterviewDescription
 from backoffice.decorators import user_login_required
-from backoffice.models import CheckMarkGroup, JudgeComment, MajorInterviewCallDecision, InterviewDescription, AdmissionProjectMajorCuptCodeInterviewDescription
+from backoffice.models import CheckMarkGroup, JudgeComment, MajorInterviewCallDecision, InterviewDescription, AdmissionProjectMajorCuptCodeInterviewDescription, ProjectMenuConfig
 from backoffice.views.permissions import can_user_view_project, can_user_view_applicant_in_major, \
     can_user_view_applicants_in_major
 from regis.models import Applicant, LogItem
@@ -465,6 +465,8 @@ def index(request, project_id, round_id):
                                 faculty,
                                 majors)
 
+    menu_flags = ProjectMenuConfig.load_menu_config_flags(admission_round, project)
+    
     return render(request,
                   'backoffice/projects/index.html',
                   { 'project': project,
@@ -483,6 +485,8 @@ def index(request, project_id, round_id):
 
                     'user_major_number': user_major_number,
                     'any_major': user.profile.ANY_MAJOR,
+
+                    'menu_flags': menu_flags,
                   })
 
 
