@@ -156,6 +156,9 @@ class AdmissionProject(models.Model):
     is_cupt_export_only_major_list = models.BooleanField(default=True,
                                                          verbose_name='ส่งข้อมูลทปอ.เป็นรายการสาขาเท่านั้น')
 
+    is_auto_select_single_major = models.BooleanField(default=False,
+                                                      verbose_name='มีสาขาเดียวและเลือกสาขานั้นโดยอัตโนมัติ')
+    
     # basic admission criteria (student types / school types)
 
     SCHOOL_TYPE_CHOICES = [
