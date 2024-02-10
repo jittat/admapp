@@ -239,12 +239,16 @@ def main():
                         continue
 
                     
-                    
                 cupt_majors = [{
                     'program_id': m.get_detail_items()[-2],
                     'major_id': m.get_detail_items()[-1],
                     'project_id': project.cupt_code,
                 }]
+
+                if len(cupt_majors[0]['major_id']) > 10:
+                    cupt_majors[0]['program_id'] = cupt_majors[0]['major_id']
+                    cupt_majors[0]['major_id'] = ''
+                
                 if (project.id in major_map) and (m.number in major_map[project.id]):
                     cupt_majors = []
                     for mj in major_map[project.id][m.number]:
