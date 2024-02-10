@@ -8,6 +8,7 @@ from django.urls import reverse
 from admapp.utils import number_to_thai_text
 from appl.barcodes import generate
 from appl.models import AdmissionProject, AdmissionRound
+from appl.models import Major, MajorSelection
 from appl.models import AdmissionResult, MajorInterviewDescription
 from appl.models import Eligibility
 from appl.models import Payment
@@ -391,7 +392,24 @@ def index(request, admission_round_id='0'):
                     'additional_payment': additional_payment,
                   })
 
-        
+def auto_select_major(applicant, application, project):
+    major = Major.get_by_project_number(project,1)
+    
+    try:
+        major_selection = application.major_selection
+    except MajorSelection.DoesNotExist:
+        major_selection = MajorSelection(major_list='')
+
+    major_selection.set_majors([major])
+    major_selection.applicant = applicant
+    major_selection.project_application = application
+    major_selection.admission_project = project
+    major_selection.admission_round = application.admission_round
+
+    major_selection.save()
+    return major_selection
+
+
 @appl_login_required
 def apply_project(request, project_id, admission_round_id):
     applicant = request.applicant
@@ -426,6 +444,10 @@ def apply_project(request, project_id, admission_round_id):
 
     LogItem.create('Applied to project %d' % (project.id,), applicant, request)
     
+    if project.is_auto_select_single_major:
+        auto_select_major(applicant, application, project)
+        LogItem.create('Auto select major', applicant, request)
+
     return redirect(reverse('appl:index'))
 
 
