@@ -130,13 +130,13 @@
               {% if user_major_number == any_major or user_major_number == major.number %}
                 {% if major.has_any_applications and applicant_score_viewable %}
 		  <td>
-                    <a target="_blank" class="d-none btn btn-sm btn-outline-primary" rel="noopener noreferrer" href="{% url 'backoffice:projects-show-scores' project.id admission_round.id major.number %}">เรียกสัมภาษณ์</a>
+                    <a target="_blank" class="{% dnone_flag menu_flags 'score-viewable-interview-call-by-scores' %} btn btn-sm btn-outline-primary" rel="noopener noreferrer" href="{% url 'backoffice:projects-show-scores' project.id admission_round.id major.number %}">เรียกสัมภาษณ์</a>
 		  </td>
 		  <td>
 		    <div class="dropdown d-inline">
                       <a class="btn btn-sm btn-outline-secondary dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></a>
                       <div class="dropdown-menu">
-			<a target="_blank" class="dropdown-item" href="{% url 'backoffice:projects-show-applicant' project.id admission_round.id major.number 1 %}">พิจารณาผู้สมัคร</a>
+			<a target="_blank" class="dropdown-item {% dnone_flag menu_flags 'score-viewable-dropdown-show-applicant' %}" href="{% url 'backoffice:projects-show-applicant' project.id admission_round.id major.number 1 %}">พิจารณาผู้สมัคร</a>
 		      </div>
 		    </div>
 		  </td>
@@ -165,20 +165,20 @@
 		  </td>
 		{% endif %}
               {% endif %}
-              <td class="d-none">
+              <td class="{% dnone_flag menu_flags 'td-show-scores' %}">
                 {% if user_major_number == any_major or user_major_number == major.number %}
-                  <a target="_blank" class="xx-none btn btn-sm btn-outline-secondary" rel="noopener noreferrer" href="{% url 'backoffice:projects-show-scores' project.id admission_round.id major.number %}">ดูคะแนนสอบ</a>
+                  <a target="_blank" class="btn btn-sm btn-outline-secondary" rel="noopener noreferrer" href="{% url 'backoffice:projects-show-scores' project.id admission_round.id major.number %}">ดูคะแนนสอบ</a>
                 {% endif %}
               </td>
-              <td class="d-none">
+              <td class="{% dnone_flag menu_flags 'td-applicant-info' %}">
                 {% if user_major_number == any_major or user_major_number == major.number %}
                   {% if major.has_any_applications %}
                     <div class="dropdown">
                       <a class="btn btn-sm btn-outline-secondary dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">พิจารณา</a>
                       <div class="dropdown-menu">
-                        <a target="_blank" class="dropdown-item" rel="noopener noreferrer" href="{% url 'backoffice:projects-show-applicant' project.id admission_round.id major.number 1 %}">ผู้สมัครรายคน</a>
+                        <a target="_blank" class="dropdown-item {% dnone_flag menu_flags 'td-applicant-info-dropdown-show-applicant' %}" rel="noopener noreferrer" href="{% url 'backoffice:projects-show-applicant' project.id admission_round.id major.number 1 %}">ผู้สมัครรายคน</a>
                         {% if applicant_score_viewable %}
-                          <a target="_blank" class="dropdown-item" rel="noopener noreferrer" href="{% url 'backoffice:projects-show-scores' project.id admission_round.id major.number %}">พิจารณาคะแนน</a>
+                          <a target="_blank" class="dropdown-item {% dnone_flag menu_flags 'td-applicant-info-dropdown-show-scores' %}" rel="noopener noreferrer" href="{% url 'backoffice:projects-show-scores' project.id admission_round.id major.number %}">พิจารณาคะแนน</a>
                         {% endif %}
                       </div>
                     </div>
@@ -187,15 +187,15 @@
               </td>
               <td>
                 {% if user_major_number == any_major or user_major_number == major.number %}
-                  <div class="dropdown">
+                  <div class="dropdown {% dnone_flag menu_flags 'download-dropdown' %}">
                     <a class="btn btn-sm btn-outline-secondary dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">ดาวน์โหลด</a>
                     <div class="dropdown-menu">
-                      <a class="dropdown-item" href="{% url 'backoffice:projects-download-app-sheet' project.id admission_round.id major.number %}">ข้อมูลทั่วไป</a>
-                      <a class="x-none dropdown-item" href="{% url 'backoffice:projects-download-app-score-sheet' project.id admission_round.id major.number %}">รายงานคะแนนสอบ TGAT/TPAT</a>
-                      <a class="d-none dropdown-item" href="{% url 'backoffice:projects-download-app-score-sheet' project.id admission_round.id major.number %}">รายงานคะแนน</a>
-                      <a class="x-none dropdown-item" href="{% url 'backoffice:projects-download-app-sheet-only-interview' project.id admission_round.id major.number %}">ข้อมูลผู้มีสิทธิ์สอบสัมภาษณ์</a>
-                      <a class="d-none dropdown-item" href="{% url 'backoffice:projects-download-app-interview-score-sheet' project.id admission_round.id major.number %}">ดาวน์โหลดรายงานคะแนน</a>
-                      <a class="d-none dropdown-item" href="{% url 'backoffice:projects-download-app-interview-sheet' project.id admission_round.id major.number %}">ฟอร์มสัมภาษณ์</a>
+                      <a class="dropdown-item {% dnone_flag menu_flags 'download-gen-info' %}" href="{% url 'backoffice:projects-download-app-sheet' project.id admission_round.id major.number %}">ข้อมูลทั่วไป</a>
+                      <a class="dropdown-item {% dnone_flag menu_flags 'download-scores-tgat-tpat-label' %}" href="{% url 'backoffice:projects-download-app-score-sheet' project.id admission_round.id major.number %}">รายงานคะแนนสอบ TGAT/TPAT</a>
+                      <a class="dropdown-item {% dnone_flag menu_flags 'download-scores' %}" href="{% url 'backoffice:projects-download-app-score-sheet' project.id admission_round.id major.number %}">รายงานคะแนน</a>
+                      <a class="dropdown-item {% dnone_flag menu_flags 'download-gen-info-interview' %}" href="{% url 'backoffice:projects-download-app-sheet-only-interview' project.id admission_round.id major.number %}">ข้อมูลผู้มีสิทธิ์สอบสัมภาษณ์</a>
+                      <a class="dropdown-item {% dnone_flag menu_flags 'download-scores-only-interview' %}" href="{% url 'backoffice:projects-download-app-interview-score-sheet' project.id admission_round.id major.number %}">ดาวน์โหลดรายงานคะแนน</a>
+                      <a class="dropdown-item {% dnone_flag menu_flags 'download-interview-form' %}" href="{% url 'backoffice:projects-download-app-interview-sheet' project.id admission_round.id major.number %}">ฟอร์มสัมภาษณ์</a>
                     </div>
                   </div>
                 {% endif %}

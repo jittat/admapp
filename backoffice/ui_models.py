@@ -27,11 +27,11 @@ DEFAULT_MENU_FLAGS = {
     'td-applicant-info-dropdown-show-scores': False,
 
     # download
-    'download-dropdown': False,
-    'download-gen-info': False,
+    'download-dropdown': True,
+    'download-gen-info': True,
     'download-scores': False,
     'download-scores-tgat-tpat-label': False,
-    'download-score-only-interview': False,
+    'download-scores-only-interview': False,
     'download-gen-info-interview': False,
     'download-interview-form': False,
 }

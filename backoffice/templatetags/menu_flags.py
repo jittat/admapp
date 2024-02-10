@@ -4,7 +4,11 @@ register = template.Library()
 
 @register.simple_tag
 def dnone_flag(flags, key):
-    if flags.get(key,False) == False:
+    none_val = False
+    if key.startswith('-'):
+        key = key[1:]
+        none_val = True
+    if flags.get(key,False) == none_val:
         return 'd-none'
     else:
         return ''
