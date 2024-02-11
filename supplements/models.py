@@ -229,6 +229,16 @@ PROJECT_SUPPLEMENTS = {
                                 'supplements.views.forms.cultural.process_cultural_exam_form',
                                 'supplements/backoffice/cultural/cultural_exam.html'),
     ],
+    'ส่งเสริมโอกาสศึกษาต่อในคณะแพทยศาสตร์': [
+        ProjectSupplementConfig('med_house_codes',
+                                'เลขรหัสประจำบ้านของผู้สม้ครและบิดาหรือมารดาหรือผู้ปกครอง',
+                                True,
+                                'supplements/med/house_codes_form.html',
+                                'med_house_code_',
+                                'supplements.views.forms.med.init_house_codes_form',
+                                'supplements.views.forms.med.process_house_codes_form',
+                                'supplements/backoffice/med/house_codes.html'),
+    ],
     'xxรับตรงอิสระ': [
         ProjectSupplementConfig('tcas5_fisheries',
                                 'ผลการเรียนเฉลี่ยแยกกลุ่มสาระ (สำหรับกรณีที่สมัครคณะประมง)',
