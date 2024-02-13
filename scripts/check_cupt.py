@@ -31,13 +31,16 @@ def main():
         result, messages = cupt_check_status(national_id, first_name, last_name)
         print(national_id, result)
 
-        REGISTERED_CODES = [1,2,3]
+        REGISTERED_CODES = [1,2,3,4,6,7,8,9,10]
+        CONFIRMED_CODES = [4,8,9]
         has_registered = False
         has_confirmed = False
         
         if 'code' in result:
             if result['code'] in REGISTERED_CODES:
                 has_registered = True
+            if result['code'] in CONFIRMED_CODES:
+                has_confirmed = True
         
         LogItem.create('CUPT QUERY result = ' + messages, applicant)
 
