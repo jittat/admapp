@@ -14,7 +14,8 @@ def mm2px(mm, dpi=300):
 def paint_text(self, xpos, ypos):
     font = ImageFont.truetype(FONT, self.font_size * 3)
     updated_text = self.text.replace('\x0d',' ')
-    width, height = font.getsize(updated_text)
+    width = font.getlength(updated_text)
+    height = self.font_size * 4  # TODO: fix this
     pos = (mm2px(xpos, self.dpi) - width // 2,
            mm2px(ypos, self.dpi) - height )
     self._draw.text(pos, updated_text, font=font, fill=self.foreground)
