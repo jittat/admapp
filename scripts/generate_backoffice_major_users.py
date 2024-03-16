@@ -114,7 +114,7 @@ PROJECT_CODENAMES = {
         23: 'mou',
         24: 'vet',
         34: 'spe',
-	34: 'med',
+	35: 'med',
         50: 'int2',
     },
     3: {
