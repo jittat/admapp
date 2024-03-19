@@ -260,9 +260,13 @@ def forget(request):
         if form.is_valid():
             national_id = form.cleaned_data['national_id']
             email = form.cleaned_data['email']
-            applicant = Applicant.find_by_national_id(national_id)
-            if not applicant:
-                applicant = Applicant.find_by_passport_number(national_id)
+
+            if is_valid_national_id(national_id) or is_valid_passport_number(national_id):
+                applicant = Applicant.find_by_national_id(national_id)
+                if not applicant:
+                    applicant = Applicant.find_by_passport_number(national_id)
+            else:
+                applicant = None    
 
             if (not applicant) or (applicant.email.upper() != email.strip().upper()):
                 error_message = _('ไม่พบข้อมูลผู้สมัครที่ระบุหรืออีเมลที่ระบุไม่ถูกต้อง')
@@ -301,11 +305,15 @@ def login(request):
         national_id = form.cleaned_data['national_id']
         password = form.cleaned_data['password']
 
-        applicant = Applicant.find_by_national_id(national_id)
-        if not applicant:
-            applicant = Applicant.find_by_passport_number(national_id)
+        if is_valid_national_id(national_id) or is_valid_passport_number(national_id):
+            applicant = Applicant.find_by_national_id(national_id)
             if not applicant:
-                return redirect(reverse('main-index') + '?error=wrong-password')
+                applicant = Applicant.find_by_passport_number(national_id)
+        else:
+            applicant = None    
+        
+        if not applicant:
+            return redirect(reverse('main-index') + '?error=wrong-password')
 
         if ((settings.FAKE_LOGIN and settings.DEBUG)
             or applicant.check_password(password)):
