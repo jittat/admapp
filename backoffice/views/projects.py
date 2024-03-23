@@ -13,7 +13,11 @@ from backoffice.models import CheckMarkGroup, JudgeComment, MajorInterviewCallDe
 from backoffice.views.permissions import can_user_view_project, can_user_view_applicant_in_major, \
     can_user_view_applicants_in_major
 from regis.models import Applicant, LogItem
+from supplements.models import load_supplement_configs_with_instance
 
+PROJECTS_WITH_SUPPLEMENTS = [
+    35,   # med
+]
 
 def load_applicant_round_paid_amount(admission_round):
     round_payments = Payment.objects.filter(admission_round=admission_round)
@@ -803,6 +807,21 @@ def show_applicant(request, project_id, round_id, major_number, rank):
 
     only_bulk_interview_acceptance = (project_round.only_bulk_interview_acceptance) and (not major.is_forced_individual_interview_call)
 
+    supplement_configs = None
+    supplement_instances = None
+    if project.id in PROJECTS_WITH_SUPPLEMENTS:
+        supplement_configs = load_supplement_configs_with_instance(applicant, project)
+        supplement_instances = []
+
+        for config in supplement_configs:
+            if hasattr(config,'supplement_instance'):
+                try:
+                    instance = config.supplement_instance.get_data()
+                except:
+                    instance = {}
+                instance['config'] = config
+                supplement_instances.append(instance)
+
     return render(request,
                   'backoffice/projects/show_applicant.html',
                   { 'project': project,
@@ -830,6 +849,8 @@ def show_applicant(request, project_id, round_id, major_number, rank):
                     'frozen_results': frozen_results,
 
                     'only_bulk_interview_acceptance': only_bulk_interview_acceptance,
+
+                    'supplement_instances': supplement_instances,
 
                     'check_mark_group': check_mark_group,
                     'judge_comments': judge_comments,

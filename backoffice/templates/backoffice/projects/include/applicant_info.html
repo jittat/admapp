@@ -6,7 +6,6 @@
   {% else %}
     <span class="badge badge-danger">ไม่มีข้อมูลการศึกษา</span>
   {% endif %}
-
   {% if personal %}
     <a href="#" class="badge badge-info badge-pill personal-toggle-buttons">แสดงข้อมูลเพิ่มเติม</a>
     <div class="personal-list" style="display: none;">
@@ -19,6 +18,14 @@
     </div>
   {% else %}
     <span class="badge badge-secondary">ไม่มีข้อมูลส่วนตัว</span>
+  {% endif %}
+  <!-- ########## supplements hack ######### -->
+  {% if project.id == 35 %}
+    {% for instance in supplement_instances %}
+      <div>
+	รหัสประจำบ้านผู้สมัคร: {{ instance.applicant_house_code }} | รหัสประจำบ้านผู้ปกครอง: {{ instance.parent_house_code }}
+      </div>
+    {% endfor %}
   {% endif %}
 </div>
 <script>
