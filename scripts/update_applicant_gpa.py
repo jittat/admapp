@@ -4,6 +4,7 @@ bootstrap()
 import sys
 
 from regis.models import Applicant
+from regis.models import LogItem
 
 def main():
     fname = sys.argv[1]
@@ -25,6 +26,8 @@ def main():
         edu.save()
 
         print(a,old_gpa,gpa)
+
+        LogItem.create(f'Batch update GPA from {old_gpa} to {gpa}', a)
         
         counter += 1
         
