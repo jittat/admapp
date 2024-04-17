@@ -11,6 +11,10 @@ def main():
     score_filename = sys.argv[1]
     exam_type = sys.argv[2]
 
+    if exam_type not in ['tgattpat','alevel','extra']:
+        print('ERROR unknown exam types', exam_type)
+        quit()
+
     counter = 0
     with open(score_filename) as csvfile:
         reader = csv.reader(csvfile, delimiter=',')
