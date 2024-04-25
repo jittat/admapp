@@ -5,49 +5,7 @@ import sys
 import json
 
 from appl.models import AdmissionProject, AdmissionRound, ProjectApplication, AdmissionResult, PersonalProfile
-
-def load_tcas_data(filename):
-    lines = open(filename).readlines()
-
-    count = len(lines) // 2
-
-    tcas_data = {}
-    
-    for i in range(count):
-        nat_id = lines[i*2].strip()
-        data = json.loads(lines[i*2+1].strip())
-
-        if len(data) == 0:
-             tcas_data[nat_id] = { 'status': 'missing' }
-             continue
-
-        names = data[0]['studenT_NAME'].split()
-        tcas_data[nat_id] = {
-            'status': 'found',
-            'prefix': names[0],
-            'first_name': names[1],
-            'last_name': ' '.join(names[2:]), 
-        }
-        
-    return tcas_data
-
-def load_major_map(map_files):
-    import csv
-    
-    major_map = {}
-    for f in map_files:
-        with open(f) as csvfile:
-            reader = csv.DictReader(csvfile)
-            for row in reader:
-                project_number = int(row['project'])
-                major_number = int(row['number'])
-                if project_number not in major_map:
-                    major_map[project_number] = {}
-                if major_number not in major_map[project_number]:
-                    major_map[project_number][major_number] = []
-
-                major_map[project_number][major_number].append(row)
-    return major_map
+from regis.models import CuptUpdatedName
 
 def print_csv_line(applicant, application, personal_profile, app_date, cupt_major,
                    app_type, tcas_id, ranking, applicant_status, interview_description,
@@ -108,38 +66,14 @@ def get_admission_result(application,
     else:
         return results[0]
 
-MAJOR_MAP = {
-    #1:{
-    #    100: [
-    #        '10020118620101A,A',
-    #        '10020118620101A,B',
-    #    ],
-    #},
-    #2:{
-    #    40: ['10020107611106A,'],
-    #},
-}
-    
+
 def main():
     project_id = sys.argv[1]
     round_id = sys.argv[2]
+    app_type = sys.argv[3]
 
-    if (len(sys.argv) >= 4) and (not sys.argv[3].startswith('-')):
-        tcas_data_filename = sys.argv[3]
-        tcas_data = load_tcas_data(tcas_data_filename)
-    else:
-        tcas_data = {}
-
-    if (len(sys.argv) >= 5) and (not sys.argv[4].startswith('-')):
-        update_json_filename = sys.argv[4]
-        update_data = json.loads(open(update_json_filename).read())
-    else:
-        update_data = {}
-
-    #major_map_files = [f for f in sys.argv[4:] if not f.startswith('--')]
-    #major_map = load_major_map(major_map_files)
-
-    major_map = MAJOR_MAP
+    if app_type.startswith('-'):
+        raise Exception("Error wrong arguments")
     
     only_accepted = False
     if '--accepted' in sys.argv:
@@ -182,7 +116,6 @@ def main():
               'interview_reason',]
 
     print(','.join(header))
-    app_type = '1_2567'
     
     for app in project_applications:
         if app.has_paid():
@@ -197,38 +130,16 @@ def main():
                 nat = applicant.national_id
 
             is_found = False
-            if nat in tcas_data:
-                if tcas_data[nat]['status'] == 'found':
-                    is_found = True
-                    
-                    applicant.prefix = tcas_data[nat]['prefix']
-                    applicant.first_name = tcas_data[nat]['first_name']
-                    applicant.last_name = tcas_data[nat]['last_name']
 
             profile = applicant.get_personal_profile()
 
-            UPDATE_FIELD_MAP = {
-                'first_name_th': 'first_name',
-                'last_name_th': 'last_name',
-                'first_name_en': 'p.first_name_english',
-                'last_name_en': 'p.last_name_english',
-            }
-            if nat in update_data:
-                for f in update_data[nat]:
-                    update_f = UPDATE_FIELD_MAP[f]
-                    if not update_f.startswith('p'):
-                        if getattr(applicant, update_f) != update_data[nat][f]['original']:
-                            print("MISMATCH", update_data[nat], file=sys.stderr)
-                        setattr(applicant, update_f, update_data[nat][f]['update'])
-                    else:
-                        update_f = update_f.split('.')[1]
-                        if getattr(profile, update_f) != update_data[nat][f]['original']:
-                            print("MISMATCH", update_data[nat], file=sys.stderr)
-                        setattr(profile, update_f, update_data[nat][f]['update'])
-                    
             app_date = '%02d/%02d/%04d' % (app.applied_at.day,
                                            app.applied_at.month,
                                            app.applied_at.year + 543)
+
+            cupt_updated_names = CuptUpdatedName.objects.filter(applicant=applicant).all()
+            for updated_name in cupt_updated_names:
+                updated_name.apply_update(applicant, profile)
             
             for m in majors:
                 result = None
@@ -249,15 +160,6 @@ def main():
                     cupt_majors[0]['program_id'] = cupt_majors[0]['major_id']
                     cupt_majors[0]['major_id'] = ''
                 
-                if (project.id in major_map) and (m.number in major_map[project.id]):
-                    cupt_majors = []
-                    for mj in major_map[project.id][m.number]:
-                        cupt_majors.append({
-                            'program_id': mj.split(',')[0],
-                            'major_id': mj.split(',')[1],
-                            'project_id': project.cupt_code,
-                        })
-
                 applicant_status = '1'
                 if with_applicant_status:
                     if not result:

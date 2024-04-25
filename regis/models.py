@@ -329,3 +329,18 @@ class CuptUpdatedName(models.Model):
     field_name = models.CharField(max_length=20)
     updated_value = models.CharField(max_length=200)
 
+
+    def apply_update(self, applicant, personal_profile):
+        if applicant.id != self.applicant.id:
+            return
+
+        if self.field_name == 'first_name_th':
+            applicant.first_name = self.updated_value
+        elif self.field_name == 'last_name_th':
+            applicant.last_name = self.updated_value
+        elif self.field_name == 'first_name_en':
+            personal_profile.first_name_english = self.updated_value
+        elif self.field_name == 'last_name_en':
+            personal_profile.last_name_english = self.updated_value
+
+    
