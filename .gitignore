@@ -12,9 +12,10 @@ ENV
 *.mo
 main/static/react/node_modules/*
 
+/scripts/private*
 /scripts/notebooks/private*
 /scripts/notebooks/*.csv
-/scripts/notebooks/.ipynb_checkpoints
+.ipynb_checkpoints
 
 /scripts/*.xlsx
 /scripts/*.csv
