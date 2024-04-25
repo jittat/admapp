@@ -39,6 +39,8 @@ def main():
 
             major = majors[0]
             old_slot = major.slots
+            if old_slot != int(items[6]):
+                print('mismatch:', major, old_slot, items[6])
             new_slot = int(items[7])
             major.slots = int(items[7])
             #if major.title != items[5].strip():

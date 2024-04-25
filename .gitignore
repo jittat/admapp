@@ -13,6 +13,7 @@ ENV
 main/static/react/node_modules/*
 
 /scripts/notebooks/private*
+/scripts/notebooks/*.csv
 /scripts/notebooks/.ipynb_checkpoints
 
 /scripts/*.xlsx
