@@ -322,3 +322,10 @@ class LogItem(models.Model):
         return '(%s) %s' % (self.created_at, self.message)
 
 
+class CuptUpdatedName(models.Model):
+    applicant = models.ForeignKey(Applicant,
+                                  on_delete=models.CASCADE)
+
+    field_name = models.CharField(max_length=20)
+    updated_value = models.CharField(max_length=200)
+
