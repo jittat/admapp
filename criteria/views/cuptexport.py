@@ -708,6 +708,10 @@ def update_project_information(project, rows):
                     if option['accepts_male_only'] == 1:
                         r['gender_male_number'] = r['slots']
 
+                if 'custom_values' in option:
+                    for f in option['custom_values']:
+                        r[f] = option['custom_values'][f]
+
 
 def fill_zero_in_rows(rows, zero_fields):
     for r in rows:

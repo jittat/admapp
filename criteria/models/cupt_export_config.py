@@ -1,7 +1,9 @@
 from django.db import models
 
-from appl.models import AdmissionProject
+import json
 
+from appl.models import AdmissionProject
+from django.core.exceptions import ValidationError
 
 class CuptExportConfig(models.Model):
     admission_project = models.ForeignKey(AdmissionProject,
