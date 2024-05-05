@@ -9,7 +9,8 @@
 
       <div class="alert alert-warning">
         <span class="badge badge-danger">คำเตือน</span>
-        สำหรับการรับบางสาขา จำนวนการรับอาจจะกระจายไปในกลุ่มรวมสาขาอื่น ๆ ด้วย กรุณาอย่าลืมพิจารณา
+        สำหรับการรับบางสาขา จำนวนการรับอาจจะกระจายไปในกลุ่มรวมสาขาอื่น ๆ ด้วย กรุณาอย่าลืมพิจารณา<br>
+        <span class="badge badge-danger">จำนวนสละสิทธิ์</span> สำหรับบางสาขาที่มีการสละสิทธิ์ในภายหลังการยืนยันสิทธิ์ (เช่นในรอบที่ 1 ยืนยันสิทธิ์แล้ว แต่มาสละสิทธิ์ก่อนการสมัครในรอบที่ 2) จำนวนดังกล่าวจะอยู่ในส่วนสละสิทธิ์ภายหลัง จำนวนยืนยันล่าสุดจะปรับตามจำนวนสละสิทธ์ภายหลังนี้แล้ว
       </div>
 
       {% if validation_error %}
@@ -28,8 +29,10 @@
             <th>รอบ</th>
             <th>โครงการ</th>
             <th>จน.แผน</th>
-            <th>จน.ยืนยัน</th>
             <th>จน.ปรับ</th>
+            <th>จน.ยืนยัน</th>
+	    <th>สละสิทธ์<br>ภายหลัง</th>
+	    <th>จน.ยืนยัน<br>ปัจจุบัน</th>
             <th></th>
           </tr>
           {% for slot in major_slots %}
@@ -43,11 +46,6 @@
               <td>{{ slot.admission_round_number }}</td>
               <td>{{ slot.admission_project_title }}</td>
               <td>{{ slot.original_slots }}</td>
-              <td>
-                {% if slot.is_final %}
-                  {{ slot.confirmed_slots }}
-                {% endif %}
-              </td>
               <td>
                 {% if not slot.is_final %}
                   {% if slot.is_frozen or slot.is_confirmed_by_faculty %}
@@ -66,6 +64,21 @@
 		  {{ slot.current_slots }}
                 {% endif %}
               </td>
+              {% if slot.is_final %}
+		<td>
+                  {{ slot.confirmed_slots }}
+		</td>
+		<td>
+		  {{ slot.confirmed_canceled_slots }}
+		</td>
+		<td>
+		  {{ slot.latest_confirmed_slots }}
+		</td>
+	      {% else %}
+		<td></td>
+		<td></td>
+		<td></td>
+              {% endif %}
               <td>
                 {% if slot.is_confirmed_by_faculty %}
                   <span class="badge badge-success">ยืนยัน</span>

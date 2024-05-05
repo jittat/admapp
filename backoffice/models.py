@@ -265,6 +265,7 @@ class AdjustmentMajorSlot(models.Model):
     is_confirmed_by_faculty = models.BooleanField(default=False)
 
     confirmed_slots = models.IntegerField(default=0)
+    confirmed_canceled_slots = models.IntegerField(default=0)
     is_final = models.BooleanField(default=False)
 
     class Meta:
@@ -286,6 +287,9 @@ class AdjustmentMajorSlot(models.Model):
 
     def is_adjusted(self):
         return self.original_slots != self.current_slots
+
+    def latest_confirmed_slots(self):
+        return self.confirmed_slots - self.confirmed_canceled_slots
 
     @staticmethod
     def get_adjusted_slots():

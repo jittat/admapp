@@ -8,6 +8,9 @@ from backoffice.models import AdjustmentMajorSlot
 
 def main():
     filename = sys.argv[1]
+
+    cancel_import = (len(sys.argv) >= 3) and (sys.argv[2] == '--cancel')
+    
     counter = 0
 
     confirmed_count = {}
@@ -30,7 +33,10 @@ def main():
             slot = None
 
         if slot != None:
-            slot.confirmed_slots = confirmed_count[cupt_id]
+            if not cancel_import:
+                slot.confirmed_slots = confirmed_count[cupt_id]
+            else:
+                slot.confirmed_canceled_slots = confirmed_count[cupt_id]
             slot.save()
         else:
             print('ERROR', cupt_id, confirmed_count[cupt_id])
