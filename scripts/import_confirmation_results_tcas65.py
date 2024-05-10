@@ -16,6 +16,7 @@ def main():
 
     is_fake = len(sys.argv) <= 3 or (sys.argv[3] != 'real')
 
+    counter2 = 0
     counter = 0
     with open(result_filename, encoding='utf-8-sig') as csvfile:
         reader = csv.DictReader(csvfile)
@@ -29,7 +30,12 @@ def main():
             passport = row['citizen_id']
             decision = row['tcas_status']
             program_id = row['program_id']
+            project_id = row['project_id']
 
+            counter2 += 1
+            if counter2 % 1000 == 0:
+                print(counter2)
+            
             try:
                 applicant = Applicant.objects.get(national_id=nat_id)
             except:
@@ -43,7 +49,8 @@ def main():
                
             if not applicant:
                 if (decision == '3') or (decision == 'ยืนยันสิทธิ์'):
-                    print('Applicant not found', nat_id, passport, row['first_name_th'])
+                    # print('Applicant not found', nat_id, passport, row['first_name_th'])
+                    pass
                 continue
             
             admission_results = AdmissionResult.objects.filter(applicant=applicant).all()
@@ -51,18 +58,23 @@ def main():
 
             if len(accepted_results) != 1:
                 if len(accepted_results) != 0:
-                    print('ERROR accepted results', accepted_results)
+                    # print('ERROR accepted results', accepted_results)
+                    pass
                 continue
 
             admission_result = accepted_results[0]
             application = admission_result.application
 
             if (decision == '3') or (decision == 'ยืนยันสิทธิ์'):
-                admission_result.has_confirmed = True
-                if not is_fake:
-                    admission_result.save()
-                    applicant.confirmed_application = application
-                    applicant.save()
+                admission_project = accepted_results[0].admission_project
+                if admission_project.cupt_code != project_id:
+                    print('>>> PROJECT mismatched', applicant, admission_project, project_id, program_id)
+                else:
+                    admission_result.has_confirmed = True
+                    if not is_fake:
+                        admission_result.save()
+                        applicant.confirmed_application = application
+                        applicant.save()
             else:
                 pass
                 #admission_result.has_confirmed = False
@@ -77,7 +89,8 @@ def main():
 
             counter += 1
             if (decision == '3') or (decision == 'ยืนยันสิทธิ์'):
-                print(counter, decision, admission_result.has_confirmed, applicant)
+                #print(counter, decision, admission_result.has_confirmed, applicant)
+                pass
             
             if counter % 1000 == 0:
                 print(counter)

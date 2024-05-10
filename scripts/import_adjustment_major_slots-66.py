@@ -39,6 +39,8 @@ def main():
                     slot = s
             if not slot:
                 slot = AdjustmentMajorSlot()
+            else:
+                continue
 
             slot.adjustment_major = adj_major
             slot.faculty = adj_major.faculty
