@@ -69,7 +69,7 @@ def compute_cupt_confirmation_stats():
         'counters': [(k,counters[k]) for k in sorted(counters.keys())],
         'queue_count': CuptRequestQueueItem.objects.count(),
     }
-            
+
 @user_login_required
 def index(request):
     user = request.user
@@ -90,7 +90,7 @@ def index(request):
         is_application_admin = True
         admission_projects = AdmissionProject.objects.filter(Q(is_available=True) | Q(is_visible_in_backoffice=True)).all()
         stats['applicant_count'] = Applicant.objects.count()
-        stats['confirmation'] = compute_cupt_confirmation_stats()
+        #stats['confirmation'] = compute_cupt_confirmation_stats()
         stats['project_application_count'] = ProjectApplication.objects.filter(is_canceled=False).count()
 
     admission_projects = sort_admission_projects(admission_projects)
@@ -107,6 +107,18 @@ def index(request):
 
                     'applicant_stats': stats,
                   })
+
+@user_login_required
+def cupt_check_stats(request):
+    user = request.user
+    if not user.is_super_admin:
+        return HttpResponseForbidden()
+    
+    stats  = compute_cupt_confirmation_stats()
+
+    return render(request,
+                  'backoffice/include/cupt_check_stats.html',
+                  { 'stats': stats })
 
 
 @user_login_required

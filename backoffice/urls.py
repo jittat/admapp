@@ -170,4 +170,5 @@ urlpatterns = [
         {"description_id": None},
         name="interviews-list",
     ),
+    path("cupt-check-stats/", views.cupt_check_stats, name="cupt-check-stats"),
 ]

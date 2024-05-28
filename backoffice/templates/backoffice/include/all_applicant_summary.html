@@ -5,8 +5,18 @@
 <ul>
   <li>
     ผู้สมัครที่ลงทะเบียนแล้วทั้งหมด: {{ applicant_stats.applicant_count }} คน ||
-    สถิติการตรวจสอบสิทธิ์จากทปอ. queue: {{ applicant_stats.confirmation.queue_count }},
-    results: {% for k, v in applicant_stats.confirmation.counters %}{{ k }}: {{ v }} &nbsp;&nbsp; {% endfor %}
+    สถิติการตรวจสอบสิทธิ์จากทปอ.: 
+    <span id="cuptCheckStatId">...</span>
+    <a id="cuptCheckRefreshButtonId" href="#" class="btn btn-sm btn-outline-secondary">โหลด</a>
   </li>
   <li>ผู้สมัครที่เลือกโครงการแล้ว: {{ applicant_stats.project_application_count }} คน</li>  
 </ul>
+<script>
+ $('#cuptCheckRefreshButtonId').click(function(){
+   $('#cuptCheckStatId').html('loading...');
+   jQuery.get('{% url 'backoffice:cupt-check-stats' %}', function(data){
+     $('#cuptCheckStatId').html(data);
+   })
+   return false;
+ });
+</script>
