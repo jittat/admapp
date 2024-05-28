@@ -59,3 +59,22 @@
     });
   </script>
 {% endif %}
+
+{% if cupt_confirmations %}
+  <tr>
+    <td>ข้อมูลยืนยันสิทธิ์จากทปอ.</td>
+    <td>
+      <ul>
+	{% for c in cupt_confirmations %}
+	  <li>
+	    Result = {{ c.api_result_code }}
+	    {% if c.has_registered %}ลงทะเบียนแล้ว{% endif %}
+	    {% if c.has_confirmed %}ยืนยันสิทธิ์แล้ว{% endif %}
+	    ({{ c.updated_at }})
+	  </li>
+	{% endfor %}
+      </ul>
+    </td>
+  </tr>
+{% endif %}
+

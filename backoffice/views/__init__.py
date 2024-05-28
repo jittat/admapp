@@ -212,6 +212,8 @@ def show(request, national_id, project_id=None):
         logs = []
         applicant_form = None
 
+    cupt_confirmations = CuptConfirmation.objects.filter(applicant=applicant)
+        
     notice = request.session.pop('notice', None)
         
     return render(request,
@@ -225,6 +227,8 @@ def show(request, national_id, project_id=None):
                     'applications': applications,
                     'payments': payments,
 
+                    'cupt_confirmations': cupt_confirmations,
+                    
                     'logs': logs,
                     'notice': notice,
                   })
