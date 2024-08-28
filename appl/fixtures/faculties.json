@@ -293,7 +293,7 @@
  "model": "appl.faculty",
  "pk": 30,
  "fields": {
-  "title": "โครงการจัดตั้งวิทยาเขตสุพรรณบุรี",
+  "title": "คณะสหวิทยาการจัดการและเทคโนโลยี",
   "campus": 5,
   "ku_code": "",
   "cupt_code": ""
@@ -364,6 +364,16 @@
  "pk": 37,
  "fields": {
   "title": "คณะแพทยศาสตร์",
+  "campus": 1,
+  "ku_code": "",
+  "cupt_code": ""
+ }
+},
+{
+ "model": "appl.faculty",
+ "pk": 38,
+ "fields": {
+  "title": "คณะพยาบาลศาสตร์",
   "campus": 1,
   "ku_code": "",
   "cupt_code": ""
