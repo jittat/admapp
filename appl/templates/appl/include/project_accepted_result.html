@@ -46,43 +46,56 @@
 	      </div>
             </div>
 	  {% endif %}
-
-	  {% if accepted_result.admission_round_id == 2 %}
+	  
+	  {% if accepted_result.admission_round_id == 2 and accepted_result.admission_project_id != 35 %}
 	    <!-- for round 2 -->
 	    <div class="">
 	      <br>
-              <span class="badge badge-info">สำหรับผู้ผ่านการสอบสัมภาษณ์</span> สำหรับกำหนดการต่าง ๆ และการดำเนินการต่อไป สามารถตรวจสอบได้จาก <a href="https://admission.ku.ac.th/kuadm/static/docs/66-TCAS2-clearing-schedule.pdf" target="_blank">เอกสารสำหรับผู้ผ่านการสอบสัมภาษณ์</a> <a href="https://admission.ku.ac.th/kuadm/static/docs/66-TCAS2-clearing-schedule.pdf" class="badge badge-sm badge-primary" target="_blank" rel="noopener noreferrer">ดาวน์โหลด</a><br>
+	      <span class="badge badge-info">สำหรับผู้ผ่านการสอบสัมภาษณ์</span> สำหรับกำหนดการต่าง ๆ และการดำเนินการต่อไป สามารถตรวจสอบได้จาก <a href="https://admission.ku.ac.th/kuadm/static/docs/67-TCAS2-clearing-schedule.pdf" target="_blank">เอกสารสำหรับผู้ผ่านการสอบสัมภาษณ์</a> <a href="https://admission.ku.ac.th/kuadm/static/docs/67-TCAS2-clearing-schedule.pdf" class="badge badge-sm badge-primary" target="_blank" rel="noopener noreferrer">ดาวน์โหลด</a><br>
 	      <br>
 	      
 	      <b>กำหนดการยืนยันสิทธิ์:</b>
 	      <ul>
 		<li>
-		  4 - 5 พ.ค. 2566 ยืนยันสิทธิ์ในระบบ TCAS 
+		  2 - 3 พ.ค. 2567 ยืนยันสิทธิ์ในระบบ TCAS
 		  ที่ <a href="https://www.mytcas.com" target="_blank" rel="noopener noreferrer">https://www.mytcas.com</a>
 		</li>
 		<li>
-		  6 พ.ค. 2566 สละสิทธิ์ในระบบ TCAS 
+		  4 พ.ค. 2567 สละสิทธิ์ในระบบ TCAS
 		  ที่ <a href="https://www.mytcas.com" target="_blank" rel="noopener noreferrer">https://www.mytcas.com</a>
 		</li>
 		<li>
-		  9 พ.ค. 2566 ประกาศรายชื่อผู้ยืนยันสิทธิ์เข้าศึกษา รอบที่ 2 (ทุกโครงการ) พร้อมแจ้งกำหนดการขึ้นทะเบียนเป็นนิสิตใหม่
+		  7 พ.ค. 2567 ประกาศรายชื่อผู้ยืนยันสิทธิ์เข้าศึกษา รอบที่ 2 (ทุกโครงการ) พร้อมแจ้งกำหนดการขึ้นทะเบียนเป็นนิสิตใหม่
 		</li>
 	      </ul>
 	      
-              อ่านรายละเอียดและขั้นตอนทั้งหมดที่ <a href="https://admission.ku.ac.th/kuadm/static/docs/66-TCAS2-clearing-schedule.pdf" target="_blank">เอกสารสำหรับผู้ผ่านการสอบสัมภาษณ์</a> <a href="https://admission.ku.ac.th/kuadm/static/docs/66-TCAS2-clearing-schedule.pdf" class="badge badge-sm badge-primary" target="_blank" rel="noopener noreferrer">ดาวน์โหลด</a><br>
+	      อ่านรายละเอียดและขั้นตอนทั้งหมดที่ <a href="https://admission.ku.ac.th/kuadm/static/docs/67-TCAS2-clearing-schedule.pdf" target="_blank">เอกสารสำหรับผู้ผ่านการสอบสัมภาษณ์</a> <a href="https://admission.ku.ac.th/kuadm/static/docs/67-TCAS2-clearing-schedule.pdf" class="badge badge-sm badge-primary" target="_blank" rel="noopener noreferrer">ดาวน์โหลด</a><br>
 	      
 	      <div class="mt10">
-		ฝ่ายรับสมัครและพัฒนาการรับเข้าศึกษา ใคร่ขอรบกวนเวลาผู้สมัครช่วยทำแบบประเมินความพึงพอใจที่มีต่อการรับบุคคลเข้าศึกษา โดย<a href="https://kasets.art/lyN1G2" target="_blank" rel="noopener noreferrer">กรอกแบบสอบถามนี้ https://kasets.art/lyN1G2</a>  ทีมงานขอขอบคุณทุกท่าน
+		ฝ่ายรับสมัครและพัฒนาการรับเข้าศึกษา ใคร่ขอรบกวนเวลาผู้สมัครช่วยทำแบบประเมินความพึงพอใจที่มีต่อการรับบุคคลเข้าศึกษา โดย<a href="https://kasets.art/GIBCrH" target="_blank" rel="noopener noreferrer">กรอกแบบสอบถามนี้ https://kasets.art/GIBCrH</a>  ทีมงานขอขอบคุณทุกท่าน
 	      </div>
             </div>
 	  {% endif %}
 
+          {% if accepted_result.admission_project_id == 35 %}
+            <div>
+              <br>
+              <span class="badge badge-danger">ประกาศเกี่ยวกับการยืนยันสิทธิ์</span>
+              ผู้ผ่านการคัดเลือก พ.บ. โครงการส่งเสริมโอกาสศึกษาต่อในคณะแพทยศาสตร์ มหาวิทยาลัยเกษตรศาสตร์ รอบที่ 2
+              <b>กรุณากรอกข้อมูลการยืนยันสิทธิ์/และไม่ใช้สิทธิ์  ภายในวันที่ 27 เมษายน 2567 เวลา 16.00 น.</b>  
+              โดยยืนยันเพิ่มเติมตาม link ที่ส่งให้ทาง email ของผู้ผ่านการคัดเลือกเป็นรายบุคคล
+	      
+              <div class="mt10">
+		ฝ่ายรับสมัครและพัฒนาการรับเข้าศึกษา ใคร่ขอรบกวนเวลาผู้สมัครช่วยทำแบบประเมินความพึงพอใจที่มีต่อการรับบุคคลเข้าศึกษา โดย<a href="https://kasets.art/GIBCrH" target="_blank" rel="noopener noreferrer">กรอกแบบสอบถามนี้ https://kasets.art/GIBCrH</a>  ทีมงานขอขอบคุณทุกท่าน
+              </div>
+            </div>
+          {% endif %}
 	  
 	  {% if accepted_result.admission_round_id == 4 %}
 	    <!-- for round 4 -->
 	    <div class="">
 	      <br>
-              <span class="badge badge-info">สำหรับผู้ผ่านการสอบสัมภาษณ์</span> สำหรับกำหนดการต่าง ๆ และการดำเนินการต่อไป สามารถตรวจสอบได้จาก <a href="https://admission.ku.ac.th/kuadm/static/docs/67-TCAS4-clearing-schedule.pdf" target="_blank">เอกสารสำหรับผู้ผ่านการสอบสัมภาษณ์</a> <a href="https://admission.ku.ac.th/kuadm/static/docs/67-TCAS4-clearing-schedule.pdf" class="badge badge-sm badge-primary" target="_blank" rel="noopener noreferrer">ดาวน์โหลด</a><br>
+	      <span class="badge badge-info">สำหรับผู้ผ่านการสอบสัมภาษณ์</span> สำหรับกำหนดการต่าง ๆ และการดำเนินการต่อไป สามารถตรวจสอบได้จาก <a href="https://admission.ku.ac.th/kuadm/static/docs/67-TCAS4-clearing-schedule.pdf" target="_blank">เอกสารสำหรับผู้ผ่านการสอบสัมภาษณ์</a> <a href="https://admission.ku.ac.th/kuadm/static/docs/67-TCAS4-clearing-schedule.pdf" class="badge badge-sm badge-primary" target="_blank" rel="noopener noreferrer">ดาวน์โหลด</a><br>
 	      <br>
 	      
 	      <b>กำหนดการยืนยันสิทธิ์:</b>
@@ -100,8 +113,8 @@
 		  11 - 13 มิ.ย. 2567 ขึ้นทะเบียนเป็นนิสิตใหม่ผ่านระบบออนไลน์
 		</li>
 	      </ul>
-	      
-              อ่านรายละเอียดและขั้นตอนทั้งหมดที่ <a href="https://admission.ku.ac.th/kuadm/static/docs/67-TCAS4-clearing-schedule.pdf" target="_blank">เอกสารสำหรับผู้ผ่านการสอบสัมภาษณ์</a> <a href="https://admission.ku.ac.th/kuadm/static/docs/67-TCAS4-clearing-schedule.pdf" class="badge badge-sm badge-primary" target="_blank" rel="noopener noreferrer">ดาวน์โหลด</a><br>
+
+	      อ่านรายละเอียดและขั้นตอนทั้งหมดที่ <a href="https://admission.ku.ac.th/kuadm/static/docs/67-TCAS4-clearing-schedule.pdf" target="_blank">เอกสารสำหรับผู้ผ่านการสอบสัมภาษณ์</a> <a href="https://admission.ku.ac.th/kuadm/static/docs/67-TCAS4-clearing-schedule.pdf" class="badge badge-sm badge-primary" target="_blank" rel="noopener noreferrer">ดาวน์โหลด</a><br>
 	      
 	      <div class="mt10">
 		ฝ่ายรับสมัครและพัฒนาการรับเข้าศึกษา ใคร่ขอรบกวนเวลาผู้สมัครช่วยทำแบบประเมินความพึงพอใจที่มีต่อการรับบุคคลเข้าศึกษา โดย<a href="https://kasets.art/pI3v03" target="_blank" rel="noopener noreferrer">กรอกแบบสอบถามนี้ https://kasets.art/pI3v03</a>  ทีมงานขอขอบคุณทุกท่าน
