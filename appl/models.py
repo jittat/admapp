@@ -141,6 +141,15 @@ class AdmissionProject(models.Model):
     is_criteria_edit_allowed = models.BooleanField(default=True,
                                                    verbose_name='อนุญาตให้ผู้ดูแลโครงการแก้ไขเงื่อนไขการรับ')
 
+    is_custom_interview_date_allowed = models.BooleanField(default=False,
+                                                           verbose_name='อนุญาติให้เลือกวันสัมภาษณ์ได้')
+    custom_interview_start_date = models.DateField(verbose_name='วันสัมภาษณ์วันแรก',
+                                                   blank=True,
+                                                   null=True)
+    custom_interview_end_date = models.DateField(verbose_name='วันสัมภาษณ์วันสุดท้าย',
+                                                 blank=True,
+                                                 null=True)
+    
     max_num_selections = models.IntegerField(default=1,
                                              verbose_name='จำนวนสาขาที่เลือกได้')
 

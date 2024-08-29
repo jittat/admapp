@@ -57,6 +57,10 @@ class AdmissionCriteria(models.Model):
 
     curriculum_majors_json = models.TextField(blank=True)
 
+    interview_date = models.DateField(verbose_name='วันสัมภาษณ์',
+                                      blank=True,
+                                      null=True)
+    
     def get_all_score_criteria(self, criteria_type):
         if getattr(self, 'cached_score_criteria', None) is None:
             self.cached_score_criteria = self.scorecriteria_set.all()

@@ -1,0 +1,16 @@
+{% if project.is_custom_interview_date_allowed %}
+  <div class="form-group">
+    <label for="interviewDateInput">วันที่สัมภาษณ์</label>
+    <select class="custom-select" name="custom_interview_date">
+      <option
+	value="0"
+	{% if interview_date %}{% if interview_date == None %}selected{% endif %}{% endif %}>ไม่มีสัมภาษณ์</option>
+      <option
+	value="{{ project.custom_interview_start_date|date:"Y-m-d" }}"
+	{% if interview_date %}{% if interview_date == project.custom_interview_start_date %}selected{% endif %}{% endif %}>{{ project.custom_interview_start_date }}</option>
+      <option
+	value="{{ project.custom_interview_end_date|date:"Y-m-d" }}"
+	{% if interview_date %}{% if interview_date == project.custom_interview_end_date %}selected{% endif %}{% endif %}>{{ project.custom_interview_end_date }}</option>
+    </select>
+  </div>
+{% endif %}

@@ -224,6 +224,23 @@ def project_report(request, project_id, round_id):
                    })
 
 
+def extract_custom_interview_date(post_request):
+    from datetime import date
+
+    custom_interview_date = None
+    if 'custom_interview_date' in post_request:
+        if post_request['custom_interview_date']!='0':
+            custom_interview_date = date.fromisoformat(post_request['custom_interview_date'])
+    return custom_interview_date
+
+
+def extract_additional_interview_condition(post_request):
+    additional_interview_condition = ''
+    if 'additional_interview_condition' in post_request:
+        additional_interview_condition = post_request['additional_interview_condition'].strip()
+    return additional_interview_condition
+
+
 def upsert_admission_criteria(post_request, project=None, faculty=None, admission_criteria=None, user=None):
     score_criteria_dict = dict()
     selected_major_dict = dict()
@@ -258,9 +275,8 @@ def upsert_admission_criteria(post_request, project=None, faculty=None, admissio
                 value = Decimal(value)
             selected_major_dict[data_key][splitted_keys[2]] = value
 
-    additional_interview_condition = ''
-    if 'additional_interview_condition' in post_request:
-        additional_interview_condition = post_request['additional_interview_condition'].strip()
+    additional_interview_condition = extract_additional_interview_condition(post_request)
+    custom_interview_date = extract_custom_interview_date(post_request)
 
     if (len(selected_major_dict) == 0) and (len(score_criteria_dict) == 0):
         raise Http404("Error ")
@@ -271,6 +287,7 @@ def upsert_admission_criteria(post_request, project=None, faculty=None, admissio
             version = 1
             admission_criteria = AdmissionCriteria(
                 additional_interview_condition=additional_interview_condition,
+                interview_date=custom_interview_date,
                 admission_project=project,
                 version=version,
                 faculty=faculty)
@@ -287,6 +304,7 @@ def upsert_admission_criteria(post_request, project=None, faculty=None, admissio
                 additional_condition=old_admission_criteria.additional_condition,
                 accepted_student_curriculum_type_flags=old_admission_criteria.accepted_student_curriculum_type_flags,
                 additional_interview_condition=additional_interview_condition,
+                interview_date=custom_interview_date,
                 version=version)
             admission_criteria.save()
 
@@ -535,6 +553,7 @@ def render_edit_criteria(admission_criteria, admission_round, faculty, majors, p
                    'data_selected_majors': json.dumps(data_selected_majors).replace("'","&#39;"),
 
                    'additional_interview_condition': admission_criteria.additional_interview_condition,
+                   'interview_date': admission_criteria.interview_date,
                    })
 
 

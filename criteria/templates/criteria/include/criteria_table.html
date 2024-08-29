@@ -6,6 +6,11 @@
 	จำนวนรับ
 	{% if project.is_custom_add_limit_criteria %}<br><small>(add limit)</small>{% endif %}
       </th>
+      {% if project.is_custom_interview_date_allowed %}
+	<th>
+	  สัมภาษณ์
+	</th>
+      {% endif %}
       <th>เงื่อนไขขั้นต่ำ</th>
       <th>เกณฑ์การพิจารณา</th>
       <th>
@@ -56,6 +61,15 @@
 	  <td></td>
 	{% endif %}
 
+	{% if project.is_custom_interview_date_allowed %}
+	  <td rowspan="{{ major_count }}">
+	    {% if criterias.0.interview_date == None %}
+	      -
+	    {% else %}
+	      {{ criterias.0.interview_date|date:"j M" }}
+	    {% endif %}
+	  </td>
+	{% endif %}
 	{% with criterias.0 as admission_criteria %}
 	  {% include "criteria/include/criteria_table_scorecriteria_cols.html" %}
 	{% endwith %}
