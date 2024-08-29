@@ -193,7 +193,7 @@
  "model": "appl.faculty",
  "pk": 20,
  "fields": {
-  "title": "คณะวิทยาศาสตร์การกีฬา",
+  "title": "คณะวิทยาศาสตร์การกีฬาและสุขภาพ",
   "campus": 2,
   "ku_code": "",
   "cupt_code": ""
