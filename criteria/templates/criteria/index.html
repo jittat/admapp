@@ -23,11 +23,17 @@
         {% endif %}
         {% endif %}
         <div class="alert alert-info">
+	  <div>
             เลือกสาขาวิชาที่เปิดรับในโครงการ{{ project.title }}
             <a class="btn btn-sm btn-info"
                href="{% url 'backoffice:criteria:curriculum-majors' project.id admission_round.id %}{{ faculty_url_query }}">เลือกสาขาวิชา</a>
             <a class="btn btn-sm btn-secondary"
                href="{% url 'backoffice:criteria:list-curriculum-majors' %}{{ faculty_url_query }}">แสดงรายการสาขาวิชาที่เลือกเปิด</a>
+	  </div>
+	  {% if project.is_custom_interview_date_allowed %}
+	    {% include "criteria/include/faculty_interview_date_form.html" %}
+	    
+	  {% endif %}
         </div>
         {% if notice %}
         <div class="alert alert-success">{{ notice }}</div>

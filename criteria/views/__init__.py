@@ -12,7 +12,7 @@ from appl.models import Faculty
 from backoffice.decorators import user_login_required
 from backoffice.views.permissions import can_user_view_project
 from criteria.models import AdmissionCriteria, ScoreCriteria, CurriculumMajorAdmissionCriteria, \
-    MajorCuptCode, CurriculumMajor
+    MajorCuptCode, CurriculumMajor, AdmissionProjectFacultyInterviewDate
 
 
 def is_number(string):
@@ -175,6 +175,8 @@ def project_index(request, project_id, round_id):
 
     faculty, faculty_choices = extract_user_faculty(request, user)
 
+    faculty_interview_date = AdmissionProjectFacultyInterviewDate.get_from(project, faculty)
+    
     admission_criterias = AdmissionCriteria.objects.filter(admission_project_id=project_id,
                                                            faculty_id=faculty.id,
                                                            is_deleted=False)
@@ -190,6 +192,9 @@ def project_index(request, project_id, round_id):
                    'faculty': faculty,
                    'faculty_url_query': '' if faculty_choices == [] else '?faculty_id=' + str(faculty.id),
                    'faculty_choices': faculty_choices,
+
+                   'faculty_interview_date': faculty_interview_date,
+                   
                    'admission_criteria_rows': admission_criteria_rows,
                    'notice': notice,
                    'free_curriculum_majors': free_curriculum_majors,
@@ -687,6 +692,43 @@ def update_accepted_graduate_year(request, project_id, round_id, acid, ytypeid):
                    'admission_criteria': admission_criteria,
                    })
 
+
+@user_login_required
+def update_faculty_interview_date(request, project_id, round_id, faculty_id):
+    user = request.user
+    project = get_object_or_404(AdmissionProject, pk=project_id)
+    admission_round = get_object_or_404(AdmissionRound, pk=round_id)
+    faculty = get_object_or_404(Faculty, pk=faculty_id) 
+
+    if not can_user_view_project(user, project):
+        return redirect_to_project_index(project_id, round_id)
+    
+    user_faculty, faculty_choices = extract_user_faculty(request, user)
+    if not user.profile.is_admission_admin and ((user_faculty == None) or (faculty.id != user_faculty.id)):
+        return redirect_to_project_index(project_id, round_id)
+
+    if request.method != 'POST':
+        return HttpResponseForbidden()
+
+    faculty_interview_date = AdmissionProjectFacultyInterviewDate.get_from(project, faculty)
+
+    custom_interview_date = request.POST.get('custom_interview_date','1')
+    if custom_interview_date == '1':
+        faculty_interview_date.is_major_specific = True
+        faculty_interview_date.interview_date = None
+    elif custom_interview_date == '0':
+        faculty_interview_date.is_major_specific = False
+        faculty_interview_date.interview_date = None
+    else:
+        from datetime import date
+        faculty_interview_date.is_major_specific = False
+        faculty_interview_date.interview_date = date.fromisoformat(custom_interview_date)
+
+    faculty_interview_date.save()
+        
+    faculty_url_query = '' if faculty_choices == [] else '?faculty_id=' + str(faculty.id)
+
+    return redirect_to_project_index_with_query(faculty_url_query, project_id, round_id)
 
 @user_login_required
 def select_curriculum_majors(request, project_id, round_id, code_id=0, value='none'):

@@ -197,3 +197,38 @@ class AdmissionCriteria(models.Model):
         else:
             accepted_years.append(year)
         self.accepted_graduate_year_flags = ','.join([str(t) for t in sorted(accepted_years)])
+
+
+class AdmissionProjectFacultyInterviewDate(models.Model):
+    admission_project = models.ForeignKey(AdmissionProject,
+                                          on_delete=models.CASCADE)
+    faculty = models.ForeignKey(Faculty,
+                                on_delete=models.CASCADE)
+
+    is_major_specific = models.BooleanField(default=True,
+                                            verbose_name='ระบุแยกตามสาขา')
+    interview_date = models.DateField(verbose_name='วันสัมภาษณ์',
+                                      blank=True,
+                                      null=True)
+    
+    class Meta:
+        unique_together = [['admission_project','faculty']]
+
+        
+    @staticmethod
+    def get_default(admission_project, faculty):
+        return AdmissionProjectFacultyInterviewDate(admission_project=admission_project,
+                                                    faculty=faculty,
+                                                    is_major_specific=True,
+                                                    interview_date=None)
+
+    @staticmethod
+    def get_from(admission_project, faculty):
+        dates = AdmissionProjectFacultyInterviewDate.objects.filter(admission_project=admission_project,
+                                                                    faculty=faculty).all()
+        if len(dates)!=0:
+            return dates[0]
+        else:
+            return AdmissionProjectFacultyInterviewDate.get_default(admission_project,
+                                                                    faculty)
+    

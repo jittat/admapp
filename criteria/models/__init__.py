@@ -1,4 +1,5 @@
 from .admission_criteria import AdmissionCriteria
+from .admission_criteria import AdmissionProjectFacultyInterviewDate
 from .cupt_export_config import CuptExportConfig, CuptExportLog
 from .curriculum_major_admission_criteria import CurriculumMajorAdmissionCriteria
 from .imported_criteria_JSON import ImportedCriteriaJSON

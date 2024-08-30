@@ -1,0 +1,51 @@
+<div class="mt-1">
+  <b>การกำหนดวันสัมภาษณ์สำหรับสาขาในคณะ:</b>
+  {% if faculty_interview_date.is_major_specific %}
+    กำหนดแยกในแต่ละเงื่อนไขการรับ
+  {% else %}
+    {% if faculty_interview_date.interview_date == None %}
+      ไม่สัมภาษณ์ทุกสาขา
+    {% else %}
+      {{ faculty_interview_date.interview_date }} (วันเดียวกันทุกสาขา)
+    {% endif %}
+  {% endif %}
+  <a class="btn btn-sm btn-outline-info" id="facultyInterviewDateFormToggleId">แก้ไข</a>
+  <div id="facultyInterviewDateFormId" style="display:none;">
+    <form method="post" action="{% url 'backoffice:criteria:update-faculty-interview-date' project.id admission_round.id faculty.id %}" class="form-group row">
+      {% csrf_token %}
+      <div class="col-sm-2 text-right">
+	<label>การกำหนดวันสัมภาษณ์</label>
+      </div>
+      <div class="col-sm-4">
+	<select class="custom-select" name="custom_interview_date">
+	  <option
+	    value="1"
+	  >กำหนดแยกตามแต่ละเงื่อนไข</option>
+	  <option
+	    value="0"
+	    {% if not faculty_interview_date.is_major_specific %}{% if faculty_interview_date.interview_date == None %}selected{% endif %}{% endif %}>ไม่มีสัมภาษณ์ทุกสาขา</option>
+	  <option
+	    value="{{ project.custom_interview_start_date|date:"Y-m-d" }}"
+	    {% if not faculty_interview_date.is_major_specific %}{% if faculty_interview_date.interview_date == project.custom_interview_start_date %}selected{% endif %}{% endif %}>{{ project.custom_interview_start_date }} ทุกสาขา</option>
+	  {% if project.custom_interview_start_date != project.custom_interview_end_date %}
+	    <option
+	      value="{{ project.custom_interview_end_date|date:"Y-m-d" }}"
+	      {% if not faculty_interview_date.is_major_specific %}{% if faculty_interview_date.interview_date == project.custom_interview_end_date %}selected{% endif %}{% endif %}>{{ project.custom_interview_end_date }} ทุกสาขา</option>
+	  {% endif %}
+	</select>
+      </div>
+      <div class="col-sm-1">
+	<input class="btn btn-sm btn-info" type="submit" value="จัดเก็บ">
+      </div>
+    </form>
+  </div>
+</div>
+<script>
+ $(function(){
+   $('#facultyInterviewDateFormToggleId').click(function(){
+     $('#facultyInterviewDateFormId').slideDown();
+     $('#facultyInterviewDateFormToggleId').hide();
+     return false;
+   });
+ });
+</script>

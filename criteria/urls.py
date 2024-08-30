@@ -32,6 +32,8 @@ urlpatterns = [
          views.update_accepted_curriculum_type, name='update-accepted-curriculum-type'),
     path('<int:project_id>/<int:round_id>/year/<int:acid>/<int:ytypeid>/',
          views.update_accepted_graduate_year, name='update-accepted-graduate-year'),
+    path('<int:project_id>/<int:round_id>/<int:faculty_id>/interview-date/',
+         views.update_faculty_interview_date, name='update-faculty-interview-date'),
 
     path('num-report/<int:round_id>/',
          views.report_num_slots, name='report-num-slots'),
