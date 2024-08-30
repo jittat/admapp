@@ -741,6 +741,8 @@ def select_curriculum_majors(request, project_id, round_id, code_id=0, value='no
                    })
 
 
+from backoffice.views import sort_admission_projects
+
 @user_login_required
 def list_curriculum_majors(request):
     user = request.user
@@ -755,6 +757,8 @@ def list_curriculum_majors(request):
             is_visible_in_backoffice=True).all()
     else:
         admission_projects = AdmissionProject.objects.filter(is_visible_in_backoffice=True)
+
+    admission_projects = sort_admission_projects(admission_projects)
 
     for p in admission_projects:
         p.adm_rounds = set([r.id for r in p.admission_rounds.all()])

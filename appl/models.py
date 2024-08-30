@@ -168,6 +168,9 @@ class AdmissionProject(models.Model):
     is_auto_select_single_major = models.BooleanField(default=False,
                                                       verbose_name='มีสาขาเดียวและเลือกสาขานั้นโดยอัตโนมัติ')
     
+    display_rank = models.IntegerField(default=0,
+                                       verbose_name='สำหรับใช้เรียงรายการ')
+
     # basic admission criteria (student types / school types)
 
     SCHOOL_TYPE_CHOICES = [
