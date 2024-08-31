@@ -1,5 +1,5 @@
 {% if project.is_custom_interview_date_allowed %}
-  <div class="form-group">
+  <div class="form-group {% if not faculty_interview_date.is_major_specific %}d-none{% endif %}">
     <label for="interviewDateInput">วันที่สัมภาษณ์</label>
     <select class="custom-select" name="custom_interview_date">
       <option

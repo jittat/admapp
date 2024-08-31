@@ -440,6 +440,9 @@ def render_create_criteria(admission_round, faculty, majors, project, request):
     # TODO: remove component weights (no more TCAS round 3 - Admission 2)
     uses_component_weights = False
     component_weight_type_choices = CurriculumMajor.get_component_weight_type_choices_unique(majors)
+
+    faculty_interview_date = AdmissionProjectFacultyInterviewDate.get_from(project, faculty)
+    
     return render(request,
                   'criteria/create.html',
                   {'project': project,
@@ -456,6 +459,7 @@ def render_create_criteria(admission_round, faculty, majors, project, request):
                    'data_scoring': json.dumps(data_scoring),
                    'data_selected_majors': json.dumps(data_selected_majors),
 
+                   'faculty_interview_date': faculty_interview_date,
                    'additional_interview_condition': additional_interview_condition,
                    })
 
@@ -540,6 +544,9 @@ def render_edit_criteria(admission_criteria, admission_round, faculty, majors, p
     # TODO: remove component weights (no more TCAS round 3 - Admission 2)
     uses_component_weights = False
     component_weight_type_choices = CurriculumMajor.get_component_weight_type_choices_unique(majors)
+
+    faculty_interview_date = AdmissionProjectFacultyInterviewDate.get_from(project, faculty)
+    
     return render(request,
                   'criteria/edit.html',
                   {'project': project,
@@ -557,6 +564,7 @@ def render_edit_criteria(admission_criteria, admission_round, faculty, majors, p
                    'data_scoring': json.dumps(data_scoring).replace("'","&#39;"),
                    'data_selected_majors': json.dumps(data_selected_majors).replace("'","&#39;"),
 
+                   'faculty_interview_date': faculty_interview_date,
                    'additional_interview_condition': admission_criteria.additional_interview_condition,
                    'interview_date': admission_criteria.interview_date,
                    })

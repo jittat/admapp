@@ -63,10 +63,18 @@
 
 	{% if project.is_custom_interview_date_allowed %}
 	  <td rowspan="{{ major_count }}">
-	    {% if criterias.0.interview_date == None %}
-	      -
+	    {% if faculty_interview_date.is_major_specific %}
+	      {% if criterias.0.interview_date == None %}
+		ไม่มี
+	      {% else %}
+		{{ criterias.0.interview_date|date:"j M" }}
+	      {% endif %}
 	    {% else %}
-	      {{ criterias.0.interview_date|date:"j M" }}
+	      {% if faculty_interview_date.interview_date == None %}
+		ไม่มี
+	      {% else %}
+		{{ faculty_interview_date.interview_date|date:"j M" }}
+	      {% endif %}
 	    {% endif %}
 	  </td>
 	{% endif %}
@@ -135,6 +143,9 @@
         {{major.cupt_code}}
       </td>
       <td></td>
+      {% if project.is_custom_interview_date_allowed %}
+	<td></td>
+      {% endif %}
       <td colspan="2">
         (ยังไม่มีการกำหนดเกณฑ์)
       </td>
