@@ -35,6 +35,15 @@ EXCLUDED_TAGS = [
             'GPAX',
         ]
     },
+    {
+        'conditions': {
+            'project_ids': [28],
+        },
+        'excluded_tags': [
+            'GPAX_4_SEMESTER',
+            'GPAX_5_SEMESTER',
+        ]
+    },
 ]
 
 def exclude_tags(options, admission_project):
@@ -65,7 +74,6 @@ def exclude_tags(options, admission_project):
     updated_options['test_tags'] = [tag for tag in options['test_tags']
                                     if tag['score_type'] not in removed_tags]
 
-    print(removed_tags,updated_options)
     return updated_options
     
 @register.simple_tag
