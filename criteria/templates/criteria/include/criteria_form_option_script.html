@@ -1,6 +1,6 @@
 {% load criteria_tags %}
 <script>
-  {% criteria_options_as_js %}
+  {% criteria_options_as_js project %}
 
   {% if not uses_component_weights %}
     const requiredTags = general_required_tags.concat(test_tags)

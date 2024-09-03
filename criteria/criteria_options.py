@@ -30,7 +30,7 @@ CRITERIA_OPTIONS = {
     'general_required_tags': [
         {
             "score_type": "GPAX_4_SEMESTER",
-            "description": "ผลการเรียนเฉลี่ยสะสม (GPAX) 4 ภาคเรียน (รอบ 1/1)", "unit": ""
+            "description": "ผลการเรียนเฉลี่ยสะสม (GPAX) 4 ภาคเรียน", "unit": ""
         },
         {
             "score_type": "GPAX_5_SEMESTER",
@@ -76,7 +76,7 @@ CRITERIA_OPTIONS = {
     'general_scoring_tags': [
         {
             "score_type": "GPAX_4_SEMESTER",
-            "description": "ผลการเรียนเฉลี่ยสะสม (GPAX) 4 ภาคเรียน (รอบ 1/1)", "unit": ""
+            "description": "ผลการเรียนเฉลี่ยสะสม (GPAX) 4 ภาคเรียน", "unit": ""
         },
         {
             "score_type": "GPAX_5_SEMESTER",
