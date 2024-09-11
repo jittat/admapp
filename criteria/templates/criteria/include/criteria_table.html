@@ -62,21 +62,23 @@
 	{% endif %}
 
 	{% if project.is_custom_interview_date_allowed %}
-	  <td rowspan="{{ major_count }}">
-	    {% if faculty_interview_date.is_major_specific %}
-	      {% if criterias.0.interview_date == None %}
-		ไม่มี
+	  {% with criterias.0.faculty_interview_date as faculty_interview_date %}
+	    <td rowspan="{{ major_count }}">
+	      {% if faculty_interview_date.is_major_specific %}
+		{% if criterias.0.interview_date == None %}
+		  ไม่มี
+		{% else %}
+		  {{ criterias.0.interview_date|date:"j M" }}
+		{% endif %}
 	      {% else %}
-		{{ criterias.0.interview_date|date:"j M" }}
+		{% if faculty_interview_date.interview_date == None %}
+		  ไม่มี
+		{% else %}
+		  {{ faculty_interview_date.interview_date|date:"j M" }}
+		{% endif %}
 	      {% endif %}
-	    {% else %}
-	      {% if faculty_interview_date.interview_date == None %}
-		ไม่มี
-	      {% else %}
-		{{ faculty_interview_date.interview_date|date:"j M" }}
-	      {% endif %}
-	    {% endif %}
-	  </td>
+	    </td>
+	  {% endwith %}
 	{% endif %}
 	{% with criterias.0 as admission_criteria %}
 	  {% include "criteria/include/criteria_table_scorecriteria_cols.html" %}

@@ -131,6 +131,8 @@ def prepare_admission_criteria(admission_criterias, curriculum_majors, combine_m
     curriculum_majors_with_criterias = []
     # curriculum_major_criterias = { cm.id:[] for cm in curriculum_majors }
 
+    faculty_interview_date_cache = {} 
+    
     for criteria in admission_criterias:
         criteria.cache_score_criteria_children()
         criteria.curriculum_major_admission_criterias = criteria.curriculummajoradmissioncriteria_set.select_related(
@@ -156,6 +158,15 @@ def prepare_admission_criteria(admission_criterias, curriculum_majors, combine_m
     if combine_majors:
         admission_criteria_rows = combine_criteria_rows(admission_criteria_rows)
 
+    # add faculty interview date
+    for r in admission_criteria_rows:
+        first_criteria = r['criterias'][0]
+        faculty_id = first_criteria.faculty_id
+        if faculty_id not in faculty_interview_date_cache:
+            faculty_interview_date_cache[faculty_id] = AdmissionProjectFacultyInterviewDate.get_from(first_criteria.admission_project,
+                                                                                                     first_criteria.faculty)
+        first_criteria.faculty_interview_date = faculty_interview_date_cache[faculty_id]
+
     # for row in admission_criteria_rows:
     #    for cmc in row['majors']:
     #        if (cmc.curriculum_major_id in curriculum_major_criterias) and (len(curriculum_major_criterias[cmc.curriculum_major_id]) > 1):
@@ -175,7 +186,7 @@ def project_index(request, project_id, round_id):
 
     faculty, faculty_choices = extract_user_faculty(request, user)
 
-    faculty_interview_date = AdmissionProjectFacultyInterviewDate.get_from(project, faculty)
+    project_faculty_interview_date = AdmissionProjectFacultyInterviewDate.get_from(project, faculty)
     
     admission_criterias = AdmissionCriteria.objects.filter(admission_project_id=project_id,
                                                            faculty_id=faculty.id,
@@ -193,7 +204,7 @@ def project_index(request, project_id, round_id):
                    'faculty_url_query': '' if faculty_choices == [] else '?faculty_id=' + str(faculty.id),
                    'faculty_choices': faculty_choices,
 
-                   'faculty_interview_date': faculty_interview_date,
+                   'project_faculty_interview_date': project_faculty_interview_date,
                    
                    'admission_criteria_rows': admission_criteria_rows,
                    'notice': notice,

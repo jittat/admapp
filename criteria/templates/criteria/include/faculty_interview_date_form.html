@@ -1,12 +1,12 @@
 <div class="mt-1">
   <b>การกำหนดวันสัมภาษณ์สำหรับสาขาในคณะ:</b>
-  {% if faculty_interview_date.is_major_specific %}
+  {% if project_faculty_interview_date.is_major_specific %}
     กำหนดแยกในแต่ละเงื่อนไขการรับ
   {% else %}
-    {% if faculty_interview_date.interview_date == None %}
+    {% if project_faculty_interview_date.interview_date == None %}
       ไม่สัมภาษณ์ทุกสาขา
     {% else %}
-      {{ faculty_interview_date.interview_date }} (วันเดียวกันทุกสาขา)
+      {{ project_faculty_interview_date.interview_date }} (วันเดียวกันทุกสาขา)
     {% endif %}
   {% endif %}
   <a class="btn btn-sm btn-outline-info" id="facultyInterviewDateFormToggleId">แก้ไข</a>
@@ -23,14 +23,14 @@
 	  >กำหนดแยกตามแต่ละเงื่อนไข</option>
 	  <option
 	    value="0"
-	    {% if not faculty_interview_date.is_major_specific %}{% if faculty_interview_date.interview_date == None %}selected{% endif %}{% endif %}>ไม่มีสัมภาษณ์ทุกสาขา</option>
+	    {% if not project_faculty_interview_date.is_major_specific %}{% if project_faculty_interview_date.interview_date == None %}selected{% endif %}{% endif %}>ไม่มีสัมภาษณ์ทุกสาขา</option>
 	  <option
 	    value="{{ project.custom_interview_start_date|date:"Y-m-d" }}"
-	    {% if not faculty_interview_date.is_major_specific %}{% if faculty_interview_date.interview_date == project.custom_interview_start_date %}selected{% endif %}{% endif %}>{{ project.custom_interview_start_date }} ทุกสาขา</option>
+	    {% if not project_faculty_interview_date.is_major_specific %}{% if project_faculty_interview_date.interview_date == project.custom_interview_start_date %}selected{% endif %}{% endif %}>{{ project.custom_interview_start_date }} ทุกสาขา</option>
 	  {% if project.custom_interview_start_date != project.custom_interview_end_date %}
 	    <option
 	      value="{{ project.custom_interview_end_date|date:"Y-m-d" }}"
-	      {% if not faculty_interview_date.is_major_specific %}{% if faculty_interview_date.interview_date == project.custom_interview_end_date %}selected{% endif %}{% endif %}>{{ project.custom_interview_end_date }} ทุกสาขา</option>
+	      {% if not project_faculty_interview_date.is_major_specific %}{% if project_faculty_interview_date.interview_date == project.custom_interview_end_date %}selected{% endif %}{% endif %}>{{ project.custom_interview_end_date }} ทุกสาขา</option>
 	  {% endif %}
 	</select>
       </div>
