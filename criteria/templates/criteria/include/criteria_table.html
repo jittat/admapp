@@ -63,7 +63,7 @@
 
 	{% if project.is_custom_interview_date_allowed %}
 	  {% with criterias.0.faculty_interview_date as faculty_interview_date %}
-	    <td rowspan="{{ major_count }}">
+	    <td {% if major_count != 0 %}rowspan="{{ major_count }}{% endif %}">
 	      {% if faculty_interview_date.is_major_specific %}
 		{% if criterias.0.interview_date == None %}
 		  ไม่มี
