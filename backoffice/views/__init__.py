@@ -51,7 +51,7 @@ def compute_project_stats(admission_projects):
 
             
 def sort_admission_projects(admission_projects):
-    return [p for _,_,_,p in sorted([(p.admission_rounds.all()[0].id, p.display_rank, p.id, p) for p in admission_projects])]
+    return [p for _,_,_,p in sorted([(p.admission_rounds.all()[0].number, p.display_rank, p.id, p) for p in admission_projects])]
 
 
 def compute_cupt_confirmation_stats():

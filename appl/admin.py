@@ -39,6 +39,7 @@ class AdmissionProjectAdmin(admin.ModelAdmin):
                     'base_fee',
                     'is_available',
                     'is_visible_in_backoffice',
+                    'custom_interview_start_date',
                     'admission_student_type',]
     ordering = ['id']
     actions = [make_available, make_visible]
