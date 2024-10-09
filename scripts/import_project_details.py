@@ -12,6 +12,20 @@ def extract_datetime(date_str, time_str):
     return datetime.strptime(date_str.strip() + ' ' + time_str.strip(),
                              '%Y-%m-%d %H:%M:%S')
 
+def get_admission_round_number(round_number_str):
+    try:
+        round_number = int(round_number_str)
+        admission_round = AdmissionRound.objects.get(number=round_number)
+        return admission_round
+    except:
+        pass
+
+    num,sub = [int(x) for x in round_number_str.split('/')]
+    admission_rounds = AdmissionRound.objects.filter(number=num,subround_number=sub).all()
+    if len(admission_rounds)==1:
+        return admission_rounds[0]
+    raise "Admission Round not found"
+
 def main():
     admission_rounds = dict([(r.id,r) for r in AdmissionRound.objects.all()])
     
@@ -23,7 +37,7 @@ def main():
         
         for items in reader:
             pid = int(items[0])
-            round_number = int(items[1])
+            round_number_str = items[1].strip()
             title = items[2].strip()
             warning = items[8]
             descriptions = items[9]
@@ -39,7 +53,7 @@ def main():
                 pdf_url = None
 
             project = AdmissionProject.objects.get(pk=pid)
-            admission_round = AdmissionRound.objects.get(number=round_number)
+            admission_round = get_admission_round_number(round_number_str)
             project_round = project.get_project_round_for(admission_round)
 
             if project.title != title:
