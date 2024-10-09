@@ -60,6 +60,8 @@ class AdmissionCriteria(models.Model):
     interview_date = models.DateField(verbose_name='วันสัมภาษณ์',
                                       blank=True,
                                       null=True)
+
+    custom_interview_date_str = models.TextField(blank=True)
     
     def get_all_score_criteria(self, criteria_type):
         if getattr(self, 'cached_score_criteria', None) is None:
