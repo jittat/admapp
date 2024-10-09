@@ -36,16 +36,40 @@ def render_score_criterias(score_criterias, hide_percent=False, short=False):
 
     return '\n'.join(lines)
 
+def get_interview_date(admission_criteria):
+    MONTHS = ['','ม.ค.','ก.พ.','มี.ค.','เม.ย.',
+              'พ.ค.','มิ.ย.','ก.ค.','ส.ค.',
+              'ก.ย.','ต.ค.','พ.ย.','ธ.ค.']
+
+    interview_date_str = None
+    if admission_criteria.custom_interview_date_str != '':
+        interview_date_str = admission_criteria.custom_interview_date_str
+    elif admission_criteria.interview_date != None:
+        interview_date = admission_criteria.interview_date
+        interview_date_str = (str(interview_date.day) + ' ' +
+                              MONTHS[interview_date.month] + ' ' +
+                              str((interview_date.year + 543) % 100))
+    if interview_date_str != None:
+        return 'กำหนดการสัมภาษณ์ (ถ้าผ่านการคัดเลือก): ' + interview_date_str
+    else:
+        return None
+
 def gen_row(curriculum_major, slots, admission_criteria, admission_project):
     major_cupt_code = curriculum_major.cupt_code
     
     r = []
 
+    interview_date = get_interview_date(admission_criteria)
+    
     r.append(curriculum_major.faculty.title)
     r.append(major_cupt_code.display_title())
     r.append(str(slots))
     r.append('')
-    r.append(render_score_criterias(admission_criteria.get_all_required_score_criteria(), short=True))
+    if interview_date:
+        r.append(render_score_criterias(admission_criteria.get_all_required_score_criteria(), short=True) +
+                 '\n' + interview_date)
+    else:
+        r.append(render_score_criterias(admission_criteria.get_all_required_score_criteria(), short=True))
     r.append(render_score_criterias(admission_criteria.get_all_scoring_score_criteria(), True))
     r.append(f'{curriculum_major.faculty.id:02d}')
     r.append(major_cupt_code.program_type_code)
