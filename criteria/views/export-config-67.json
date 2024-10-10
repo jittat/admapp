@@ -1,0 +1,573 @@
+{
+  "projects": [
+    [
+      "C2801",
+      "Admission (พาณิชยศาสตร์ศึกษา ใช้คะแนน A-Level )"
+    ],
+    [
+      "C2802",
+      "Admission (พาณิชยศาสตร์ศึกษา ใช้คะแนน V-NET)"
+    ],
+    [
+      "C2803",
+      "Admission (ใช้คะแนน TPAT3)"
+    ],
+    [
+      "C2804",
+      "Admission (ใช้คะแนน คณิตศาสตร์ประยุกต์ 2 และวิทยาศาสตร์ประยุกต์)"
+    ],
+    [
+      "C2805",
+      "Admission (ใช้คะแนน A-Level Math1 คณิตศาสตร์ประยุกต์ 1)"
+    ],
+    [
+      "C2806",
+      "Admission (ใช้คะแนน A-Level Math2 คณิตศาสตร์ประยุกต์ 2)"
+    ],
+    [
+      "C2807",
+      "Admission (ใช้คะแนน A-Level Sci วิทยาศาสตร์ประยุกต์)"
+    ],
+    [
+      "C2808",
+      "Admission (ใช้คะแนน A-Level Thai ภาษาไทย)"
+    ],
+    [
+      "C2809",
+      "Admission (ใช้คะแนน A-Level Fre ภาษาฝรั่งเศส)"
+    ],
+    [
+      "C2810",
+      "Admission (ใช้คะแนน A-Level Ger ภาษาเยอรมัน)"
+    ],
+    [
+      "C2811",
+      "Admission (ใช้คะแนน A-Level Jap ภาษาญี่ปุ่น)"
+    ],
+    [
+      "C2812",
+      "Admission (ใช้คะแนน A-Level Kor ภาษาเกาหลี)"
+    ],
+    [
+      "C2813",
+      "Admission (ใช้คะแนน A-Level Chi ภาษาจีน)"
+    ],
+    [
+      "C2814",
+      "Admission (ใช้คะแนน A-Level เคมีและชีววิทยา)"
+    ],
+    [
+      "C2815",
+      "Admission (รับเฉพาะเพศชาย ต้องทดสอบพลศึกษาและว่ายน้ำ)"
+    ],
+    [
+      "C2816",
+      "Admission (รับเฉพาะเพศชาย, ประกาศนียบัตรวิชาชีพ (ปวช.) วิชาอุตสาหกรรม กลุ่มช่าง อุตสาหกรรมฐาน วิทยาศาสตร์/ระดับอื่น ๆ ที่เทียบเท่า, ต้องทดสอบพลศึกษาและว่ายน้ำ)"
+    ],
+    [
+      "C2817",
+      "Admission (ประวัติศาสตร์ ใช้คะแนน A-Level ภาษา Fre, Ger, Jap, Kor, หรือ Chi)"
+    ],
+    [
+      "C2818",
+      "Admission (ประวัติศาสตร์ ใช้คะแนน A-Level คณิตศาสตร์ประยุกต์ 2)"
+    ],
+    [
+      "C2819",
+      "Admission (ใช้คะแนน A-Level Math1, Phy, Chem, Eng)"
+    ],
+    [
+      "C2820",
+      "Admission (ใช้คะแนน TGAT1, TPAT3)"
+    ],
+    [
+      "C2821",
+      "Admission (ใช้คะแนน A-Level Math1 และ Sci)"
+    ],
+    [
+      "C2822",
+      "Admission (ช้คะแนน A-Level ภาษา Fre, Ger, Jap, Kor, หรือ Chi)"
+    ],
+    [
+      "C2823",
+      "Admission (ช้คะแนน A-Level คณิตศาสตร์ประยุกต์ 2)"
+    ],
+    [
+      "C2824",
+      "Admission (ใช้คะแนน A-Level ภาษา Fre, Ger, Jap, Kor, Spn, หรือ Chi)"
+    ]
+  ],
+  "custom_projects": {
+    "10020106700301A0I": [
+      {
+        "score-include": "A-Level",
+        "project_id": "C2801"
+      },
+      {
+        "score-include": "V-NET",
+        "project_id": "C2802"
+      }
+    ],
+    "10020116210103A": [
+      {
+        "score-include": "TPAT3",
+        "project_id": "C2803"
+      },
+      {
+        "score-include": "Math2",
+        "project_id": "C2804"
+      }
+    ],
+    "10020108901001A": [
+      {
+        "score-include": "Math1",
+        "project_id": "C2805"
+      },
+      {
+        "score-include": "Math2",
+        "project_id": "C2806"
+      },
+      {
+        "score-include": "Sci",
+        "project_id": "C2807"
+      },
+      {
+        "score-include": "Thai",
+        "project_id": "C2808"
+      },
+      {
+        "score-include": "Fre",
+        "project_id": "C2809"
+      },
+      {
+        "score-include": "Ger",
+        "project_id": "C2810"
+      },
+      {
+        "score-include": "Jap",
+        "project_id": "C2811"
+      },
+      {
+        "score-include": "Kor",
+        "project_id": "C2812"
+      },
+      {
+        "score-include": "Chi",
+        "project_id": "C2813"
+      }
+    ],
+    "10020108901001B": [
+      {
+        "score-include": "Math1",
+        "project_id": "C2805"
+      },
+      {
+        "score-include": "Math2",
+        "project_id": "C2806"
+      },
+      {
+        "score-include": "Sci",
+        "project_id": "C2807"
+      },
+      {
+        "score-include": "Thai",
+        "project_id": "C2808"
+      },
+      {
+        "score-include": "Fre",
+        "project_id": "C2809"
+      },
+      {
+        "score-include": "Ger",
+        "project_id": "C2810"
+      },
+      {
+        "score-include": "Jap",
+        "project_id": "C2811"
+      },
+      {
+        "score-include": "Kor",
+        "project_id": "C2812"
+      },
+      {
+        "score-include": "Chi",
+        "project_id": "C2813"
+      }
+    ],
+    "10020108902801B": [
+      {
+        "score-include": "Math1",
+        "project_id": "C2805"
+      },
+      {
+        "score-include": "Math2",
+        "project_id": "C2806"
+      },
+      {
+        "score-include": "Fre",
+        "project_id": "C2809"
+      },
+      {
+        "score-include": "Ger",
+        "project_id": "C2810"
+      },
+      {
+        "score-include": "Jap",
+        "project_id": "C2811"
+      },
+      {
+        "score-include": "Kor",
+        "project_id": "C2812"
+      },
+      {
+        "score-include": "Chi",
+        "project_id": "C2813"
+      }
+    ],
+    "10020324611101A": [
+      {
+        "score-include": "Math1",
+        "project_id": "C2805"
+      },
+      {
+        "score-include": "Math2",
+        "project_id": "C2806"
+      }
+    ],
+    "10020324611101B": [
+      {
+        "score-include": "Math1",
+        "project_id": "C2805"
+      },
+      {
+        "score-include": "Math2",
+        "project_id": "C2806"
+      }
+    ],
+    "10020107611102B": [
+      {
+        "score-include": "Math1",
+        "project_id": "C2805"
+      },
+      {
+        "score-include": "Math2",
+        "project_id": "C2806"
+      }
+    ],
+    "10020107611103A": [
+      {
+        "score-include": "Math1",
+        "project_id": "C2805"
+      },
+      {
+        "score-include": "Math2",
+        "project_id": "C2806"
+      }
+    ],
+    "10020107611103B": [
+      {
+        "score-include": "Math1",
+        "project_id": "C2805"
+      },
+      {
+        "score-include": "Math2",
+        "project_id": "C2806"
+      }
+    ],
+    "10020108901401A": [
+      {
+        "score-include": "Fre",
+        "project_id": "C2817"
+      },
+      {
+        "score-include": "Math2",
+        "project_id": "C2818"
+      }
+    ],
+    "10020325210202A": [
+      {
+        "require-include": "หน่วยกิตกลุ่มสาระ",
+        "project_id": "C2815"
+      }
+    ],
+    "10020325303802A": [
+      {
+        "require-include": "หน่วยกิตกลุ่มสาระ",
+        "project_id": "C2815"
+      },
+      {
+        "require-include": "อุตสาหกรรม",
+        "project_id": "C2816"
+      }
+    ],
+    "10020110501104A": [
+      {
+        "score-include": "TPAT3",
+        "project_id": "C2803"
+      },
+      {
+        "score-include": "Chem",
+        "project_id": "C2814"
+      }
+    ],
+    "10020110501105A": [
+      {
+        "score-include": "TPAT3",
+        "project_id": "C2803"
+      },
+      {
+        "score-include": "Chem",
+        "project_id": "C2814"
+      }
+    ],
+    "10020110501106A": [
+      {
+        "score-include": "TPAT3",
+        "project_id": "C2803"
+      },
+      {
+        "score-include": "Chem",
+        "project_id": "C2814"
+      }
+    ],
+    "10020110501106B": [
+      {
+        "score-include": "TPAT3",
+        "project_id": "C2803"
+      },
+      {
+        "score-include": "Chem",
+        "project_id": "C2814"
+      }
+    ],
+    "10020326610201A": [
+      {
+        "score-include": "Math1",
+        "project_id": "C2805"
+      },
+      {
+        "score-include": "Math2",
+        "project_id": "C2806"
+      }
+    ],
+    "10020326610201B": [
+      {
+        "score-include": "Math1",
+        "project_id": "C2805"
+      },
+      {
+        "score-include": "Math2",
+        "project_id": "C2806"
+      }
+    ],
+    "10020326610201D": [
+      {
+        "score-include": "Math1",
+        "project_id": "C2805"
+      },
+      {
+        "score-include": "Math2",
+        "project_id": "C2806"
+      }
+    ],
+    "10020326610602A": [
+      {
+        "score-include": "Math1",
+        "project_id": "C2805"
+      },
+      {
+        "score-include": "Math2",
+        "project_id": "C2806"
+      }
+    ],
+    "10020326610602B": [
+      {
+        "score-include": "Math1",
+        "project_id": "C2805"
+      },
+      {
+        "score-include": "Math2",
+        "project_id": "C2806"
+      }
+    ],
+    "10020326610602D": [
+      {
+        "score-include": "Math1",
+        "project_id": "C2805"
+      },
+      {
+        "score-include": "Math2",
+        "project_id": "C2806"
+      }
+    ],
+    "10020326620102A0A": [
+      {
+        "score-include": "Math1",
+        "project_id": "C2805"
+      },
+      {
+        "score-include": "Math2",
+        "project_id": "C2806"
+      }
+    ],
+    "10020326620102A0B": [
+      {
+        "score-include": "Math1",
+        "project_id": "C2805"
+      },
+      {
+        "score-include": "Math2",
+        "project_id": "C2806"
+      }
+    ],
+    "10020326620102B0A": [
+      {
+        "score-include": "Math1",
+        "project_id": "C2805"
+      },
+      {
+        "score-include": "Math2",
+        "project_id": "C2806"
+      }
+    ],
+    "10020326620102B0B": [
+      {
+        "score-include": "Math1",
+        "project_id": "C2805"
+      },
+      {
+        "score-include": "Math2",
+        "project_id": "C2806"
+      }
+    ],
+    "10020326620102D0A": [
+      {
+        "score-include": "Math1",
+        "project_id": "C2805"
+      },
+      {
+        "score-include": "Math2",
+        "project_id": "C2806"
+      }
+    ],
+    "10020326620102D0B": [
+      {
+        "score-include": "Math1",
+        "project_id": "C2805"
+      },
+      {
+        "score-include": "Math2",
+        "project_id": "C2806"
+      }
+    ],
+    "10020219500102A": [
+      {
+        "score-include": "TPAT3",
+        "project_id": "C2820"
+      },
+      {
+        "score-include": "A-Level",
+        "project_id": "C2819"
+      }
+    ],
+    "10020219500201A": [
+      {
+        "score-include": "TPAT3",
+        "project_id": "C2803"
+      },
+      {
+        "score-include": "Chem",
+        "project_id": "C2814"
+      },
+      {
+        "score-include": "Sci",
+        "project_id": "C2807"
+      }
+    ],
+    "10020219500401A": [
+      {
+        "score-include": "TPAT3",
+        "project_id": "C2803"
+      },
+      {
+        "score-include": "Chem",
+        "project_id": "C2814"
+      },
+      {
+        "score-include": "Sci",
+        "project_id": "C2807"
+      }
+    ],
+    "10020219501201A": [
+      {
+        "score-include": "TPAT3",
+        "project_id": "C2803"
+      },
+      {
+        "score-include": "A-Level",
+        "project_id": "C2821"
+      }
+    ],
+    "": [
+      {
+        "score-include": "Fre",
+        "project_id": "C2817"
+      },
+      {
+        "score-include": "Math2",
+        "project_id": "C2818"
+      }
+    ],
+    "10020111620103E": [
+      {
+        "score-include": "Fre",
+        "project_id": "C2822"
+      },
+      {
+        "score-include": "Math2",
+        "project_id": "C2823"
+      }
+    ],
+    "10020111620105A": [
+      {
+        "score-include": "Fre",
+        "project_id": "C2824"
+      },
+      {
+        "score-include": "Math2",
+        "project_id": "C2823"
+      }
+    ]
+  },
+  "custom_comments": {
+"10020104212301A-C2800": "มีใบรับรองแพทย์ที่รับรองว่าไม่เป็นผู้พิการทางสายตา (ตาบอดสี) รายละเอียดเพิ่มเติมทาง https://admission.ku.ac.th",
+"10020105303201G-C2800": "การสอบสัมภาษณ์เป็นภาษาอังกฤษ รายละเอียดเพิ่มเติม ทาง https://admission.ku.ac.th",
+"10020106700301A0I-C2802": "สำเร็จการศึกษาประกาศนียบัตรวิชาชีพ (ปวช.) ชั้นปีที่ 3 หรือเทียบเท่า หรือที่สูงกว่าทุกประเภทวิชา",
+"10020108903001A-C2800": "มีใบรับรองแพทย์ที่รับรองว่าไม่มีความบกพร่องทางสายตา (เช่น ตาไม่บอดสี ตาบอด เป็นต้น) รายละเอียดเพิ่มเติม ทาง https://admission.ku.ac.th",
+"10020108903001B-C2800": "มีใบรับรองแพทย์ที่รับรองว่าไม่มีความบกพร่องทางสายตา (เช่น ตาไม่บอดสี ตาบอด เป็นต้น) โดยอัพโหลดในระบบรับสมัครในวันที่สมัคร รายละเอียดเพิ่มเติม ทาง https://admission.ku.ac.th",
+"10020109140101A-C2800": "ผ่านการตรวจสุขภาพตามที่คณะกำหนด รายละเอียดเพิ่มเติม ทาง https://admission.ku.ac.th",
+"10020111901701B-C2800": "เงื่อนไขเพิ่มเติม นิสิตทุกคนจะต้องสามารถเดินทางไปศึกษาที่ประเทศสาธารณรัฐเกาหลี ในมหาวิทยาลัยคู่สัญญา ในช่วงชั้นปีที่ 3 เป็นเวลา 1 ปีการศึกษา โดยนิสิตเป็นผู้รับผิดชอบค่าใช้จ่ายในการศึกษา (อาทิ ค่าธรรมเนียมการศึกษา ค่าหนังสือ ค่าหอพัก ค่าใช้จ่ายอื่น ๆ ที่เกี่ยวข้อง เป็นต้น) ให้แก่มหาวิทยาลัยคู่สัญญาเอง รวมถึงค่าใช้จ่ายส่วนตัวระหว่างการศึกษาทั้งหมด และอัตราค่าธรรมเนียมอื่น ๆ ที่เกี่ยวข้องตามที่มหาวิทยาลัยเกษตรศาสตร์กำหนด รายละเอียดเพิ่มเติม ทาง https://admission.ku.ac.th",
+"10020111901701A-C2800": "เงื่อนไขเพิ่มเติม นิสิตทุกคนจะต้องสามารถเดินทางไปศึกษาที่ประเทศสาธารณรัฐเกาหลี ในมหาวิทยาลัยคู่สัญญา ในช่วงชั้นปีที่ 3 เป็นเวลา 1 ปีการศึกษา โดยนิสิตเป็นผู้รับผิดชอบค่าใช้จ่ายในการศึกษา (อาทิ ค่าธรรมเนียมการศึกษา ค่าหนังสือ ค่าหอพัก ค่าใช้จ่ายอื่น ๆ ที่เกี่ยวข้อง เป็นต้น) ให้แก่มหาวิทยาลัยคู่สัญญาเอง และค่าใช้จ่ายส่วนตัวระหว่างการศึกษาทั้งหมด",
+"10020113112901A-C2800": "ใบรับรองแพทย์ตามแนวทางตาบอดสีของราชวิทยาลัยจักษุแพทย์แห่งประเทศไทย (ตาไม่บอดสีทุกรูปแบบ) นำใบรับรองแพทย์ส่งตามแบบฟอร์มที่หลักสูตรฯ กำหนด รายละเอียดเพิ่มเติมทาง https://admission.ku.ac.th",
+"10020113112901B-C2800": "ใบรับรองแพทย์ตามแนวทางตาบอดสีของราชวิทยาลัยจักษุแพทย์แห่งประเทศไทย (ตาไม่บอดสีทุกรูปแบบ) นำใบรับรองแพทย์ส่งตามแบบฟอร์มที่หลักสูตรฯ กำหนด รายละเอียดเพิ่มเติมทาง https://admission.ku.ac.th",
+"10020222212701A-C2800": "ไม่เป็นผู้พิการหรือทุพลลภาพในลักษณะที่มีผลกระทบต่อการทำปฏิบัติการทางฟิสิกส์",
+"10020222210401A-C2800": "ไม่เป็นผู้พิการหรือทุพลภาพในลักษณะที่มีผลกระทบต่อความปลอดภัยในห้องปฏิบัติการเคมี รายละเอียดเพิ่มเติม ทาง https://admission.ku.ac.th",
+"10020325210202A-C2815": "เงื่อนไขเพิ่มเติม รับเฉพาะเพศชาย และต้องทดสอบพลศึกษาและว่ายน้ำ รายละเอียดเพิ่มเติม ทาง https://admission.ku.ac.th",
+"10020325303802A-C2815": "เงื่อนไขเพิ่มเติม รับเฉพาะเพศชาย และต้องทดสอบพลศึกษาและว่ายน้ำ รายละเอียดเพิ่มเติม ทาง https://admission.ku.ac.th",
+"10020325303802A-C2816": "รับเฉพาะเพศชาย ต้องทดสอบพลศึกษาและว่ายน้ำ รายละเอียดเพิ่มเติม ทาง https://admission.ku.ac.th  ต้องได้รับประกาศนียบัตรวิชาชีพ (ปวช.) วิชาอุตสาหกรรม กลุ่มช่างอุตสาหกรรมฐาน วิทยาศาสตร์/ระดับอื่น ๆ ที่เทียบเท่า",
+"10020118620101A-C2800": "เรียนที่จังหวัดสุพรรณบุรี 4 ปี",
+"10020118620102A0B-C2800": "เรียนที่จังหวัดสุพรรณบุรี 4 ปี",
+"10020118620102A0C-C2800": "เรียนที่จังหวัดสุพรรณบุรี 4 ปี"
+  },
+  "custom_options": {
+    "10020325210202A-C2815": {
+      "accepts_male_only": 1
+    },
+    "10020325303802A-C2815": {
+      "accepts_male_only": 1
+    },
+    "10020325303802A-C2816": {
+      "accepts_male_only": 1
+    }
+  }
+}

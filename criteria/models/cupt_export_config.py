@@ -30,3 +30,21 @@ class CuptExportLog(models.Model):
     
     def __str__(self):
         return self.output_filename
+
+
+class CuptExportCustomProject(models.Model):
+    cupt_code = models.CharField(max_length=10)
+    title = models.CharField(max_length=400)
+
+    def __str__(self):
+        return f'{self.cupt_code} - {self.title}'
+
+class CuptExportAdditionalProjectRule(models.Model):
+    program_major_code = models.CharField(max_length=30)
+    custom_project = models.ForeignKey('CuptExportCustomProject',
+                                       on_delete=models.CASCADE)
+    rule_json = models.TextField(blank=True)
+
+    def __str__(self):
+        return f'{self.program_major_code} - {self.custom_project.cupt_code}'
+
