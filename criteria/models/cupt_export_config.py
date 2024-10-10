@@ -33,18 +33,31 @@ class CuptExportLog(models.Model):
 
 
 class CuptExportCustomProject(models.Model):
-    cupt_code = models.CharField(max_length=10)
+    cupt_code = models.CharField(max_length=10,
+                                 unique=True)
     title = models.CharField(max_length=400)
 
+    class Meta:
+        ordering = ['cupt_code']
+    
     def __str__(self):
         return f'{self.cupt_code} - {self.title}'
 
+    
 class CuptExportAdditionalProjectRule(models.Model):
     program_major_code = models.CharField(max_length=30)
     custom_project = models.ForeignKey('CuptExportCustomProject',
                                        on_delete=models.CASCADE)
     rule_json = models.TextField(blank=True)
 
+    class Meta:
+        ordering = ['program_major_code','custom_project']
+    
     def __str__(self):
-        return f'{self.program_major_code} - {self.custom_project.cupt_code}'
-
+        return f'{self.program_major_code} - {self.custom_project.cupt_code} {self.custom_project.title}'
+    
+    def clean(self):
+        try:
+            json.loads(self.rule_json)
+        except:
+            raise ValidationError('Incorrect JSON config')
