@@ -90,6 +90,12 @@
 		  {% endif %}
 		</td>
 	      </tr>
+	      {% if r.criteria.additional_interview_condition %}
+		<tr class="table-info">
+		  <td colspan="7"></td>
+		  <td colspan="5"><b>Additional interview condition</b><br>{{ r.criteria.additional_interview_condition }}</td>
+		</tr>
+	      {% endif %}
 	    {% endwith %}
 	  {% endfor %}
 	{% endfor %}

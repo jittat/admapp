@@ -13,7 +13,7 @@ from appl.models import Faculty
 from backoffice.decorators import user_login_required
 from criteria.criteria_options import REQUIRED_SCORE_TYPE_TAGS, SCORING_SCORE_TYPE_TAGS
 from criteria.models import AdmissionCriteria, CurriculumMajorAdmissionCriteria, CuptExportConfig, ImportedCriteriaJSON, \
-    CurriculumMajor
+    CurriculumMajor, CuptExportCustomProject, CuptExportAdditionalProjectRule
 from backoffice.models import AdjustmentMajor, AdjustmentMajorSlot
 
 from . import get_all_curriculum_majors
@@ -47,6 +47,11 @@ def is_criteria_match(row, custom_project):
                          ('require-include', 'required_criteria_str')]:
         if key in custom_project:
             if custom_project[key] not in row[str_key]:
+                return False
+    for key, str_key in [('score-not-include', 'scoring_criteria_str'),
+                         ('require-not-include', 'required_criteria_str')]:
+        if key in custom_project:
+            if custom_project[key] in row[str_key]:
                 return False
     return True
 
@@ -107,6 +112,8 @@ def validate_project_ids(curriculum_major_rows, additional_projects, cupt_code_c
 def load_export_config(project):
     configs = CuptExportConfig.objects.filter(admission_project=project)
 
+    import json
+    
     config = {}
     for c in configs:
         this_config = {}
@@ -114,7 +121,6 @@ def load_export_config(project):
         if c.config_json.strip() == '':
             continue
         
-        import json
         try:
             this_config = json.loads(c.config_json)
         except json.JSONDecodeError as err: 
@@ -125,6 +131,26 @@ def load_export_config(project):
                 config[k] += this_config[k]
             else:
                 config[k] = this_config[k]
+
+    if 'projects' not in config:
+        config['projects'] = []
+
+    if 'custom_projects' not in config:
+        config['custom_projects'] = {}
+        
+    for p in CuptExportCustomProject.objects.all():
+        config['projects'].append([p.cupt_code, p.title])
+
+    for r in CuptExportAdditionalProjectRule.objects.filter(admission_project=project).all():
+        full_rule = { 'project_id': r.custom_project.cupt_code }
+        full_rule.update(json.loads(r.rule_json))
+
+        for program_major_code in [p.strip() for p in r.program_major_codes.split(',')]:
+        
+            if program_major_code not in config['custom_projects']:
+                config['custom_projects'][program_major_code] = []
+            config['custom_projects'][program_major_code].append(full_rule)
+        
     return config
 
 def extract_additional_projects(config):
