@@ -540,7 +540,7 @@ class EducationalProfile(models.Model):
                             verbose_name='GPAX',
                             validators=[MinValueValidator(0.0), MaxValueValidator(5.0)],
                             help_text=_(
-                                'ในกรณีที่กำลังศึกษาชั้นม.6 ให้กรอกเกรดเฉลี่ย 5 ภาคการศึกษา ถ้าจบการศึกษาแล้วให้กรอกเกรดเฉลี่ย 6 ภาคการศึกษา'))
+                                'ในกรณีที่กำลังศึกษาชั้นม.6 ให้กรอกเกรดเฉลี่ย 5 หรือ 4 ภาคการศึกษา ถ้าจบการศึกษาแล้วให้กรอกเกรดเฉลี่ย 6 ภาคการศึกษา'))
     # help_text='สำหรับการคัดเลือก TCAS รอบ 5 <b>ให้กรอกเกรดเฉลี่ย 6 ภาคการศึกษา</b>')
     province = models.ForeignKey(Province,
                                  verbose_name=_('จังหวัด'),

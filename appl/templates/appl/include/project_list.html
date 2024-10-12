@@ -4,7 +4,7 @@
 {% include "appl/include/deadline_announcement_hook.html" %}
 
 {% if admission_round %}
-  <div class="alert alert-warning">
+  <div class="d-none alert alert-warning">
     สำหรับการสมัครเข้าศึกษาต่อปีการศึกษา 2567 นี้ ผู้สมัครจะต้องลงทะเบียนในระบบ <a href="https://www.mytcas.com/" target="_blank">mytcas</a> ของทปอ. ให้เรียบร้อยก่อนจึงจะสามารถสมัครได้ &nbsp; นอกจากนี้ก่อนการสมัครแต่ละรอบ ระบบจะมีการตรวจสอบสิทธิ์การสมัครจากระบบ mytcas ด้วย
   </div>
   {% if not cupt_confirmation_status.is_not_required %}
