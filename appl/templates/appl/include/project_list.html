@@ -5,7 +5,10 @@
 
 {% if admission_round %}
   <div class="d-none alert alert-warning">
-    สำหรับการสมัครเข้าศึกษาต่อปีการศึกษา 2567 นี้ ผู้สมัครจะต้องลงทะเบียนในระบบ <a href="https://www.mytcas.com/" target="_blank">mytcas</a> ของทปอ. ให้เรียบร้อยก่อนจึงจะสามารถสมัครได้ &nbsp; นอกจากนี้ก่อนการสมัครแต่ละรอบ ระบบจะมีการตรวจสอบสิทธิ์การสมัครจากระบบ mytcas ด้วย
+    สำหรับการสมัครเข้าศึกษาต่อปีการศึกษา 2568 นี้ ผู้สมัครจะต้องลงทะเบียนในระบบ <a href="https://www.mytcas.com/" target="_blank">mytcas</a> ของทปอ. ให้เรียบร้อยก่อนจึงจะสามารถสมัครได้ &nbsp; นอกจากนี้ก่อนการสมัครแต่ละรอบ ระบบจะมีการตรวจสอบสิทธิ์การสมัครจากระบบ mytcas ด้วย
+  </div>
+  <div class="alert alert-info">
+    สำหรับการสมัครเข้าศึกษาต่อปีการศึกษา 2568 {{ admission_round.title_trans }} นี้ มีเปิดรับสมัคร {{ admission_projects|length }} โครงการ เมื่อมีการเปิดระบบรับสมัครแต่ละโครงการจะมีปุ่มให้กดสมัครได้
   </div>
   {% if not cupt_confirmation_status.is_not_required %}
     {% if cupt_confirmation_status.is_wait %}
@@ -47,6 +50,8 @@
             {% if not project.eligibility.is_eligible %}
               <span class="badge badge-warning">ยังไม่สามารถสมัครได้</span>
               <small>{{ project.eligibility.notice_text }}</small>
+	    {% else %}
+	      <span class="badge badge-secondary">ยังไม่เปิดรับสมัคร</span>
             {% endif %}
           {% endif %}
         {% else %}
