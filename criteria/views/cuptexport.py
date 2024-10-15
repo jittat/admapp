@@ -637,6 +637,28 @@ def extract_student_curriculum_type(row_items, admission_criteria):
         else:
             row_items[f] = 2
 
+def extract_interview_dates(row_items, admission_criteria):
+
+    def get_interview_date(admission_criteria):
+        MONTHS = ['','ม.ค.','ก.พ.','มี.ค.','เม.ย.',
+                  'พ.ค.','มิ.ย.','ก.ค.','ส.ค.',
+                  'ก.ย.','ต.ค.','พ.ย.','ธ.ค.']
+        
+        interview_date_str = None
+        if admission_criteria.custom_interview_date_str != '':
+            interview_date_str = admission_criteria.custom_interview_date_str
+        elif admission_criteria.interview_date != None:
+            interview_date = admission_criteria.interview_date
+            interview_date_str = (str(interview_date.day) + ' ' +
+                                  MONTHS[interview_date.month] + ' ' +
+                                  str((interview_date.year + 543) % 100))
+        if interview_date_str != None:
+            return interview_date_str
+        else:
+            return ''
+
+    row_items['interview_date'] = get_interview_date(admission_criteria)
+    
 
 def extract_rows(project, admission_criterias, base_row_conversion_f, extract_f, postprocess_f):
     rows = []
@@ -674,6 +696,8 @@ def extract_condition_rows(project, admission_criterias):
                     row_items['subject_names'] = ' '.join(names)
                     row_items['score_minimum'] = ' '.join([str(v) for v in mins])
 
+
+        extract_interview_dates(row_items, admission_criteria)
         extract_student_curriculum_type(row_items, admission_criteria)
                         
     def condition_postprocess_f(rows, project):
