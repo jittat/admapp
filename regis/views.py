@@ -249,12 +249,22 @@ def register(request):
                   'regis/register.html',
                   { 'form': form })
 
+def check_recent_forget_logitem(applicant):
+    recent_log_item = LogItem.get_applicant_latest_log(applicant,
+                                                       'New password')
+    if not recent_log_item:
+        return True
+
+    from datetime import datetime, timedelta
+
+    return recent_log_item.created_at + timedelta(minutes=5) <= datetime.now()
+
 
 def forget(request):
     error_message = None
     update_success = False
     email = None
-    
+
     if request.method == 'POST':
         form = ForgetForm(request.POST)
         if form.is_valid():
@@ -270,6 +280,8 @@ def forget(request):
 
             if (not applicant) or (applicant.email.upper() != email.strip().upper()):
                 error_message = _('ไม่พบข้อมูลผู้สมัครที่ระบุหรืออีเมลที่ระบุไม่ถูกต้อง')
+            elif not check_recent_forget_logitem(applicant):
+                error_message = 'ผู้สมัครได้ขอรหัสผ่านใหม่ไปแล้ว กรุณารออย่างน้อย 5 นาที ก่อนจะขอรหัสผ่านใหม่อีกครั้ง อีเมลรหัสผ่านอาจจะถูกส่งเข้าไปที่กล่องขยะ กรุณาอย่าลืมตรวจสอบ'
             else:
                 new_password = applicant.random_password()
                 applicant.save()

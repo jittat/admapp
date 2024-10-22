@@ -302,11 +302,16 @@ class LogItem(models.Model):
         return log
 
     @staticmethod
-    def get_applicant_latest_log(applicant, prefix):
+    def get_applicant_latest_log(applicant, prefix, limit=100):
         items = LogItem.objects.filter(applicant=applicant).all()
+        c = 0
         for item in items:
             if item.message.startswith(prefix):
                 return item
+            c += 1
+            if c > limit:
+                return None
+        return None
 
     @staticmethod
     def generate_log_key(applicant):
