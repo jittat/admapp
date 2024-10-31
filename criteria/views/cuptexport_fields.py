@@ -138,6 +138,7 @@ min_tu002
 min_tu003
 min_tu004
 min_tu005
+min_tu006
 min_tu061
 min_tu062
 min_tu071
@@ -152,10 +153,13 @@ min_gsat_m
 min_mu_elt
 min_netsat_math
 min_netsat_lang
+min_netsat_lang_en
+min_netsat_lang_th
 min_netsat_sci
 min_netsat_phy
 min_netsat_chem
 min_netsat_bio
+min_kmitl_tep
 score_condition
 subject_names
 score_minimum

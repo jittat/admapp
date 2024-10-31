@@ -542,7 +542,11 @@ def write_condition_row(writer, row, zero_fields):
     for f in CONDITION_FILE_FIELD_DEFAULTS:
         if f not in out_row:
             out_row[f] = CONDITION_FILE_FIELD_DEFAULTS[f]
-        
+
+    # hack for custom number
+    if 'receive_student_number' in out_row:
+        del update['receive_student_number']
+            
     out_row.update(update)
     writer.writerow(out_row)
 
