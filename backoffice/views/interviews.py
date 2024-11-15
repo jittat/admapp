@@ -165,8 +165,13 @@ def interview_form(request, admission_round_id, faculty_id, description_id=None)
         else:
             from datetime import datetime
 
+            try:
+                project_interview_date = datetime.fromisoformat(str(current_admission_project.custom_interview_start_date) + 'T08:30:00')
+            except:
+                project_interview_date = datetime.fromisoformat("2023-04-26T08:30:00")
+
             form = InterviewDescriptionForm(
-                initial={"interview_date": datetime.fromisoformat("2023-04-26T08:30:00")}
+                initial={"interview_date": project_interview_date}
             )
         form.fields["project_majors"].choices = project_majors_choices
 
