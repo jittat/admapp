@@ -66,8 +66,13 @@ class AdmissionRound(models.Model):
 
     clearing_house_description = models.TextField(blank=True,
                                                   verbose_name='ข้อมูลการยืนยันสิทธิ์')
+    acceptance_result_date = models.DateField(verbose_name='วันที่ประกาศผลการคัดเลือก (สำหรับแจ้งในข้อความ)')
     clearing_house_dates = models.CharField(max_length=50,
-                                            blank=True)
+                                            blank=True,
+                                            verbose_name='วันที่ยืนยันสิทธิ์ในระบบทปอ. (สำหรับแจ้งในข้อความ)')
+    clearing_house_dates_short = models.CharField(max_length=50,
+                                                  blank=True,
+                                                  verbose_name='วันที่ยืนยันสิทธิ์ในระบบทปอ.แบบสั้น (สำหรับแจ้งในข้อความ)')
 
     class Meta:
         ordering = ['rank']
