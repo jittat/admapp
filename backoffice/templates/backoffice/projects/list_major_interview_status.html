@@ -1,0 +1,49 @@
+{% extends 'backoffice/base.html' %}
+{% block content %}
+  <div class="row">
+    <div class="col-md-12">
+      <h2>
+        สถิติผลการสัมภาษณ์โครงการ{{ project.title }} ({{ admission_round }})
+        {% if faculty %}
+          - {{ faculty }}
+        {% endif %}
+      </h2>
+      <table class="table table-striped table-sm table-bordered">
+        <thead>
+          <tr>
+            <th>รหัส</th>
+            <th>คณะ</th>
+            <th>สาขา</th>
+	    <th>จำนวนรับ</th>
+            <th>เรียกสัมภาษณ์</th>
+            <th>รับ</th>
+            <th>ไม่รับ</th>
+            <th>ขาดสอบ</th>
+            <th>ยังไม่ดำเนินการ</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for major in majors %}
+            <tr>
+              <td>{{ major.number }}</td>
+              <td>{{ major.faculty }}</td>
+              <td>{{ major.title }}</td>
+              <td>{{ major.slots }}</td>
+	      {% with major.interview_status as status %}
+		<td>{{ status.calls }}</td>
+		<td>{{ status.accepted }}</td>
+		<td>{{ status.rejected }}</td>
+		<td>{{ status.absent }}</td>
+		{% if status.left > 0 %}
+		  <td><span class="text-danger"><b>{{ status.left }}</b></span></td>
+		{% else %}
+		  <td>{{ status.left }}</td>
+		{% endif %}
+	      {% endwith %}
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endblock %}

@@ -19,6 +19,9 @@
 	{% endif %}
         <a class="btn btn-sm btn-primary" href="{% url 'backoffice:projects-list' project.id admission_round.id %}">แสดงรายการผู้สมัครทั้งหมด</a>
         <a class="btn btn-sm btn-secondary" href="{% url 'backoffice:projects-list-majors' project.id admission_round.id %}">แสดงข้อมูลสาขาที่รับ</a>
+	{% if user.profile.is_admission_admin %}
+          <a class="btn btn-sm btn-outline-secondary" href="{% url 'backoffice:projects-interview-status' project.id admission_round.id %}">แสดงสถิติการเรียกสัมภาษณ์</a>
+	{% endif %}
       </p>
 
       <table class="table table-striped table-sm">

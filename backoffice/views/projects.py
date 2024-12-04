@@ -1672,5 +1672,52 @@ def list_major_interview_descriptions(request, project_id, round_id):
                     'majors': majors,
                   })
 
+@user_login_required
+def list_major_interview_status(request, project_id, round_id):
+    user = request.user
+    project = get_object_or_404(AdmissionProject, pk=project_id)
+    admission_round = get_object_or_404(AdmissionRound, pk=round_id)
+    project_round = project.get_project_round_for(admission_round)
+
+    if not user.profile.is_admission_admin:
+        return redirect(reverse('backoffice:index'))
+
+    majors = list(project.major_set.all())
+
+    mmap = { m.id:m for m in majors }
+    for m in majors:
+        m.interview_status = {
+            'calls': 0,
+            'accepted': 0,
+            'rejected': 0,
+            'absent': 0,
+            'left': 0,
+        }
+
+    for res in AdmissionResult.objects.filter(admission_project=project,
+                                              is_accepted_for_interview=True):
+        m = mmap[res.major_id]
+        m.interview_status['calls'] += 1
+        if res.is_accepted:
+            m.interview_status['accepted'] += 1
+        elif res.is_accepted == False:
+            m.interview_status['rejected'] += 1
+        elif res.is_interview_absent:
+            m.interview_status['absent'] += 1
+
+    for m in majors:
+        m.interview_status['left'] = (m.interview_status['calls']
+                                      - m.interview_status['accepted']
+                                      - m.interview_status['rejected']
+                                      - m.interview_status['absent'])
+    
+    return render(request,
+                  'backoffice/projects/list_major_interview_status.html',
+                  { 'project': project,
+                    'admission_round': admission_round,
+
+                    'majors': majors,
+                  })
+
 
 
