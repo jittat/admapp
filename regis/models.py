@@ -26,6 +26,11 @@ class Applicant(models.Model):
                                                  null=True,
                                                  on_delete=models.SET_NULL)
 
+    accepted_application = models.OneToOneField('appl.ProjectApplication',
+                                                related_name='accepted_applicant',
+                                                null=True,
+                                                on_delete=models.SET_NULL)
+
     additional_data = models.CharField(max_length=50,
                                        blank=True)
     

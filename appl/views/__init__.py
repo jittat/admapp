@@ -300,8 +300,11 @@ def index_with_active_application(request, active_application, admission_round=N
 def index(request, admission_round_id='0'):
     applicant = request.applicant
 
-    if applicant.confirmed_application:
-        active_application = applicant.confirmed_application
+    if (applicant.confirmed_application) or (applicant.accepted_application):
+        if applicant.confirmed_application:
+            active_application = applicant.confirmed_application
+        else:
+            active_application = applicant.accepted_application
         admission_round = active_application.admission_round
         return index_with_active_application(request, active_application, admission_round)
 
