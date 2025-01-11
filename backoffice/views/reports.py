@@ -580,7 +580,8 @@ def download_applicants_score_sheet(request,
     if not can_user_view_applicants_in_major(user, project, major):
         return redirect(reverse('backoffice:index'))
 
-    if admission_round.id == 5:
+    # TODO: fix this
+    if admission_round.id == -1:
         all_applicants = load_major_applicants(project,
                                                admission_round,
                                                major,
