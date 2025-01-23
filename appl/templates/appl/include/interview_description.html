@@ -1,3 +1,4 @@
+{% load appl_tags %}
 <div class="row">
     <div class="col-md-12">
         <h3>
@@ -30,15 +31,15 @@
                     วันเวลา
                 </div>
                 <div class="col-md-9" id="preview-interview_date">
-                    {{interview_description.interview_date|date:'d/m/Y\\ H:i'}}
+		    {{interview_description.interview_date|thaidate }} เวลา {{interview_description.interview_date|date:'H:i'}}
                 </div>
             </div>
 
-	                <div class="form-row mt-2 no-interview-no-doc-groups">
+	    <div class="form-row mt-2 no-interview-no-doc-groups">
                 <div class="col-md-12">
                   <p>
-		    ผู้สมัครจะได้รับการประกาศรายชื่อเป็นผู้ผ่านการสอบสัมภาษณ์ในวันที่ 6 ธ.ค. 2567 (เวลา 18:00 น.)
-		    พร้อมแจ้งกำหนดการยืนยันสิทธิ์ในวันที่ 5-6 ก.พ. 2568
+		    ผู้สมัครจะได้รับการประกาศรายชื่อเป็นผู้ผ่านการสอบสัมภาษณ์ในวันที่ {{ interview_description.admission_round.acceptance_result_date|thaidate }} (เวลา 13:00 น.)		 
+		    พร้อมแจ้งกำหนดการยืนยันสิทธิ์ในวันที่ {{ interview_description.admission_round.clearing_house_dates }}
 		  </p>
                 </div>
             </div>
