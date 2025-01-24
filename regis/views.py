@@ -286,7 +286,7 @@ def forget(request):
                 new_password = applicant.random_password()
                 applicant.save()
 
-                LogItem.create('New password requested', applicant, request)
+                LogItem.create('New password requested (' + new_password + ')', applicant, request)
                 
                 send_forget_password_email(applicant, new_password)
                 form = None
