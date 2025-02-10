@@ -23,7 +23,7 @@ def main():
     for application in applications:
         applicant = application.applicant
         admission_results = AdmissionResult.objects.filter(applicant=applicant).all()
-        accepted_results = [res for res in admission_results if res.is_accepted]
+        accepted_results = [res for res in admission_results if res.has_confirmed]
 
         if len(accepted_results) != 1:
             continue

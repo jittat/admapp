@@ -106,19 +106,25 @@ def check_project_documents(applicant,
             status = False
             errors.append('ยังไม่ได้อัพโหลด' + d.title)
 
-    if admission_project.id in DOCUMENT_CONDITIONS:
-        orkeys = DOCUMENT_CONDITIONS[admission_project.id][0]
-        msg = DOCUMENT_CONDITIONS[admission_project.id][1]
 
+    or_keys = {}
+    for d in project_uploaded_documents:
+        if d.requirement_key != '':
+            if d.requirement_key not in or_keys:
+                or_keys[d.requirement_key] = [d]
+            else:
+                or_keys[d.requirement_key].append(d)
+
+    for key in or_keys:
+        documents = or_keys[key]
         or_status = False
-        for d in project_uploaded_documents:
-            if (d.document_key in orkeys) and (len(d.applicant_uploaded_documents) > 0):
+        for d in documents:
+            if len(d.applicant_uploaded_documents) > 0:
                 or_status = True
-
         if not or_status:
-            errors.append(msg)
+            errors.append('ยังไม่ได้อัพโหลด' + ' หรือ '.join([d.title for d in documents]))
             status = False
-        
+            
     for c in supplement_configs:
         if callable(c.is_required):
             is_required = c.is_required(applicant,

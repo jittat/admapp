@@ -47,7 +47,10 @@ def main():
             document.is_required = (items[11].strip() == '1')
             document.is_detail_required = (items[12].strip() == '1')
             document.can_have_multiple_files = (items[13].strip() == '1')
-        
+
+            if items[11].strip() not in ['0','1']:
+                document.requirement_key = items[11].strip()
+            
             document.save()
 
             project_ids = items[0].strip().split(',')
