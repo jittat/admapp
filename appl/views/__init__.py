@@ -63,10 +63,26 @@ def load_supplement_blocks(request, applicant, admission_project, admission_roun
                                                              config))
     return supplement_blocks    
 
+def check_project_document_condition(applicant,
+                                     admission_project,
+                                     major_selection,
+                                     conditions):
+    if not major_selection:
+        return False
+    for cond in conditions.split(","):
+        items = cond.strip().split("-")
+        project_id, major_number = items[1],items[2]
+        if int(project_id) == admission_project.id:
+            if major_selection.contains_major_number(major_number):
+                return True
+    return False
+
+
 def check_project_documents(applicant,
                             admission_project,
                             supplement_configs,
-                            project_uploaded_documents):
+                            project_uploaded_documents,
+                            major_selection=None):
     status = True
     errors = []
 
@@ -74,7 +90,6 @@ def check_project_documents(applicant,
         if d.is_required and len(d.applicant_uploaded_documents) == 0:
             status = False
             errors.append('ยังไม่ได้อัพโหลด' + d.title)
-
 
     or_keys = {}
     for d in project_uploaded_documents:
@@ -85,6 +100,10 @@ def check_project_documents(applicant,
                 or_keys[d.requirement_key].append(d)
 
     for key in or_keys:
+        if key.startswith('if'):
+            if not check_project_document_condition(applicant, admission_project, major_selection, key):
+                continue
+            
         documents = or_keys[key]
         or_status = False
         for d in documents:
@@ -169,7 +188,8 @@ def index_with_active_application(request, active_application, admission_round=N
     documents_complete_status = check_project_documents(applicant,
                                                         admission_project,
                                                         supplement_configs,
-                                                        list(common_uploaded_documents) + list(project_uploaded_documents))
+                                                        list(common_uploaded_documents) + list(project_uploaded_documents),
+                                                        major_selection)
     admission_projects = []
     has_confirmed = False
     
@@ -676,7 +696,8 @@ def check_application_documents(request):
     documents_complete_status = check_project_documents(applicant,
                                                         admission_project,
                                                         supplement_configs,
-                                                        list(common_uploaded_documents) + list(project_uploaded_documents))
+                                                        list(common_uploaded_documents) + list(project_uploaded_documents),
+                                                        major_selection)
         
     admission_fee = active_application.admission_fee(major_selection)
 

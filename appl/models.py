@@ -867,7 +867,13 @@ class MajorSelection(models.Model):
     def has_applied_to_major(self, major):
         return major.number in self.get_major_numbers()
 
+    def contains_major_number(self, number):
+        if (not self.major_list) or (self.major_list == ''):
+            return False
+        number = str(number)
+        return number in self.major_list.split(",")
 
+    
 class Payment(models.Model):
     applicant = models.ForeignKey(Applicant,
                                   null=True,
