@@ -63,37 +63,6 @@ def load_supplement_blocks(request, applicant, admission_project, admission_roun
                                                              config))
     return supplement_blocks    
 
-DOCUMENT_CONDITIONS = {
-    1: (['ele-port','ele-link'],
-        'ยังไม่ได้อัพโหลดประวัติผลงานหรือลิงก์ผลงาน'),
-    101: (['ele12-port','ele12-link'],
-          'ยังไม่ได้อัพโหลดประวัติผลงานหรือลิงก์ผลงาน'),
-    3: (['inter-port','inter-link'],
-        'ยังไม่ได้อัพโหลดประวัติผลงานหรือลิงก์ผลงาน'),
-    103: (['inter12-port','inter12-link'],
-          'ยังไม่ได้อัพโหลดประวัติผลงานหรือลิงก์ผลงาน'),
-    8: (['dpst-port','dpst-link'],
-        'ยังไม่ได้อัพโหลดประวัติผลงานหรือลิงก์ผลงาน'),
-    9: (['posn-port','posn-link'],
-        'ยังไม่ได้อัพโหลดประวัติผลงานหรือลิงก์ผลงาน'),
-    109: (['posn12-port','posn12-link'],
-          'ยังไม่ได้อัพโหลดประวัติผลงานหรือลิงก์ผลงาน'),
-    32: (['steam-port','steam-link'],
-        'ยังไม่ได้อัพโหลดประวัติผลงานหรือลิงก์ผลงาน'),
-    33: (['smt-port','smt-link'],
-        'ยังไม่ได้อัพโหลดประวัติผลงานหรือลิงก์ผลงาน'),
-    13: (['dia-cert','dia-link'],
-        'ยังไม่ได้อัพโหลดประวัติผลงานหรือลิงก์ผลงาน'),
-    23: (['mou-port','mou-link'],
-        'ยังไม่ได้อัพโหลดประวัติผลงานหรือลิงก์ผลงาน'),
-    24: (['vet-port','vet-link'],
-        'ยังไม่ได้อัพโหลดประวัติผลงานหรือลิงก์ผลงาน'),
-    35: (['med-port','med-link'],
-        'ยังไม่ได้อัพโหลด statement of purpose หรือลิงก์ไปยังเอกสาร'),
-    50: (['inter2-port','inter2-link'],
-        'ยังไม่ได้อัพโหลดประวัติผลงานหรือลิงก์ผลงาน'),
-}
-
 def check_project_documents(applicant,
                             admission_project,
                             supplement_configs,
