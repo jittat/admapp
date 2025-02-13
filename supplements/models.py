@@ -190,7 +190,7 @@ PROJECT_SUPPLEMENTS = {
                                 'supplements.views.forms.nat_sport.process_sport_history_form',
                                 'supplements/backoffice/nat_sport/sport_history.html'),
     ],
-    'โควตานักกีฬา': [
+    'นักกีฬา': [
         ProjectSupplementConfig('gen_sport_type',
                                 'ประเภทกีฬาและระดับ',
                                 True,
