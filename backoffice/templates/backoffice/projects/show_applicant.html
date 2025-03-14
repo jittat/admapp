@@ -12,7 +12,7 @@
 {% block content %}
   <div class="row" style="margin-top: -10px;">
     <div class="col-md-12">
-      <div class="float-right border rounded p5">
+      <div class="{% if hide_navigation %}d-none {% endif %}float-right border rounded p5">
         {% include 'backoffice/projects/include/applicant_nav.html' %}
       </div>
       <div>

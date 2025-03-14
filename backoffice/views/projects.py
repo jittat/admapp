@@ -608,8 +608,8 @@ def list_applicants(request, project_id, round_id):
     if applicant_info_viewable:
         from supplements.models import PROJECT_APPLICANT_LIST_ADDITIONS
 
-        if project.title in PROJECT_APPLICANT_LIST_ADDITIONS:
-            config = PROJECT_APPLICANT_LIST_ADDITIONS[project.title]
+        if project.short_title in PROJECT_APPLICANT_LIST_ADDITIONS:
+            config = PROJECT_APPLICANT_LIST_ADDITIONS[project.short_title]
             loader = config['loader']
             for app in applicants:
                 app.additional_info = loader(app,
@@ -618,6 +618,11 @@ def list_applicants(request, project_id, round_id):
             info_template = config['template']
             info_col_count = config['col_count']
             info_header_template = config['header_template']
+
+            if config['sort'] != None:
+                sort_function = config['sort']
+                applicants = sort_function(applicants)
+
 
     return render(request,
                   'backoffice/projects/list_applicants.html',
@@ -822,6 +827,10 @@ def show_applicant(request, project_id, round_id, major_number, rank):
                 instance['config'] = config
                 supplement_instances.append(instance)
 
+    hide_navigation = False
+    if request.GET.get('hidenav','') == 'true':
+        hide_navigation = True
+
     return render(request,
                   'backoffice/projects/show_applicant.html',
                   { 'project': project,
@@ -837,6 +846,7 @@ def show_applicant(request, project_id, round_id, major_number, rank):
                     'rank_choices': range(1,major_stat['total']+1),
                     'major_accepted_for_interview_count': major_accepted_for_interview_count,
                     'major_accepted_count': major_accepted_count,
+                    'hide_navigation': hide_navigation,
 
                     'uploaded_documents': uploaded_documents,
                     'education': education,

@@ -82,7 +82,8 @@
                   {% include info_template %}
                 {% endif %}
                 <td>
-                  <a class="btn btn-sm btn-outline-primary" target="_blank" rel="noopener noreferrer" href="{% url 'backoffice:projects-show-applicant' project.id admission_round.id applicant.major_number 0 %}?natid={{ applicant.national_id }}">พิจารณา</a>
+                  <a class="btn btn-sm btn-outline-primary" target="_blank" rel="noopener noreferrer" 
+                     href="{% url 'backoffice:projects-show-applicant' project.id admission_round.id applicant.major_number 0 %}?natid={{ applicant.national_id }}{% if not sorted_by_majors %}&hidenav=true{% endif %}">พิจารณา</a>
                 </td>
                 <td>
                   {% if applicant.check_marks %}

@@ -313,12 +313,48 @@ def load_applicant_ap_results(applicant,
             ap_app = ap_course_results[national_id]
             ap_app.course_results[SUBJECT_IDX[res.subject_id]] = res.grade
 
-        
-
     if applicant.national_id in ap_course_results:
         return ap_course_results[applicant.national_id]
     else:
         return None
+
+applicant_cultural_exams = None
+
+def load_applicant_culture_exam(applicant,
+                                admission_project,
+                                admission_round):
+
+    global applicant_cultural_exams
+
+    if not applicant_cultural_exams:
+        applicant_cultural_exams = {}
+        for s in ProjectSupplement.objects.filter(name='cultural_exam').all():
+            applicant_cultural_exams[s.applicant_id] = s
+
+    if applicant.id in applicant_cultural_exams:
+        return {'cultural_exam': applicant_cultural_exams[applicant.id].get_data()['cultural_exam'] }
+    else:
+        return {'cultural_exam': '-'}
+
+    
+def sort_cultural_applicants_with_supplements(applicants):
+    import locale
+    locale.setlocale(locale.LC_ALL, 'th_TH.utf8')
+
+    sorted_apps = sorted([((({True: 0, False: 1}[a.has_paid]),
+                            a.additional_info['cultural_exam'],
+                            locale.strxfrm(a.first_name),
+                            locale.strxfrm(a.last_name),
+                            a.id),
+                            a) for a in applicants])
+
+    applicants = [a[1] for a in sorted_apps]
+    r = 1
+    for a in applicants:
+        a.r = r
+        r += 1
+    return applicants
+
 
 PROJECT_APPLICANT_LIST_ADDITIONS = {
     'เรียนล่วงหน้า': {
@@ -326,5 +362,13 @@ PROJECT_APPLICANT_LIST_ADDITIONS = {
         'col_count': 4,
         'header_template': 'supplements/ap/applicant_info_head.html',
         'template': 'supplements/ap/applicant_info.html',
+        'sort': None,
+    },
+    'ศิลปวัฒนธรรม': {
+        'loader': load_applicant_culture_exam,
+        'col_count': 1,
+        'header_template': 'supplements/cultural/applicant_info_head.html',
+        'template': 'supplements/cultural/applicant_info.html',
+        'sort': sort_cultural_applicants_with_supplements,
     },
 }
