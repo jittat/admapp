@@ -81,6 +81,11 @@ urlpatterns = [
         name="projects-set-criteria-result",
     ),
     re_path(
+        r"^projects/applicants/(\d+)/(\d+)/(\d+)/(\d+)/mm-criteria/(.+)/$",
+        projects.set_multimajor_criteria_result,
+        name="projects-set-multimajor-criteria-result",
+    ),
+    re_path(
         r"^projects/applicants/(\d+)/(\d+)/(\d+)/(\d+)/interview/(.+)/$",
         projects.set_call_for_interview,
         name="projects-set-call-for-interview",

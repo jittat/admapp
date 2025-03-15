@@ -92,6 +92,13 @@ class CheckMarkGroup(models.Model):
     )
     check_marks = models.CharField(default="", max_length=20)
 
+    # This is for global criteria check.  
+    # We keep them here because CheckMarkGroup is created for each project application
+    # and is shared by all selected majors of the applicant.
+    is_multimajor_criteria_passed = models.BooleanField(default=None,
+                                                        null=True)
+    updated_multimajor_criteria_passed_at = models.DateTimeField(null=True)
+
     def is_checked(self, num):
         if len(self.check_marks) >= num:
             return self.check_marks[num - 1] == "1"

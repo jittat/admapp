@@ -3,6 +3,12 @@
   <div class="check-mark-groups d-inline-block">
     {% include 'backoffice/projects/include/check_mark_group.html' %}
   </div>
+  {% if frozen_results.multimajor_criteria_check_required %}
+    เกณฑ์โครงการ
+    <div id="multimajor_criteria_button_group_id" class="d-inline-block">
+      {% include 'backoffice/projects/include/multimajor_criteria_buttons.html' %}
+    </div> ||
+  {% endif %}
   &nbsp;
   ผลการพิจารณา:
   {% if has_paid %}
@@ -21,7 +27,7 @@
       <!-- buttons -->
 
       {% if frozen_results.criteria_check_required and not frozen_results.criteria %}
-        เกณฑ์ขั้นต่ำ
+        เกณฑ์ขั้นต่ำ{% if frozen_results.multimajor_criteria_check_required %}สำหรับสาขานี้{% endif %}
         <div id="criteria_button_group_id" class="d-inline-block">
           {% include 'backoffice/projects/include/criteria_buttons.html' %}
         </div>
@@ -60,10 +66,11 @@
   {% endif %}
 </div>
 <script>
-  var baseToggleUrl = '{% url 'backoffice:projects-check-mark-toggle' project.id admission_round.id applicant.national_id major.number 0 %}';
-  var baseSetCriteriaUrl = '{% url 'backoffice:projects-set-criteria-result' project.id admission_round.id applicant.national_id major.number 'x' %}';
-  var baseSetInterviewUrl = '{% url 'backoffice:projects-set-call-for-interview' project.id admission_round.id applicant.national_id major.number 'x' %}';
-  var baseSetAcceptanceUrl = '{% url 'backoffice:projects-set-acceptance' project.id admission_round.id applicant.national_id major.number 'x' %}';
+  var baseToggleUrl = "{% url 'backoffice:projects-check-mark-toggle' project.id admission_round.id applicant.national_id major.number 0 %}";
+  var baseSetCriteriaUrl = "{% url 'backoffice:projects-set-criteria-result' project.id admission_round.id applicant.national_id major.number 'x' %}";
+  var baseSetMultimajorCriteriaUrl = "{% url 'backoffice:projects-set-multimajor-criteria-result' project.id admission_round.id applicant.national_id major.number 'x' %}";
+  var baseSetInterviewUrl = "{% url 'backoffice:projects-set-call-for-interview' project.id admission_round.id applicant.national_id major.number 'x' %}";
+  var baseSetAcceptanceUrl = "{% url 'backoffice:projects-set-acceptance' project.id admission_round.id applicant.national_id major.number 'x' %}";
 
   var saveResult = function(elt, baseUrl, buttonGroupSelector, countSelector) {
     var decision = $(elt).data('decision');
@@ -97,6 +104,11 @@
     
     $('#criteria_button_group_id').on('click','.criteria-selection-buttons', function() {
       saveResult(this, baseSetCriteriaUrl, '#criteria_button_group_id');
+      return false;
+    });
+
+    $('#multimajor_criteria_button_group_id').on('click','.multimajor-criteria-selection-buttons', function() {
+      saveResult(this, baseSetMultimajorCriteriaUrl, '#multimajor_criteria_button_group_id');
       return false;
     });
 

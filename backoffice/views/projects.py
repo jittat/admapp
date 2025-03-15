@@ -636,6 +636,7 @@ def list_applicants(request, project_id, round_id):
                     'info_header_template': info_header_template,
 
                     'has_criteria_check': project_round.criteria_check_required,
+                    'has_multimajor_criteria_check': project_round.multimajor_criteria_check_required,
 
                     'sorted_by_majors': sorted_by_majors,
                     'applicant_info_viewable': applicant_info_viewable,
@@ -790,6 +791,8 @@ def show_applicant(request, project_id, round_id, major_number, rank):
         is_accepted_for_interview = None
         is_accepted = False
 
+    is_multimajor_criteria_passed = check_mark_group.is_multimajor_criteria_passed
+
     if not project_round.criteria_check_required:
         is_criteria_passed = True
 
@@ -805,6 +808,8 @@ def show_applicant(request, project_id, round_id, major_number, rank):
 
     frozen_results = {
         'criteria_check_required': project_round.criteria_check_required,
+        'multimajor_criteria_check_required': project_round.multimajor_criteria_check_required,
+
         'criteria': (not project_round.criteria_check_required) or project_round.criteria_check_frozen,
         'interview': project_round.accepted_for_interview_result_frozen,
         'acceptance': project_round.accepted_result_frozen or project_round.accepted_result_shown
@@ -853,6 +858,7 @@ def show_applicant(request, project_id, round_id, major_number, rank):
                     'personal': personal,
 
                     'is_criteria_passed': is_criteria_passed,
+                    'is_multimajor_criteria_passed': is_multimajor_criteria_passed,
                     'is_accepted_for_interview': is_accepted_for_interview,
                     'is_accepted': is_accepted,
 
@@ -1122,6 +1128,61 @@ def set_criteria_result(request, project_id, round_id, national_id, major_number
     template = loader.get_template('backoffice/projects/include/criteria_buttons.html')
 
     html = template.render({ 'is_criteria_passed': is_criteria_passed }, request)
+
+    return HttpResponse(json.dumps({ 'result': 'OK',
+                                     'html': html }),
+                        content_type='application/json')
+
+
+@user_login_required
+def set_multimajor_criteria_result(request, project_id, round_id, national_id, major_number, decision):
+    can_view, error_response = load_applicant_application_and_check_permission(request,
+                                                                               project_id,
+                                                                               round_id,
+                                                                               national_id,
+                                                                               major_number)
+    if not can_view:
+        return error_response
+
+    user = request.user
+    applicant = request.applicant
+    admission_round = request.admission_round
+    major = request.major
+    application = request.application
+
+    if request.project_round.criteria_check_frozen:
+        return HttpResponseForbidden()
+
+
+    if hasattr(application,'check_mark_group'):
+        check_mark_group = application.check_mark_group
+    else:
+        check_mark_group = CheckMarkGroup(applicant=applicant,
+                                          project_application=application)
+        check_mark_group.save()
+
+    if check_mark_group.check_marks == '':
+        check_mark_group.init_marks()
+
+    if decision == 'accepted':
+        check_mark_group.is_multimajor_criteria_passed = True
+    else:
+        check_mark_group.is_multimajor_criteria_passed = False
+    check_mark_group.updated_multimajor_criteria_passed_at = datetime.now()
+
+    check_mark_group.save()
+
+    LogItem.create('Multimajor criteria decision ({0}) by {1}'.format(decision,
+                                                                      user.username),
+                   applicant,
+                   request)
+
+    is_multimajor_criteria_passed = check_mark_group.is_multimajor_criteria_passed
+
+    from django.template import loader
+    template = loader.get_template('backoffice/projects/include/multimajor_criteria_buttons.html')
+
+    html = template.render({ 'is_multimajor_criteria_passed': is_multimajor_criteria_passed }, request)
 
     return HttpResponse(json.dumps({ 'result': 'OK',
                                      'html': html }),

@@ -273,6 +273,8 @@ class AdmissionProjectRound(models.Model):
                                                   verbose_name='สามารถดูรายละเอียดผู้สมัครได้')
     criteria_check_required = models.BooleanField(default=False,
                                                   verbose_name='มีการตรวจเกณฑ์พื้นฐานก่อน')
+    multimajor_criteria_check_required = models.BooleanField(default=False,
+                                                             verbose_name='มีการตรวจเกณฑ์พื้นฐานสำหรับการสมัครหลายสาขา')
     criteria_check_frozen = models.BooleanField(default=False,
                                                 verbose_name='ปิดการแก้ไขผลการตรวจเกณฑ์พื้นฐาน')
 

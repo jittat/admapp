@@ -32,7 +32,7 @@
                 {% include info_header_template %}
               {% endif %}
               <th></th>
-              <th style="width: 100px;"></th>
+              <th style="width: {% if has_multimajor_criteria_check %}120px{% else %}100px{% endif %};"></th>
               {% if has_criteria_check %}
                 <th>เกณฑ์</th>
               {% endif %}
@@ -96,6 +96,12 @@
                             <i class="fa fa-circle-thin" style="color:#bbbbbb;"></i>
                           {% endif %}
                         {% endfor %}
+                        {% if applicant.check_marks.is_multimajor_criteria_passed %}
+                          <span class="badge badge-success"><i class="fa fa-check"></i></span>
+                        {% endif %}
+                        {% if applicant.check_marks.is_multimajor_criteria_passed == False%}
+                        <span class="badge badge-danger"><i class="fa fa-close"></i></span>
+                        {% endif %}
                       </small>
                     </div>
                   {% endif %}
