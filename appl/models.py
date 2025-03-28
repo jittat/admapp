@@ -277,6 +277,8 @@ class AdmissionProjectRound(models.Model):
                                                              verbose_name='มีการตรวจเกณฑ์พื้นฐานสำหรับการสมัครหลายสาขา')
     criteria_check_frozen = models.BooleanField(default=False,
                                                 verbose_name='ปิดการแก้ไขผลการตรวจเกณฑ์พื้นฐาน')
+    criteria_edit_only_staff_allowed = models.BooleanField(default=False,
+                                                          verbose_name='อนุญาตให้เจ้าหน้าที่แก้ไขเกณฑ์พื้นฐานเท่านั้น')
 
     applicant_score_viewable = models.BooleanField(default=False,
                                                    verbose_name='แสดงคะแนนสำหรับการคัดเลือก')
