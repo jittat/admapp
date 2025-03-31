@@ -140,6 +140,11 @@ CRITERIA_OPTIONS = {
         { "score_type": "SWU_SET", "description": "SWU-SET", "unit": "คะแนน" },
         { "score_type": "DET", "description": "Duolingo English Test", "unit": "คะแนน" },
         { "score_type": "MU_ELT", "description": "MU-ELT", "unit": "คะแนน" },
+
+        { "score_type": "TS_TGAT1", "description": "T-Score ของวิชา TGAT1 การสื่อสารภาษาอังกฤษ", "unit": "คะแนน" },
+        { "score_type": "TS_TPAT3", "description": "T-Score ของวิชา TPAT3 ความถนัดวิทยาศาสตร์ เทคโนโลยี วิศวกรรมศาสตร์", "unit": "คะแนน" },
+        { "score_type": "TS_A61Math1", "description": "T-Score ของวิชา A-Level Math1 คณิตศาสตร์ประยุกต์ 1", "unit": "คะแนน" },
+        { "score_type": "TS_A64Phy", "description": "T-Score ของวิชา A-Level Phy ฟิสิกส์", "unit": "คะแนน" },
     ]
 }
 

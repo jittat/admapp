@@ -209,6 +209,11 @@ SCORE_TYPE_FIELD_MAP = {
     "SWU_SET": 'min_swu_set',
     "DET": 'min_det',
     "MU_ELT": 'min_mu_elt',
+
+    "TS_TGAT1": 'min_tgat1_tscore',
+    "TS_TPAT3": 'min_tpat3_tscore',
+    "TS_A61Math1": 'min_a_lv_61_tscore',
+    "TS_A64Phy": 'min_a_lv_64_tscore',
 }
 
 def print_error(*args, **kwargs):
