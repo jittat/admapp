@@ -1100,7 +1100,8 @@ def set_criteria_result(request, project_id, round_id, national_id, major_number
     if request.project_round.criteria_check_frozen:
         return HttpResponseForbidden()
 
-    if request.project_round.criteria_edit_only_staff_allowed and (not user.is_staff):
+    if (request.project_round.criteria_edit_only_staff_allowed and 
+        (not user.is_staff) and (user.profile.has_criteria_check_permission == False)):
         return HttpResponseForbidden()
 
     admission_result = AdmissionResult.get_for_application_and_major(application, major)

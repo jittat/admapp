@@ -44,6 +44,9 @@ class Profile(models.Model):
     )
     adjustment_major_number = models.CharField(max_length=20, blank=True)
 
+    has_criteria_check_permission = models.BooleanField(verbose_name="สามารถตรวจสอบเกณฑ์พื้นฐานได้พิเศษ", 
+                                                        default=False)
+
     def __str__(self):
         if self.faculty:
             return self.user.get_full_name() + " (" + str(self.faculty) + ")"
