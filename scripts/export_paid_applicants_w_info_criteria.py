@@ -4,6 +4,7 @@ bootstrap()
 import sys
 
 from appl.models import AdmissionProject, AdmissionRound, ProjectApplication, Payment, AdmissionResult, Major
+from backoffice.models import CheckMarkGroup
 
 def compute_amount_paid(admission_round):
     payments = Payment.objects.filter(admission_round=admission_round).all()
@@ -21,7 +22,26 @@ def compute_amount_paid(admission_round):
     return amount_paid
 
 
-def print_applicant_info(applicant, major_numbers, admission_project):
+def load_check_marks(applicant, admission_project):
+    groups = (CheckMarkGroup
+              .objects
+              .select_related('project_application')
+              .filter(project_application__admission_project=admission_project)
+              .filter(applicant=applicant)
+              .all())
+    if len(groups) > 0:
+        return groups[0]
+    else:
+        return None    
+
+def print_applicant_info(applicant, major_numbers, admission_project, 
+                         has_multimajor_criteria_check=False):
+    project_criteria_passed = True
+    if has_multimajor_criteria_check:
+        check_marks = load_check_marks(applicant, admission_project)
+        if check_marks:
+            project_criteria_passed = check_marks.is_multimajor_criteria_passed
+
     items = ['"%s"' % applicant.national_id, applicant.get_full_name()]
     education = applicant.educationalprofile
     items.append('%.3f' % education.gpa)
@@ -36,7 +56,10 @@ def print_applicant_info(applicant, major_numbers, admission_project):
         major = Major.objects.filter(admission_project=admission_project, number=m).first()
         result = AdmissionResult.objects.filter(applicant=applicant, major=major).first()
         if result:
-            items.append(str(result.is_criteria_passed))
+            if project_criteria_passed == False:
+                items.append('False')
+            else:
+                items.append(str(result.is_criteria_passed))
         else:
             items.append('None')
 
@@ -51,6 +74,7 @@ def main():
 
     admission_project = AdmissionProject.objects.get(pk=project_id)
     admission_round = AdmissionRound.objects.get(pk=round_id)
+    project_round = admission_project.get_project_round_for(admission_round)
 
     applicants = ProjectApplication.objects.filter(admission_project=admission_project,
                                                    admission_round=admission_round,
@@ -73,7 +97,10 @@ def main():
         if amount_paid[national_id] < admission_fee:
             continue
 
-        print_applicant_info(app.applicant, majors.get_major_numbers(), admission_project)
+        print_applicant_info(app.applicant, 
+                             majors.get_major_numbers(), 
+                             admission_project,
+                             project_round.multimajor_criteria_check_required)
 
     
 if __name__ == '__main__':
