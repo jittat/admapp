@@ -673,11 +673,35 @@ def list_applicants_by_majors(request, project_id, round_id):
         majors[num].applicants = []
         
     applicants = load_project_applicants(project, admission_round, faculty)
+
+    if applicant_info_viewable:
+        load_check_marks_and_results(applicants,
+                                     project,
+                                     admission_round,
+                                     project_round)
+
+    result_map = {}
+    for applicant in applicants:
+        if getattr(applicant, 'admission_results', None) == None:
+            continue
+        for r in applicant.admission_results:
+            if applicant.id not in result_map:
+                result_map[r.applicant_id] = {}
+            result_map[r.applicant_id][r.major_id] = r
+
     for a in applicants:
         r = 1
         for m in a.majors:
             if m.number in majors:
-                majors[m.number].applicants.append({'applicant': a, 'rank': r, 'paid': a.has_paid})
+                if (a.id in result_map) and (m.id in result_map[a.id]):
+                    res = result_map[a.id][m.id]
+                else:
+                    res = None
+
+                majors[m.number].applicants.append({'applicant': a, 
+                                                    'rank': r, 
+                                                    'paid': a.has_paid,
+                                                    'result': res})
             r += 1
     for num in majors:
        sorted_applicants = sorted([(not a['paid'],a['rank'],a['applicant'].national_id,a) for a in majors[num].applicants])
@@ -692,6 +716,8 @@ def list_applicants_by_majors(request, project_id, round_id):
                     'majors': majors.values(),
 
                     'has_criteria_check': project_round.criteria_check_required,
+                    'has_multimajor_criteria_check': project_round.multimajor_criteria_check_required,                    
+
                     'applicant_info_viewable': applicant_info_viewable,
                   })
 

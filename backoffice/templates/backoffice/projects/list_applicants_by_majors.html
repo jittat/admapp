@@ -16,10 +16,13 @@
             <th>รหัสประชาชน</th>
             <th>ชื่อ-นามสกุล</th>
             <th>ค่าสมัคร</th>
-	    <th>อันดับที่เลือก</th>
+            <th>อันดับที่เลือก</th>
             <th>สาขา</th>
             {% if applicant_info_viewable %}
               {% if has_criteria_check %}
+                {% if has_multimajor_criteria_check %}
+                  <th></th>
+                {% endif %}
                 <th>เกณฑ์</th>
               {% endif %}
               <th>สัมภาษณ์</th>
@@ -31,24 +34,45 @@
         <tbody>
 	  {% for m in majors %}
 	    <tr class="table-info">
-              <th colspan="1000" class="text-center">
-		{{ m.number }}. {{ m }} ({{ m.faculty }})
-              </th>
-            </tr>
+        <th colspan="1000" class="text-center">
+          {{ m.number }}. {{ m }} ({{ m.faculty }})
+        </th>
+      </tr>
 	    {% for a in m.applicants %}
 	      {% with a.applicant as applicant %}
-		<tr class="applican-items">
-		  <td class="app-number">{{ applicant.r }}</td>
-		  <td><a href="{% url 'backoffice:show-applicant-in-project' applicant.national_id project.id %}">{{ applicant.national_id }}</a></td>
-		  <td>{{ applicant.get_full_name }}</td>
-		  <td class="text-center">
-                    {% if applicant.has_paid %}
-                      <i class="fa fa-check text-success"></i>
+          <tr class="applican-items">
+            <td class="app-number">{{ applicant.r }}</td>
+            <td><a href="{% url 'backoffice:show-applicant-in-project' applicant.national_id project.id %}">{{ applicant.national_id }}</a></td>
+            <td>{{ applicant.get_full_name }}</td>
+            <td class="text-center">
+                          {% if applicant.has_paid %}
+                            <i class="fa fa-check text-success"></i>
+                          {% endif %}
+            </td>
+            <td>{{ a.rank }}</td>
+            <td>{{ m }}</td>
+            {% if applicant_info_viewable %}
+              {% if has_criteria_check %}
+                {% if has_multimajor_criteria_check %}
+                  <td class="text-center">
+                    {% if a.applicant.check_marks.is_multimajor_criteria_passed %}
+                      <span class="badge badge-success"><i class="fa fa-check"></i></span>
                     {% endif %}
-		  </td>
-		  <td>{{ a.rank }}</td>
-		  <td>{{ m }}</td>
-		</tr>
+                    {% if a.applicant.check_marks.is_multimajor_criteria_passed == False%}
+                      <span class="badge badge-danger"><i class="fa fa-close"></i></span>
+                    {% endif %}                  
+                  </td>
+                {% endif %}
+                <td class="text-center">  
+                  {% if a.result.is_criteria_passed %}
+                    <span class="badge badge-success">ผ่าน</span>
+                  {% elif a.result.is_criteria_passed == False %}
+                    <span class="badge badge-danger">ไม่ผ่าน</span>
+                  {% endif %}
+                </td>
+              {% endif %}
+            {% endif %}
+          </tr>
 	      {% endwith %}
 	    {% empty %}
 	      <tr class="applican-items">
