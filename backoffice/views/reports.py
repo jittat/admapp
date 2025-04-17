@@ -381,15 +381,17 @@ def write_score_report_header(sheet, major, cell_format):
     ]
     items += [
         'TGAT',
-        'TG1','TG2','TG3',
+        'TG1','TG1\nTS','TG2','TG3',
         'TP1',
         'TP2',
         'TP21','TP22','TP23',
-        'TP3','TP4','TP5',
+        'TP3','TP3\nTS','TP4','TP5',
         'A61\nMa1',
+        'A61\nMa1\nTS',
         'A62\nMa2',
         'A63\nSci',
         'A64\nPhy',
+        'A64\nPhy\nTS',
         'A65\nChm',
         'A66\nBio',
         'A70\nSoc',
@@ -409,10 +411,10 @@ def write_score_report_sheet(sheet, project, applicants, major, cell_format):
     
     sheet.set_landscape()
     set_column_widths(sheet,[3,11,6,9,14,4,8,
-                             3.6,3.6,3.6,3.6,         #TGAT
+                             3.6,3.6,3.6,3.6,3.6,         #TGAT
                              3.6,3.6,3.6,3.6,3.6,     #TPAT1-2
-                             3.6,3.6,3.6,             #TPAT3-4-5
-                             3.6,3.6,3.6,3.6,3.6,3.6, #A61-66
+                             3.6,3.6,3.6,3.6,             #TPAT3-4-5
+                             3.6,3.6,3.6,3.6,3.6,3.6,3.6,3.6, #A61-66
                              3.6,3.6,3.6,7,         #A70,81,82,8x
                              7])
     sheet.write(0,0,'รายงานคะแนนโครงการ' + project.title)
@@ -439,6 +441,7 @@ def write_score_report_sheet(sheet, project, applicants, major, cell_format):
             items += [
                 score_filter(scores.tgattpat['tgat']),
                 score_filter(scores.tgattpat['tgat1']),
+                score_filter(scores.tgattpat['tgat1_tscore']),
                 score_filter(scores.tgattpat['tgat2']),
                 score_filter(scores.tgattpat['tgat3']),
                 score_filter(scores.tgattpat['tpat1']),
@@ -447,6 +450,7 @@ def write_score_report_sheet(sheet, project, applicants, major, cell_format):
                 score_filter(scores.tgattpat['tpat22']),
                 score_filter(scores.tgattpat['tpat23']),
                 score_filter(scores.tgattpat['tpat3']),
+                score_filter(scores.tgattpat['tpat3_tscore']),
                 score_filter(scores.tgattpat['tpat4']),
                 score_filter(scores.tgattpat['tpat5']),
             ]
@@ -456,9 +460,11 @@ def write_score_report_sheet(sheet, project, applicants, major, cell_format):
         if hasattr(scores,'alevel'):
             items += [
                 score_filter(scores.alevel['a_lv_61']),
+                score_filter(scores.alevel['a_lv_61_tscore']),
                 score_filter(scores.alevel['a_lv_62']),
                 score_filter(scores.alevel['a_lv_63']),
                 score_filter(scores.alevel['a_lv_64']),
+                score_filter(scores.alevel['a_lv_64_tscore']),
                 score_filter(scores.alevel['a_lv_65']),
                 score_filter(scores.alevel['a_lv_66']),
                 score_filter(scores.alevel['a_lv_70']),
@@ -546,6 +552,7 @@ def download_applicants_interview_score_sheet(request,
     bordered_cell_format = workbook.add_format()
     bordered_cell_format.set_border(1)
     bordered_cell_format.set_font_size(9)
+    bordered_cell_format.set_text_wrap(True)
 
     write_score_report_sheet(score_worksheet,
                              project,
@@ -609,6 +616,7 @@ def download_applicants_score_sheet(request,
     bordered_cell_format = workbook.add_format()
     bordered_cell_format.set_border(1)
     bordered_cell_format.set_font_size(9)
+    bordered_cell_format.set_text_wrap(True)
 
     write_score_report_sheet(score_worksheet,
                              project,
@@ -618,7 +626,7 @@ def download_applicants_score_sheet(request,
     workbook.close()
     output.seek(0)
 
-    filename = 'interview-score-{}-{}-{}.xlsx'.format(project_id, round_id, major_number)
+    filename = 'applicant-score-{}-{}-{}.xlsx'.format(project_id, round_id, major_number)
     response = HttpResponse(output.read(),
                             content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
     response['Content-Disposition'] = 'attachment; filename="{}"'.format(filename)
