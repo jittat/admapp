@@ -1378,22 +1378,6 @@ def show_scores(request, project_id, round_id, major_number):
 
     
     show_udat_scores = False
-
-    UDAT_USAGES= {
-        11: [69, 96, 99],
-        12: [11, 14, 50, 51],
-        13: [6, 56, 59, 60],
-        14: [2, 7, 27, 43],
-        15: [2, 8],
-        16: [16, 49, 58, 84, 87],
-        22: [3],
-        23: [1, 3],
-        26: [1],
-        31: [25, 28, 29, 32, 33, 34, 35, 37, 40, 41, 44, 48],
-    }
-
-    if project.id in UDAT_USAGES:
-        show_udat_scores = major.number in UDAT_USAGES[project.id]
     
     applicant_score_viewable = project_round.applicant_score_viewable
     individual_call_only = (not project_round.only_bulk_interview_acceptance) or (major.is_forced_individual_interview_call)
@@ -1436,6 +1420,9 @@ def show_scores(request, project_id, round_id, major_number):
     if individual_call_only:
         project_round.accepted_for_interview_result_frozen = True
         
+
+    menu_flags = ProjectMenuConfig.load_menu_config_flags(admission_round, project)
+
     return render(request,
                   'backoffice/projects/show_applicant_scores.html',
                   { 'project': project,
@@ -1458,6 +1445,7 @@ def show_scores(request, project_id, round_id, major_number):
                     'cross_major_titles': cross_major_titles,
 
                     'show_udat_scores': show_udat_scores,
+                    'menu_flags': menu_flags,
 
                     'is_tcas_project': is_tcas_project,
                   })

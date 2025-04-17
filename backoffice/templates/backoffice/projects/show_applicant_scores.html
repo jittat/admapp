@@ -32,6 +32,13 @@
           </ul>
         </small>
       </div>
+
+      {% if menu_flags.applicant_score_list_message %}
+        <div class="alert alert-warning">
+          {{ menu_flags.applicant_score_list_message|safe }}
+        </div>
+      {% endif %}
+
       {% include "backoffice/projects/include/score_table/applicant_score_table.html" %}
     </div>
   </div>

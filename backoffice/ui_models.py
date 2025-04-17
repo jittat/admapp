@@ -34,6 +34,10 @@ DEFAULT_MENU_FLAGS = {
     'download-scores-only-interview': False,
     'download-gen-info-interview': False,
     'download-interview-form': False,
+
+    # messages
+    'project_index_message': "",
+    'applicant_score_list_message': "",
 }
 
 class ProjectMenuConfig(models.Model):
@@ -56,7 +60,6 @@ class ProjectMenuConfig(models.Model):
             return str(self.admission_project)
         else:
             return '(empty)'
-
 
     def clean(self):
         if (self.admission_round_id == None) and (self.admission_project_id == None):
