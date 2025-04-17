@@ -17,12 +17,12 @@
       {% include "backoffice/projects/include/score_table/tgattpat_header.html" %}
       {% include "backoffice/projects/include/score_table/alevel_header.html" %}
       {% comment %}
-      {% include "backoffice/projects/include/score_table/onet_header.html" %}
-      {% include "backoffice/projects/include/score_table/gatpat_header.html" %}
-      {% include "backoffice/projects/include/score_table/udat_header.html" %}
+        {% include "backoffice/projects/include/score_table/onet_header.html" %}
+        {% include "backoffice/projects/include/score_table/gatpat_header.html" %}
+        {% include "backoffice/projects/include/score_table/udat_header.html" %}
       {% endcomment %}
       {% comment %}
-      {% include "backoffice/projects/include/score_table/additional_hack_header.html" %}
+        {% include "backoffice/projects/include/score_table/additional_hack_header.html" %}
       {% endcomment %}
       {% if applicant_score_viewable %}
         <th>คะแนน</th>
@@ -67,6 +67,7 @@
         {% with a as applicant %}
           <td class="gatpat-odd">{{ applicant.get_all_exam_scores.tgattpat.tgat|score }}</td>
           <td class="gatpat-even onet-extra" style="display: none;">{{ applicant.get_all_exam_scores.tgattpat.tgat1|score }}</td>
+          <td class="gatpat-even onet-extra" style="display: none;">{{ applicant.get_all_exam_scores.tgattpat.tgat1_tscore|score }}</td>
           <td class="gatpat-odd onet-extra" style="display: none;">{{ applicant.get_all_exam_scores.tgattpat.tgat2|score }}</td>
           <td class="gatpat-even onet-extra" style="display: none;">{{ applicant.get_all_exam_scores.tgattpat.tgat3|score }}</td>
           <td class="gatpat-even">{{ applicant.get_all_exam_scores.tgattpat.tpat1|score }}</td>
@@ -75,13 +76,16 @@
           <td class="gatpat-odd onet-extra" style="display: none;">{{ applicant.get_all_exam_scores.tgattpat.tpat22|score }}</td>
           <td class="gatpat-even onet-extra" style="display: none;">{{ applicant.get_all_exam_scores.tgattpat.tpat23|score }}</td>
           <td class="gatpat-even">{{ applicant.get_all_exam_scores.tgattpat.tpat3|score }}</td>
+          <td class="gatpat-even onet-extra" style="display: none;">{{ applicant.get_all_exam_scores.tgattpat.tpat3_tscore|score }}</td>
           <td class="gatpat-odd">{{ applicant.get_all_exam_scores.tgattpat.tpat4|score }}</td>
           <td class="gatpat-even">{{ applicant.get_all_exam_scores.tgattpat.tpat5|score }}</td>
 
           <td class="udat-odd alevel-scores">{{ applicant.get_all_exam_scores.alevel.a_lv_61|score }}</td>
+          <td class="udat-odd alevel-scores onet-extra" style="display: none;">{{ applicant.get_all_exam_scores.alevel.a_lv_61_tscore|score }}</td>
           <td class="udat-even alevel-scores">{{ applicant.get_all_exam_scores.alevel.a_lv_62|score }}</td>
           <td class="udat-odd alevel-scores">{{ applicant.get_all_exam_scores.alevel.a_lv_63|score }}</td>
           <td class="udat-even alevel-scores">{{ applicant.get_all_exam_scores.alevel.a_lv_64|score }}</td>
+          <td class="udat-odd alevel-scores onet-extra" style="display: none;">{{ applicant.get_all_exam_scores.alevel.a_lv_64_tscore|score }}</td>
           <td class="udat-odd alevel-scores">{{ applicant.get_all_exam_scores.alevel.a_lv_65|score }}</td>
           <td class="udat-even alevel-scores">{{ applicant.get_all_exam_scores.alevel.a_lv_66|score }}</td>
           <td class="udat-odd alevel-scores">{{ applicant.get_all_exam_scores.alevel.a_lv_70|score }}</td>
