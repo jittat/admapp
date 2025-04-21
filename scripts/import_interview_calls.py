@@ -14,6 +14,7 @@ def main():
 
     admission_project = AdmissionProject.objects.get(pk=project_id)
     admission_round = AdmissionRound.objects.get(pk=round_id)
+    project_round = admission_project.get_project_round_for(admission_round)
 
     all_applications = {}
 
@@ -25,6 +26,9 @@ def main():
         all_applications[application.applicant.national_id] = application
 
     counter = 0
+    create_counter = 0
+    change_count = 0
+
     with open(result_filename) as csvfile:
         reader = csv.reader(csvfile, delimiter=',')
         for items in reader:
@@ -37,32 +41,52 @@ def main():
             major_selection = application.major_selection
             
             majors = major_selection.get_majors()
-            result_nums = items[1:]
-            if len(majors) != len(result_nums):
-                print('ERROR')
+            accepted_major_number = int(items[1])
 
-            for i in range(len(result_nums)):
-                result = AdmissionResult(applicant=application.applicant,
-                                         application=application,
-                                         admission_project=admission_project,
-                                         admission_round=admission_round,
-                                         major_rank=i+1,
-                                         major=majors[i])
-                if result_nums[i] == '-1':
-                    result.is_accepted_for_interview = False
+            mcount = 0
+            for m in majors:
+                old_result = None
+                old_accepted = None
+                old_results = AdmissionResult.objects.filter(applicant=application.applicant,
+                                                             admission_round=admission_round,
+                                                             admission_project=admission_project,
+                                                             major=m).all()
+                if len(old_results) != 0:
+                    old_result = old_results[0]
+                    result = old_result
+                    if project_round.criteria_check_required:
+                        if not result.is_criteria_passed:
+                            print('ERROR', nat_id, 'not passed criteria')
+                    old_accepted = result.is_accepted_for_interview
                 else:
+                    result = AdmissionResult(applicant=application.applicant,
+                                             application=application,
+                                             admission_project=admission_project,
+                                             admission_round=admission_round,
+                                             major_rank=mcount+1,
+                                             major=m)
+                    create_counter += 1
+
+                if m.number == accepted_major_number:
                     result.is_accepted_for_interview = True
-                    if majors[i].number != int(result_nums[i]):
-                        print('ERROR - number')
+                    if (not old_result) and (project_round.criteria_check_required):
+                        result.is_criteria_passed = True
+                else:
+                    result.is_accepted_for_interview = False
                     
+                if (old_result) and (old_accepted != None) and (old_accepted != result.is_accepted_for_interview):
+                    change_count += 1
+
                 result.updated_accepted_for_interview_at = datetime.now()
                 result.save()
+                mcount += 1
+
                 counter += 1
             print(application.applicant)
 
     print('Imported',counter,'results')
-        
+    print('New results created:', create_counter)
+    print('Changed results:', change_count)     
 
 if __name__ == '__main__':
     main()
-    
