@@ -135,7 +135,19 @@
 	      อ่านรายละเอียดและขั้นตอนทั้งหมดที่ <a href="https://admission.ku.ac.th/kuadm/static/docs/68-TCAS2-clearing-schedule.pdf" target="_blank">เอกสารสำหรับผู้ผ่านการสอบสัมภาษณ์</a> 
 				<a href="https://admission.ku.ac.th/kuadm/static/docs/68-TCAS2-clearing-schedule.pdf" class="badge badge-sm badge-primary" target="_blank" rel="noopener noreferrer">ดาวน์โหลด</a><br>
 	      
-	      <div class="mt10">
+	      {% if accepted_result.major.faculty_id == 9 %}
+		<br>
+		<div class="alert alert-info">
+		  <b>สำหรับผู้มีสิทธิ์เข้าศึกษาต่อคณะสังคมศาสตร์</b><br>
+		  คณะสังคมศาสตร์ขอรบกวนเวลาผู้สมัครช่วยกรอกแบบสอบถามสองชุดด้านล่างนี้
+		  <ul>
+		    <li>แบบสอบถามข้อมูลนิสิต คณะสังคมศาสตร์ <a class="badge badge-sm badge-success" target="_blank" href="https://forms.gle/2YU4dL5EmAv6cNx67">ตอบแบบสอบถาม</a></li>
+		    <li>ปัจจัยที่ส่งผลการตัดสินใจเลือกเข้าศึกษาต่อระดับปริญญาตรี ในคณะสังคมศาสตร์ มหาวิทยาลัยเกษตรศาสตร์ ประจำปีการศึกษา 2568 <a class="badge badge-sm badge-success" target="_blank" href="https://docs.google.com/forms/d/e/1FAIpQLScz5r0Vdwj5V7VawsyBXsKDJhqDSEE28qyeuPg7GGmWiZ7IGw/viewform?usp=header">ตอบแบบสอบถาม</a></li>
+		  </ul>
+		</div>
+	      {% endif %}
+
+				<div class="mt10">
 		ฝ่ายรับสมัครและพัฒนาการรับเข้าศึกษา ใคร่ขอรบกวนเวลาผู้สมัครช่วยทำแบบประเมินความพึงพอใจที่มีต่อการรับบุคคลเข้าศึกษา โดย<a href="https://kasets.art/gZgqsZ" target="_blank" rel="noopener noreferrer">กรอกแบบสอบถามนี้ https://kasets.art/gZgqsZ</a>  ทีมงานขอขอบคุณทุกท่าน
 	      </div>
             </div>
@@ -150,7 +162,7 @@
               โดยยืนยันเพิ่มเติมตาม link ที่ส่งให้ทาง email ของผู้ผ่านการคัดเลือกเป็นรายบุคคล
 	      
               <div class="mt10">
-		ฝ่ายรับสมัครและพัฒนาการรับเข้าศึกษา ใคร่ขอรบกวนเวลาผู้สมัครช่วยทำแบบประเมินความพึงพอใจที่มีต่อการรับบุคคลเข้าศึกษา โดย<a href="https://kasets.art/GIBCrH" target="_blank" rel="noopener noreferrer">กรอกแบบสอบถามนี้ https://kasets.art/GIBCrH</a>  ทีมงานขอขอบคุณทุกท่าน
+		ฝ่ายรับสมัครและพัฒนาการรับเข้าศึกษา ใคร่ขอรบกวนเวลาผู้สมัครช่วยทำแบบประเมินความพึงพอใจที่มีต่อการรับบุคคลเข้าศึกษา โดย<a href="https://kasets.art/gZgqsZ" target="_blank" rel="noopener noreferrer">กรอกแบบสอบถามนี้ https://kasets.art/gZgqsZ</a>  ทีมงานขอขอบคุณทุกท่าน
               </div>
             </div>
           {% endif %}
