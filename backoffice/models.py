@@ -292,6 +292,9 @@ class AdjustmentMajorSlot(models.Model):
     def project_code(self):
         return self.cupt_code[:3]
 
+    def project_full_code(self):
+        return self.cupt_code[:5]
+
     def is_editable(self):
         return (not self.is_frozen) and (not self.is_final) and (not self.is_confirmed_by_faculty)
 
