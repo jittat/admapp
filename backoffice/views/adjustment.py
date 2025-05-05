@@ -28,7 +28,7 @@ def load_faculty_major_statistics(faculty, admission_rounds):
         if slot.is_final:
             if m.round_stats[slot.admission_round_number - 1][1] == -1:
                 m.round_stats[slot.admission_round_number - 1][1] = 0
-            m.round_stats[slot.admission_round_number - 1][1] += slot.confirmed_slots
+            m.round_stats[slot.admission_round_number - 1][1] += slot.confirmed_slots - slot.confirmed_canceled_slots
         
     return adjustment_majors
 
