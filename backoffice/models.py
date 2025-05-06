@@ -308,6 +308,8 @@ class AdjustmentMajorSlot(models.Model):
         if self.cupt_code[:3] != 'C28':
             return ''
         else:
+            if self.cupt_code[:5] == 'C2800':
+                return ''
             msg = self.admission_project_title
             cutwords = ['ใช้คะแนน', 'รับนักเรียน']
             for w in cutwords:
