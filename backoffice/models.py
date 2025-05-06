@@ -304,6 +304,18 @@ class AdjustmentMajorSlot(models.Model):
     def latest_confirmed_slots(self):
         return self.confirmed_slots - self.confirmed_canceled_slots
 
+    def additional_project_message(self):
+        if self.cupt_code[:3] != 'C28':
+            return ''
+        else:
+            msg = self.admission_project_title
+            cutwords = ['ใช้คะแนน', 'รับนักเรียน']
+            for w in cutwords:
+                if w in msg:
+                    idx = msg.find(w)
+                    return '(' + msg[idx:]
+            return msg
+    
     @staticmethod
     def get_adjusted_slots():
         return [
