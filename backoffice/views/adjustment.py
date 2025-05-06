@@ -164,7 +164,12 @@ def adjustment_list(request, round_number):
     if not user.is_super_admin:
         return HttpResponseForbidden()
 
-    all_slots = AdjustmentMajorSlot.objects.filter(admission_round_number=round_number).select_related('adjustment_major').all()
+    all_unsorted_slots = (AdjustmentMajorSlot.objects.filter(admission_round_number=round_number)
+                          .select_related('adjustment_major')
+                          .all())
+    
+    all_slots = [slot for _,_,_,slot in
+                 sorted([(s.cupt_code[:3], s.cupt_code[5:], s.cupt_code, s) for s in all_unsorted_slots])]
 
     faculty_map = { f.id:f for f in Faculty.objects.all() }
     
