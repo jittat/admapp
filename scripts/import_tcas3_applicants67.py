@@ -7,7 +7,7 @@ from random import choice
 from datetime import datetime
 
 from regis.models import Applicant
-from appl.models import Major, MajorSelection, ProjectApplication, AdmissionProjectRound, EducationalProfile, AdmissionResult, PersonalProfile
+from appl.models import Major, MajorSelection, ProjectApplication, AdmissionProjectRound, EducationalProfile, AdmissionResult, PersonalProfile, AdmissionProject, AdmissionRound
 
 def random_email():
     return ''.join([choice('abcdefghijklmnopqrstuvwxyz') for i in range(10)]) + '@ku.ac.th'
@@ -44,11 +44,11 @@ def read_applicants(filename):
 
 def main():
     applicant_filename = sys.argv[1]
-    project_round_id = sys.argv[2]
+    project_id = sys.argv[2]
+    round_id = sys.argv[3]
 
-    project_round = AdmissionProjectRound.objects.get(pk=project_round_id)
-    project = project_round.admission_project
-    admission_round = project_round.admission_round
+    project = AdmissionProject.objects.get(pk=project_id)
+    admission_round = AdmissionRound.objects.get(pk=round_id)
     
     applicants = read_applicants(applicant_filename)
 
@@ -102,6 +102,7 @@ def main():
         major_selection.admission_project = project
         major_selection.admission_round = admission_round
 
+        #print(a['major_cupt_full_code'], project)
         major = Major.objects.filter(admission_project=project,
                                      cupt_full_code=a['major_cupt_full_code'])[0]
         
