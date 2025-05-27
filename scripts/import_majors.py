@@ -9,6 +9,7 @@ from appl.models import Faculty, AdmissionProject, Major
 
 def validate_titles(lines):
     titles = set()
+    is_dup = False
     for items in lines:
         if len(items) < 4:
             continue
@@ -16,9 +17,11 @@ def validate_titles(lines):
         title = (items[2].strip() + "-" + items[1].strip()).replace(" ","")
         if title in titles:
             print("Dupplicated title:", title)
-            return False
-        titles.add(title)
-    return True
+            is_dup = True
+        else:
+            titles.add(title)
+
+    return not is_dup
 
 def main():
     project_id = sys.argv[1]
@@ -34,6 +37,9 @@ def main():
         major.delete()
     
     filename = sys.argv[2]
+
+    is_dup_ignored = (len(sys.argv) > 3) and (sys.argv[3] == '--ignore-dup')
+
     counter = 0
 
     with open(filename) as csvfile:
@@ -44,9 +50,13 @@ def main():
         project.column_descriptions = lines[1][0]
         project.save()
         
-        if not validate_titles(lines[2:]):
+        dup_validation_result = validate_titles(lines[2:])
+
+        if not dup_validation_result and not is_dup_ignored:
             print("Error majors with same title")
             quit()
+        elif not dup_validation_result:
+            print("Warning: majors with same title found, but ignored due to --ignore-dup option")
 
         for items in lines[2:]:
             
