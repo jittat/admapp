@@ -396,7 +396,7 @@ def write_score_report_header(sheet, major, cell_format):
         'A66\nBio',
         'A70\nSoc',
         'A81\nTha',
-        'A81\nEng',
+        'A82\nEng',
         'A8x',
     ]
     write_sheet_row(sheet,2,
