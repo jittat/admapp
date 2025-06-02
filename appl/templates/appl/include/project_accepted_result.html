@@ -12,193 +12,17 @@
       {% if is_accepted_for_interview %}
         {% if is_accepted %}
 
-	  {% if accepted_result.admission_round_id == 1 %}
-	    <div class="alert alert-info">
-	      <span class="badge badge-primary">การสมัครในรอบ 1/2</span> &nbsp;&nbsp;
-	      เนื่องจากผู้สมัครได้ผ่านการคัดเลือกในรอบ 1/1 และมีสิทธิ์เข้าศึกษาต่อที่มหาวิทยาลัยเกษตรศาสตร์แล้ว &nbsp;
-	      ผู้สมัครจะไม่สามารถสมัครโครงการต่าง ๆ ในรอบที่ 1/2 ซ้ำได้อีก
-	    </div>
-	  {% endif %}
+		      {% include "appl/include/project_accepted_result_acceptance_prehook.html" %}
 
-	  <h3>ขอแสดงความยินดีด้วย</h3>
-          <i class="text-success fa fa-check"></i>
-          คุณผ่านการสอบสัมภาษณ์และมีสิทธิ์เข้าศึกษาต่อในสาขา:
-          <h4>{{ accepted_result.major }} - {{ accepted_result.major.faculty }} ({{ accepted_result.major.faculty.campus.title }})</h4>
-          <!-- รหัสยืนยันตัวตนในระบบเคลียริงเฮาส์: {{ accepted_result.clearing_house_code }}<br />
-               คำอ่าน (เพื่อความชัดเจน): {{ accepted_result.read_clearing_house_code }} -->
+					<h3>ขอแสดงความยินดีด้วย</h3>
+					<i class="text-success fa fa-check"></i>
+					คุณผ่านการสอบสัมภาษณ์และมีสิทธิ์เข้าศึกษาต่อในสาขา:
+					<h4>{{ accepted_result.major }} - {{ accepted_result.major.faculty }} ({{ accepted_result.major.faculty.campus.title }})</h4>
+					<!-- รหัสยืนยันตัวตนในระบบเคลียริงเฮาส์: {{ accepted_result.clearing_house_code }}<br />
+							คำอ่าน (เพื่อความชัดเจน): {{ accepted_result.read_clearing_house_code }} -->
 
-	  {% if accepted_result.admission_round_id == 1 %}
-	    <!-- for round 1/1 -->
-	    <div class="">
-	      <br>
-              <span class="badge badge-info">สำหรับผู้ผ่านการสอบสัมภาษณ์</span> สำหรับกำหนดการต่าง ๆ และการดำเนินการต่อไป สามารถตรวจสอบได้จาก <a href="https://admission.ku.ac.th/kuadm/static/docs/68-TCAS11-clearing-schedule.pdf" target="_blank">เอกสารสำหรับผู้ผ่านการสอบสัมภาษณ์</a> <a href="https://admission.ku.ac.th/kuadm/static/docs/68-TCAS11-clearing-schedule.pdf" class="badge badge-sm badge-primary" target="_blank" rel="noopener noreferrer">ดาวน์โหลด</a><br>
-	      <br>
-	      
-	      <b>กำหนดการยืนยันสิทธิ์:</b>
-	      <ul>
-					<li>
-						5 - 6 ก.พ. 2568 ยืนยันสิทธิ์ในระบบ TCAS 
-						ที่ <a href="https://www.mytcas.com" target="_blank" rel="noopener noreferrer">https://www.mytcas.com</a>
-					</li>
-					<li>
-						7 ก.พ. 2568 สละสิทธิ์ในระบบ TCAS
-					</li>
-					<li>
-						10 ก.พ. 2568 ประกาศรายชื่อผู้ยืนยันสิทธิ์เข้าศึกษา รอบที่ 1 Portfolio (ทุกโครงการ) พร้อมแจ้งกำหนดการขึ้นทะเบียนเป็นนิสิตใหม่
-					</li>
-	      </ul>
-	      
-        อ่านรายละเอียดและขั้นตอนทั้งหมดที่ <a href="https://admission.ku.ac.th/kuadm/static/docs/68-TCAS11-clearing-schedule.pdf" target="_blank">เอกสารสำหรับผู้ผ่านการสอบสัมภาษณ์</a> <a href="https://admission.ku.ac.th/kuadm/static/docs/68-TCAS11-clearing-schedule.pdf" class="badge badge-sm badge-primary" target="_blank" rel="noopener noreferrer">ดาวน์โหลด</a><br>
+					{% include "appl/include/project_accepted_result_acceptance_posthook.html" %}
 
-	      {% if accepted_result.major.faculty_id == 9 %}
-					<br>
-					<div class="alert alert-info">
-						<b>สำหรับผู้มีสิทธิ์เข้าศึกษาต่อคณะสังคมศาสตร์</b><br>
-						คณะสังคมศาสตร์ขอรบกวนเวลาผู้สมัครช่วยกรอกแบบสอบถามสองชุดด้านล่างนี้
-						<ul>
-							<li>แบบสอบถามข้อมูลนิสิต คณะสังคมศาสตร์ <a class="badge badge-sm badge-success" target="_blank" href="https://forms.gle/oCsMbixd3UMdskdu5">ตอบแบบสอบถาม</a></li>
-							<li>ปัจจัยที่ส่งผลการตัดสินใจเลือกเข้าศึกษาต่อระดับปริญญาตรี ในคณะสังคมศาสตร์ มหาวิทยาลัยเกษตรศาสตร์ ประจำปีการศึกษา 2568 <a class="badge badge-sm badge-success" target="_blank" href="https://forms.gle/ciZ7DWMtFtn4tzr78">ตอบแบบสอบถาม</a></li>
-						</ul>
-					</div>
-	      {% endif %}
-	      
-	      <div class="mt10">
-					ฝ่ายรับสมัครและพัฒนาการรับเข้าศึกษา ใคร่ขอรบกวนเวลาผู้สมัครช่วยทำแบบประเมินความพึงพอใจที่มีต่อการรับบุคคลเข้าศึกษา โดย<a href="https://kasets.art/8u1B6y" target="_blank" rel="noopener noreferrer">กรอกแบบสอบถามนี้ https://kasets.art/8u1B6y</a>  ทีมงานขอขอบคุณทุกท่าน
-	      </div>
-      </div>
-	  {% endif %}
-	  
-	  {% if accepted_result.admission_round_id == 5 %}
-	    <!-- for round 1/2 -->
-	    <div class="">
-	      <br>
-              <span class="badge badge-info">สำหรับผู้ผ่านการสอบสัมภาษณ์</span> สำหรับกำหนดการต่าง ๆ และการดำเนินการต่อไป สามารถตรวจสอบได้จาก <a href="https://admission.ku.ac.th/kuadm/static/docs/68-TCAS12-clearing-schedule.pdf" target="_blank">เอกสารสำหรับผู้ผ่านการสอบสัมภาษณ์</a> <a href="https://admission.ku.ac.th/kuadm/static/docs/68-TCAS12-clearing-schedule.pdf" class="badge badge-sm badge-primary" target="_blank" rel="noopener noreferrer">ดาวน์โหลด</a><br>
-	      <br>
-	      
-	      <b>กำหนดการยืนยันสิทธิ์:</b>
-	      <ul>
-					<li>
-						5 - 6 ก.พ. 2568 ยืนยันสิทธิ์ในระบบ TCAS 
-						ที่ <a href="https://www.mytcas.com" target="_blank" rel="noopener noreferrer">https://www.mytcas.com</a>
-					</li>
-					<li>
-						7 ก.พ. 2568 สละสิทธิ์ในระบบ TCAS
-					</li>
-					<li>
-						10 ก.พ. 2568 ประกาศรายชื่อผู้ยืนยันสิทธิ์เข้าศึกษา รอบที่ 1 Portfolio (ทุกโครงการ) พร้อมแจ้งกำหนดการขึ้นทะเบียนเป็นนิสิตใหม่
-					</li>
-	      </ul>
-	      
-        อ่านรายละเอียดและขั้นตอนทั้งหมดที่ <a href="https://admission.ku.ac.th/kuadm/static/docs/68-TCAS12-clearing-schedule.pdf" target="_blank">เอกสารสำหรับผู้ผ่านการสอบสัมภาษณ์</a> <a href="https://admission.ku.ac.th/kuadm/static/docs/68-TCAS12-clearing-schedule.pdf" class="badge badge-sm badge-primary" target="_blank" rel="noopener noreferrer">ดาวน์โหลด</a><br>
-
-	      {% if accepted_result.major.faculty_id == 9 %}
-					<br>
-					<div class="alert alert-info">
-						<b>สำหรับผู้มีสิทธิ์เข้าศึกษาต่อคณะสังคมศาสตร์</b><br>
-						คณะสังคมศาสตร์ขอรบกวนเวลาผู้สมัครช่วยกรอกแบบสอบถามสองชุดด้านล่างนี้
-						<ul>
-							<li>แบบสอบถามข้อมูลนิสิต คณะสังคมศาสตร์ <a class="badge badge-sm badge-success" target="_blank" href="https://forms.gle/bY45pg1UtkAxj7jX6">ตอบแบบสอบถาม</a></li>
-							<li>ปัจจัยที่ส่งผลการตัดสินใจเลือกเข้าศึกษาต่อระดับปริญญาตรี ในคณะสังคมศาสตร์ มหาวิทยาลัยเกษตรศาสตร์ ประจำปีการศึกษา 2568 <a class="badge badge-sm badge-success" target="_blank" href="https://forms.gle/jpLPndgKFU8Z554K6">ตอบแบบสอบถาม</a></li>
-						</ul>
-					</div>
-	      {% endif %}
-	      
-	      <div class="mt10">
-					ฝ่ายรับสมัครและพัฒนาการรับเข้าศึกษา ใคร่ขอรบกวนเวลาผู้สมัครช่วยทำแบบประเมินความพึงพอใจที่มีต่อการรับบุคคลเข้าศึกษา โดย<a href="https://kasets.art/cqqzag" target="_blank" rel="noopener noreferrer">กรอกแบบสอบถามนี้ https://kasets.art/cqqzag</a>  ทีมงานขอขอบคุณทุกท่าน
-	      </div>
-      </div>
-	  {% endif %}
-	  
-	  {% if accepted_result.admission_round_id == 2 %}
-	    <!-- for round 2 -->
-	    <div class="">
-	      <br>
-	      <span class="badge badge-info">สำหรับผู้ผ่านการสอบสัมภาษณ์</span> สำหรับกำหนดการต่าง ๆ และการดำเนินการต่อไป สามารถตรวจสอบได้จาก 
-				<a href="https://admission.ku.ac.th/kuadm/static/docs/68-TCAS2-clearing-schedule.pdf" target="_blank">เอกสารสำหรับผู้ผ่านการสอบสัมภาษณ์</a> <a href="https://admission.ku.ac.th/kuadm/static/docs/68-TCAS2-clearing-schedule.pdf" class="badge badge-sm badge-primary" target="_blank" rel="noopener noreferrer">ดาวน์โหลด</a><br>
-	      <br>
-	      
-	      <b>กำหนดการยืนยันสิทธิ์:</b>
-	      <ul>
-					<li>
-						2 - 3 พ.ค. 2568 ยืนยันสิทธิ์ในระบบ TCAS
-						ที่ <a href="https://www.mytcas.com" target="_blank" rel="noopener noreferrer">https://www.mytcas.com</a>
-					</li>
-					<li>
-						4 พ.ค. 2568 สละสิทธิ์ในระบบ TCAS
-						ที่ <a href="https://www.mytcas.com" target="_blank" rel="noopener noreferrer">https://www.mytcas.com</a>
-					</li>
-					<li>
-						7 พ.ค. 2568 ประกาศรายชื่อผู้ยืนยันสิทธิ์เข้าศึกษา รอบที่ 2 (ทุกโครงการ) พร้อมแจ้งกำหนดการขึ้นทะเบียนเป็นนิสิตใหม่
-					</li>
-	      </ul>
-	      
-	      อ่านรายละเอียดและขั้นตอนทั้งหมดที่ <a href="https://admission.ku.ac.th/kuadm/static/docs/68-TCAS2-clearing-schedule.pdf" target="_blank">เอกสารสำหรับผู้ผ่านการสอบสัมภาษณ์</a> 
-				<a href="https://admission.ku.ac.th/kuadm/static/docs/68-TCAS2-clearing-schedule.pdf" class="badge badge-sm badge-primary" target="_blank" rel="noopener noreferrer">ดาวน์โหลด</a><br>
-	      
-	      {% if accepted_result.major.faculty_id == 9 %}
-					<br>
-					<div class="alert alert-info">
-						<b>สำหรับผู้มีสิทธิ์เข้าศึกษาต่อคณะสังคมศาสตร์</b><br>
-						คณะสังคมศาสตร์ขอรบกวนเวลาผู้สมัครช่วยกรอกแบบสอบถามสองชุดด้านล่างนี้
-						<ul>
-							<li>แบบสอบถามข้อมูลนิสิต คณะสังคมศาสตร์ <a class="badge badge-sm badge-success" target="_blank" href="https://forms.gle/2YU4dL5EmAv6cNx67">ตอบแบบสอบถาม</a></li>
-							<li>ปัจจัยที่ส่งผลการตัดสินใจเลือกเข้าศึกษาต่อระดับปริญญาตรี ในคณะสังคมศาสตร์ มหาวิทยาลัยเกษตรศาสตร์ ประจำปีการศึกษา 2568 <a class="badge badge-sm badge-success" target="_blank" href="https://docs.google.com/forms/d/e/1FAIpQLScz5r0Vdwj5V7VawsyBXsKDJhqDSEE28qyeuPg7GGmWiZ7IGw/viewform?usp=header">ตอบแบบสอบถาม</a></li>
-						</ul>
-					</div>
-	      {% endif %}
-
-				<div class="mt10">
-					ฝ่ายรับสมัครและพัฒนาการรับเข้าศึกษา ใคร่ขอรบกวนเวลาผู้สมัครช่วยทำแบบประเมินความพึงพอใจที่มีต่อการรับบุคคลเข้าศึกษา โดย<a href="https://kasets.art/gZgqsZ" target="_blank" rel="noopener noreferrer">กรอกแบบสอบถามนี้ https://kasets.art/gZgqsZ</a>  ทีมงานขอขอบคุณทุกท่าน
-	      </div>
-       </div>
-	  {% endif %}
-
-		{% if accepted_result.admission_project_id == 35 %}
-			<div class="d-none">
-				<br>
-				<span class="badge badge-danger">ประกาศเกี่ยวกับการยืนยันสิทธิ์</span>
-				ผู้ผ่านการคัดเลือก พ.บ. โครงการส่งเสริมโอกาสศึกษาต่อในคณะแพทยศาสตร์ มหาวิทยาลัยเกษตรศาสตร์ รอบที่ 2
-				<b>กรุณากรอกข้อมูลการยืนยันสิทธิ์/และไม่ใช้สิทธิ์  ภายในวันที่ 27 เมษายน 2567 เวลา 16.00 น.</b>  
-				โดยยืนยันเพิ่มเติมตาม link ที่ส่งให้ทาง email ของผู้ผ่านการคัดเลือกเป็นรายบุคคล
-	
-				<div class="mt10">
-					ฝ่ายรับสมัครและพัฒนาการรับเข้าศึกษา ใคร่ขอรบกวนเวลาผู้สมัครช่วยทำแบบประเมินความพึงพอใจที่มีต่อการรับบุคคลเข้าศึกษา โดย<a href="https://kasets.art/gZgqsZ" target="_blank" rel="noopener noreferrer">กรอกแบบสอบถามนี้ https://kasets.art/gZgqsZ</a>  ทีมงานขอขอบคุณทุกท่าน
-				</div>
-			</div>
-		{% endif %}
-	  
-	  {% if accepted_result.admission_round_id == 4 %}
-	    <!-- for round 4 -->
-	    <div class="">
-	      <br>
-	      <span class="badge badge-info">สำหรับผู้ผ่านการสอบสัมภาษณ์</span> สำหรับกำหนดการต่าง ๆ และการดำเนินการต่อไป สามารถตรวจสอบได้จาก <a href="https://admission.ku.ac.th/kuadm/static/docs/67-TCAS4-clearing-schedule.pdf" target="_blank">เอกสารสำหรับผู้ผ่านการสอบสัมภาษณ์</a> <a href="https://admission.ku.ac.th/kuadm/static/docs/67-TCAS4-clearing-schedule.pdf" class="badge badge-sm badge-primary" target="_blank" rel="noopener noreferrer">ดาวน์โหลด</a><br>
-	      <br>
-	      
-	      <b>กำหนดการยืนยันสิทธิ์:</b>
-	      <ul>
-					<li>
-						6 - 7 มิ.ย. 2568 ยืนยันสิทธิ์ในระบบ TCAS 
-						ที่ <a href="https://www.mytcas.com" target="_blank" rel="noopener noreferrer">https://www.mytcas.com</a>
-					</li>
-
-					<li>
-						9 มิ.ย. 2568 ประกาศรายชื่อผู้ยืนยันสิทธิ์เข้าศึกษา รอบที่ 4 พร้อมแจ้งกำหนดการขึ้นทะเบียนเป็นนิสิตใหม่
-					</li>
-
-					<li>
-						11 - 13 มิ.ย. 2568 ขึ้นทะเบียนเป็นนิสิตใหม่ผ่านระบบออนไลน์
-					</li>
-	      </ul>
-
-	      อ่านรายละเอียดและขั้นตอนทั้งหมดที่ <a href="https://admission.ku.ac.th/kuadm/static/docs/68-TCAS4-clearing-schedule.pdf" target="_blank">เอกสารสำหรับผู้ผ่านการสอบสัมภาษณ์</a> <a href="https://admission.ku.ac.th/kuadm/static/docs/67-TCAS4-clearing-schedule.pdf" class="badge badge-sm badge-primary" target="_blank" rel="noopener noreferrer">ดาวน์โหลด</a><br>
-	      
-	      <div class="mt10">
-					ฝ่ายรับสมัครและพัฒนาการรับเข้าศึกษา ใคร่ขอรบกวนเวลาผู้สมัครช่วยทำแบบประเมินความพึงพอใจที่มีต่อการรับบุคคลเข้าศึกษา โดย<a href="https://kasets.art/WggN8C" target="_blank" rel="noopener noreferrer">กรอกแบบสอบถามนี้ https://kasets.art/WggN8C</a>  ทีมงานขอขอบคุณทุกท่าน
-	      </div>
-      </div>
-	  {% endif %}
-
-	  
           <div class="mt5">
             {{ project_round.accepted_instructions|safe }}
           </div>
@@ -206,7 +30,7 @@
           <h3>ขอแสดงความเสียใจด้วย</h3>
           คุณไม่ผ่านการสอบสัมภาษณ์ อย่างไรก็ตาม คุณยังมีโอกาสเข้าศึกษาต่อที่มหาวิทยาลัยเกษตรศาสตร์ผ่านทางโครงการอื่น ๆ ในรอบถัด ๆ ไป กรุณาติดตามข่าวสารได้จากเว็บไซต์ admission.ku.ac.th<br />
 
-	  <br>
+	  			<br>
 	  
           รายการสาขาที่มีสิทธิ์เข้าสัมภาษณ์:
           <ul>
@@ -217,16 +41,17 @@
             {% endfor %}
           </ul>
 
-	  <div class="mt10">
-	    ฝ่ายรับสมัครและพัฒนาการรับเข้าศึกษา ใคร่ขอรบกวนเวลาผู้สมัครช่วยทำแบบประเมินความพึงพอใจที่มีต่อการรับบุคคลเข้าศึกษา โดย<a href="https://kasets.art/WggN8C" target="_blank" rel="noopener noreferrer">กรอกแบบสอบถามนี้ https://kasets.art/gZgqsZ</a>  ทีมงานขอขอบคุณทุกท่าน
-	  </div>
+					<div class="mt10">
+						ฝ่ายรับสมัครและพัฒนาการรับเข้าศึกษา ใคร่ขอรบกวนเวลาผู้สมัครช่วยทำแบบประเมินความพึงพอใจที่มีต่อการรับบุคคลเข้าศึกษา 
+						โดย<a href="https://kasets.art/WggN8C" target="_blank" rel="noopener noreferrer">กรอกแบบสอบถามนี้ https://kasets.art/WggN8C</a>  ทีมงานขอขอบคุณทุกท่าน
+					</div>
 
           {{ project_round.accepted_for_interview_instructions|safe }}
         {% endif %}
       {% else %}
         <h3>ขอแสดงความเสียใจด้วย</h3>
         คุณไม่ผ่านการพิจารณาคัดเลือกให้เข้าสอบสัมภาษณ์ มหาวิทยาลัยเกษตรศาสตร์ขอขอบคุณผู้สมัครที่สนใจเข้าศึกษาต่อที่มหาวิทยาลัยเกษตรศาสตร์ นอกจากโครงการนี้แล้วยังมีโครงการรับสมัครในรอบการคัดเลือกอื่น ๆ อีก สามารถติดตามข้อมูลได้จากเว็บไซต์ admission.ku.ac.th
-	<br>
+				<br>
       {% endif %}
     </div>
   </div>
