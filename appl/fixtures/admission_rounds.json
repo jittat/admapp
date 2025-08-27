@@ -11,7 +11,9 @@
     "is_available": false,
     "is_application_available": false,
     "clearing_house_description": "",
-    "clearing_house_dates": ""
+    "clearing_house_dates": "6 - 7 กุมภาพันธ์ พ.ศ. 2569",
+    "clearing_house_dates_short": "6 - 7 ก.พ. 69",
+    "acceptance_result_date": "2025-12-10"
   }
 },
 {
@@ -26,7 +28,9 @@
     "is_available": false,
     "is_application_available": false,
     "clearing_house_description": "",
-    "clearing_house_dates": ""
+    "clearing_house_dates": "2 - 3 พฤษภาคม พ.ศ. 2569",
+    "clearing_house_dates_short": "2 - 3 พ.ค. 69",
+    "acceptance_result_date": "2026-04-28"
   }
 },
 {
@@ -41,7 +45,9 @@
     "is_available": false,
     "is_application_available": false,
     "clearing_house_description": "",
-    "clearing_house_dates": ""
+    "clearing_house_dates": "",
+    "clearing_house_dates_short": "",
+    "acceptance_result_date": "2026-05-26"
   }
 },
 {
@@ -56,7 +62,9 @@
     "is_available": false,
     "is_application_available": false,
     "clearing_house_description": "",
-    "clearing_house_dates": ""
+    "clearing_house_dates": "",
+    "clearing_house_dates_short": "",
+    "acceptance_result_date": "2026-06-10"
   }
 },
 {
@@ -71,7 +79,9 @@
     "is_available": false,
     "is_application_available": false,
     "clearing_house_description": "",
-    "clearing_house_dates": ""
+    "clearing_house_dates": "6 - 7 กุมภาพันธ์ พ.ศ. 2569",
+    "clearing_house_dates_short": "6 - 7 ก.พ. 69",
+    "acceptance_result_date": "2026-01-29"
   }
 }
 ]
