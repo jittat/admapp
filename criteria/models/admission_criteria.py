@@ -47,6 +47,7 @@ class AdmissionCriteria(models.Model):
     additional_description = models.CharField(max_length=100, blank=True)
     additional_condition = models.CharField(max_length=500, blank=True)
     additional_interview_condition = models.TextField(blank=True)
+    additional_admission_form_fields_json = models.TextField(blank=True)
 
     accepted_student_curriculum_type_flags = models.CharField(max_length=10,
                                                               default=INITIAL_CURR_TYPE_FLAG,

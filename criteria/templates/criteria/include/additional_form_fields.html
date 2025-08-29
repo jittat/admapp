@@ -1,0 +1,98 @@
+{% if has_additional_form_fields %}
+  <div class="form-group">
+    <label for="majors">
+      ฟอร์มกรอกข้อมูลเพิ่มเติมสำหรับผู้สมัคร
+      <button class="btn btn-outline-secondary btn-sm" id="additionalFormFieldsToggleId">ป้อนข้อมูล</button>
+    </label>
+    <div class="additional-form-fields-form" {% if not additional_form_fields %}style="display: none;"{% endif %}>
+      <small class="form-text text-muted">
+	      สามารถเพิ่มฟอร์มให้ผู้สมัครกรอกรายละเอีดยเพิ่มเติม เพื่อใช้ประกอบการพิจารณาเรียกสัมภาษณ์ได้
+        ควรระบุหัวข้อให้ชัดเจน สั้นและกระชับ <strong>ไม่ควรมีเกิน 3 คำถาม</strong>
+      </small>
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th ></th>
+            <th class="w-75">หัวข้อ</th>
+            <th>ขนาด</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>
+              <input class="form-control additional-form-fields-title" style="border-width: 1px;" type="text" name="additional_admission_form_fields-1-title" value="" />
+            </td>
+            <td>
+              <select class="form-control additional-form-fields-size" name="additional_admission_form_fields-1-size">
+                <option value="short">คำตอบสั้น</option>
+                <option value="paragraph">ข้อความยาว</option>
+              </select>
+            </td>
+            <td>
+              <button class="btn btn-secondary btn-sm additional-form-fields-row-delete-buttons">-</button >
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <button class="btn btn-primary additional-form-fields-row-add-buttons">+</button>
+            </td>
+            <td></td>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <script>
+    $(function(){
+      $("#additionalFormFieldsToggleId").click(function(){
+        $(".additional-form-fields-form").slideDown();
+        return false;
+      });
+    });
+
+    function renumberAdditionalFormFields() {
+      $('.additional-form-fields-form table tbody tr').each(function(index, tr) {
+        if (index < $('.additional-form-fields-form table tbody tr').length - 1) {
+          $(tr).find('td:first').text(index + 1);
+          $(tr).find('.additional-form-fields-title').attr('name', 'additional_admission_form_fields-' + (index + 1) + '-title');
+          $(tr).find('.additional-form-fields-size').attr('name', 'additional_admission_form_fields-' + (index + 1) + '-size');
+        }
+      });
+    }
+
+    function addNewFormRow() {
+      var formRowTemplate = `<tr class="additional-form-fields-form-rows">
+                <td class="additional-form-fields-form-index">2</td>
+                <td>
+                  <input class="form-control additional-form-fields-title" style="border-width: 1px;" type="text" name="additional_admission_form_fields-2-title" value="" />
+                </td>
+                <td>
+                  <select class="form-control form-control additional-form-fields-size" name="additional_admission_form_fields-2-size">
+                    <option value="short">คำตอบสั้น</option>
+                    <option value="paragraph">ข้อความยาว</option>
+                  </select>
+                </td>
+                <td>
+                  <button class="btn btn-secondary btn-sm additional-form-fields-row-delete-buttons">-</button>
+                </td>
+              </tr>`;
+      var newRow = $(formRowTemplate);
+      newRow.find('.additional-form-fields-form-index').text($('.additional-form-fields-form table tbody tr').length);
+      $('.additional-form-fields-form table tbody').find('tr:last').before(newRow);
+    }
+
+    $(document).on('click', '.additional-form-fields-row-add-buttons', function() {
+      addNewFormRow();
+      return false;
+    });
+
+    $(document).on('click', '.additional-form-fields-row-delete-buttons', function() {
+      $(this).closest('tr').remove();
+      renumberAdditionalFormFields();
+      return false;
+    });
+  </script>
+{% endif %}

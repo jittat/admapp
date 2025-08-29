@@ -388,24 +388,6 @@ def upsert_admission_criteria(post_request, project=None, faculty=None, admissio
         admission_criteria.save_curriculum_majors(major_criterias)
 
 
-@user_login_required
-def create(request, project_id, round_id):
-    user = request.user
-    project = get_object_or_404(AdmissionProject, pk=project_id)
-    admission_round = get_object_or_404(AdmissionRound, pk=round_id)
-
-    if not can_user_view_project(user, project):
-        return redirect_to_project_index(project_id, round_id)
-
-    faculty, faculty_choices = extract_user_faculty(request, user)
-    majors = get_all_curriculum_majors(project, faculty)
-
-    if request.method == 'POST':
-        return handle_create_criteria(faculty, faculty_choices, project, project_id, request, round_id, user)
-
-    return render_create_criteria(admission_round, faculty, majors, project, request)
-
-
 def render_create_criteria(admission_round, faculty, majors, project, request):
     data_required = []
     data_scoring = []
@@ -453,6 +435,9 @@ def render_create_criteria(admission_round, faculty, majors, project, request):
     component_weight_type_choices = CurriculumMajor.get_component_weight_type_choices_unique(majors)
 
     faculty_interview_date = AdmissionProjectFacultyInterviewDate.get_from(project, faculty)
+
+    has_additional_form_fields = project.is_additional_admission_form_allowed 
+    additional_form_fields = []
     
     return render(request,
                   'criteria/create.html',
@@ -472,6 +457,9 @@ def render_create_criteria(admission_round, faculty, majors, project, request):
 
                    'faculty_interview_date': faculty_interview_date,
                    'additional_interview_condition': additional_interview_condition,
+
+                   'has_additional_form_fields': has_additional_form_fields,
+                   'additional_form_fields': additional_form_fields,
                    })
 
 
@@ -489,36 +477,26 @@ def handle_create_criteria(faculty, faculty_choices, project, project_id, reques
     return redirect_to_project_index_with_query(faculty_url_query, project_id, round_id)
 
 
-def redirect_to_project_index(project_id, round_id):
-    return redirect(reverse('backoffice:criteria:project-index', args=[project_id, round_id]))
-
-
 @user_login_required
-def edit(request, project_id, round_id, criteria_id):
+def create(request, project_id, round_id):
     user = request.user
     project = get_object_or_404(AdmissionProject, pk=project_id)
     admission_round = get_object_or_404(AdmissionRound, pk=round_id)
-    admission_criteria = get_object_or_404(AdmissionCriteria, pk=criteria_id)
 
     if not can_user_view_project(user, project):
         return redirect_to_project_index(project_id, round_id)
 
     faculty, faculty_choices = extract_user_faculty(request, user)
-    if admission_criteria.admission_project.id != project_id or (
-            not user.profile.is_admission_admin and faculty.id != admission_criteria.faculty.id):
-        return redirect_to_project_index(project_id, round_id)
-
-    majors = CurriculumMajor.objects.filter(
-        admission_project_id=project_id).select_related('cupt_code')
-
-    if faculty:
-        majors = [m for m in majors if m.faculty_id == faculty.id]
+    majors = get_all_curriculum_majors(project, faculty)
 
     if request.method == 'POST':
-        return handle_edit_criteria(admission_criteria, faculty, faculty_choices, request, user, project_id, round_id,
-                                    project)
+        return handle_create_criteria(faculty, faculty_choices, project, project_id, request, round_id, user)
 
-    return render_edit_criteria(admission_criteria, admission_round, faculty, majors, project, request)
+    return render_create_criteria(admission_round, faculty, majors, project, request)
+
+
+def redirect_to_project_index(project_id, round_id):
+    return redirect(reverse('backoffice:criteria:project-index', args=[project_id, round_id]))
 
 
 def render_edit_criteria(admission_criteria, admission_round, faculty, majors, project, request):
@@ -558,6 +536,9 @@ def render_edit_criteria(admission_criteria, admission_round, faculty, majors, p
 
     faculty_interview_date = AdmissionProjectFacultyInterviewDate.get_from(project, faculty)
     
+    has_additional_form_fields = project.is_additional_admission_form_allowed 
+    additional_form_fields = []
+
     return render(request,
                   'criteria/edit.html',
                   {'project': project,
@@ -578,6 +559,9 @@ def render_edit_criteria(admission_criteria, admission_round, faculty, majors, p
                    'faculty_interview_date': faculty_interview_date,
                    'additional_interview_condition': admission_criteria.additional_interview_condition,
                    'interview_date': admission_criteria.interview_date,
+
+                   'has_additional_form_fields': has_additional_form_fields,
+                   'additional_form_fields': additional_form_fields,
                    })
 
 
@@ -590,6 +574,34 @@ def handle_edit_criteria(admission_criteria, faculty, faculty_choices, request, 
     request.session['notice'] = "แก้ไขเกณฑ์ สำเร็จ"
     faculty_url_query = '' if faculty_choices == [] else '?faculty_id=' + str(faculty.id)
     return redirect_to_project_index_with_query(faculty_url_query, project_id, round_id)
+
+
+@user_login_required
+def edit(request, project_id, round_id, criteria_id):
+    user = request.user
+    project = get_object_or_404(AdmissionProject, pk=project_id)
+    admission_round = get_object_or_404(AdmissionRound, pk=round_id)
+    admission_criteria = get_object_or_404(AdmissionCriteria, pk=criteria_id)
+
+    if not can_user_view_project(user, project):
+        return redirect_to_project_index(project_id, round_id)
+
+    faculty, faculty_choices = extract_user_faculty(request, user)
+    if admission_criteria.admission_project.id != project_id or (
+            not user.profile.is_admission_admin and faculty.id != admission_criteria.faculty.id):
+        return redirect_to_project_index(project_id, round_id)
+
+    majors = CurriculumMajor.objects.filter(
+        admission_project_id=project_id).select_related('cupt_code')
+
+    if faculty:
+        majors = [m for m in majors if m.faculty_id == faculty.id]
+
+    if request.method == 'POST':
+        return handle_edit_criteria(admission_criteria, faculty, faculty_choices, request, user, project_id, round_id,
+                                    project)
+
+    return render_edit_criteria(admission_criteria, admission_round, faculty, majors, project, request)
 
 
 def redirect_to_project_index_with_query(faculty_url_query, project_id, round_id):

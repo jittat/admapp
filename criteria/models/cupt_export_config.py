@@ -46,8 +46,7 @@ class CuptExportCustomProject(models.Model):
     
 class CuptExportAdditionalProjectRule(models.Model):
     admission_project = models.ForeignKey(AdmissionProject,
-                                          on_delete=models.CASCADE,
-                                          default=AdmissionProject.objects.get(pk=28))
+                                          on_delete=models.CASCADE)
     program_major_codes = models.CharField(max_length=200)
     custom_project = models.ForeignKey('CuptExportCustomProject',
                                        on_delete=models.CASCADE)
