@@ -256,6 +256,20 @@ def extract_additional_interview_condition(post_request):
         additional_interview_condition = post_request['additional_interview_condition'].strip()
     return additional_interview_condition
 
+def extract_additional_admission_form_fields_as_json(project, post_request):
+    if not project.is_additional_admission_form_allowed:
+        return ''
+    additional_admission_form_fields = []
+    for key in post_request:
+        if key.startswith("additional_admission_form_fields-") and key.endswith("-title"):
+            index = key.split("-")[1]
+            title = post_request[key].strip()
+            size = post_request.get(f"additional_admission_form_fields-{index}-size", "").strip()
+            additional_admission_form_fields.append({
+                "title": title,
+                "size": size
+            })
+    return json.dumps(additional_admission_form_fields)
 
 def upsert_admission_criteria(post_request, project=None, faculty=None, admission_criteria=None, user=None):
     score_criteria_dict = dict()
@@ -291,8 +305,12 @@ def upsert_admission_criteria(post_request, project=None, faculty=None, admissio
                 value = Decimal(value)
             selected_major_dict[data_key][splitted_keys[2]] = value
 
+    if not project:
+        project = admission_criteria.admission_project
+    
     additional_interview_condition = extract_additional_interview_condition(post_request)
     custom_interview_date = extract_custom_interview_date(post_request)
+    additional_admission_form_fields_json = extract_additional_admission_form_fields_as_json(project, post_request)
 
     if (len(selected_major_dict) == 0) and (len(score_criteria_dict) == 0):
         raise Http404("Error ")
@@ -302,11 +320,12 @@ def upsert_admission_criteria(post_request, project=None, faculty=None, admissio
         if admission_criteria is None:
             version = 1
             admission_criteria = AdmissionCriteria(
+                admission_project=project,
+                faculty=faculty,
                 additional_interview_condition=additional_interview_condition,
                 interview_date=custom_interview_date,
-                admission_project=project,
-                version=version,
-                faculty=faculty)
+                additional_admission_form_fields_json=additional_admission_form_fields_json,
+                version=version)
             admission_criteria.save()
             old_admission_criteria = None
         else:
@@ -321,6 +340,7 @@ def upsert_admission_criteria(post_request, project=None, faculty=None, admissio
                 accepted_student_curriculum_type_flags=old_admission_criteria.accepted_student_curriculum_type_flags,
                 additional_interview_condition=additional_interview_condition,
                 interview_date=custom_interview_date,
+                additional_admission_form_fields_json=additional_admission_form_fields_json,
                 version=version)
             admission_criteria.save()
 
@@ -538,6 +558,11 @@ def render_edit_criteria(admission_criteria, admission_round, faculty, majors, p
     
     has_additional_form_fields = project.is_additional_admission_form_allowed 
     additional_form_fields = []
+    try:
+        if admission_criteria.additional_admission_form_fields_json != '':
+            additional_form_fields = json.loads(admission_criteria.additional_admission_form_fields_json)
+    except:
+        additional_form_fields = []
 
     return render(request,
                   'criteria/edit.html',
