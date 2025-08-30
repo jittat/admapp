@@ -41,6 +41,7 @@ class AdmissionCriteria(models.Model):
         Faculty, on_delete=models.CASCADE, null=True, blank=False)
     version = models.IntegerField(default=1)
     is_deleted = models.BooleanField(default=False)
+    is_from_last_year = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     created_by = models.CharField(max_length=30, blank=True)
 
@@ -63,7 +64,8 @@ class AdmissionCriteria(models.Model):
                                       null=True)
 
     custom_interview_date_str = models.TextField(blank=True)
-    
+    last_year_major_titles = models.TextField(blank=True)
+
     def get_all_score_criteria(self, criteria_type):
         if getattr(self, 'cached_score_criteria', None) is None:
             self.cached_score_criteria = self.scorecriteria_set.all()
@@ -200,6 +202,9 @@ class AdmissionCriteria(models.Model):
         else:
             accepted_years.append(year)
         self.accepted_graduate_year_flags = ','.join([str(t) for t in sorted(accepted_years)])
+
+    def last_year_major_titles_display(self):
+        return '\n'.join(self.last_year_major_titles.split(";"))
 
 
 class AdmissionProjectFacultyInterviewDate(models.Model):

@@ -30,7 +30,7 @@
     {% include "criteria/include/scorecriteria_list.html" %}
   {% endwith %}
 </td>
-<td rowspan="{% if major_count %}{{ major_count }}{% else %}1{% endif %}">
+<td class="admission-criteria-edit-link-tds" rowspan="{% if major_count %}{{ major_count }}{% else %}1{% endif %}">
   {% if is_edit_link_hidden %}
   {% else %}
     <a href="{% url 'backoffice:criteria:create' project.id admission_round.id %}?duplicate_score_id={{admission_criteria.id}}{% if faculty_choices %}&faculty_id={{ faculty.id }}{% endif %}"

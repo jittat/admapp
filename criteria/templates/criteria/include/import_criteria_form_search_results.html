@@ -1,0 +1,26 @@
+<table id="importCriteriaSearchResultsTableId" class="table table-bordered table-striped">
+  <tr>
+    <th>#</th>
+    <th>สาขาวิชา</th>
+    <th>คุณสมบัติเฉพาะ</th>
+    <th>เกณฑ์การคัดเลือก</th>
+    <th></th>
+  </tr>
+  {% for r in admission_criteria_rows %}
+    <tr>
+      <td>{{ forloop.counter }}</td>
+      {% with r.criterias.0 as admission_criteria %}
+        <td>
+          {{ admission_criteria.last_year_major_titles_display|linebreaksbr }}
+        </td>
+        {% with True as is_edit_link_hidden  %}
+          {% include "criteria/include/criteria_table_scorecriteria_cols.html" %}
+        {% endwith %}
+        <td>
+          <a href="{% url 'backoffice:criteria:create' project.id admission_round.id %}?duplicate_score_id={{admission_criteria.id}}{% if faculty_choices %}&faculty_id={{ faculty.id }}{% endif %}"
+        class="btn btn-primary btn-sm">ใช้เกณฑ์นี้</a>
+        </td>
+      {% endwith %}
+    </tr>
+  {% endfor %}
+</table>

@@ -414,6 +414,7 @@ def render_create_criteria(admission_round, faculty, majors, project, request):
     data_selected_majors = []
     duplicate_score_id = request.GET.get('duplicate_score_id', None)
     selected_major_id = request.GET.get('selected_major_id', None)
+    selected_major_slot = request.GET.get('slots', None)
     additional_interview_condition = ''
     if duplicate_score_id is not None:
         admission_criteria = get_object_or_404(AdmissionCriteria,
@@ -441,15 +442,18 @@ def render_create_criteria(admission_round, faculty, majors, project, request):
         data_required = [d[0] for d in data_criteria if d[1] == "required"]
         data_scoring = [d[0] for d in data_criteria if d[1] == "scoring"]
     if selected_major_id is not None:
-        preselected_major = get_object_or_404(
-            CurriculumMajor, pk=selected_major_id)
-        data_selected_majors = [
-            {
+        data_selected_majors = []
+        slots = selected_major_slot.split(",") if selected_major_slot else ['']
+        for m, s in zip(selected_major_id.split(","), slots):
+            preselected_major = get_object_or_404(
+                CurriculumMajor, pk=m)
+            data_selected_majors.append({
                 "id": preselected_major.id,
                 "title": ("%s (%s) %s") % (preselected_major.cupt_code.title, preselected_major.cupt_code.program_type,
                                            preselected_major.cupt_code.major_title),
-            }
-        ]
+                "slot": s,
+            })
+
     # TODO: remove component weights (no more TCAS round 3 - Admission 2)
     uses_component_weights = False
     component_weight_type_choices = CurriculumMajor.get_component_weight_type_choices_unique(majors)
@@ -897,6 +901,52 @@ def list_curriculum_majors(request):
                    'project_lists': project_lists,
                    'major_table': major_table,
                    'round_data': list(zip(admission_rounds, major_table, project_lists)),
+                   })
+
+
+@user_login_required
+def search_last_year_admission_criteria(request,project_id, round_id):
+    user = request.user
+    project = get_object_or_404(AdmissionProject, pk=project_id)
+    admission_round = get_object_or_404(AdmissionRound, pk=round_id)
+
+    majors = request.GET.get('majors', None)
+    if not majors:
+        return HttpResponseForbidden()
+    
+    major_titles = []
+    for m in majors.split(","):
+        major = get_object_or_404(CurriculumMajor, pk=m)
+        major_titles.append(str(major.cupt_code))
+    print(major_titles)
+
+    if not can_user_view_project(user, project):
+        return redirect(reverse('backoffice:index'))
+
+    faculty, faculty_choices = extract_user_faculty(request, user)
+
+    admission_criterias = []
+    
+    for a in AdmissionCriteria.objects.filter(admission_project_id=project_id,
+                                              faculty_id=faculty.id,
+                                              is_from_last_year=True):
+        is_major_found = False
+        for title in major_titles:
+            if title in a.last_year_major_titles:
+                is_major_found = True
+                break
+        if is_major_found:
+            admission_criterias.append(a)
+
+    admission_criteria_rows, free_curriculum_majors = prepare_admission_criteria(admission_criterias, [])
+
+    return render(request,
+                  'criteria/include/import_criteria_form_search_results.html',
+                  {'project': project,
+                   'admission_round': admission_round,
+                   'faculty': faculty,                   
+                   'faculty_choices': faculty_choices,
+                   'admission_criteria_rows': admission_criteria_rows,
                    })
 
 

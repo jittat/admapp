@@ -15,6 +15,9 @@ urlpatterns = [
     path('<int:project_id>/<int:round_id>/<int:criteria_id>/delete/',
          views.delete, name='delete'),
 
+    path('<int:project_id>/<int:round_id>/import-search/',
+         views.search_last_year_admission_criteria, name='import-search'),
+
     path('<int:project_id>/<int:round_id>/curriculum-majors/',
          views.select_curriculum_majors, name='curriculum-majors'),
     path('<int:project_id>/<int:round_id>/curriculum-majors/toggle/<int:code_id>/<value>/',

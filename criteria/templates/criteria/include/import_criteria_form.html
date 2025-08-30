@@ -1,0 +1,57 @@
+<div class="form-group">
+  <label for="import-form">
+    นำเข้าข้อมูลจากการรับเข้าจากปีการศึกษาที่แล้ว
+    <button class="btn btn-outline-secondary btn-sm" id="importFormToggleId">เลือกและนำเข้า</button>
+  </label>
+  <div id="lastYearImportFormId"></div>
+</div>
+<script>
+  var facultyId = {{ faculty.id }};
+  function getMajorFieldValues(name_suffix) {
+    var c = 1;
+    var vals = [];
+    while(true) {
+      var inputName = 'majors_' + c + name_suffix;
+      var input = $("[name='" + inputName + "']");
+      if(input.length != 0) {
+        vals.push(input.val());
+      } else {
+        break;
+      }
+      c++;
+    }
+    return vals.join(',');
+  }
+  function getMajorIds() {
+    return getMajorFieldValues('_id');
+  }
+  function getMajorSlots() {
+    return getMajorFieldValues('_slot');
+  }
+  function addSelectedMajorToImportLinks() {
+    var majorIds = getMajorIds();
+    if(majorIds == '') {
+      return;
+    }
+    var additionalQueryStr = "&selected_major_id=" + majorIds + "&slots=" + getMajorSlots();
+    $("#importCriteriaSearchResultsTableId a").each(function() {
+      var href = $(this).attr("href");
+      $(this).attr("href", href + additionalQueryStr);
+    });
+  }
+  $(function(){
+    $("#importFormToggleId").click(function(){
+      var majorIds = getMajorIds();
+      if(majorIds == '') {
+        alert('กรุณาเลือกสาขาก่อน จึงจะสามารถค้นเงื่อนไขการรับจากปีก่อนได้');
+      }
+      var url = "{% url 'backoffice:criteria:import-search' project.id admission_round.id %}?faculty_id=" + facultyId + "&majors=" + majorIds;
+      $.get(url, function(data) {
+        $("#lastYearImportFormId").html(data);
+        $(".admission-criteria-edit-link-tds").hide();
+        addSelectedMajorToImportLinks();
+      });
+      return false;
+    });
+  });
+</script>
