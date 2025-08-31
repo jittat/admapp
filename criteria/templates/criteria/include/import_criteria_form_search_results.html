@@ -18,7 +18,7 @@
         {% endwith %}
         <td>
           <a href="{% url 'backoffice:criteria:create' project.id admission_round.id %}?duplicate_score_id={{admission_criteria.id}}{% if faculty_choices %}&faculty_id={{ faculty.id }}{% endif %}"
-        class="btn btn-primary btn-sm">ใช้เกณฑ์นี้</a>
+        class="btn btn-success btn-sm">ใช้เกณฑ์นี้</a>
         </td>
       {% endwith %}
     </tr>
