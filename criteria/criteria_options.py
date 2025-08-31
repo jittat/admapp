@@ -29,6 +29,14 @@ CRITERIA_OPTIONS = {
     ],
     'general_required_tags': [
         {
+          "score_type": "STUDY_AT_12",
+          "description": "กำลังศึกษาอยู่ชั้นมัธยมศึกษาปีที่ 6 หรือเทียบเท่าในปีการศึกษา 2568", "unit": ""
+        },
+        {
+          "score_type": "GRAD_OR_STUDY_AT_12",
+          "description": "กำลังศึกษาหรือสำเร็จการศึกษาชั้นมัธยมศึกษาปีที่ 6 หรือเทียบเท่า", "unit": ""
+        },
+        {
             "score_type": "GPAX_4_SEMESTER",
             "description": "ผลการเรียนเฉลี่ยสะสม (GPAX) 4 ภาคเรียน", "unit": ""
         },
@@ -40,14 +48,6 @@ CRITERIA_OPTIONS = {
             "score_type": "GPAX",
             "description": "ผลการเรียนเฉลี่ยสะสม (GPAX)", "unit": ""
         },
-        #{
-        #  "score_type": "STUDY_AT_12",
-        #  "description": "เป็นผู้ที่กำลังศึกษาอยู่ชั้นมัธยมศึกษาปีที่ 6 หรือเทียบเท่า", "unit": ""
-        #},
-        #{
-        #  "score_type": "GRAD_OR_STUDY_AT_12",
-        #  "description": "กำลังศึกษาหรือสำเร็จศึกษาชั้นมัธยมศึกษาปีที่ 6 หรือเทียบเท่า", "unit": ""
-        #},
         {
             "score_type": "UNIT_MATH",
             "description": "หน่วยกิตกลุ่มสาระการเรียนรู้คณิตศาสตร์", "unit": ""
