@@ -11,14 +11,23 @@
       <span>เงื่อนไขประเภทโรงเรียน: {{ project.get_admission_school_type_display }} &nbsp;|&nbsp;</span>
     {% endif %}
     {% if not project.is_custom_curriculum_type_allowed %}
-      <span class="text-muted">ถ้าต้องการแก้ไขกรุณาแจ้งฝ่ายรับสมัคร</span>
+      <span class="text-muted">ถ้าต้องการแก้ไขกรุณาแจ้งฝ่ายรับสมัคร หรือระบุในเงื่อนไขคุณสมบัติเฉพาะ</span>
     {% else %}
       {% if not project.is_custom_graduate_year_allowed %}
-	<span class="text-muted">ถ้าต้องการแก้ไขกรุณาแจ้งฝ่ายรับสมัคร</span>
+	<span class="text-muted">ถ้าต้องการแก้ไขกรุณาแจ้งฝ่ายรับสมัคร หรือระบุในเงื่อนไขคุณสมบัติเฉพาะ</span>
       {% endif %}
     {% endif %}
   </small>
 </div>
+
+{% if project.id != 28 %}
+  {% if faculty.campus_id == 1 or faculty.campus_id == 5 %}
+    <div class="alert alert-info mt-1">
+      <span class="badge badge-info">ประกาศ</span>
+      จะสามารถระบุข้อความเพื่อแจ้งให้กับผู้สมัครระหว่างดำเนินการสมัคร เช่น ระบุให้ส่งข้อมูลบางอย่างเป็นพิเศษ หรือแจ้งว่ามีทุนการศึกษา จะสามารถระบุได้ในระบบภายในวันพุธที่ 3 ก.ย. นี้ ขออภัยในความล่าช้า
+    </div>
+  {% endif %}
+{% endif %}
 
 {% if project.id == 28 %}
   <div class="alert alert-info mt-1">
