@@ -1,4 +1,4 @@
-<div class="form-group">
+<div class="form-group" id="lastYearImportFormGroupId">
   <label for="import-form">
     นำเข้าข้อมูลจากการรับเข้าจากปีการศึกษาที่แล้ว
     <button class="btn btn-outline-secondary btn-sm" id="importFormToggleId">เลือกและนำเข้า</button>
@@ -40,7 +40,11 @@
     });
   }
   $(function(){
-    $("#importFormToggleId").click(function(){
+    // move import section to be before the criteria
+    var targetDiv = $("#add-criterion-form .form-group").eq(1);
+    $("#lastYearImportFormGroupId").insertBefore(targetDiv);
+
+    $(document).on("click", "#importFormToggleId", function(){
       var majorIds = getMajorIds();
       if(majorIds == '') {
         alert('กรุณาเลือกสาขาก่อน จึงจะสามารถค้นเงื่อนไขการรับจากปีก่อนได้');
