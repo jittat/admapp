@@ -157,6 +157,8 @@ class AdmissionProject(models.Model):
     
     is_additional_admission_form_allowed = models.BooleanField(default=False,
                                                                verbose_name='อนุญาตให้มีแบบฟอร์มเพิ่มเติม')
+    is_additional_notice_allowed = models.BooleanField(default=False,
+                                                       verbose_name='อนุญาตให้มีประกาศเพิ่มเติมในระบบรับสมัคร')
     
     max_num_selections = models.IntegerField(default=1,
                                              verbose_name='จำนวนสาขาที่เลือกได้')

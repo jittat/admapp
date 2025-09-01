@@ -1,0 +1,26 @@
+{% if project.is_additional_notice_allowed %}
+  <div class="form-group">
+    <label for="additional-notice">
+      รายละเอียดเพิ่มเติมที่ต้องการแจ้งกับผู้สมัครในระบบรับสมัคร
+      <button class="btn btn-outline-secondary btn-sm" id="additionalNoticeToggleId">เพิ่มรายละเอียด</button>
+    </label>
+    <div class="additional-notice-form" {% if additional_notice == '' %}style="display: none;"{% endif %}>
+      <small class="form-text text-muted">
+	    ในกรณีที่มีเงื่อนไขเพิ่มเติม เช่นเงื่อนไขการสัมภาษณ์หรือการตรวจสุขภาพ ใหัระบุที่นี่ ถ้าไม่มีไม่ต้องระบุ  ให้ป้อนเฉพาะในกรณีที่ไม่สามารถเลือกจากตัวเลือกด้านบนได้เท่านั้น
+      </small>
+      {% if additional_notice %}
+  	    <input class="form-control" name="additional_notice" value="{{ additional_notice }}"/>
+      {% else %}
+	      <input class="form-control" name="additional_notice"/>
+      {% endif %}
+    </div>
+  </div>
+  <script>
+   $(function(){
+     $("#additionalNoticeToggleId").click(function(){
+       $(".additional-notice-form").slideDown();
+       return false;
+     });
+   });
+  </script>
+{% endif %}

@@ -265,11 +265,19 @@ def extract_additional_admission_form_fields_as_json(project, post_request):
             index = key.split("-")[1]
             title = post_request[key].strip()
             size = post_request.get(f"additional_admission_form_fields-{index}-size", "").strip()
-            additional_admission_form_fields.append({
-                "title": title,
-                "size": size
-            })
+            if title != '':
+                additional_admission_form_fields.append({
+                    "title": title,
+                    "size": size
+                })
     return json.dumps(additional_admission_form_fields)
+
+def extract_additional_notice(project, post_request):
+    if not project.is_additional_notice_allowed:
+        return ''
+    if 'additional_notice' in post_request:
+        return post_request['additional_notice'].strip()
+    return ''
 
 def upsert_admission_criteria(post_request, project=None, faculty=None, admission_criteria=None, user=None):
     score_criteria_dict = dict()
@@ -311,6 +319,7 @@ def upsert_admission_criteria(post_request, project=None, faculty=None, admissio
     additional_interview_condition = extract_additional_interview_condition(post_request)
     custom_interview_date = extract_custom_interview_date(post_request)
     additional_admission_form_fields_json = extract_additional_admission_form_fields_as_json(project, post_request)
+    additional_notice = extract_additional_notice(project, post_request)
 
     if (len(selected_major_dict) == 0) and (len(score_criteria_dict) == 0):
         raise Http404("Error ")
@@ -325,6 +334,7 @@ def upsert_admission_criteria(post_request, project=None, faculty=None, admissio
                 additional_interview_condition=additional_interview_condition,
                 interview_date=custom_interview_date,
                 additional_admission_form_fields_json=additional_admission_form_fields_json,
+                additional_notice=additional_notice,
                 version=version)
             admission_criteria.save()
             old_admission_criteria = None
@@ -341,6 +351,7 @@ def upsert_admission_criteria(post_request, project=None, faculty=None, admissio
                 additional_interview_condition=additional_interview_condition,
                 interview_date=custom_interview_date,
                 additional_admission_form_fields_json=additional_admission_form_fields_json,
+                additional_notice=additional_notice,
                 version=version)
             admission_criteria.save()
 
@@ -465,6 +476,8 @@ def render_create_criteria(admission_round, faculty, majors, project, request):
 
     has_additional_form_fields = project.is_additional_admission_form_allowed 
     additional_form_fields = []
+    has_additional_notice = project.is_additional_notice_allowed
+    additional_notice = ''
     
     return render(request,
                   'criteria/create.html',
@@ -487,6 +500,9 @@ def render_create_criteria(admission_round, faculty, majors, project, request):
 
                    'has_additional_form_fields': has_additional_form_fields,
                    'additional_form_fields': additional_form_fields,
+
+                   'has_additional_notice': has_additional_notice,
+                   'additional_notice': additional_notice,
 
                    'notice': notice,
                    })
@@ -573,6 +589,9 @@ def render_edit_criteria(admission_criteria, admission_round, faculty, majors, p
     except:
         additional_form_fields = []
 
+    has_additional_notice = project.is_additional_notice_allowed
+    additional_notice = admission_criteria.additional_notice
+ 
     return render(request,
                   'criteria/edit.html',
                   {'project': project,
@@ -596,6 +615,9 @@ def render_edit_criteria(admission_criteria, admission_round, faculty, majors, p
 
                    'has_additional_form_fields': has_additional_form_fields,
                    'additional_form_fields': additional_form_fields,
+
+                   'has_additional_notice': has_additional_notice,
+                   'additional_notice': additional_notice,
                    })
 
 
@@ -923,7 +945,6 @@ def search_last_year_admission_criteria(request,project_id, round_id):
     for m in majors.split(","):
         major = get_object_or_404(CurriculumMajor, pk=m)
         major_titles.append(str(major.cupt_code))
-    print(major_titles)
 
     if not can_user_view_project(user, project):
         return redirect(reverse('backoffice:index'))
