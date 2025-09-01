@@ -22,5 +22,7 @@
         </td>
       {% endwith %}
     </tr>
+  {% empty %}
+    <tr><td colspan="5" class="text-center">ไม่พบเกณฑ์การคัดเลือกของสาขานี้ในโครงการ {{ project }} จากปีการศึกษาก่อน</td></tr>
   {% endfor %}
 </table>
