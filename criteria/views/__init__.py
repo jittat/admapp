@@ -409,6 +409,7 @@ def upsert_admission_criteria(post_request, project=None, faculty=None, admissio
 
 
 def render_create_criteria(admission_round, faculty, majors, project, request):
+    notice = None
     data_required = []
     data_scoring = []
     data_selected_majors = []
@@ -441,6 +442,8 @@ def render_create_criteria(admission_round, faculty, majors, project, request):
 
         data_required = [d[0] for d in data_criteria if d[1] == "required"]
         data_scoring = [d[0] for d in data_criteria if d[1] == "scoring"]
+
+        notice = 'นำเข้าเกณฑ์การรับแล้ว แต่ยังไม่ได้จัดเก็บ อย่าลืมจัดเก็บเงื่อนไขด้วย'
     if selected_major_id is not None:
         data_selected_majors = []
         slots = selected_major_slot.split(",") if selected_major_slot else ['']
@@ -484,6 +487,8 @@ def render_create_criteria(admission_round, faculty, majors, project, request):
 
                    'has_additional_form_fields': has_additional_form_fields,
                    'additional_form_fields': additional_form_fields,
+
+                   'notice': notice,
                    })
 
 
