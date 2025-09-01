@@ -9,9 +9,9 @@
 	ในกรณีที่มีเงื่อนไขเพิ่มเติม เช่นเงื่อนไขการสัมภาษณ์หรือการตรวจสุขภาพ ใหัระบุที่นี่ ถ้าไม่มีไม่ต้องระบุ  ให้ป้อนเฉพาะในกรณีที่ไม่สามารถเลือกจากตัวเลือกด้านบนได้เท่านั้น
       </small>
       {% if additional_interview_condition %}
-	<textarea class="form-control" name="additional_interview_condition" rows="2">{{ additional_interview_condition }}</textarea>
+	<textarea class="form-control" name="additional_interview_condition" rows="4">{{ additional_interview_condition }}</textarea>
       {% else %}
-	<textarea class="form-control" name="additional_interview_condition" rows="2"></textarea>
+	<textarea class="form-control" name="additional_interview_condition" rows="4"></textarea>
       {% endif %}
     </div>
   </div>
