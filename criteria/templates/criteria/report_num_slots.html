@@ -2,7 +2,7 @@
 {% block content %}
 <div class="row">
   <div class="col-md-12">
-    <h2>จำนวนการรับ {{ admission_round }} {{ admission_round.short_descriptions }}</h2>
+    <h2>จำนวนการรับแยกตามคณะ {{ admission_round }} {{ admission_round.short_descriptions }}</h2>
     <div class="mb-1">
       <small>
 	รอบอื่น:
@@ -19,21 +19,47 @@
 	<tr>
 	  <th></th>
 	  <th></th>
+	  <th></th>
 	  {% for p in admission_projects %}
 	    <th>{{ p }}</th>
 	  {% endfor %}
 	</tr>
       </thead>
       <tbody>
-	{% for f,sf in faculty_slots %}
-	  <tr>
-	    <td>{{ forloop.counter }}</td>
-	    <td>{{ f }}</td>
-	    {% for s in sf %}
-	      <td>{{ s }}</td>
-	    {% endfor %}
-	  </tr>
-	{% endfor %}
+				<tr>
+					<td></td>
+					<td>รวม</td>
+					<td></td>
+					{% for s in total_slots %}
+						<td>
+							{% if s != 0 %}
+								<strong>{{ s }}</strong>
+							{% else %}
+								-
+							{% endif %}
+						</td>
+					{% endfor %}
+				</tr>
+				{% for f,sf in faculty_slots %}
+					<tr>
+						<td>{{ forloop.counter }}</td>
+						<td>
+							{{ f }}
+						</td>
+						<td>
+							<a class="btn btn-sm btn-outline-secondary" href="{% url 'backoffice:criteria:report-num-slots-by-faculty' admission_round.id f.id %}"><i class="fa fa-folder-open"></i></a>
+						</td>
+						{% for s in sf %}
+							<td>
+								{% if s != 0 %}
+									{{ s }}
+								{% else %}
+									-
+								{% endif %}
+							</td>
+						{% endfor %}
+					</tr>
+				{% endfor %}
       </tbody>
     </table>
   </div>

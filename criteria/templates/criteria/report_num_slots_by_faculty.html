@@ -1,0 +1,73 @@
+{% extends 'backoffice/base.html' %}
+{% block content %}
+<div class="row">
+  <div class="col-md-12">
+    <h2>จำนวนการรับ {{ faculty }} แยกตามสาขา {{ admission_round }} {{ admission_round.short_descriptions }}</h2>
+    <div class="mb-1">
+      <small>
+        รอบอื่น:
+        {% for r in admission_rounds %}
+          {% if r.id != admission_round.id %}
+            <a class="btn btn-sm btn-outline-secondary" href="{% url 'backoffice:criteria:report-num-slots-by-faculty' r.id faculty.id %}">{{ r }}</a>
+          {% endif %}
+        {% endfor %}
+      </small>
+    </div>
+
+    <table class="table table-striped table-sm table-bordered">
+      <thead class="thead-dark">
+        <tr>
+          <th></th>
+          <th></th>
+          <th></th>
+          {% for p in admission_projects %}
+            <th class="num-col-{{ forloop.counter0 }}">{{ p }}</th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+ 				<tr>
+					<td></td>
+					<td>รวม</td>
+					<td></td>
+					{% for s in total_slots %}
+						<td class="num-col-{{ forloop.counter0 }}">
+							{% if s != 0 %}
+								{{ s }}
+							{% else %}
+								-
+							{% endif %}
+						</td>
+					{% endfor %}
+				</tr>
+
+        {% for major,sf in major_slots %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ major }}</td>
+            <td>
+              <a class="btn btn-sm btn-outline-secondary" href="{% url 'backoffice:criteria:major-report' major.id %}"><i class="fa fa-folder-open"></i></a>
+            </td>
+            {% for s in sf %}
+              <td class="num-col-{{ forloop.counter0 }}">
+                {% if s != 0 %}
+                  {{ s }}
+                {% else %}
+                  -
+                {% endif %}
+              </td>
+            {% endfor %}
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+<style>
+  {% for s in total_slots %}
+    {% if s == 0 %}
+      .num-col-{{ forloop.counter0 }} { display: none; }
+    {% endif %}
+  {% endfor %}
+</style>
+{% endblock %}

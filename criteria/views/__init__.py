@@ -975,6 +975,12 @@ def search_last_year_admission_criteria(request,project_id, round_id):
                    'admission_criteria_rows': admission_criteria_rows,
                    })
 
+def sum_all_slots(slots):
+    total = [0] * len(slots[0])
+    for s in slots:
+        for i in range(len(s)):
+            total[i] += s[i]
+    return total
 
 @user_login_required
 def report_num_slots(request, round_id):
@@ -1014,4 +1020,51 @@ def report_num_slots(request, round_id):
                    'faculties': faculties,
                    'admission_projects': admission_projects,
                    'faculty_slots': zip(faculties, slots),
+                   'total_slots': sum_all_slots(slots),
+                   })
+
+@user_login_required
+def report_num_slots_by_faculty(request, round_id, faculty_id):
+    user = request.user
+    if not user.profile.is_admission_admin:
+        return HttpResponseForbidden()
+
+    admission_round = get_object_or_404(AdmissionRound, pk=round_id)
+    admission_rounds = AdmissionRound.objects.all()
+
+    faculty = get_object_or_404(Faculty, pk=faculty_id)
+
+    admission_projects = [p for p in
+                          AdmissionProject.objects.filter(is_visible_in_backoffice=True)
+                          if admission_round in p.admission_rounds.all()]
+
+    pmap = {p.id: r for p, r in zip(admission_projects, range(len(admission_projects)))}
+
+    major_choices = MajorCuptCode.objects.filter(faculty=faculty)
+    mmap = {m.id: r for m, r in zip(major_choices, range(len(major_choices)))}
+
+    slots = []
+
+    for major in major_choices:
+        slots.append([0] * len(admission_projects))
+
+    cmap = {}
+    for c in AdmissionCriteria.objects.filter(is_deleted=False, faculty=faculty):
+        if c.admission_project_id in pmap:
+            cmap[c.id] = pmap[c.admission_project_id]
+
+    for major_criteria in CurriculumMajorAdmissionCriteria.objects.all():
+        if major_criteria.admission_criteria_id in cmap:
+            p = cmap[major_criteria.admission_criteria_id]
+            m = mmap[major_criteria.curriculum_major.cupt_code_id]
+            slots[m][p] += major_criteria.slots
+
+    return render(request,
+                  'criteria/report_num_slots_by_faculty.html',
+                  {'admission_round': admission_round,
+                   'admission_rounds': admission_rounds,
+                   'faculty': faculty,
+                   'admission_projects': admission_projects,
+                   'major_slots': zip(major_choices, slots),
+                   'total_slots': sum_all_slots(slots),
                    })

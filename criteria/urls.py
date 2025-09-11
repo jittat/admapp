@@ -28,6 +28,8 @@ urlpatterns = [
 
     path('report/<int:project_id>/<int:round_id>/',
          views.project_report, name='project-report'),
+    path('report/major/<int:code_id>/',
+         views.project_report, name='major-report'),
 
     path('<int:project_id>/<int:round_id>/addlimit/<int:mid>/',
          views.update_add_limit, name='update-add-limit'),
@@ -40,6 +42,8 @@ urlpatterns = [
 
     path('num-report/<int:round_id>/',
          views.report_num_slots, name='report-num-slots'),
+    path('num-report/<int:round_id>/<int:faculty_id>/',
+         views.report_num_slots_by_faculty, name='report-num-slots-by-faculty'),
 
 ]
 
