@@ -211,6 +211,9 @@ class AdmissionProject(models.Model):
     def get_admission_rounds_display(self):
         return ','.join([str(r) for r in self.admission_rounds.all()])
 
+    def get_single_round_number(self):
+        return self.admission_rounds.first().number
+
     def is_deadline_passed(self):
         started = False
         for around in self.admissionprojectround_set.all():

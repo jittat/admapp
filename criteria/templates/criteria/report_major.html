@@ -1,0 +1,58 @@
+{% extends 'backoffice/base.html' %}
+{% block content %}
+<div class="row">
+  <div class="col-md-12">
+    <h2>รวมเกณฑ์ {{ cupt_code }} ({{ faculty }})</h2>
+
+    <div class="mb-1">
+      <small>
+        กลับหน้ารวมคณะ:
+        {% for r in admission_rounds %}
+          <a class="btn btn-sm btn-outline-secondary" href="{% url 'backoffice:criteria:report-num-slots-by-faculty' r.id faculty.id %}">{{ r }}</a>
+        {% endfor %}
+      </small>
+    </div>
+
+
+    <table class="table table-sm table-bordered table-striped">
+      <thead class="thead-dark">
+        <tr>
+          <th>โครงการรับสมัคร</th>
+          <th>จำนวนรับ</th>
+          <th>สัมภาษณ์</th>
+          <th>เงื่อนไขขั้นต่ำ</th>
+          <th>เกณฑ์การพิจารณา</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in project_criterias %}
+          {% ifchanged row.round_number %}
+            <tr class="table-info">
+              <th colspan="300" class="text-center">รอบที่ {{ row.round_number }}</th>
+            </tr>
+            <tr class="table-secondary">
+              <th>โครงการรับสมัคร</th>
+              <th>จำนวนรับ</th>
+              <th>สัมภาษณ์</th>
+              <th>เงื่อนไขขั้นต่ำ</th>
+              <th>เกณฑ์การพิจารณา</th>
+              <th></th>
+            </tr>
+          {% endifchanged %}
+          {% for c in row.criterias %}
+            <tr>
+              <td>{{ row.admission_project }}</td>
+              <td>{{ c.major_criteria.slots }}</td>
+              <td>??</td>
+              {% with c.admission_criteria as admission_criteria %}
+                {% include "criteria/include/criteria_table_scorecriteria_cols.html" with major_count=1 is_edit_link_hidden=True %}
+              {% endwith %}
+            </tr>
+          {% endfor %}
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

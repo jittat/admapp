@@ -240,6 +240,52 @@ def project_report(request, project_id, round_id):
                    })
 
 
+@user_login_required
+def major_report(request, code_id):
+    user = request.user
+    cupt_code = get_object_or_404(MajorCuptCode, pk=code_id)
+    faculty = cupt_code.faculty
+    admission_rounds = AdmissionRound.objects.all()
+
+    if not user.profile.is_admission_admin:
+        return redirect(reverse('backoffice:index'))
+
+    curriculum_majors = (CurriculumMajor.objects
+                           .filter(cupt_code_id=code_id)
+                           .select_related('admission_project'))
+
+    curriculum_majors = sorted(curriculum_majors, 
+                               key=lambda cm: (cm.admission_project.get_single_round_number(),
+                                               cm.admission_project.display_rank, 
+                                               cm.admission_project.id))
+
+    project_criterias = []
+    for cm in curriculum_majors:
+        criterias = []
+        for cma in CurriculumMajorAdmissionCriteria.objects.filter(curriculum_major=cm).all():
+            criteria = cma.admission_criteria
+            if criteria.is_deleted:
+                continue
+            criteria.cache_score_criteria_children()
+            criterias.append({
+                'major_criteria': cma,
+                'admission_criteria': criteria
+            })
+        project_criterias.append({
+            'admission_project': cm.admission_project, 
+            'round_number': cm.admission_project.get_single_round_number(),
+            'criterias': criterias
+        })
+
+    return render(request,
+                  'criteria/report_major.html',
+                  {'cupt_code': cupt_code,
+                   'faculty': faculty,
+                   'project_criterias': project_criterias,
+                   'admission_rounds': admission_rounds,
+                   })
+
+
 def extract_custom_interview_date(post_request):
     from datetime import date
 

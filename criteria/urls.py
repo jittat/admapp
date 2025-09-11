@@ -29,7 +29,7 @@ urlpatterns = [
     path('report/<int:project_id>/<int:round_id>/',
          views.project_report, name='project-report'),
     path('report/major/<int:code_id>/',
-         views.project_report, name='major-report'),
+         views.major_report, name='major-report'),
 
     path('<int:project_id>/<int:round_id>/addlimit/<int:mid>/',
          views.update_add_limit, name='update-add-limit'),

@@ -11,6 +11,8 @@
             <a class="btn btn-sm btn-outline-secondary" href="{% url 'backoffice:criteria:report-num-slots-by-faculty' r.id faculty.id %}">{{ r }}</a>
           {% endif %}
         {% endfor %}
+        &nbsp;&nbsp; | &nbsp;&nbsp;
+        <a class="btn btn-sm btn-outline-secondary" href="{% url 'backoffice:criteria:report-num-slots' admission_round.id %}">รวมทุกคณะ</a>
       </small>
     </div>
 
