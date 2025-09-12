@@ -271,8 +271,11 @@ def major_report(request, code_id):
                 'major_criteria': cma,
                 'admission_criteria': criteria
             })
+        admission_project = cm.admission_project
+        project_faculty_interview_date = AdmissionProjectFacultyInterviewDate.get_from(admission_project, faculty)
         project_criterias.append({
-            'admission_project': cm.admission_project, 
+            'admission_project': admission_project, 
+            'faculty_interview_date': project_faculty_interview_date,
             'round_number': cm.admission_project.get_single_round_number(),
             'criterias': criterias
         })

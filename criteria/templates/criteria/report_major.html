@@ -44,7 +44,9 @@
             <tr>
               <td>{{ row.admission_project }}</td>
               <td>{{ c.major_criteria.slots }}</td>
-              <td>??</td>
+              <td>
+                {% include "criteria/include/interview_date.html" with faculty_interview_date=row.faculty_interview_date criteria_interview_date=c.admission_criteria.interview_date %}
+              </td>
               {% with c.admission_criteria as admission_criteria %}
                 {% include "criteria/include/criteria_table_scorecriteria_cols.html" with major_count=1 is_edit_link_hidden=True %}
               {% endwith %}

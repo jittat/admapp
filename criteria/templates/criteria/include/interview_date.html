@@ -1,0 +1,13 @@
+{% if faculty_interview_date.is_major_specific %}
+  {% if criteria_interview_date == None %}
+    ไม่มี
+  {% else %}
+    {{ criteria_interview_date|date:"j M" }}
+  {% endif %}
+{% else %}
+  {% if faculty_interview_date.interview_date == None %}
+    ไม่มี
+  {% else %}
+    {{ faculty_interview_date.interview_date|date:"j M" }}
+  {% endif %}
+{% endif %}
