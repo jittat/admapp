@@ -13,7 +13,6 @@
       </small>
     </div>
 
-
     <table class="table table-sm table-bordered table-striped">
       <thead class="thead-dark">
         <tr>
@@ -45,7 +44,7 @@
               <td>{{ row.admission_project }}</td>
               <td>{{ c.major_criteria.slots }}</td>
               <td>
-                {% include "criteria/include/interview_date.html" with faculty_interview_date=row.faculty_interview_date criteria_interview_date=c.admission_criteria.interview_date %}
+                {% include "criteria/include/interview_date.html" with faculty_interview_date=row.faculty_interview_date admission_criteria=c.admission_criteria %}
               </td>
               {% with c.admission_criteria as admission_criteria %}
                 {% include "criteria/include/criteria_table_scorecriteria_cols.html" with major_count=1 is_edit_link_hidden=True %}
@@ -57,4 +56,14 @@
     </table>
   </div>
 </div>
+<script>
+  $(function () {
+    $('[data-toggle="popover"]').popover()
+  })
+</script>
+<style>
+  .popover-body {
+    font-size: 1rem;
+  }
+</style>
 {% endblock %}

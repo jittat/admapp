@@ -1,8 +1,8 @@
 {% if faculty_interview_date.is_major_specific %}
-  {% if criteria_interview_date == None %}
+  {% if admission_criteria.interview_date == None %}
     ไม่มี
   {% else %}
-    {{ criteria_interview_date|date:"j M" }}
+    {{ admission_criteria.interview_date|date:"j M" }}
   {% endif %}
 {% else %}
   {% if faculty_interview_date.interview_date == None %}
@@ -10,4 +10,15 @@
   {% else %}
     {{ faculty_interview_date.interview_date|date:"j M" }}
   {% endif %}
+{% endif %}
+{% if admission_criteria.additional_interview_condition %}
+  <br>
+  <button 
+    type="button" 
+    class="btn btn-sm btn-outline-secondary" 
+    data-toggle="popover" 
+    title="เงื่อนไขเพิ่มเติม" 
+    data-content="{{ admission_criteria.additional_interview_condition }}">
+    <i class="fa fa-list"></i>
+  </button>
 {% endif %}

@@ -64,7 +64,7 @@
 				{% if project.is_custom_interview_date_allowed %}
 					{% with criterias.0.faculty_interview_date as faculty_interview_date %}
 						<td {% if major_count != 0 %}rowspan="{{ major_count }}{% endif %}">		
-							{% include "criteria/include/interview_date.html" with criteria_interview_date=criterias.0.interview_date %}
+							{% include "criteria/include/interview_date.html" with admission_criteria=criterias.0 %}
 						</td>
 					{% endwith %}
 				{% endif %}
@@ -276,5 +276,12 @@
 						  return false;
    });
    
+
+  $('[data-toggle="popover"]').popover();
  });
 </script>
+<style>
+  .popover-body {
+    font-size: 1rem;
+  }
+</style>
