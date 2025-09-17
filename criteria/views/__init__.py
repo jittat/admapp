@@ -1025,6 +1025,8 @@ def search_last_year_admission_criteria(request,project_id, round_id):
                    })
 
 def sum_all_slots(slots):
+    if slots == []:
+        return []
     total = [0] * len(slots[0])
     for s in slots:
         for i in range(len(s)):
