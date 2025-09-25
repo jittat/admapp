@@ -14,7 +14,7 @@
       <th>เงื่อนไขขั้นต่ำ</th>
       <th>เกณฑ์การพิจารณา</th>
       <th>
-				{% if is_edit_link_hidden %}
+				{% if is_edit_link_hidden or not is_criteria_edit_allowed %}
 				{% else  %}
 					แก้ไข
 				{% endif %}
@@ -140,7 +140,7 @@
 				(ยังไม่มีการกำหนดเกณฑ์)
 			</td>
 			<td>
-				{% if is_edit_link_hidden %}
+				{% if is_edit_link_hidden or not is_criteria_edit_allowed %}
 				{% else %}
 					<a href="{% url 'backoffice:criteria:create' project.id admission_round.id %}?selected_major_id={{major.id}}{% if faculty_choices %}&faculty_id={{ faculty.id }}{% endif %}"
 						class="btn btn-success btn-sm">กำหนดเงื่อนไขและเกณฑ์การพิจารณา</a>

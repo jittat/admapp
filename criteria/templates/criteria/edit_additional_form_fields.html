@@ -1,0 +1,41 @@
+{% extends 'backoffice/base.html' %}
+{% block content %}
+{% load static %}
+<div class="row">
+  <div class="col-md-12">
+    <h2>
+      แก้ไขคำถามเพิ่มเติม โครงการ{{ project.title }} ({{ admission_round }})
+    </h2>
+
+    {% if notice %}
+      <div class="alert alert-success">{{ notice }}</div>
+    {% endif %}
+    
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>สาขา</th>
+          <th>จำนวนรับ (คน)</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for major in selected_majors %}
+          <tr>
+            <td>{{ major.curriculum_major.cupt_code }}</td>
+            <td>{{ major.slots }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <form method="post">
+      {% csrf_token %}
+
+      {% include "criteria/include/additional_form_fields.html" %}
+      
+      <button class="btn btn-primary" type="submit" id="add-criterion-submit-button">จัดเก็บคำถามเพิ่มเติม</button>
+      <button class="btn btn-outline-secondary" type="submit" name="cancel" id="add-criterion-submit-button">กลับหน้ารายการเงื่อนไข</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

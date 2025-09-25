@@ -15,6 +15,9 @@ urlpatterns = [
     path('<int:project_id>/<int:round_id>/<int:criteria_id>/delete/',
          views.delete, name='delete'),
 
+    path('<int:project_id>/<int:round_id>/<int:criteria_id>/formsfields/',
+         views.edit_additional_admission_form_fields, name='edit-form-fields'),
+
     path('<int:project_id>/<int:round_id>/import-search/',
          views.search_last_year_admission_criteria, name='import-search'),
 
@@ -44,7 +47,6 @@ urlpatterns = [
          views.report_num_slots, name='report-num-slots'),
     path('num-report/<int:round_id>/<int:faculty_id>/',
          views.report_num_slots_by_faculty, name='report-num-slots-by-faculty'),
-
 ]
 
 from .views import cuptexport

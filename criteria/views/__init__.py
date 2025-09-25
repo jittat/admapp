@@ -196,6 +196,8 @@ def project_index(request, project_id, round_id):
     curriculum_majors = get_all_curriculum_majors(project, faculty)
     admission_criteria_rows, free_curriculum_majors = prepare_admission_criteria(admission_criterias, curriculum_majors)
 
+    is_criteria_edit_allowed = (project.is_criteria_edit_allowed) or (user.is_super_admin)
+
     return render(request,
                   'criteria/index.html',
                   {'project': project,
@@ -207,8 +209,11 @@ def project_index(request, project_id, round_id):
                    'project_faculty_interview_date': project_faculty_interview_date,
                    
                    'admission_criteria_rows': admission_criteria_rows,
-                   'notice': notice,
                    'free_curriculum_majors': free_curriculum_majors,
+
+                   'is_criteria_edit_allowed': is_criteria_edit_allowed,
+
+                   'notice': notice,
                    })
 
 
@@ -631,12 +636,7 @@ def render_edit_criteria(admission_criteria, admission_round, faculty, majors, p
     faculty_interview_date = AdmissionProjectFacultyInterviewDate.get_from(project, faculty)
     
     has_additional_form_fields = project.is_additional_admission_form_allowed 
-    additional_form_fields = []
-    try:
-        if admission_criteria.additional_admission_form_fields_json != '':
-            additional_form_fields = json.loads(admission_criteria.additional_admission_form_fields_json)
-    except:
-        additional_form_fields = []
+    additional_form_fields = admission_criteria.get_additional_admission_form_fields()
 
     has_additional_notice = project.is_additional_notice_allowed
     additional_notice = admission_criteria.additional_notice
@@ -707,6 +707,57 @@ def edit(request, project_id, round_id, criteria_id):
                                     project)
 
     return render_edit_criteria(admission_criteria, admission_round, faculty, majors, project, request)
+
+
+@user_login_required
+def edit_additional_admission_form_fields(request, project_id, round_id, criteria_id):
+    user = request.user
+    project = get_object_or_404(AdmissionProject, pk=project_id)
+    admission_round = get_object_or_404(AdmissionRound, pk=round_id)
+    admission_criteria = get_object_or_404(AdmissionCriteria, pk=criteria_id)
+    faculty = admission_criteria.faculty
+
+    if not can_user_view_project(user, project):
+        return redirect_to_project_index(project_id, round_id)
+
+    user_faculty, faculty_choices = extract_user_faculty(request, user)
+    if admission_criteria.admission_project.id != project_id or (
+            not user.profile.is_admission_admin and user_faculty.id != faculty.id):
+        return redirect_to_project_index(project_id, round_id)
+    
+    selected_majors = admission_criteria.curriculummajoradmissioncriteria_set.all()
+
+    has_additional_form_fields = project.is_additional_admission_form_allowed
+    if not has_additional_form_fields:
+        return HttpResponseForbidden()
+
+    notice = None
+
+    if request.method == 'POST':
+        if 'cancel' in request.POST:
+            faculty_url_query = '?faculty_id=' + str(faculty.id)
+            return redirect_to_project_index_with_query(faculty_url_query, project_id, round_id)
+
+        additional_admission_form_fields_json = extract_additional_admission_form_fields_as_json(project, request.POST)
+        admission_criteria.additional_admission_form_fields_json = additional_admission_form_fields_json
+        admission_criteria.save()
+        notice = "จัดเก็บคำถามเพิ่มเติมเรียบร้อย"
+
+    additional_form_fields = admission_criteria.get_additional_admission_form_fields()
+
+    return render(request,
+                  'criteria/edit_additional_form_fields.html',
+                  {'project': project,
+                   'admission_round': admission_round,
+                   'faculty': faculty,
+                   'admission_criteria': admission_criteria,
+                   'selected_majors': selected_majors,
+                   'has_additional_form_fields': has_additional_form_fields,
+                   'additional_form_fields': additional_form_fields,
+
+                   'shows_additional_form_fields': True,
+                   'notice': notice,
+                   })
 
 
 def redirect_to_project_index_with_query(faculty_url_query, project_id, round_id):

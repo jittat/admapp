@@ -7,7 +7,8 @@
     <div class="additional-form-fields-form" {% if not additional_form_fields %}style="display: none;"{% endif %}>
       <small class="form-text text-muted">
 	      สามารถเพิ่มฟอร์มให้ผู้สมัครกรอกรายละเอีดยเพิ่มเติม เพื่อใช้ประกอบการพิจารณาเรียกสัมภาษณ์ได้
-        ควรระบุหัวข้อให้ชัดเจน สั้นและกระชับ <strong>ไม่ควรมีเกิน 3 คำถาม</strong>
+        ควรระบุหัวข้อให้ชัดเจน สั้นและกระชับ <strong>ไม่ควรมีเกิน 3 คำถาม</strong> &nbsp; &nbsp;
+        สำหรับคำถามที่ระบุว่าเป็นคำตอบสั้น ในระบบ TCAS Folio จะแจ้งเป็น "คำถามปลายปิด" ส่วนคำถามที่ระบุว่าเป็นข้อความยาว จะแจ้งในระบบ TCAS Folio ว่าเป็น "คำถามปลายเปิด"
       </small>
       <table class="table table-bordered">
         <thead>
@@ -69,6 +70,11 @@
         $(".additional-form-fields-form").slideDown();
         return false;
       });
+
+      {% if shows_additional_form_fields %}
+        $(".additional-form-fields-form").show();
+        $("#additionalFormFieldsToggleId").hide();
+      {% endif %}
     });
 
     function renumberAdditionalFormFields() {

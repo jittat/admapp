@@ -1,0 +1,41 @@
+{% if admission_criteria.get_additional_admission_form_fields %}
+  <div class="card" id="additionalFormFieldId-{{ admission_criteria.id }}">
+    <div class="card-header">
+      <strong>คำถามเพิ่มเติม</strong> <small>แสดงใน TCAS Folio และระบบรับเข้า</small>
+      {% if not is_edit_link_hidden %}
+        <a class="btn btn-sm btn-outline-secondary" href="{% url 'backoffice:criteria:edit-form-fields' project.id admission_round.id admission_criteria.id %}">แก้ไข</a>
+      {% endif %}
+    </div>
+    <div class="card-body p-1">
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th class="w-10">#</th>
+            <th class="w-70">คำถาม</th>
+            <th class="w-20">รูปแบบ</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for f in admission_criteria.get_additional_admission_form_fields %}
+            <tr>
+              <td>{{ forloop.counter }}</td>
+              <td>{{ f.title }}</td>
+              <td>{% if f.size == "short" %}คำตอบสั้น{% elif f.size == "paragraph" %}ข้อความยาว{% endif %}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% else %}
+  {% if not is_edit_link_hidden %}
+    <div class="card" id="additionalFormFieldId-{{ admission_criteria.id }}">
+      <div class="card-body p-1">
+        <strong>คำถามเพิ่มเติม</strong>: ไม่มี
+        <a class="btn btn-sm btn-outline-secondary" href="{% url 'backoffice:criteria:edit-form-fields' project.id admission_round.id admission_criteria.id %}">เพิ่มคำถาม</a>
+        <br> 
+        <small>คำถามที่ระบุจะแสดงใน TCAS Folio และระบบรับเข้า</small>
+      </div>
+    </div>
+  {% endif %}
+{% endif %}

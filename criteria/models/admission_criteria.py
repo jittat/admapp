@@ -206,6 +206,24 @@ class AdmissionCriteria(models.Model):
 
     def last_year_major_titles_display(self):
         return '\n'.join(self.last_year_major_titles.split(";"))
+    
+    def get_additional_admission_form_fields(self):
+        additional_form_fields = []
+
+        if ((self.additional_admission_form_fields_json is None) or
+            (self.additional_admission_form_fields_json.strip() == '') or
+            (self.additional_admission_form_fields_json.strip() == '[]')):
+            return additional_form_fields
+
+        import json
+        try:
+            if self.additional_admission_form_fields_json != '':
+                additional_form_fields = json.loads(self.additional_admission_form_fields_json)
+            additional_form_fields = [f for f in additional_form_fields
+                                        if 'title' in f and f['title'].strip() != '']
+        except:
+            additional_form_fields = []
+        return additional_form_fields
 
 
 class AdmissionProjectFacultyInterviewDate(models.Model):

@@ -24,6 +24,10 @@
   {% if admission_criteria.additional_condition %}
     คำอธิบายเงื่อนไขเพิ่มเติม สำหรับผู้สมัคร: {{ admission_criteria.additional_condition }}<br>
   {% endif %}
+
+  {% if project.is_additional_admission_form_allowed %}
+    {% include "criteria/include/scorecriteria_col_additional_form_fields.html" %}
+  {% endif %}
 </td>
 <td rowspan="{% if major_count %}{{ major_count }}{% else %}1{% endif %}">
   {% with scorecriterias=admission_criteria.get_all_scoring_score_criteria %}
@@ -31,7 +35,7 @@
   {% endwith %}
 </td>
 <td class="admission-criteria-edit-link-tds" rowspan="{% if major_count %}{{ major_count }}{% else %}1{% endif %}">
-  {% if is_edit_link_hidden %}
+  {% if is_edit_link_hidden or not is_criteria_edit_allowed %}
   {% else %}
     <a href="{% url 'backoffice:criteria:create' project.id admission_round.id %}?duplicate_score_id={{admission_criteria.id}}{% if faculty_choices %}&faculty_id={{ faculty.id }}{% endif %}"
        class="btn btn-primary btn-sm">คัดลอก</a>
