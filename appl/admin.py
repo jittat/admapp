@@ -18,7 +18,31 @@ def make_visible(modeladmin, request, queryset):
         project.is_visible_in_backoffice = True
         project.save()
 make_visible.short_description = 'Mark selected project as visible in backoffice'
-        
+
+def enable_criteria_edit(modeladmin, request, queryset):
+    for project in queryset:
+        project.is_criteria_edit_allowed = True
+        project.save()
+enable_criteria_edit.short_description = 'Enable criteria edit for selected projects'
+
+def disable_criteria_edit(modeladmin, request, queryset):
+    for project in queryset:
+        project.is_criteria_edit_allowed = False
+        project.save()
+disable_criteria_edit.short_description = 'Disable criteria edit for selected projects'
+
+def enable_additional_admission_form_edit(modeladmin, request, queryset):
+    for project in queryset:
+        project.is_additional_admission_form_edit_allowed = True
+        project.save()
+enable_additional_admission_form_edit.short_description = 'Enable additional admission form edit for selected projects'
+
+def disable_additional_admission_form_edit(modeladmin, request, queryset):
+    for project in queryset:
+        project.is_additional_admission_form_edit_allowed = False
+        project.save()
+disable_additional_admission_form_edit.short_description = 'Disable additional admission form edit for selected projects'
+
 def make_project_round_started(modeladmin, request, queryset):
     for project in queryset:
         project.is_started = True
@@ -42,7 +66,14 @@ class AdmissionProjectAdmin(admin.ModelAdmin):
                     'custom_interview_start_date',
                     'admission_student_type',]
     ordering = ['id']
-    actions = [make_available, make_visible]
+    actions = [
+        make_available, 
+        make_visible,
+        enable_criteria_edit,
+        disable_criteria_edit,
+        enable_additional_admission_form_edit,
+        disable_additional_admission_form_edit,
+    ]
     inlines = (ProjectUploadedDocumentInline,)
 
 class ProjectUploadedDocumentAdmin(admin.ModelAdmin):
