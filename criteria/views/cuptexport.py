@@ -13,7 +13,7 @@ from appl.models import Faculty
 from backoffice.decorators import user_login_required
 from criteria.criteria_options import REQUIRED_SCORE_TYPE_TAGS, SCORING_SCORE_TYPE_TAGS
 from criteria.models import AdmissionCriteria, CurriculumMajorAdmissionCriteria, CuptExportConfig, ImportedCriteriaJSON, \
-    CurriculumMajor, CuptExportCustomProject, CuptExportAdditionalProjectRule
+    CurriculumMajor, CuptExportCustomProject, CuptExportAdditionalProjectRule, AdmissionProjectFacultyInterviewDate
 from backoffice.models import AdjustmentMajor, AdjustmentMajorSlot
 
 from . import get_all_curriculum_majors
@@ -648,21 +648,110 @@ def extract_interview_dates(row_items, admission_criteria):
                   'พ.ค.','มิ.ย.','ก.ค.','ส.ค.',
                   'ก.ย.','ต.ค.','พ.ย.','ธ.ค.']
         
+        faculty_interview_date = AdmissionProjectFacultyInterviewDate.objects.filter(
+            faculty=admission_criteria.faculty,
+            admission_project=admission_criteria.admission_project).first()
+
         interview_date_str = None
         if admission_criteria.custom_interview_date_str != '':
             interview_date_str = admission_criteria.custom_interview_date_str
-        elif admission_criteria.interview_date != None:
-            interview_date = admission_criteria.interview_date
-            interview_date_str = (str(interview_date.day) + ' ' +
-                                  MONTHS[interview_date.month] + ' ' +
-                                  str((interview_date.year + 543) % 100))
+        else:
+            interview_date = None
+            if (faculty_interview_date is not None) and (not faculty_interview_date.is_major_specific):
+                interview_date = faculty_interview_date.interview_date
+            elif admission_criteria.interview_date != None:
+                interview_date = admission_criteria.interview_date
+
+            if interview_date:
+                interview_date_str = (str(interview_date.day) + ' ' +
+                                    MONTHS[interview_date.month] + ' ' +
+                                    str((interview_date.year + 543) % 100))
+
         if interview_date_str != None:
             return interview_date_str
         else:
             return ''
 
     row_items['interview_date'] = get_interview_date(admission_criteria)
+
+
+def extract_portfolio_information(row_items, admission_criteria):
     
+    def is_portfolio_round(admission_criteria):
+        PROJECT_LIST = [1,2,3,4,5,6,7,8,9,10,18,32,33,
+                        101,103,107,207,109,110]
+        return admission_criteria.admission_project_id in PROJECT_LIST
+
+    def get_subround(admission_criteria):
+        R11_LIST = [1,2,3,4,5,6,7,107,9,10,18,32]
+
+        if admission_criteria.admission_project_id in R11_LIST:
+            return 1
+        else:
+            return 2
+
+    def get_portfolio_closed_date(admission_criteria):
+        PROJECT_DATES = {
+            4: '13/11/2568',
+            5: '15/01/2569',
+            6: '15/01/2569',
+        }
+
+        if admission_criteria.admission_project_id in PROJECT_DATES:
+            return PROJECT_DATES[admission_criteria.admission_project_id]
+        
+        campus_id = admission_criteria.faculty.campus_id
+        r = get_subround(admission_criteria)
+
+        FORLIO_CLOSED_DATES = {
+            (1,1): '13/11/2568',
+            (1,2): '15/01/2569',
+            (2,1): '20/10/2568',
+            (2,2): '14/01/2569',
+            (3,1): '15/11/2568',
+            (3,2): '15/01/2569',
+            (4,1): '09/01/2569',
+            (5,1): '13/11/2568',
+            (5,2): '15/01/2569',
+        }
+        return FORLIO_CLOSED_DATES.get((campus_id,r),'')
+
+    additional_admission_form_fields = []
+    try:
+        import json
+        additional_admission_form_fields = json.loads(admission_criteria.additional_admission_form_fields_json)
+    except:
+        additional_admission_form_fields = []
+
+    ZERO_FIELDS = ['folio_q1','folio_q2','folio_q3',
+                   'folio_q1_type','folio_q2_type','folio_q3_type',
+                   'folio_closed_date','folio_page_limit']
+    for f in ZERO_FIELDS:
+        row_items[f] = '0'
+
+    if not is_portfolio_round(admission_criteria):
+        return
+
+    count = 0
+    for fields in additional_admission_form_fields:
+        count += 1
+        if count > 3:
+            print("Too many portfolio fields")
+            break
+        fname = f'folio_q{count}'
+        ftype = f'folio_q{count}_type'
+        title = fields['title'].strip()
+        if title == '':
+            count -= 1
+            continue
+        row_items[fname] = fields['title']
+        if fields['size'] == 'short':
+            row_items[ftype] = 'คำถามปลายปิด'
+        else:
+            row_items[ftype] = 'คำถามปลายเปิด'
+
+    row_items['folio_closed_date'] = get_portfolio_closed_date(admission_criteria)
+
 
 def extract_rows(project, admission_criterias, base_row_conversion_f, extract_f, postprocess_f):
     rows = []
@@ -700,10 +789,11 @@ def extract_condition_rows(project, admission_criterias):
                     row_items['subject_names'] = ' '.join(names)
                     row_items['score_minimum'] = ' '.join([str(v) for v in mins])
 
-
         extract_interview_dates(row_items, admission_criteria)
         extract_student_curriculum_type(row_items, admission_criteria)
-                        
+        extract_portfolio_information(row_items, admission_criteria)
+
+
     def condition_postprocess_f(rows, project):
         if project.is_cupt_export_only_major_list:
             rows = group_condition_rows(rows)

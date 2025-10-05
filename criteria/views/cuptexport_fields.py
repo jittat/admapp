@@ -225,6 +225,14 @@ min_kmitl_tep
 score_condition
 subject_names
 score_minimum
+folio_q1
+folio_q2
+folio_q3
+folio_q1_type
+folio_q2_type
+folio_q3_type
+folio_closed_date
+folio_page_limit
 """
 
 SCORING_FILE_FIELD_STR = """
