@@ -20,7 +20,7 @@ def get_admission_round_number(round_number_str):
     except:
         pass
 
-    num,sub = [int(x) for x in round_number_str.split('/')]
+    num,sub = [int(x) for x in round_number_str.split('.')]
     admission_rounds = AdmissionRound.objects.filter(number=num,subround_number=sub).all()
     if len(admission_rounds)==1:
         return admission_rounds[0]
