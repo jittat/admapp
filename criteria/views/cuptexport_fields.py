@@ -357,6 +357,8 @@ gsat
 gsat_l
 gsat_m
 kmitl_tep
+portfolio
+interview
 """
 
 CONDITION_FILE_ZERO_FIELD_STR = """
@@ -742,4 +744,6 @@ gsat
 gsat_l
 gsat_m
 kmitl_tep
+portfolio
+interview
 """

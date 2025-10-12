@@ -674,14 +674,17 @@ def extract_interview_dates(row_items, admission_criteria):
 
     row_items['interview_date'] = get_interview_date(admission_criteria)
 
+def is_portfolio_project(admission_project):
+    PROJECT_LIST = [1,2,3,4,5,6,7,8,9,10,18,32,33,
+                    101,103,107,207,109,110]
+    if isinstance(admission_project, AdmissionProject):
+        admission_project_id = admission_project.id
+    else:
+        admission_project_id = admission_project
+    return admission_project_id in PROJECT_LIST
 
 def extract_portfolio_information(row_items, admission_criteria):
     
-    def is_portfolio_round(admission_criteria):
-        PROJECT_LIST = [1,2,3,4,5,6,7,8,9,10,18,32,33,
-                        101,103,107,207,109,110]
-        return admission_criteria.admission_project_id in PROJECT_LIST
-
     def get_subround(admission_criteria):
         R11_LIST = [1,2,3,4,5,6,7,107,9,10,18,32]
 
@@ -729,7 +732,7 @@ def extract_portfolio_information(row_items, admission_criteria):
     for f in ZERO_FIELDS:
         row_items[f] = '0'
 
-    if not is_portfolio_round(admission_criteria):
+    if not is_portfolio_project(admission_criteria.admission_project_id):
         return
 
     count = 0
@@ -746,9 +749,9 @@ def extract_portfolio_information(row_items, admission_criteria):
             continue
         row_items[fname] = fields['title']
         if fields['size'] == 'short':
-            row_items[ftype] = 'คำถามปลายปิด'
+            row_items[ftype] = 'A'
         else:
-            row_items[ftype] = 'คำถามปลายเปิด'
+            row_items[ftype] = 'C'
 
     row_items['folio_closed_date'] = get_portfolio_closed_date(admission_criteria)
 
@@ -976,8 +979,10 @@ def extract_scoring_rows(project, admission_criterias):
                 row_items['cal_subject_name'] = '|'.join(names)
 
     def scoring_postprocess_f(rows, project):
+        if project.is_cupt_export_only_major_list:
+            rows = group_condition_rows(rows)
         return rows
-
+    
     # extract messages
     all_messages = []
     for admission_criteria in admission_criterias:
@@ -1022,6 +1027,10 @@ def write_scoring_row(writer, row, zero_fields):
     out_row.update(update)
     writer.writerow(out_row)
 
+def preprocess_portfolio_admission_criteria(admission_criterias):
+    for criteria in admission_criterias:
+        criteria.extracted_scoring_criteria = ([],[])
+
 @user_login_required
 def export_scoring_csv(request):
     user = request.user
@@ -1045,7 +1054,10 @@ def export_scoring_csv(request):
     admission_criterias = load_all_criterias()
     
     for project in admission_projects:
-        if not project.is_cupt_export_only_major_list:
+        if (not project.is_cupt_export_only_major_list) or is_portfolio_project(project):
+            if is_portfolio_project(project):
+                preprocess_portfolio_admission_criteria(admission_criterias[project.id])
+
             rows, messages = extract_scoring_rows(project, admission_criterias[project.id])
 
             update_project_information(project, rows)
@@ -1054,6 +1066,7 @@ def export_scoring_csv(request):
         
             all_rows += rows
             all_messages += [str(project.id) + '-' + m for m in  messages]
+
 
     zero_fields = [x.strip() for x in SCORING_FILE_ZERO_FIELD_STR.split() if x.strip() != '']
         
