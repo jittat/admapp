@@ -208,7 +208,7 @@ PROJECT_SUPPLEMENTS = {
                                 'supplements.views.forms.gen_sport.process_sport_history_form',
                                 'supplements/backoffice/gen_sport/sport_history.html'),
     ],
-    'ศิลปวัฒนธรรม': [
+    'โควตาศิลปวัฒนธรรมและซอฟต์พาวเวอร์': [
 #        ProjectSupplementConfig('cultural_type',
 #                                'ประเภทศิลปวัฒนธรรม',
 #                                True,
