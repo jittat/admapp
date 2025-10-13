@@ -738,6 +738,8 @@ def edit_additional_admission_form_fields(request, project_id, round_id, criteri
             faculty_url_query = '?faculty_id=' + str(faculty.id)
             return redirect_to_project_index_with_query(faculty_url_query, project_id, round_id)
 
+        return HttpResponseForbidden()  # disable for now
+
         additional_admission_form_fields_json = extract_additional_admission_form_fields_as_json(project, request.POST)
         admission_criteria.additional_admission_form_fields_json = additional_admission_form_fields_json
         admission_criteria.save()
