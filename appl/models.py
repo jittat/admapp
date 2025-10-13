@@ -1277,3 +1277,31 @@ class MajorInterviewDescriptionCache(models.Model):
             return None
 
             
+class MajorAdditionalNotice(models.Model):
+    major = models.OneToOneField(Major, on_delete=models.CASCADE)
+    message = models.TextField()
+
+    @staticmethod
+    def get_notice_by_major(major):
+        notices = MajorAdditionalNotice.objects.filter(major=major)
+        if len(notices) > 0:
+            return notices[0]
+        else:
+            return None
+        
+    def __str__(self):
+        return f'{self.major} - {self.message}'
+        
+class MajorAdditionalAdmissionFormField(models.Model):
+    major = models.ForeignKey(Major, 
+                              related_name='additionaladmissionformfields',
+                              on_delete=models.CASCADE)
+    title = models.CharField(max_length=300)
+    size = models.CharField(max_length=20)
+    rank = models.IntegerField()
+
+    class Meta:
+        ordering = ['rank']
+
+    def __str__(self):
+        return f'{self.major} - {self.rank}: {self.title}'

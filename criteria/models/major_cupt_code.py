@@ -48,3 +48,18 @@ class MajorCuptCode(models.Model):
             return self.program_code
         else:
             return f'{self.program_code}0{self.major_code}'
+    
+    @staticmethod
+    def get_from_full_code(full_code):
+        if len(full_code) > 15:
+            program_code = full_code[:-2]
+            major_code = full_code[-1:]
+        else:
+            program_code = full_code
+            major_code = ''
+        
+        try:
+            cupt_code = MajorCuptCode.objects.get(program_code=program_code, major_code=major_code)
+            return cupt_code
+        except MajorCuptCode.DoesNotExist:
+            return None
