@@ -48,7 +48,7 @@ def update_form(admission_project, major, criterias):
     if not form_fields:
         return False
 
-    old_form_fields = list(major.additionaladmissionformfields.all())
+    old_form_fields = list(major.additional_admission_form_fields.all())
     for i, field in enumerate(form_fields):
         if i < len(old_form_fields):
             field = old_form_fields[i]

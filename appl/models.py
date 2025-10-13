@@ -1291,10 +1291,11 @@ class MajorAdditionalNotice(models.Model):
         
     def __str__(self):
         return f'{self.major} - {self.message}'
-        
+
+
 class MajorAdditionalAdmissionFormField(models.Model):
     major = models.ForeignKey(Major, 
-                              related_name='additionaladmissionformfields',
+                              related_name='additional_admission_form_fields',
                               on_delete=models.CASCADE)
     title = models.CharField(max_length=300)
     size = models.CharField(max_length=20)
@@ -1305,3 +1306,24 @@ class MajorAdditionalAdmissionFormField(models.Model):
 
     def __str__(self):
         return f'{self.major} - {self.rank}: {self.title}'
+
+
+class ApplicantAdditionalAdmissionFormValue(models.Model):
+    applicant = models.ForeignKey(Applicant, 
+                                  related_name='additional_admission_form_values',
+                                  on_delete=models.CASCADE)
+    major = models.ForeignKey(Major, 
+                              on_delete=models.CASCADE)
+    field = models.ForeignKey(MajorAdditionalAdmissionFormField, 
+                              on_delete=models.CASCADE)
+    value = models.TextField(blank=True)
+    is_auto_extracted = models.BooleanField(default=False)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['applicant', 'major']),
+        ]
+
+    def __str__(self):
+        return f'{self.applicant} - {self.field}: {self.value}'
+
