@@ -31,6 +31,9 @@ def main():
             if items[0].strip().startswith('-'):
                 continue
             
+            if items[0].strip().startswith('x'):
+                continue
+
             document_key = items[3]
 
             old_documents = ProjectUploadedDocument.objects.filter(document_key=document_key).all()
