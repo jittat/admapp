@@ -182,6 +182,8 @@ class AdmissionProject(models.Model):
     
     display_rank = models.IntegerField(default=0,
                                        verbose_name='สำหรับใช้เรียงรายการ')
+    is_apply_link_hidden = models.BooleanField(default=False,
+                                               verbose_name='ซ่อนลิงก์สมัคร')
 
     # basic admission criteria (student types / school types)
 

@@ -5,21 +5,21 @@
 
 {% if admission_round %}
   <div class="d-none alert alert-warning">
-    สำหรับการสมัครเข้าศึกษาต่อปีการศึกษา 2568 นี้ ผู้สมัครจะต้องลงทะเบียนในระบบ <a href="https://www.mytcas.com/" target="_blank">mytcas</a> ของทปอ. ให้เรียบร้อยก่อนจึงจะสามารถสมัครได้ &nbsp; นอกจากนี้ก่อนการสมัครแต่ละรอบ ระบบจะมีการตรวจสอบสิทธิ์การสมัครจากระบบ mytcas ด้วย
+    สำหรับการสมัครเข้าศึกษาต่อปีการศึกษา 2569 นี้ ผู้สมัครจะต้องลงทะเบียนในระบบ <a href="https://www.mytcas.com/" target="_blank">mytcas</a> ของทปอ. ให้เรียบร้อยก่อนจึงจะสามารถสมัครได้ &nbsp; นอกจากนี้ก่อนการสมัครแต่ละรอบ ระบบจะมีการตรวจสอบสิทธิ์การสมัครจากระบบ mytcas ด้วย
   </div>
   <div class="alert alert-info">
-    สำหรับการสมัครเข้าศึกษาต่อปีการศึกษา 2568 {{ admission_round.title_trans }} นี้ มีเปิดรับสมัคร {{ admission_projects|length }} โครงการ เมื่อมีการเปิดระบบรับสมัครแต่ละโครงการจะมีปุ่มให้กดสมัครได้
+    สำหรับการสมัครเข้าศึกษาต่อปีการศึกษา 2569 {{ admission_round.title_trans }} นี้ มีเปิดรับสมัคร {{ admission_projects|length }} โครงการ เมื่อมีการเปิดระบบรับสมัครแต่ละโครงการจะมีปุ่มให้กดสมัครได้
   </div>
   {% if not cupt_confirmation_status.is_not_required %}
     {% if cupt_confirmation_status.is_wait %}
       {% include 'appl/include/cupt_confirmation_wait.html' %}
     {% else %}
       {% if not cupt_confirmation_status.is_registered %}
-	{% include 'appl/include/cupt_confirmation_not_registered.html' %}
+        {% include 'appl/include/cupt_confirmation_not_registered.html' %}
       {% else %}
-	{% if not cupt_confirmation_status.is_free %}
-	  {% include 'appl/include/cupt_confirmation_not_free.html' %}
-	{% endif %}
+        {% if not cupt_confirmation_status.is_free %}
+          {% include 'appl/include/cupt_confirmation_not_free.html' %}
+        {% endif %}
       {% endif %}
     {% endif %}
   {% endif %}
@@ -33,7 +33,10 @@
         ({% trans 'เปิดรับสมัครวันที่' %} {{ project.project_round.admission_dates }})
         {% if cupt_confirmation_status.is_not_required or cupt_confirmation_status.is_free %}
           {% if project.is_open and project.eligibility.is_eligible %}
-            <a class="btn btn-primary btn-sm applying-links" href="#">{% trans 'สมัครโครงการนี้' %}</a>
+            <a class="btn btn-primary btn-sm applying-links {% if project.is_apply_link_hidden %}d-none{% endif %}" href="#">{% trans 'สมัครโครงการนี้' %}</a>
+            {% if project.is_apply_link_hidden %}
+              <span class="badge badge-secondary">ยังไม่เปิดรับสมัคร</span>
+            {% endif %}
             <div class="p10 border-a0 bg-warn applying-confirmations" style="display:none;">
               {% if project.applying_confirmation_warning %}
                 {{ project.applying_confirmation_warning|safe }}
@@ -50,20 +53,20 @@
             {% if not project.eligibility.is_eligible %}
               <span class="badge badge-warning">ยังไม่สามารถสมัครได้</span>
               <small>{{ project.eligibility.notice_text }}</small>
-	    {% else %}
-	      <span class="badge badge-secondary">ยังไม่เปิดรับสมัคร</span>
+            {% else %}
+              <span class="badge badge-secondary">ยังไม่เปิดรับสมัคร</span>
             {% endif %}
           {% endif %}
         {% else %}
           {% if cupt_confirmation_status.is_wait %}
             (รอตรวจสอบสิทธิ์)
           {% else %}
-	    {% if not cupt_confirmation_status.is_registered %}
+            {% if not cupt_confirmation_status.is_registered %}
               <span class="badge badge-warning">ยังไม่สามารถสมัครได้</span> <small>(ยังไม่ได้ลงทะเบียนระบบ mytcas)</small>
-	    {% else %}
+            {% else %}
               <span class="badge badge-danger">ไม่สามารถสมัครได้</span> <small>(ยืนยันสิทธิ์แล้วในการสมัครรอบอื่น)</small>
             {% endif %}
-	  {% endif %}
+      	  {% endif %}
         {% endif %}
       </div>
     {% endif %}
