@@ -10,13 +10,17 @@
     </thead>
     {% for course in block_context.courses %}
       {% if course.grade != '-' %}
-	<tr>
+      	<tr>
           <td>{{ course.subject_id }}</td>
           <td>{{ course.get_course_title_display }}</td>
           <td>{{ course.grade }}</td>
-	</tr>
+	      </tr>
       {% endif %}
+    {% empty %}
+      <tr>
+        <td colspan="3">ผลการเรียนอยู่ระหว่างการนำเข้า</td>
+      </tr>
     {% endfor %}
   </table>
-  <small class="text-muted">ผลการเรียนของรุ่น 19/3 ยังไม่แสดงในตาราง</small>
+  <small class="text-muted">ผลการเรียนจะแสดงที่นี่ภายหลังเกรดของรุ่น 20/3 เสร็จเรียบร้อยแล้ว หลังวันที่ 20 ต.ค. 69</small>
 </div>
