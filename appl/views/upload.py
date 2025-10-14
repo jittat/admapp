@@ -115,6 +115,8 @@ def upload(request, document_id):
         result_code = 'OK'
         try:
             uploaded_document.save()
+            LogItem.create('Uploaded document id %d for %d' % (uploaded_document.id, project_uploaded_document.id), 
+                           applicant, request)
         except OperationalError:
             error = True
             result_code = 'DETAIL_ERROR'
@@ -221,7 +223,11 @@ def document_delete(request, applicant_id=0, project_uploaded_document_id=0, doc
             if is_deadline_passed and (not project_uploaded_document.is_interview_document):
                 return HttpResponseForbidden()
             
+            doc_id = uploaded_document.id
             uploaded_document.delete()
+            LogItem.create('Deleted document id %d for %d' % (doc_id, project_uploaded_document.id),
+                           applicant, request)
+
 
             from django.template import loader
             template = loader.get_template('appl/include/document_upload_form.html')
