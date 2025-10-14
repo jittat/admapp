@@ -1284,7 +1284,7 @@ class MajorAdditionalNotice(models.Model):
     message = models.TextField()
 
     @staticmethod
-    def get_notice_by_major(major):
+    def get_notice_for_major(major):
         notices = MajorAdditionalNotice.objects.filter(major=major)
         if len(notices) > 0:
             return notices[0]

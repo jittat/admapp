@@ -15,6 +15,8 @@ from appl.models import Payment
 from appl.models import ProjectApplication
 from appl.models import ProjectUploadedDocument
 from appl.models import MajorInterviewDescriptionCache
+from appl.models import MajorAdditionalNotice
+from appl.models import MajorAdditionalAdmissionFormField, ApplicantAdditionalAdmissionFormValue
 from appl.qrpayment import generate_ku_qr, generate_empty_img
 from appl.views.upload import upload_form_for
 from regis.decorators import appl_login_required
@@ -140,6 +142,23 @@ def load_applications_in_other_round(applicant, current_admission_round):
 def index_outside_round(request):
     return HttpResponseForbidden()
 
+def load_major_notices(project, major_selection):
+    if not project.is_additional_notice_allowed:
+        return
+    if not major_selection:
+        return
+    for major in major_selection.get_majors():
+        major.notice = MajorAdditionalNotice.get_notice_for_major(major)
+
+def load_major_additional_form_fields(project, major_selection):
+    if not project.is_additional_admission_form_allowed:
+        return
+    if not major_selection:
+        return
+    for major in major_selection.get_majors():
+        major.form_fields = list(major.additional_admission_form_fields.all())
+        if len(major.form_fields) > 0:
+            major.has_additional_form = True
 
 def is_payment_deadline_passed(deadline):
     return datetime.now() > datetime(deadline.year, deadline.month, deadline.day) + timedelta(days=1)
@@ -231,6 +250,9 @@ def index_with_active_application(request, active_application, admission_round=N
         
         is_accepted = False
         accepted_result = None
+
+    load_major_notices(admission_project, major_selection)
+    load_major_additional_form_fields(admission_project, major_selection)
 
     other_application_rounds = load_applications_in_other_round(applicant,
                                                                 admission_round)

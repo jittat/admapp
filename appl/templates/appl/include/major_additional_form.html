@@ -1,0 +1,7 @@
+{% load i18n %}
+<div class="alert alert-info mb-2">
+  <span class="badge badge-info">คำถามเพิ่มเติม</span> สาขานี้มีคำถามเพิ่มเติม<br>
+  {% for f in major.form_fields %}
+    {{ f.title }}: {{ f.size }}<br>
+  {% endfor %}
+</div>

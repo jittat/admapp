@@ -3,8 +3,18 @@
   {% with major_selection.get_majors.0 as major %}
     <div class="project-appl-sections bborder-superlight">
       <h4>{% trans 'รายละเอียดสาขาที่สมัคร' context 'single major details' %}</h4>
-      <small>{% trans 'กรุณาพิจารณาเกณฑ์และรายการเอกสารเพิ่มเติมที่ต้องอัพโหลด' %}</small><br />
+      <small>
+        {% trans 'กรุณาพิจารณาเกณฑ์และรายการเอกสารเพิ่มเติมที่ต้องอัพโหลด' %}
+      </small><br />
       <b>{% trans 'สาขาที่สมัคร' context 'single major details' %}:</b> {{ major.faculty.title_trans }} - {{ major.title_trans }}<br />
+      {% if major.notice %}
+        <div class="alert alert-info">
+          <span class="badge badge-info">ประกาศ</span> {{ major.notice.message |linebreaksbr }}
+        </div>
+      {% endif %}
+      {% if major.has_additional_form %}
+      {% include "appl/include/major_additional_form.html" %}
+      {% endif %}
       {{ major.get_detail_items_as_list_display|safe }}
     </div>
   {% endwith %}
