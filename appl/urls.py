@@ -35,6 +35,8 @@ urlpatterns = [
     re_path(r'^doc/(?P<applicant_id>\d+)/(?P<project_uploaded_document_id>\d+)/(?P<document_id>\d+)/$', upload_views.document_download, name='document-download'),
     re_path(r'^doc/(?P<applicant_id>\d+)/(?P<project_uploaded_document_id>\d+)/(?P<document_id>\d+)/delete/$', upload_views.document_delete, name='document-delete'),
 
+    re_path(r'^major-form/(\d+)/(\d+)/$', views.major_additional_form, name='major-additional-form'),
+
     re_path(r'^status/$', views.check_application_documents, name='check-project-documents'),
 
     re_path(r'^natsport/print/$', print_views.sport_print, name='natsport-print'),

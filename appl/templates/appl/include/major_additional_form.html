@@ -1,7 +1,65 @@
 {% load i18n %}
-<div class="alert alert-primary mb-2">
-  <span class="badge badge-primary">คำถามเพิ่มเติม</span> สาขานี้มีคำถามเพิ่มเติม<br>
+<div id="applicantAdditionalFormSection">
+  <div class="alert alert-primary mb-2">
+    <span class="badge badge-primary">คำถามเพิ่มเติม</span> สาขานี้มีคำถามเพิ่มเติม<br>
+    <div id="formStatusMessageDivId" style="display: none;">
+      <span class="badge badge-success" id="formStatusMessageId">จัดเก็บคำตอบแล้ว</span>
+    </div>
+    {% for f in major.form_fields %}
+      {% if f.value != None and f.value.value != '' %}<i class="fa fa-check text-success"></i>{% endif %}
+      <b>คำถาม {{ f.rank }}:</b> {{ f.title }}
+      <button class="btn btn-primary btn-sm major-field-modal-buttons" data-target="#majorFormModal-{{ f.id }}">ตอบ</button>
+      <br>
+    {% endfor %}
+  </div>
   {% for f in major.form_fields %}
-    {{ f.title }}: {{ f.size }}<br>
+    {% include "appl/include/major_form_field_modal.html" with field=f %}
   {% endfor %}
 </div>
+<script>
+  $(function() {
+    $('.major-field-modal-buttons').click(function() {
+      var target = $(this).data('target');
+      $(target).modal('show');
+      return false;
+    });
+    $('.major-form-modal-submit-buttons').click(function() {
+      var fieldId = $(this).data('field');
+      var rank = $(this).data('rank');
+      var text = $('#majorFormModal-' + fieldId).find('textarea.major-form-modal-inputs').val().trim();
+      var textSize = $(this).data('valuesize');
+
+      if(text == '') {
+        $("#majorFormModal-" + fieldId + " .major-form-modal-errors").text("กรุณากรอกคำตอบ");
+        return false
+      }
+      if(text.length > textSize) {
+        $("#majorFormModal-" + fieldId + " .major-form-modal-errors").text("คำตอบยาวเกินกำหนด (" + text.length + " / " + textSize + " ตัวอักษร)");
+        return false;
+      }
+
+      var form = $(this).closest('.modal').find('form');
+      $.post($(form).attr('action'), form.serialize()).done(function(data) {
+        if (data.status == 'ok') {
+          var html = data.html;
+          $('#applicantAdditionalFormSection').html(html);
+          $("#majorFormModal-" + fieldId).modal('hide');
+          $(document.body).removeClass("modal-open");
+          $(".modal-backdrop").remove();
+
+          $('#formStatusMessageId').text('จัดเก็บคำตอบของคำถาม ' + rank + ' แล้ว');
+          $('#formStatusMessageDivId').show();
+          setTimeout(function() {
+            $('#formStatusMessageDivId').hide();
+          }, 3000);
+          refreshDocumentStatus();
+        } else {
+          alert('เกิดข้อผิดพลาด: ' + data.message);
+        }
+      }).fail(function() {
+        alert('เกิดข้อผิดพลาด ไม่สามารถบันทึกคำตอบได้');
+      });
+      return false;
+    });
+  });
+</script>

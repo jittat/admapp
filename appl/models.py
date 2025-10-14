@@ -1308,6 +1308,12 @@ class MajorAdditionalAdmissionFormField(models.Model):
 
     def __str__(self):
         return f'{self.major} - {self.rank}: {self.title}'
+    
+    def text_size(self):
+        if self.size == 'short':
+            return 220
+        else:
+            return 2050
 
 
 class ApplicantAdditionalAdmissionFormValue(models.Model):
@@ -1329,3 +1335,7 @@ class ApplicantAdditionalAdmissionFormValue(models.Model):
     def __str__(self):
         return f'{self.applicant} - {self.field}: {self.value}'
 
+    @staticmethod
+    def get_values(applicant, major):
+        return ApplicantAdditionalAdmissionFormValue.objects.filter(applicant=applicant,
+                                                                    major=major).all()

@@ -125,6 +125,14 @@ def check_project_documents(applicant,
         if is_required and (not c.supplement_instance):
             status = False
             errors.append('ยังไม่ได้ป้อนข้อมูล' + c.title)
+
+    load_major_additional_form_fields(applicant, admission_project, major_selection)
+    for major in major_selection.get_majors():
+        if major.has_additional_form:
+            for f in major.form_fields:
+                if f.value == None or f.value.value.strip() == '':
+                    status = False
+                    errors.append(f'ยังตอบคำถามเพิ่มเติมไม่ครบ (คำถามข้อที่ {f.rank})')
             
     return { 'status': status,
              'errors': errors }
@@ -150,7 +158,7 @@ def load_major_notices(project, major_selection):
     for major in major_selection.get_majors():
         major.notice = MajorAdditionalNotice.get_notice_for_major(major)
 
-def load_major_additional_form_fields(project, major_selection):
+def load_major_additional_form_fields(applicant, project, major_selection):
     if not project.is_additional_admission_form_allowed:
         return
     if not major_selection:
@@ -159,6 +167,15 @@ def load_major_additional_form_fields(project, major_selection):
         major.form_fields = list(major.additional_admission_form_fields.all())
         if len(major.form_fields) > 0:
             major.has_additional_form = True
+            values = { v.field_id: v for v in 
+                         ApplicantAdditionalAdmissionFormValue.get_values(applicant, major) }
+            for f in major.form_fields:
+                if f.id in values:
+                    f.value = values[f.id]
+                else:
+                    f.value = None
+        else:
+            major.has_additional_form = False
 
 def is_payment_deadline_passed(deadline):
     return datetime.now() > datetime(deadline.year, deadline.month, deadline.day) + timedelta(days=1)
@@ -252,7 +269,7 @@ def index_with_active_application(request, active_application, admission_round=N
         accepted_result = None
 
     load_major_notices(admission_project, major_selection)
-    load_major_additional_form_fields(admission_project, major_selection)
+    load_major_additional_form_fields(applicant, admission_project, major_selection)
 
     other_application_rounds = load_applications_in_other_round(applicant,
                                                                 admission_round)
@@ -765,3 +782,57 @@ def get_additional_payment(request):
         additional_payment = 0
 
     return JsonResponse({ 'additionalPayment': additional_payment })
+
+@appl_login_required
+def major_additional_form(request, major_id, field_id):
+    applicant = request.applicant
+    admission_round = AdmissionRound.get_available()
+    active_application = applicant.get_active_application(admission_round)
+
+    if not active_application:
+        return HttpResponseForbidden()
+
+    admission_project = active_application.admission_project
+    major_selection = active_application.get_major_selection()
+    if not major_selection:
+        return HttpResponseForbidden()
+
+    load_major_additional_form_fields(applicant, admission_project, major_selection)
+
+    majors = { m.id: m for m in major_selection.get_majors() }
+    if int(major_id) not in majors:
+        return HttpResponseForbidden()
+    
+    major = majors[int(major_id)]
+
+    field = None        
+    for f in major.form_fields:
+        if f.id == int(field_id):
+            field = f
+            break
+
+    if not field:
+        return HttpResponseForbidden()
+    
+    if field.value:
+        form_value = field.value
+    else:
+        form_value = ApplicantAdditionalAdmissionFormValue(applicant=applicant,
+                                                           major=major,
+                                                           field=field)
+        field.value = form_value
+
+    answer = request.POST.get('answer','').strip()
+    form_value.value = answer
+    form_value.save()
+
+    LogItem.create('Saved additional form for major %d field %d' % (major.id, field.id),
+                   applicant, request)
+
+    html = render(request,
+                  'appl/include/major_additional_form.html',
+                  { 'major': major,
+                    'applicant': applicant,
+                  }).content.decode('utf-8')
+
+    return JsonResponse({ 'status': 'ok', 'html': html })
