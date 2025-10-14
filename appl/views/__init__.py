@@ -126,13 +126,14 @@ def check_project_documents(applicant,
             status = False
             errors.append('ยังไม่ได้ป้อนข้อมูล' + c.title)
 
-    load_major_additional_form_fields(applicant, admission_project, major_selection)
-    for major in major_selection.get_majors():
-        if major.has_additional_form:
-            for f in major.form_fields:
-                if f.value == None or f.value.value.strip() == '':
-                    status = False
-                    errors.append(f'ยังตอบคำถามเพิ่มเติมไม่ครบ (คำถามข้อที่ {f.rank})')
+    if major_selection:
+        load_major_additional_form_fields(applicant, admission_project, major_selection)
+        for major in major_selection.get_majors():
+            if major.has_additional_form:
+                for f in major.form_fields:
+                    if f.value == None or f.value.value.strip() == '':
+                        status = False
+                        errors.append(f'ยังตอบคำถามเพิ่มเติมไม่ครบ (คำถามข้อที่ {f.rank})')
             
     return { 'status': status,
              'errors': errors }
