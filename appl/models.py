@@ -161,7 +161,9 @@ class AdmissionProject(models.Model):
                                                                     verbose_name='อนุญาตให้แก้ไขแบบฟอร์มเพิ่มเติม')
     is_additional_notice_allowed = models.BooleanField(default=False,
                                                        verbose_name='อนุญาตให้มีประกาศเพิ่มเติมในระบบรับสมัคร')
-    
+    is_portfolio_submission_required = models.BooleanField(default=False,
+                                                           verbose_name='มีการส่งแฟ้มสะสมผลงาน')
+
     max_num_selections = models.IntegerField(default=1,
                                              verbose_name='จำนวนสาขาที่เลือกได้')
 
@@ -182,6 +184,7 @@ class AdmissionProject(models.Model):
     
     display_rank = models.IntegerField(default=0,
                                        verbose_name='สำหรับใช้เรียงรายการ')
+    
     is_apply_link_hidden = models.BooleanField(default=False,
                                                verbose_name='ซ่อนลิงก์สมัคร')
 
