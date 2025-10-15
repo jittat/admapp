@@ -15,7 +15,8 @@
           </td>
           <td style="text-align: left">
             <b><span style="font-size: 130%">การรับนิสิตเข้าศึกษาต่อ มหาวิทยาลัยเกษตรศาสตร์</span></b><br>
-            <b>1. ชำระผ่านธนาคารกรุงเทพ</b> ชำระเงินผ่านเคาน์เตอร์ ATM และ Internet Banking ภายใน {{ deadline|thaidate }} หรือ<br><b>2.ชำระผ่านบริการเคาน์เตอร์เซอร์วิส</b> ภายใน {{ deadline|thaidate }}
+            <!--<b>1. ชำระผ่านธนาคารกรุงเทพ</b> ชำระเงินผ่านเคาน์เตอร์ ATM และ Internet Banking ภายใน {{ deadline|thaidate }} หรือ<br>-->
+            <b>ชำระผ่านบริการเคาน์เตอร์เซอร์วิส</b> ภายใน {{ deadline|thaidate }}
           </td>
         </tr>
       </table>
@@ -26,7 +27,7 @@
   <div class="bank-section">
     <div class="bank-info">
       <table>
-        <tr>
+        <tr style="display: none;">
           <td>
             <img src="{% static 'appl/payment/img/bbl.png' %}">
           </td>
@@ -38,7 +39,7 @@
             </b>
           </td>
         </tr>
-        <tr><td colspan="2"><img src="{% static 'appl/payment/img/Logo_CS.png' %}"> หรือชำระผ่านบริการเคาน์เตอร์เซอร์วิส (ค่าธรรมเนียม 10 บาท)</td></tr>
+        <tr><td colspan="2"><img src="{% static 'appl/payment/img/Logo_CS.png' %}"> ชำระผ่านบริการเคาน์เตอร์เซอร์วิส (ค่าธรรมเนียม 10 บาท)</td></tr>
       </table>
     </div>
     <div class="payment-info">
