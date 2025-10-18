@@ -63,20 +63,18 @@ def validate_project_ids(curriculum_major_rows, additional_projects, cupt_code_c
         custom_projects = cupt_code_custom_projects[program_id]
     else:
         custom_projects = []
-
-    if custom_projects == []:
-        return
         
     for r in curriculum_major_rows:
         r['required_criteria_str'] = r['criteria'].get_all_required_score_criteria_as_str()
         r['scoring_criteria_str'] = r['criteria'].get_all_scoring_score_criteria_as_str()
 
     if len(custom_projects) == 0:
-        for r in curriculum_major_rows:
-            if 'validation_messages' in r:
-                r['validation_messages'].append(f'Too many rows - {len(custom_projects)} in config')
-                r['validation_messages'].append(r['required_criteria_str'])
-                r['validation_messages'].append(r['scoring_criteria_str'])
+        if len(curriculum_major_rows) > 1:
+            for r in curriculum_major_rows:
+                if 'validation_messages' in r:
+                    r['validation_messages'].append(f'Too many rows - {len(custom_projects)} in config')
+                    r['validation_messages'].append(r['required_criteria_str'])
+                    r['validation_messages'].append(r['scoring_criteria_str'])
         return
 
     for r in curriculum_major_rows:
