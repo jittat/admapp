@@ -66,4 +66,7 @@ urlpatterns += [
 
     path('export/import/',
          cuptexport.import_file, name='export-import-file'),
+
+    path('export/import-config/',
+         cuptexport.import_config, name='export-import-config'),
 ]

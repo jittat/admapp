@@ -21,28 +21,54 @@
     </p>
     <form method="POST" action="{% url 'backoffice:criteria:export-import-file' %}" class="form-inline border rounded p-2" enctype="multipart/form-data">
       <div class="form-group m-2">
-	<label class="mr-2">ประเภทไฟล์</label>
-	<select class="form-control" name="criteria_type">
-	  <option value="required">conditions</option>
-	  <option value="scoring">scoring</option>
-	</select>
+        <label class="mr-2">ประเภทไฟล์</label>
+        <select class="form-control" name="criteria_type">
+          <option value="required">conditions</option>
+          <option value="scoring">scoring</option>
+        </select>
       </div>
       <div class="form-group m-2">
-	<label>ไฟล์ข้อมูล</label>
-	<input type="file" class="form-control-file" name="imported_file">
+        <label>ไฟล์ข้อมูล</label>
+        <input type="file" class="form-control-file" name="imported_file">
       </div>
       <button type="submit" class="btn btn-secondary mb-2">นำเข้า</button>
       {% csrf_token %}
     </form>
-    
+
+    นำเข้า export configs: <a class="btn btn-sm btn-outline-secondary" id="importConfigFormToggleButtonId" href="#">นำเข้าข้อมูล</a>
+    <div class="border rounded p-2 mb-2" style="display: none;" id="importConfigFormId">
+      <form method="POST" action="{% url 'backoffice:criteria:export-import-config' %}">
+        <div class="form-group m-2">
+          <label class="mr-2">ประเภทข้อมูล</label>
+          <select class="form-control mr-2" name="config_type">
+            <option value="custom-projects">Custom projects</option>
+            <option value="custom-rules">Additional project rules</option>
+          </select>
+        </div>
+        <div class="form-group m-2">
+          <textarea class="form-control" name="config" style="min-height: 100px; field-sizing: content;"></textarea>
+        </div>
+        {% csrf_token %}
+        <button type="submit" class="btn btn-secondary mb-2">นำเข้า</button>
+      </form>
+    </div>
+
     <h3>ตรวจสอบข้อมูล</h3>
     <ul>
       {% for project in admission_projects %}
-	{% for round in project.admission_rounds.all %}
-	  <li><a target="_blank" rel="noopener noreferrer" href="{% url 'backoffice:criteria:export-project-validate' project.id round.id %}">{{ project }} {{ round }}</a></li>
-	{% endfor %}
+        {% for round in project.admission_rounds.all %}
+          <li><a target="_blank" rel="noopener noreferrer" href="{% url 'backoffice:criteria:export-project-validate' project.id round.id %}">{{ project }} {{ round }}</a></li>
+        {% endfor %}
       {% endfor %}
     </ul>
   </div>
 </div>
+<script>
+  $(function(){
+    $('#importConfigFormToggleButtonId').click(function(){
+      $('#importConfigFormId').show();
+      return false;
+    });
+  })
+</script>
 {% endblock %}

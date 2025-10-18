@@ -3,7 +3,7 @@ from collections import defaultdict
 from datetime import datetime
 
 from django.db.models import Q
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseForbidden
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.conf import settings
@@ -1091,7 +1091,12 @@ def export_scoring_csv(request):
         
     return response
 
+@user_login_required
 def import_file(request):
+    user = request.user
+    if not user.profile.is_admission_admin:
+        return redirect(reverse('backoffice:index'))
+
     if request.method != 'POST':
         return redirect(reverse('backoffice:criteria:export-index'))
     
@@ -1127,3 +1132,90 @@ def import_file(request):
         criteria_json.save()
     
     return redirect(reverse('backoffice:criteria:export-index'))
+
+
+def import_custom_project_config(config_data):
+    lines = config_data.split("\n")
+    if lines[-1][-1] == ',':
+        lines.append("[]")
+    json_str = "[" + "\n".join(lines) + "]"
+    import json
+    config = json.loads(json_str)
+
+    for items in config:
+        if len(items) == 2:
+            cupt_code = items[0].strip()
+            title = items[1].strip()
+
+            if title == '':
+                continue
+
+            old_projects = CuptExportCustomProject.objects.filter(cupt_code=cupt_code).all()
+            if len(old_projects) > 0:
+                custom_project = old_projects[0]
+            else:
+                custom_project = CuptExportCustomProject(cupt_code=cupt_code)
+            custom_project.title = title
+            custom_project.save()
+
+
+def import_custom_project_rule_config(config_data):
+    lines = config_data.split("\n")
+    if lines[-1][-1] == ',':
+        lines.append("[]")
+    json_str = "[" + "\n".join(lines) + "]"
+    import json
+    config = json.loads(json_str)
+
+    for items in config:
+        if len(items) == 3:
+            cupt_code = items[0].strip()
+            full_program_major_code = items[1].strip()
+            rule_json = items[2].strip()
+
+            project_cupt_code = full_program_major_code[:5]
+            program_major_codes = full_program_major_code[5:]
+
+            admission_project = AdmissionProject.objects.filter(cupt_code=project_cupt_code).first()
+            if not admission_project:
+                continue
+
+            custom_project = CuptExportCustomProject.objects.filter(cupt_code=cupt_code).first()
+            if not custom_project:
+                continue
+
+            old_rules = CuptExportAdditionalProjectRule.objects.filter(program_major_codes=program_major_codes,
+                                                                       custom_project=custom_project).all()
+            if len(old_rules) > 0:
+                rule = old_rules[0]
+            else:
+                rule = CuptExportAdditionalProjectRule(program_major_codes=program_major_codes,
+                                                      custom_project=custom_project)
+            rule.admission_project = admission_project
+            rule.rule_json = rule_json
+            rule.save()
+
+
+@user_login_required
+def import_config(request):
+    user = request.user
+    if not user.profile.is_admission_admin:
+        return redirect(reverse('backoffice:index'))
+    
+    if request.method != 'POST':
+        return redirect(reverse('backoffice:index'))
+
+    config_type = request.POST.get('config_type','')
+    config_data = request.POST.get('config','')
+
+    if config_type not in ['custom-projects','custom-rules']:
+        return HttpResponseForbidden()
+    
+    if config_type == 'custom-projects':
+        import_custom_project_config(config_data)
+    else:
+        import_custom_project_rule_config(config_data)
+
+    return redirect(reverse('backoffice:criteria:export-index'))
+
+ 
