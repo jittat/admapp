@@ -78,7 +78,7 @@
 		  {% endif %}
 		</td>
 		<td>
-		  {% if r.scoring_json %}{{ r.scoring_json }}{% endif %}
+		  {% if r.scoring_json_display %}{{ r.scoring_json_display|safe }}{% endif %}
 		</td>
 		<td>
 		  {% if r.validation_messages %}

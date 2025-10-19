@@ -455,6 +455,7 @@ def project_validation(request, project_id, round_id):
                 r['condition_json'] = condition_jsons[json_key]
             if json_key in scoring_jsons:
                 r['scoring_json'] = scoring_jsons[json_key]
+                r['scoring_json_display'] = scoring_jsons[json_key].replace("|","|&#8203;")
 
             if not project.is_cupt_export_only_major_list:
                 r['required_criteria_str'] = r['criteria'].get_all_required_score_criteria_as_str()
