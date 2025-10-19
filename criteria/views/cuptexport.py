@@ -1170,11 +1170,11 @@ def import_custom_project_rule_config(config_data):
     for items in config:
         if len(items) == 3:
             cupt_code = items[0].strip()
-            full_program_major_code = items[1].strip()
+            full_program_major_codes = items[1].strip()
             rule_json = items[2].strip()
 
-            project_cupt_code = full_program_major_code[:5]
-            program_major_codes = full_program_major_code[5:]
+            project_cupt_code = full_program_major_codes[:5]
+            program_major_codes = ','.join([(c.strip())[5:] for c in full_program_major_codes.split(',')])
 
             admission_project = AdmissionProject.objects.filter(cupt_code=project_cupt_code).first()
             if not admission_project:
