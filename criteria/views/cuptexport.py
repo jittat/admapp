@@ -1029,7 +1029,10 @@ def write_scoring_row(writer, row, zero_fields):
 
 def preprocess_portfolio_admission_criteria(admission_criterias):
     for criteria in admission_criterias:
-        criteria.extracted_scoring_criteria = ([],[])
+        criteria.extracted_scoring_criteria = ([
+            {'score_type': 'R1_PORTFOLIO', 'base_weight': 100.0},
+            {'score_type': 'R1_INTERVIEW', 'base_weight': 0},
+        ],[])
 
 @user_login_required
 def export_scoring_csv(request):

@@ -424,6 +424,9 @@ EXAM_FIELD_MAP = {
     'SWU_SET': 'swu_set',
     'DET': 'det',
     'MU_ELT': '',
+
+    'R1_PORTFOLIO': 'portfolio',
+    'R1_INTERVIEW': 'interview',
 }
 
 CONDITION_FILE_MIN_ZERO_FIELD_STR = """
