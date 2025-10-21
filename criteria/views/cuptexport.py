@@ -1004,6 +1004,8 @@ def write_scoring_row(writer, row, zero_fields):
         'condition',
         'gender_male_number',
         'interview_location',
+        'receive_student_number',
+        'join_id',
     ]
 
     curriculum_major = row['curriculum_major']
