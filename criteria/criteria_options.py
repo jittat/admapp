@@ -126,6 +126,8 @@ CRITERIA_OPTIONS = {
         { "score_type": "A89Spn", "description": "A-Level Spn ภาษาสเปน", "unit": "คะแนน" },
         { "score_type": "VNET", "description": "V-NET (รวมทุกทักษะ)", "unit": "คะแนน" },
         { "score_type": "TOEFL_PBT_ITP", "description": "TOEFL PBT/ITP", "unit": "คะแนน" },
+        { "score_type": "TOEFL_PBT", "description": "TOEFL PBT", "unit": "คะแนน" },
+        { "score_type": "TOEFL_ITP", "description": "TOEFL ITP", "unit": "คะแนน" },
         { "score_type": "TOEFL_CBT", "description": "TOEFL CBT", "unit": "คะแนน" },
         { "score_type": "TOEFL_IBT", "description": "TOEFL IBT", "unit": "คะแนน" },
         { "score_type": "IELTS", "description": "IELTS", "unit": "คะแนน" },
