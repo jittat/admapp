@@ -109,7 +109,7 @@ def validate_project_ids(curriculum_major_rows, additional_projects, cupt_code_c
             del r['scoring_criteria_str']
 
 def load_export_config(project):
-    configs = CuptExportConfig.objects.filter(admission_project=project)
+    configs = CuptExportConfig.objects.all()
 
     import json
     
@@ -124,6 +124,11 @@ def load_export_config(project):
             this_config = json.loads(c.config_json)
         except json.JSONDecodeError as err: 
             this_config['errors'] = [err.msg]
+
+        if 'GLOBAL' in this_config:
+            this_config = this_config['GLOBAL']
+        elif c.admission_project != project:
+            continue
 
         for k in this_config:
             if k in config:
@@ -962,6 +967,18 @@ def export_required_csv(request):
     return response
 
 def extract_scoring_rows(project, admission_criterias):
+    project_export_config = load_export_config(project)
+    project_id_str = str(project.id)
+
+    portfolio_interview_percents = {}
+    if 'interview_percents' in project_export_config:
+        if project_id_str in project_export_config['interview_percents']:
+            portfolio_interview_percents = {
+                p['full_code']:{ 'portfolio': float(p['porfolio']),
+                                 'interview': float(p['interview']) }
+                for p in project_export_config['interview_percents'][project_id_str]
+            }
+
     def scoring_extract_f(row_items, project, admission_criteria, curriculum_major):
         row_items['cal_type'] = 0
         row_items['cal_score_sum'] = 0
@@ -981,6 +998,13 @@ def extract_scoring_rows(project, admission_criterias):
     def scoring_postprocess_f(rows, project):
         if project.is_cupt_export_only_major_list:
             rows = group_condition_rows(rows)
+        if is_portfolio_project(project):
+            for r in rows:
+                full_code = r['curriculum_major'].cupt_code.get_program_major_code_as_str()
+                if full_code in portfolio_interview_percents:
+                    percents = portfolio_interview_percents[full_code]
+                    r['portfolio'] = normalize_int_value(percents['portfolio'])
+                    r['interview'] = normalize_int_value(percents['interview'])
         return rows
     
     # extract messages
@@ -1029,7 +1053,7 @@ def write_scoring_row(writer, row, zero_fields):
     out_row.update(update)
     writer.writerow(out_row)
 
-def preprocess_portfolio_admission_criteria(admission_criterias):
+def preprocess_portfolio_admission_criteria(admission_project, admission_criterias):
     for criteria in admission_criterias:
         criteria.extracted_scoring_criteria = ([
             {'score_type': 'R1_PORTFOLIO', 'base_weight': 100.0},
@@ -1061,7 +1085,7 @@ def export_scoring_csv(request):
     for project in admission_projects:
         if (not project.is_cupt_export_only_major_list) or is_portfolio_project(project):
             if is_portfolio_project(project):
-                preprocess_portfolio_admission_criteria(admission_criterias[project.id])
+                preprocess_portfolio_admission_criteria(project, admission_criterias[project.id])
 
             rows, messages = extract_scoring_rows(project, admission_criterias[project.id])
 
