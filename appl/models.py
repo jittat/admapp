@@ -486,6 +486,7 @@ class UploadedDocument(models.Model):
                                          blank=True)
 
     document_url = models.URLField(blank=True)
+    local_document_url = models.URLField(blank=True, default='')
 
     def __str__(self):
         return '%s (%s)' % (self.project_uploaded_document.title,
