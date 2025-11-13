@@ -128,7 +128,7 @@ def download_applicants_sheet(request, project_id, round_id, major_number,
                     bordered_cell_format)
 
     for i,f in enumerate(additional_form_fields):
-        app_worksheet.write(0, len(first_row)+i,
+        app_worksheet.write(1, len(first_row)+i,
                             f'คำถามเพิ่มเติม {i+1}: {f.title}',
                             wrap_format)
 
