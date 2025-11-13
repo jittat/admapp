@@ -382,6 +382,7 @@ def main():
         document_url = d.document_url
         if not document_url.startswith('https://folio.mytcas.com/'):
             print('ERROR: wrong url:', d.applicant, document_url)
+            continue
 
         print(d.applicant, d.document_url)
         prefix = random_prefix()
