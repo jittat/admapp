@@ -23,12 +23,12 @@
         {% for app_doc in doc.applicant_uploaded_documents %}
           {% if not doc.is_url_document %}
             <a class="app-document-links" href="{% url 'backoffice:projects-download-app-document' project.id admission_round.id major.number applicant.national_id doc.id app_doc.id %}" data-is-pdf="{{ app_doc.is_pdf }}">
-	      <i class="fa fa-angle-right"></i>
-	      {{ doc.title }}
-	    </a>
+              <i class="fa fa-angle-right"></i>
+              {{ doc.title }}
+            </a>
             <span class="badge badge-secondary">{{ doc.applicant_uploaded_documents|length }}</span>
           {% else %}
-            <a target="_blank" rel="noopener noreferrer" href="{{ app_doc.document_url }}">
+            <a target="_blank" rel="noopener noreferrer" href="{% if app_doc.local_document_url %}{{ app_doc.local_document_url }}{% else %}{{ app_doc.document_url }}{% endif %}">
               <i class="fa fa-angle-right"></i> {{ doc.title }} <i class="fa fa-external-link"></i>
             </a>
           {% endif %}
