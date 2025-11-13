@@ -75,17 +75,22 @@ def download_applicants_sheet(request, project_id, round_id, major_number,
     for i in range(6):
         check_mark_cell_formats[i].set_bg_color(mark_colors[i])
         check_mark_cell_formats[i].set_border(1)
-    
+
+    additional_form_widths = []    
     if with_additional_forms:
         additional_form_fields = list(major.additional_admission_form_fields.all())
         additional_form_values = {
             (v.applicant_id, v.field_id): v for v in
             ApplicantAdditionalAdmissionFormValue.objects.filter(major=major).all()
         }
+        for f in additional_form_fields:
+            if f.size == 'short':
+                additional_form_widths.append(45)
+            else:
+                additional_form_widths.append(80)
     else:
         additional_form_fields = []
         additional_form_values = {}
-    additional_form_widths = [45] * len(additional_form_fields)
 
     set_column_widths(app_worksheet, [15,8,8,12,22,15,13,13,10,25,10,6,12,
                                       2,2,2,2,2,2,30]+additional_form_widths)
@@ -206,7 +211,12 @@ def download_applicants_sheet(request, project_id, round_id, major_number,
     workbook.close()
     output.seek(0)
     
-    filename = 'applicants-{}-{}-{}.xlsx'.format(project_id, round_id, major_number)
+    base_filename = 'applicants'
+    if only_interview:
+        base_filename += '-interview'
+    if with_additional_forms:
+        base_filename += '-w-forms'
+    filename = '{}-{}-{}-{}.xlsx'.format(base_filename, project_id, round_id, major_number)
     response = HttpResponse(output.read(),
                             content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
     response['Content-Disposition'] = 'attachment; filename="{}"'.format(filename)
