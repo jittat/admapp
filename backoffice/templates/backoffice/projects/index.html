@@ -14,14 +14,14 @@
       <p>
         ผู้สมัครทั้งหมด {{ applicant_count }} ผู้สมัครที่ชำระเงินแล้ว {{ paid_applicant_count }}
         รายละเอียดแยกตามสาขาแสดงด้านล่าง (แสดงจำนวนที่ชำระเงินแล้ว / จำนวนที่เลือกทั้งหมด)
-	{% if project.max_num_selections != 1 %}
+      	{% if project.max_num_selections != 1 %}
           <a class="btn btn-sm btn-primary" href="{% url 'backoffice:projects-list-by-majors' project.id admission_round.id %}">แสดงรายการผู้สมัครทั้งหมด (ตามสาขา)</a>
-	{% endif %}
+      	{% endif %}
         <a class="btn btn-sm btn-primary" href="{% url 'backoffice:projects-list' project.id admission_round.id %}">แสดงรายการผู้สมัครทั้งหมด</a>
         <a class="btn btn-sm btn-secondary" href="{% url 'backoffice:projects-list-majors' project.id admission_round.id %}">แสดงข้อมูลสาขาที่รับ</a>
-	{% if user.profile.is_admission_admin %}
+      	{% if user.profile.is_admission_admin %}
           <a class="btn btn-sm btn-outline-secondary" href="{% url 'backoffice:projects-interview-status' project.id admission_round.id %}">แสดงสถิติการเรียกสัมภาษณ์</a>
-	{% endif %}
+      	{% endif %}
       </p>
 
       {% if menu_flags.project_index_message %}
@@ -138,41 +138,41 @@
 
               {% if user_major_number == any_major or user_major_number == major.number %}
                 {% if major.has_any_applications and applicant_score_viewable %}
-		  <td>
+		              <td>
                     <a target="_blank" class="{% dnone_flag menu_flags 'score-viewable-interview-call-by-scores' %} btn btn-sm btn-outline-primary" rel="noopener noreferrer" href="{% url 'backoffice:projects-show-scores' project.id admission_round.id major.number %}">เรียกสัมภาษณ์</a>
-		  </td>
-		  <td>
-		    <div class="dropdown d-inline">
+                  </td>
+                  <td>
+            		    <div class="dropdown d-inline">
                       <a class="btn btn-sm btn-outline-secondary dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></a>
                       <div class="dropdown-menu">
-			<a target="_blank" class="dropdown-item {% dnone_flag menu_flags 'score-viewable-dropdown-show-applicant' %}" href="{% url 'backoffice:projects-show-applicant' project.id admission_round.id major.number 1 %}">พิจารณาผู้สมัคร</a>
-		      </div>
-		    </div>
-		  </td>
-		{% else %}
-		  <td colspan="2">
+                  			<a target="_blank" class="dropdown-item {% dnone_flag menu_flags 'score-viewable-dropdown-show-applicant' %}" href="{% url 'backoffice:projects-show-applicant' project.id admission_round.id major.number 1 %}">พิจารณาผู้สมัคร</a>
+                      </div>
+                    </div>
+                  </td>
+                {% else %}
+                  <td colspan="2">
                     <a target="_blank" class="{% dnone_flag menu_flags 'not-score-viewable-show-applicant' %} btn btn-sm btn-outline-secondary" rel="noopener noreferrer" href="{% url 'backoffice:projects-show-applicant' project.id admission_round.id major.number 1 %}">พิจารณาผู้สมัคร</a>
-		  </td>
+                  </td>
                 {% endif %}
               {% endif %}
 	      
               {% if user_major_number == any_major or user_major_number == major.number %}
-		{% if major.interview_description %}
-		  <td>
+                {% if major.interview_description %}
+                  <td>
                     <a target="_blank" class="{% dnone_flag menu_flags 'interview-form-edit' %} btn btn-sm btn-secondary" rel="noopener noreferrer" href="{% url 'backoffice:interviews-edit' admission_round.id major.faculty_id major.interview_description.id %}">แก้รายละเอียดสัมภาษณ์</a>
-		  </td>
-		  <td>
-		    <a class="btn btn-sm btn-outline-secondary interview-description-preview-buttons" href="{% url 'backoffice:interviews-view' major.interview_description.id %}?major_id={{ major.id }}"><i class="fa fa-eye"></i></a>
-		  </td>
-		{% else %}
-		  <td colspan="2">
-		    {% if major.spanned_interview_descriptions %}
-		      {% include "backoffice/projects/include/spanned_interview_descriptions.html" %}
-		    {% else %}
+                  </td>
+                  <td>
+                    <a class="btn btn-sm btn-outline-secondary interview-description-preview-buttons" href="{% url 'backoffice:interviews-view' major.interview_description.id %}?major_id={{ major.id }}"><i class="fa fa-eye"></i></a>
+                  </td>
+                {% else %}
+                  <td colspan="2">
+                    {% if major.spanned_interview_descriptions %}
+                      {% include "backoffice/projects/include/spanned_interview_descriptions.html" %}
+                    {% else %}
                       <a target="_blank" class="{% dnone_flag menu_flags 'interview-form-edit' %} btn btn-sm btn-outline-secondary" rel="noopener noreferrer" href="{% url 'backoffice:interviews-create' admission_round.id major.faculty_id %}?major_id={{ major.id }}">เพิ่มรายละเอียดสัมภาษณ์</a>
-		    {% endif %}
-		  </td>
-		{% endif %}
+                    {% endif %}
+                  </td>
+                {% endif %}
               {% endif %}
               <td class="{% dnone_flag menu_flags 'td-show-scores' %}">
                 {% if user_major_number == any_major or user_major_number == major.number %}
@@ -200,6 +200,9 @@
                     <a class="btn btn-sm btn-outline-secondary dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">ดาวน์โหลด</a>
                     <div class="dropdown-menu">
                       <a class="dropdown-item {% dnone_flag menu_flags 'download-gen-info' %}" href="{% url 'backoffice:projects-download-app-sheet' project.id admission_round.id major.number %}">ข้อมูลทั่วไป</a>
+                      {% if major.has_additional_form_fields %}
+                        <a class="dropdown-item {% dnone_flag menu_flags 'download-gen-info' %}" href="{% url 'backoffice:projects-download-app-sheet-with-additional-forms' project.id admission_round.id major.number %}">ข้อมูลทั่วไป+คำถามเพิ่มเติม</a>
+                      {% endif %}
                       <a class="dropdown-item {% dnone_flag menu_flags 'download-scores-tgat-tpat-label' %}" href="{% url 'backoffice:projects-download-app-score-sheet' project.id admission_round.id major.number %}">รายงานคะแนนสอบ TGAT/TPAT</a>
                       <a class="dropdown-item {% dnone_flag menu_flags 'download-scores' %}" href="{% url 'backoffice:projects-download-app-score-sheet' project.id admission_round.id major.number %}">รายงานคะแนน</a>
                       <a class="dropdown-item {% dnone_flag menu_flags 'download-gen-info-interview' %}" href="{% url 'backoffice:projects-download-app-sheet-only-interview' project.id admission_round.id major.number %}">ข้อมูลผู้มีสิทธิ์สอบสัมภาษณ์</a>

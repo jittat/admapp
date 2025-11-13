@@ -4,6 +4,7 @@ from django.urls import reverse
 
 from appl.models import AdmissionProject, AdmissionRound
 from appl.models import Major, AdmissionResult
+from appl.models import MajorAdditionalAdmissionFormField, ApplicantAdditionalAdmissionFormValue
 from backoffice.decorators import user_login_required
 from backoffice.views.permissions import can_user_view_applicants_in_major
 from .projects import load_major_applicants, load_check_marks_and_results, load_major_applicants_no_cache, \
@@ -28,7 +29,9 @@ def write_sheet_row(sheet, row, items,
         sheet.set_row(row, row_height*ROW_HEIGHT_SCALE)
 
 @user_login_required
-def download_applicants_sheet(request, project_id, round_id, major_number, only_interview=False):
+def download_applicants_sheet(request, project_id, round_id, major_number, 
+                              only_interview=False,
+                              with_additional_forms=False):
     import xlsxwriter
     import io
     
@@ -65,43 +68,64 @@ def download_applicants_sheet(request, project_id, round_id, major_number, only_
         workbook.add_format(),
         workbook.add_format(),
     ]
+    wrap_format = workbook.add_format()
+    wrap_format.set_text_wrap()
 
     mark_colors = ['blue', 'green', 'yellow', 'red', 'gray', 'black']
     for i in range(6):
         check_mark_cell_formats[i].set_bg_color(mark_colors[i])
         check_mark_cell_formats[i].set_border(1)
     
+    if with_additional_forms:
+        additional_form_fields = list(major.additional_admission_form_fields.all())
+        additional_form_values = {
+            (v.applicant_id, v.field_id): v for v in
+            ApplicantAdditionalAdmissionFormValue.objects.filter(major=major).all()
+        }
+    else:
+        additional_form_fields = []
+        additional_form_values = {}
+    additional_form_widths = [45] * len(additional_form_fields)
+
     set_column_widths(app_worksheet, [15,8,8,12,22,15,13,13,10,25,10,6,12,
-                                      2,2,2,2,2,2])
+                                      2,2,2,2,2,2,30]+additional_form_widths)
 
     if only_interview:
         result_header = 'สถานะ'
     else:
         result_header = 'การชำระเงินค่าสมัคร'
+
+    first_row = [
+        'รหัสประจำตัวประชาชน',
+        'หมายเลขหนังสือเดินทาง',
+        'คำนำหน้า',
+        'ชื่อต้น',
+        'นามสกุล',
+        'E-mail',
+        'เบอร์โทรที่ติดต่อได้',
+        'เบอร์โทรมือถือ',
+        'แผนการเรียน',
+        'โรงเรียน',
+        'จังหวัด',
+        'GPA',
+        result_header,
+        'o',
+        'o',
+        'o',
+        'o',
+        'o',
+        'o',
+        'ความเห็นกรรมการ',
+    ] 
     
     write_sheet_row(app_worksheet,1,
-                    ['รหัสประจำตัวประชาชน',
-                     'หมายเลขหนังสือเดินทาง',
-                     'คำนำหน้า',
-                     'ชื่อต้น',
-                     'นามสกุล',
-                     'E-mail',
-                     'เบอร์โทรที่ติดต่อได้',
-                     'เบอร์โทรมือถือ',
-                     'แผนการเรียน',
-                     'โรงเรียน',
-                     'จังหวัด',
-                     'GPA',
-                     result_header,
-                     'o',
-                     'o',
-                     'o',
-                     'o',
-                     'o',
-                     'o',
-                     'ความเห็นกรรมการ',
-                    ],
+                    first_row,
                     bordered_cell_format)
+
+    for i,f in enumerate(additional_form_fields):
+        app_worksheet.write(0, len(first_row)+i,
+                            f'คำถามเพิ่มเติม {i+1}: {f.title}',
+                            wrap_format)
 
     r = 2
     for applicant in applicants:
@@ -135,23 +159,33 @@ def download_applicants_sheet(request, project_id, round_id, major_number, only_
             
         if row_height == 1:
             row_height = None
+
+        blank_value = ApplicantAdditionalAdmissionFormValue(value='')
+        applicant_additional_form_values = [
+            additional_form_values.get((applicant.id, f.id), blank_value).value
+            for f in additional_form_fields
+        ]
+
+        row_items = [
+            applicant.national_id,
+            applicant.personalprofile.passport_number,
+            applicant.prefix,
+            applicant.first_name,
+            applicant.last_name,
+            applicant.email,
+            applicant.personalprofile.contact_phone,
+            applicant.personalprofile.mobile_phone,
+            str(applicant.educationalprofile.get_education_plan_display()),
+            applicant.educationalprofile.school_title,
+            applicant.educationalprofile.province.title,
+            '%0.2f' % (float(applicant.educationalprofile.gpa),),
+            result_message,
+            '','','','','','',
+            combined_comments,
+        ]
+
         write_sheet_row(app_worksheet, r,
-                        [applicant.national_id,
-                         applicant.personalprofile.passport_number,
-                         applicant.prefix,
-                         applicant.first_name,
-                         applicant.last_name,
-                         applicant.email,
-                         applicant.personalprofile.contact_phone,
-                         applicant.personalprofile.mobile_phone,
-                         str(applicant.educationalprofile.get_education_plan_display()),
-                         applicant.educationalprofile.school_title,
-                         applicant.educationalprofile.province.title,
-                         '%0.2f' % (float(applicant.educationalprofile.gpa),),
-                         result_message,
-                         '','','','','','',
-                         combined_comments,
-                        ],
+                        row_items,
                         bordered_cell_format,
                         row_height=row_height)
         if (not only_interview) and (applicant.check_marks):
@@ -162,6 +196,11 @@ def download_applicants_sheet(request, project_id, round_id, major_number, only_
                     app_worksheet.write(r, 12+mcount,
                                         'o',
                                         check_mark_cell_formats[mcount-1])
+                    
+        for i in range(len(additional_form_fields)):
+            app_worksheet.write(r, len(row_items)+i,
+                                applicant_additional_form_values[i],
+                                wrap_format)
         r += 1
 
     workbook.close()

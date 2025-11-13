@@ -107,6 +107,12 @@ urlpatterns = [
         name="projects-download-app-sheet-only-interview",
     ),
     re_path(
+        r"^projects/applicants/(\d+)/(\d+)/(\d+)/sheet/additional-forms$",
+        reports.download_applicants_sheet,
+        {"with_additional_forms": True},
+        name="projects-download-app-sheet-with-additional-forms",
+    ),
+    re_path(
         r"^projects/applicants/(\d+)/(\d+)/(\d+)/interview-sheet$",
         reports.download_applicants_interview_sheet,
         name="projects-download-app-interview-sheet",

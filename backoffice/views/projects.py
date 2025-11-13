@@ -8,7 +8,7 @@ from django.urls import reverse
 from appl.models import AdmissionProject, AdmissionRound
 from appl.models import ProjectApplication, Payment, Major, AdmissionResult, Faculty
 from appl.models import ProjectUploadedDocument, UploadedDocument, ExamScoreProvider, MajorInterviewDescription
-from appl.models import ApplicantAdditionalAdmissionFormValue
+from appl.models import ApplicantAdditionalAdmissionFormValue, MajorAdditionalAdmissionFormField
 from backoffice.decorators import user_login_required
 from backoffice.models import CheckMarkGroup, JudgeComment, MajorInterviewCallDecision, InterviewDescription, AdmissionProjectMajorCuptCodeInterviewDescription, ProjectMenuConfig
 from backoffice.views.permissions import can_user_view_project, can_user_view_applicant_in_major, \
@@ -419,6 +419,19 @@ def load_interview_descriptions(admission_round, project, faculty, majors):
             for m in faculty_majors[i.faculty_id]:
                 m.spanned_interview_descriptions.append(i)
                         
+def load_major_additional_form_fields(project, majors):
+    additional_form_fields = (MajorAdditionalAdmissionFormField
+                              .objects
+                              .filter(admission_project=project)
+                              .all())
+    major_field_map = {}
+    for f in additional_form_fields:
+        if f.major_id not in major_field_map:
+            major_field_map[f.major_id] = []
+        major_field_map[f.major_id].append(f)
+
+    for m in majors:
+        m.has_additional_form_fields = m.id in major_field_map
 
 
 @user_login_required
@@ -469,6 +482,7 @@ def index(request, project_id, round_id):
                                 project,
                                 faculty,
                                 majors)
+    load_major_additional_form_fields(project, majors)
 
     menu_flags = ProjectMenuConfig.load_menu_config_flags(admission_round, project)
     

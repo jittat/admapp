@@ -1303,6 +1303,10 @@ class MajorAdditionalAdmissionFormField(models.Model):
     major = models.ForeignKey(Major, 
                               related_name='additional_admission_form_fields',
                               on_delete=models.CASCADE)
+    admission_project = models.ForeignKey(AdmissionProject, 
+                                          on_delete=models.CASCADE,
+                                          null=True,
+                                          default=None)
     title = models.CharField(max_length=300)
     size = models.CharField(max_length=20)
     rank = models.IntegerField()
