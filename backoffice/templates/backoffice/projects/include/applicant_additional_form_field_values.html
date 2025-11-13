@@ -1,0 +1,14 @@
+<div id="applicantFormFieldValueStoreId" class="d-none">
+  {% for f in additional_form_fields %}
+    <div class="bg-secondary text-light p-1">
+      <i class="fa fa-angle-right"></i> คำถามที่ {{ forloop.counter }}. {{ f.title }}
+    </div>
+    <div class="bg-white border border-left-0 border-right-0 border-top-0 p-1">
+      {% if f.value %}
+        {{ f.value.value|linebreaks }}
+      {% else %}
+        <span class="text-muted">- ไม่มีข้อมูล -</span>
+      {% endif %}
+    </div>
+  {% endfor %}
+</div>

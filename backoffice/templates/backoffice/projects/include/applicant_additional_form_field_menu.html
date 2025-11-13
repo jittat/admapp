@@ -1,0 +1,19 @@
+<div class="mt5 border border-top-0 border-left-0 border-right-0">
+  <small>
+    <a class="additional-form-links" href="#">
+      <i class="fa fa-caret-right "></i>
+      คำถามเพิ่มเติม
+    </a>
+  </small>
+</div>
+<script>
+  $(function(){
+    $('.additional-form-links').click(function(){
+      var content = $('#applicantFormFieldValueStoreId').html();
+      $('#document_panel_id').html(content);
+      $(".app-document-links").removeClass("font-weight-bold");
+      $(this).addClass("font-weight-bold");
+      return false;
+    });
+  });
+</script>

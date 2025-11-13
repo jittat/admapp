@@ -8,6 +8,7 @@ from django.urls import reverse
 from appl.models import AdmissionProject, AdmissionRound
 from appl.models import ProjectApplication, Payment, Major, AdmissionResult, Faculty
 from appl.models import ProjectUploadedDocument, UploadedDocument, ExamScoreProvider, MajorInterviewDescription
+from appl.models import ApplicantAdditionalAdmissionFormValue
 from backoffice.decorators import user_login_required
 from backoffice.models import CheckMarkGroup, JudgeComment, MajorInterviewCallDecision, InterviewDescription, AdmissionProjectMajorCuptCodeInterviewDescription, ProjectMenuConfig
 from backoffice.views.permissions import can_user_view_project, can_user_view_applicant_in_major, \
@@ -737,6 +738,22 @@ def load_all_judge_comments(application,
     return list(shared_comments) + list(judge_comments)
 
 
+def load_additional_form_fields_with_values(admission_project, major, applicant):
+    if not admission_project.is_additional_admission_form_allowed:
+        return []
+    form_fields = list(major.additional_admission_form_fields.all())
+    if len(form_fields) > 0:
+        values = { v.field_id: v for v in 
+                   ApplicantAdditionalAdmissionFormValue.get_values(applicant, major) }
+        for f in form_fields:
+            if f.id in values:
+                f.value = values[f.id]
+            else:
+                f.value = None
+        return form_fields
+    else:
+        return []
+
 @user_login_required
 def show_applicant(request, project_id, round_id, major_number, rank):
     user = request.user
@@ -794,6 +811,10 @@ def show_applicant(request, project_id, round_id, major_number, rank):
         personal = applicant.personalprofile
     else:
         personal = None
+
+    additional_form_fields = load_additional_form_fields_with_values(project,
+                                                                     major,
+                                                                     applicant)
 
     if hasattr(application,'check_mark_group'):
         check_mark_group = application.check_mark_group
@@ -882,6 +903,7 @@ def show_applicant(request, project_id, round_id, major_number, rank):
                     'uploaded_documents': uploaded_documents,
                     'education': education,
                     'personal': personal,
+                    'additional_form_fields': additional_form_fields,
 
                     'is_criteria_passed': is_criteria_passed,
                     'is_multimajor_criteria_passed': is_multimajor_criteria_passed,

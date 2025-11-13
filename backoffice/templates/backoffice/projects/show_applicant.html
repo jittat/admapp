@@ -42,6 +42,9 @@
     <div class="col-md-2"> 
       <div id="document_menu_id" style="overflow-y: auto;">
         {% include 'backoffice/projects/include/applicant_uploaded_doc_menu.html' %}
+        {% if additional_form_fields %}
+          {% include 'backoffice/projects/include/applicant_additional_form_field_menu.html' %}
+        {% endif %}
       </div>
     </div>
     <div class="col-md-7">
@@ -51,6 +54,9 @@
       {% include 'backoffice/projects/include/pswp_div.html' %}
       <div id="document_panel_id" class="border mt5 bg-light" style="overflow-y: auto; width: 100%;">
       </div>
+      {% if additional_form_fields %}
+        {% include 'backoffice/projects/include/applicant_additional_form_field_values.html' %}
+      {% endif %}
     </div>
     <div class="col-md-3">
       <div id="comment_panel_id" style="overflow-y: auto;">
