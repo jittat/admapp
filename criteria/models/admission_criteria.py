@@ -225,6 +225,36 @@ class AdmissionCriteria(models.Model):
             additional_form_fields = []
         return additional_form_fields
 
+    def get_interview_date(self):
+        faculty_interview_date = AdmissionProjectFacultyInterviewDate.objects.filter(
+            faculty=self.faculty,
+            admission_project=self.admission_project).first()
+
+        if (faculty_interview_date is not None) and (not faculty_interview_date.is_major_specific):
+            return faculty_interview_date.interview_date
+        else:
+            return self.interview_date
+
+    def get_interview_date_str(self):
+        MONTHS = ['','ม.ค.','ก.พ.','มี.ค.','เม.ย.',
+                  'พ.ค.','มิ.ย.','ก.ค.','ส.ค.',
+                  'ก.ย.','ต.ค.','พ.ย.','ธ.ค.']
+        
+        interview_date_str = None
+        if self.custom_interview_date_str != '':
+            interview_date_str = self.custom_interview_date_str
+        else:
+            interview_date = self.get_interview_date()
+            if interview_date:
+                interview_date_str = (str(interview_date.day) + ' ' +
+                                    MONTHS[interview_date.month] + ' ' +
+                                    str((interview_date.year + 543) % 100))
+
+        if interview_date_str != None:
+            return interview_date_str
+        else:
+            return ''
+
 
 class AdmissionProjectFacultyInterviewDate(models.Model):
     admission_project = models.ForeignKey(AdmissionProject,

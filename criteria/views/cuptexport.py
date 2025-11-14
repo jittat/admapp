@@ -647,37 +647,7 @@ def extract_student_curriculum_type(row_items, admission_criteria):
             row_items[f] = 2
 
 def extract_interview_dates(row_items, admission_criteria):
-
-    def get_interview_date(admission_criteria):
-        MONTHS = ['','ม.ค.','ก.พ.','มี.ค.','เม.ย.',
-                  'พ.ค.','มิ.ย.','ก.ค.','ส.ค.',
-                  'ก.ย.','ต.ค.','พ.ย.','ธ.ค.']
-        
-        faculty_interview_date = AdmissionProjectFacultyInterviewDate.objects.filter(
-            faculty=admission_criteria.faculty,
-            admission_project=admission_criteria.admission_project).first()
-
-        interview_date_str = None
-        if admission_criteria.custom_interview_date_str != '':
-            interview_date_str = admission_criteria.custom_interview_date_str
-        else:
-            interview_date = None
-            if (faculty_interview_date is not None) and (not faculty_interview_date.is_major_specific):
-                interview_date = faculty_interview_date.interview_date
-            elif admission_criteria.interview_date != None:
-                interview_date = admission_criteria.interview_date
-
-            if interview_date:
-                interview_date_str = (str(interview_date.day) + ' ' +
-                                    MONTHS[interview_date.month] + ' ' +
-                                    str((interview_date.year + 543) % 100))
-
-        if interview_date_str != None:
-            return interview_date_str
-        else:
-            return ''
-
-    row_items['interview_date'] = get_interview_date(admission_criteria)
+    row_items['interview_date'] = admission_criteria.get_interview_date_str()
 
 def is_portfolio_project(admission_project):
     PROJECT_LIST = [1,2,3,4,5,6,7,8,9,10,18,32,33,
