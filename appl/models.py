@@ -412,6 +412,32 @@ class Major(models.Model):
                            study_type_code)
         return full_major_code
 
+    def get_major_cupt_code(self):
+        from criteria.models import MajorCuptCode
+
+        if not self.cupt_full_code:
+            return None
+        return MajorCuptCode.get_from_full_code(self.cupt_full_code)
+
+    def get_admission_criterias(self):
+        from criteria.models import CurriculumMajor, AdmissionCriteria
+
+        major_cupt_code = self.get_major_cupt_code()
+        if not major_cupt_code:
+            return None
+        curriculum_majors = CurriculumMajor.objects.filter(admission_project=self.admission_project,
+                                                           cupt_code=major_cupt_code).all()
+        if len(curriculum_majors) == 0:
+            return None
+        curriculum_major = curriculum_majors[0]
+        return curriculum_major.admission_criterias.filter(is_deleted=False).all()
+
+    def get_interview_date(self):
+        admission_criterias = self.get_admission_criterias()
+        if not admission_criterias:
+            return None
+        return admission_criterias[0].get_interview_date()
+
 
 class ProjectUploadedDocument(models.Model):
     admission_projects = models.ManyToManyField(AdmissionProject,
