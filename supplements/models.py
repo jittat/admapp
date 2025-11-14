@@ -364,7 +364,7 @@ PROJECT_APPLICANT_LIST_ADDITIONS = {
         'template': 'supplements/ap/applicant_info.html',
         'sort': None,
     },
-    'ศิลปวัฒนธรรม': {
+    'โควตาศิลปวัฒนธรรมและซอฟต์พาวเวอร์': {
         'loader': load_applicant_culture_exam,
         'col_count': 1,
         'header_template': 'supplements/cultural/applicant_info_head.html',
