@@ -1,4 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
+from django.http import HttpResponseForbidden
 from django.urls import reverse
 
 from appl.models import AdmissionProject, AdmissionRound
@@ -6,6 +7,7 @@ from regis.decorators import appl_login_required
 from supplements.models import PROJECT_SUPPLEMENTS
 from supplements.models import ProjectSupplement
 from supplements.models import load_project_supplements
+from regis.models import LogItem
 from .utils import get_function
 
 
@@ -94,6 +96,9 @@ def index(request, project_id, round_id):
     admission_round = get_object_or_404(AdmissionRound,
                                         pk=round_id)
     
+    project_round = admission_project.get_project_round_for(admission_round)
+    is_deadline_passed = project_round.is_deadline_passed()
+    
     supplement_configs = PROJECT_SUPPLEMENTS[admission_project.short_title]
     supplements = load_project_supplements(applicant,
                                            admission_project,
@@ -102,6 +107,9 @@ def index(request, project_id, round_id):
     if request.method == 'POST':
         if 'ok' not in request.POST:
             return redirect(reverse('appl:index'))
+        
+        if is_deadline_passed:
+            return HttpResponseForbidden()
 
         result = process_supplement_forms(request,
                                           applicant,
@@ -110,6 +118,9 @@ def index(request, project_id, round_id):
                                           supplements,
                                           supplement_configs)
 
+        LogItem.create('Saved supplements for project %d' % admission_project.id,
+                       applicant, request)
+
         if result:
             return redirect(reverse('appl:index'))
         
@@ -117,8 +128,9 @@ def index(request, project_id, round_id):
     context = { 'applicant': applicant,
                 'admission_project': admission_project,
                 'admission_round': admission_round,
-                'configs': supplement_configs }
-        
+                'configs': supplement_configs,
+                'is_deadline_passed': is_deadline_passed }
+
     supplement_contexts = {}
     for config in supplement_configs:
         instance = supplements[config.name]

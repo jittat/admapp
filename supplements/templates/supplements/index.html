@@ -19,7 +19,12 @@
 
   <div class="row">
     <div class="col-md-12 mt5 pt5 tborder-a0">
-      <input type="submit" name="ok" class="btn btn-success" value="จัดเก็บ" />
+      {% if is_deadline_passed %}
+        <input type="submit" name="cancel" class="btn btn-success" value="กลับหน้าหลัก โดยไม่จัดเก็บ"/>
+        <span class="text-muted">หมดเวลารับสมัครแล้ว</span>
+      {% else %}
+        <input type="submit" name="ok" class="btn btn-success" value="จัดเก็บ" />
+      {% endif %}
     </div>
   </div>
 </form>
