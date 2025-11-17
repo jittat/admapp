@@ -44,12 +44,14 @@
   {% else %}
     {% if has_criteria_check %}
       <td>
-        {% if applicant.admission_results.0.is_criteria_passed %}
-          <span class="badge badge-success">ผ่าน</span>
-        {% endif %}
-        {% if applicant.admission_results.0.is_criteria_passed == False%}
-          <span class="badge badge-danger">ไม่ผ่าน</span>
-        {% endif %}
+        {% for r in applicant.admission_results %}
+          {% if r.is_criteria_passed %}
+            <small><span class="badge badge-success"><i class="fa fa-check"></i></span></small>
+          {% endif %}
+          {% if r.is_criteria_passed == False %}
+            <small><span class="badge badge-danger"><i class="fa fa-close"></i></span></small>
+          {% endif %}
+        {% endfor %}
       </td>
     {% endif %}
     <td>
