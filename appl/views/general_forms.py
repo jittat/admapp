@@ -202,7 +202,7 @@ def ajax_school_search(request):
             schools = School.objects.filter(province=province,
                                             title__contains=trancated_term)
             results += [s.title for s in schools]
-    print(results)
+    #print(results)
     return HttpResponse(json.dumps(results))
 
 
