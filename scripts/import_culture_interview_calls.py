@@ -10,7 +10,7 @@ from appl.models import AdmissionProject, AdmissionResult, AdmissionRound, Proje
 def main():
     result_filename = sys.argv[1]
     project_id = 18
-    round_id = 2
+    round_id = 1
 
     admission_project = AdmissionProject.objects.get(pk=project_id)
     admission_round = AdmissionRound.objects.get(pk=round_id)
@@ -32,7 +32,7 @@ def main():
             if len(items) < 4:
                 continue
             
-            nat_id = items[3]
+            nat_id = items[3].strip()
             if nat_id not in all_applications:
                 print('ERROR', nat_id)
                 continue
@@ -69,7 +69,7 @@ def main():
                 result.save()
                 counter += 1
             if not found:
-                print('ERROR, major not found', interview_major_num)
+                print('ERROR, major not found', nat_id, interview_major_num)
             print(application.applicant)
 
     print('Imported',counter,'results')
