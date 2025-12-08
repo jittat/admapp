@@ -46,6 +46,9 @@ urlpatterns = [
         r"^projects/(\d+)/(\d+)/interview-status/$", projects.list_major_interview_status, name="projects-interview-status"
     ),
     re_path(
+        r"^projects/(\d+)/(\d+)/interview-status/dashboard/$", projects.list_major_interview_status_dashboard, name="projects-interview-status-dashboard"
+    ),
+    re_path(
         r"^projects/(\d+)/(\d+)/interview-descriptions/$",
         projects.list_major_interview_descriptions,
         name="projects-list-majors-interview-descriptions",

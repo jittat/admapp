@@ -1797,15 +1797,10 @@ def list_major_interview_descriptions(request, project_id, round_id):
                     'majors': majors,
                   })
 
-@user_login_required
-def list_major_interview_status(request, project_id, round_id):
-    user = request.user
+def list_major_interview_status_response(request, project_id, round_id):
     project = get_object_or_404(AdmissionProject, pk=project_id)
     admission_round = get_object_or_404(AdmissionRound, pk=round_id)
     project_round = project.get_project_round_for(admission_round)
-
-    if not user.profile.is_admission_admin:
-        return redirect(reverse('backoffice:index'))
 
     majors = list(project.major_set.all())
 
@@ -1843,6 +1838,24 @@ def list_major_interview_status(request, project_id, round_id):
 
                     'majors': majors,
                   })
+
+@user_login_required
+def list_major_interview_status(request, project_id, round_id):
+    user = request.user
+    if not user.profile.is_admission_admin:
+        return redirect(reverse('backoffice:index'))
+
+    return list_major_interview_status_response(request, project_id, round_id)
+
+
+def list_major_interview_status_dashboard(request, project_id, round_id):
+    from django.conf import settings
+
+    access_key = request.GET.get('key','nokey')
+    if access_key != settings.DASHBOARD_ACCESS_KEY:
+        return HttpResponseForbidden()
+    
+    return list_major_interview_status_response(request, project_id, round_id)
 
 
 
