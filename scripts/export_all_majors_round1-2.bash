@@ -5,7 +5,7 @@ declare -A PRJ
 
 BASEDIR=$PROJECT_MAJOR_BASEDIR/r1-2
 
-PRJ=( [101]=ele [103]=inter [109]=posn [33]=smt )
+PRJ=( [101]=ele12 [103]=inter12 [8]=dpst [109]=posn12 [33]=smt )
 
 for num in "${!PRJ[@]}"; do
     echo $num ${PRJ[$num]}
