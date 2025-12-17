@@ -53,8 +53,16 @@ def main():
             major_num = int(items[1])
             
             application = all_applications[nat_id]
-            major_selection = application.major_selection
-            majors = major_selection.get_majors()
+            try:
+                major_selection = application.major_selection
+                majors = major_selection.get_majors()
+            except:
+                major_selection = None
+                majors = []
+            
+            if major_selection == None:
+                print('ERROR', nat_id, application.applicant, major_num, 'no major selection')
+                continue
 
             if major_num == 0:
                 accepted_major = None
