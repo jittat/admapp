@@ -11,6 +11,7 @@ def main():
     round_id = sys.argv[2]
 
     is_fake = len(sys.argv) <= 3 or (sys.argv[3] != 'real')
+    acceptance_only = (len(sys.argv) >= 5) and (sys.argv[4] == 'acceptance_only')
 
     admission_project = AdmissionProject.objects.get(pk=project_id)
     admission_round = AdmissionRound.objects.get(pk=round_id)
@@ -23,7 +24,10 @@ def main():
     for application in applications:
         applicant = application.applicant
         admission_results = AdmissionResult.objects.filter(applicant=applicant).all()
-        accepted_results = [res for res in admission_results if res.has_confirmed]
+        if acceptance_only:
+            accepted_results = [res for res in admission_results if res.is_accepted]
+        else:
+            accepted_results = [res for res in admission_results if res.has_confirmed]
 
         if len(accepted_results) != 1:
             continue
@@ -37,7 +41,7 @@ def main():
             applicant.save()
 
         counter += 1
-        print(counter, admission_result.has_confirmed, applicant)
+        print(counter, admission_result.is_accepted, admission_result.has_confirmed, applicant)
             
         if counter % 1000 == 0:
             print(counter)
