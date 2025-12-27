@@ -463,3 +463,13 @@ class AdmissionProjectMajorCuptCodeInterviewDescription(models.Model):
         ]
 
     
+class APIToken(models.Model):
+    token = models.CharField(max_length=64,
+                             unique=True)
+    description = models.CharField(max_length=200,
+                                   blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.description

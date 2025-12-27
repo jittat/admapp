@@ -353,4 +353,4 @@ class CuptUpdatedName(models.Model):
         elif self.field_name == 'last_name_en':
             personal_profile.last_name_english = self.updated_value
 
-    
+

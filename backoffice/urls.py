@@ -188,4 +188,6 @@ urlpatterns = [
         name="interviews-list",
     ),
     path("cupt-check-stats/", views.cupt_check_stats, name="cupt-check-stats"),
+
+    path("api/", include('backoffice.views.api.urls')),
 ]
