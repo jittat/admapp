@@ -524,6 +524,9 @@ class UploadedDocument(models.Model):
         else:
             return False
 
+    def encrypted_backup_filename(self):
+        return f"{self.project_uploaded_document_id}/{(self.id % 100):02d}/media-{self.id}.enc"
+
 
 class OldUploadedDocument(models.Model):
     applicant = models.ForeignKey(Applicant,

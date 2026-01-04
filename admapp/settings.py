@@ -256,6 +256,14 @@ KU_QR_CALLBACK_URL = ''
 # Setting fro Criteria App
 CRITERIA_ENABLE_CUSTOM_OPTION = False
 
+
+S3_MEDIA_BACKUP_ENCRYPTION_KEY = b''
+S3_MEDIA_BACKUP_BUCKET_NAME = 'adm69-media'
+S3_MEDIA_BACKUP_SECRET_KEY = ''
+S3_MEDIA_BACKUP_ACCESS_KEY = ''
+S3_MEDIA_BACKUP_ENDPOINT = ''
+
+
 # Manipulate Settings with Local Settings
 
 try:
