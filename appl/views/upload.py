@@ -6,7 +6,7 @@ from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.db.utils import OperationalError
 from django.forms import ModelForm
-from django.http import HttpResponseForbidden, HttpResponse
+from django.http import HttpResponseForbidden, HttpResponse, HttpResponseNotFound
 from django.shortcuts import get_object_or_404
 
 from appl.models import ProjectUploadedDocument, UploadedDocument, AdmissionRound
@@ -163,29 +163,81 @@ def get_uploaded_document_or_403(request, applicant_id, project_uploaded_documen
     return uploaded_document
 
 
-def get_file_mime_type(document):
+def get_file_mime_type(doc_abs_path, buffer=None):
     from magic import Magic
 
-    doc_abs_path = os.path.join(settings.MEDIA_ROOT, document.name)
-    try:
-       buffer = open(doc_abs_path,"rb").read(1024)
-    except:
-       try:
-          buffer = open(doc_abs_path.encode('utf8'),"rb").read(1024)
-       except:
-          buffer = open(doc_abs_path.encode('tis-620'),"rb").read(1024)
+    if not buffer:
+        filenames = [doc_abs_path,
+                     doc_abs_path.encode('utf8'),
+                     doc_abs_path.encode('tis-620')]
 
-    mime_type = Magic(mime=True).from_buffer(buffer)
-    return mime_type
+        for filename in filenames:
+            try:
+                buffer = open(filename,"rb").read(1024)
+                break
+            except:
+                continue
+
+    if buffer:
+        mime_type = Magic(mime=True).from_buffer(buffer)
+        return mime_type
+    else:
+        return None
+
+
+def decrypt_content(encrypted_content):
+    from cryptography.fernet import Fernet
+
+    key = settings.S3_MEDIA_BACKUP_ENCRYPTION_KEY  # Ensure this key is securely stored and retrieved
+    cipher = Fernet(key)
+
+    decrypted_content = cipher.decrypt(encrypted_content)
+    return decrypted_content
+
+
+def download_and_decrypt_file_from_s3(uploaded_document):
+    import boto3
+
+    bucket_name = settings.S3_MEDIA_BACKUP_BUCKET_NAME
+    aws_access_key = settings.S3_MEDIA_BACKUP_ACCESS_KEY
+    aws_secret_key = settings.S3_MEDIA_BACKUP_SECRET_KEY
+    endpoint_url = settings.S3_MEDIA_BACKUP_ENDPOINT
+
+    object_name = uploaded_document.encrypted_backup_filename()
+
+    s3 = boto3.client(
+        's3',
+        aws_access_key_id=aws_access_key,
+        aws_secret_access_key=aws_secret_key,
+        endpoint_url=endpoint_url
+    )
+
+    try:
+        response = s3.get_object(Bucket=bucket_name, Key=object_name)
+        encrypted_content = response['Body'].read()
+        decrypted_content = decrypt_content(encrypted_content)
+        return decrypted_content
+    except Exception as e:
+        return None
 
 
 def download_uploaded_document_response(uploaded_document):
     doc_file = uploaded_document.uploaded_file
+    doc_abs_path = os.path.join(settings.MEDIA_ROOT, doc_file.name)
 
-    mime = get_file_mime_type(doc_file)
+    mime = get_file_mime_type(doc_abs_path)
 
-    response = HttpResponse(doc_file)
-    response['Content-Type'] = mime
+    if mime == None:
+        content = download_and_decrypt_file_from_s3(uploaded_document)
+        if content:
+            mime = get_file_mime_type("",buffer=content)
+            response = HttpResponse(content)
+            response['Content-Type'] = mime
+        else:
+            return HttpResponseNotFound()
+    else:
+        response = HttpResponse(doc_file)
+        response['Content-Type'] = mime
 
     return response
 
