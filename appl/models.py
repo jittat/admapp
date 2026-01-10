@@ -739,6 +739,10 @@ class ProjectApplication(models.Model):
 
     verification_number = models.CharField(max_length=20,
                                            blank=True)
+    
+    # optimization for api
+    cached_has_paid = models.BooleanField(default=False)
+    cached_num_majors = models.IntegerField(default=0)
 
     class Meta:
         indexes = [
