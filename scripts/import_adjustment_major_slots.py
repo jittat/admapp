@@ -55,7 +55,7 @@ def main():
             
             slot.save()
             
-            print(slot)
+            print(full_major_project_code, round_number, slot)
             
             counter += 1
 
