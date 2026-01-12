@@ -5,7 +5,7 @@ from django.http import Http404, HttpResponse
 from django.contrib import messages
 
 from backoffice.models import APIToken
-from appl.models import AdmissionProject, AdmissionRound, Major
+from appl.models import AdmissionProject, AdmissionRound, Major, Faculty
 from appl.models import Applicant, ProjectApplication, AdmissionResult, MajorSelection, PersonalProfile
 
 def valid_token_required(view_func):
@@ -48,6 +48,8 @@ def get_admission_result(application,
 
 def extract_raw_data(applicant, application, personal_profile, app_date, cupt_major,
                    app_type, tcas_id, ranking, applicant_status, interview_description,
+                   admission_round, admission_project, major, faculty,
+                   has_confirmed, status, status_description,
                    header):
     university_id = '002'
 
@@ -58,25 +60,28 @@ def extract_raw_data(applicant, application, personal_profile, app_date, cupt_ma
         'project_id': cupt_major['project_id'],
         'type': app_type,
         'citizen_id': '',
-        #'gnumber': '',
-        #'passport': '',
         'title': applicant.prefix,
         'first_name_th': applicant.first_name,
         'last_name_th': applicant.last_name,
         'first_name_en': personal_profile.first_name_english,
         'last_name_en': personal_profile.last_name_english,
         'priority': 0,
-        #'application_id': application.get_number(),
-        #'application_date': app_date,
-        #'tcas_id': tcas_id,
         'ranking': ranking,
         'score': 0,
-        #'interview_status': interview_status,
-        #'interview_description': interview_description,
-        #'status': 0,
         'tcas_status': 0,
         'applicant_status': applicant_status,
         'interview_reason': '0',
+
+        'admission_round': str(admission_round),
+        'project_title': admission_project.title,
+        'major_number': major.number,
+        'major_title': major.title,
+        'faculty': faculty.title,
+        'campus': faculty.campus.title,
+
+        'has_confirmed': has_confirmed,
+        'status': status,
+        'status_description': status_description
     }
 
     if not applicant.has_registered_with_passport():
@@ -104,6 +109,15 @@ APPLICANT_FIELDS = [
     'tcas_status',
     'applicant_status',
     'interview_reason',
+    'admission_round',
+    'project_title',
+    'major_number',
+    'major_title',
+    'faculty',
+    'campus',
+    'has_confirmed',
+    'status',
+    'status_description'
 ]
 
 def extract_application_data(application, 
@@ -112,6 +126,7 @@ def extract_application_data(application,
                              admission_projects,
                              personal_profiles,
                              project_majors,
+                             faculties,
                              admission_round):
     applicant = application.applicant
     project = admission_projects[application.admission_project_id]
@@ -140,7 +155,7 @@ def extract_application_data(application,
     app_date = '%02d/%02d/%04d' % (application.applied_at.day,
                                    application.applied_at.month,
                                    application.applied_at.year + 543)
-    app_type = '1_2569'
+    app_type = f'{admission_round.number}_2569'
     
     results = []
     for m in majors:
@@ -151,18 +166,45 @@ def extract_application_data(application,
             'project_id': project.cupt_code,
         }
 
-        interview_status = '0'
+        applicant_status = '3'
         result = admission_results.get((application.id, m.id), None)
         if result and result.is_accepted:
-            interview_status = '1'
+            applicant_status = '2'
         
+        faculty = faculties[m.faculty_id]
+
+        has_confirmed = 0
+        if not result:
+            status = 1
+            status_description = 'สมัคร'
+        elif result.has_confirmed:
+            status = 4
+            status_description = 'รับเข้าศึกษาและยืนยันสิทธิ์'
+            has_confirmed = 1
+        elif result.is_accepted:
+            status = 3
+            status_description = 'รับเข้าศึกษา'
+        elif result.is_accepted_for_interview:
+            status = 2
+            status_description = 'เรียกสัมภาษณ์ แต่ไม่รับเข้าศึกษา'
+        else:
+            status = 1
+            status_description = 'สมัคร'
+
         results.append(extract_raw_data(
             applicant, application, profile,
             app_date, cupt_major,
             app_type,
             '0','0',
-            interview_status,
+            applicant_status,
             '0',
+            admission_round,
+            project,
+            m,
+            faculty,
+            has_confirmed,
+            status,
+            status_description,
             APPLICANT_FIELDS))
 
     return results
@@ -208,12 +250,17 @@ def applicants(request,admission_round_id,project_id=0):
         for project_id in admission_projects.keys()
     }
 
+    faculties = {
+        f.id: f
+        for f in Faculty.objects.all()
+    }
+
     try:
         page = int(request.GET.get('page', 1))
     except:
         page = 1
 
-    PAGE_SIZE = 1000
+    PAGE_SIZE = 500
     page_count = (len(applications) + PAGE_SIZE - 1) // PAGE_SIZE
 
     applications = applications[(page - 1) * PAGE_SIZE:page * PAGE_SIZE]
@@ -225,11 +272,23 @@ def applicants(request,admission_round_id,project_id=0):
                                             admission_projects,
                                             personal_profiles,
                                             project_majors,
+                                            faculties,
                                             admission_round)
     data = {
         "applications": results,
-        "page": page,
-        "size": len(results),
-        "total_pages": page_count,
+        "meta": {
+            "page": page,
+            "size": len(results),
+            "total_pages": page_count,
+        },
+        "links": {
+            "self": request.build_absolute_uri(),
+        }
     }
+    if page < page_count:
+        next_page = page + 1
+        data['links']['next'] = f"{request.build_absolute_uri().split('?')[0]}?page={next_page}"
+    if page > 1:
+        prev_page = page - 1
+        data['links']['prev'] = f"{request.build_absolute_uri().split('?')[0]}?page={prev_page}"
     return HttpResponse(json.dumps(data), content_type="application/json")
