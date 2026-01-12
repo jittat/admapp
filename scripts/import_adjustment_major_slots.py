@@ -11,17 +11,17 @@ def main():
     filename = sys.argv[1]
     counter = 0
     with open(filename) as csvfile:
-        reader = csv.reader(csvfile, delimiter=',')
-        first = True
+        reader = csv.DictReader(csvfile, delimiter=',')
         for items in reader:
-            if first:
-                first = False
-                continue
-
-            full_major_project_code = items[0].strip()
-            major_full_code = items[6].strip()
-            project_title = items[1].strip()
-            round_number = int(items[4])
+            if items['major_id'].strip() == '':
+                major_full_code = items['program_id']
+            else:
+                major_full_code = f"{items['program_id']}0{items['major_id']}"
+                
+            full_major_project_code = items['project_id'] + major_full_code
+            project_title = items['project_name_th']
+            round_number = int(items['type'][0])
+            original_slots = int(items['receive_student_number'])
 
             try:
                 adj_major = AdjustmentMajor.objects.get(full_code=major_full_code)
@@ -39,6 +39,8 @@ def main():
                     slot = s
             if not slot:
                 slot = AdjustmentMajorSlot()
+            else:
+                continue
 
             slot.adjustment_major = adj_major
             slot.faculty = adj_major.faculty
@@ -48,11 +50,7 @@ def main():
             slot.cupt_code = full_major_project_code
             slot.admission_project_title = project_title
 
-            if items[5] != '':
-                slot.original_slots = int(items[5])
-            else:
-                slot.original_slots = 0
-                
+            slot.original_slots = original_slots
             slot.current_slots = slot.original_slots
             
             slot.save()
