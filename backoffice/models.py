@@ -250,6 +250,15 @@ class AdjustmentMajor(models.Model):
 
     faculty = models.ForeignKey(Faculty, on_delete=models.CASCADE)
 
+    def get_program_id(self):
+        return self.full_code[:15]
+
+    def get_major_id(self):
+        if len(self.full_code) == 15:
+            return ""
+        else:
+            return self.full_code[-1:]
+
     def __str__(self):
         return self.title
 

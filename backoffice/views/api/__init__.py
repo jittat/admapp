@@ -4,7 +4,8 @@ from django.urls import reverse
 from django.http import Http404, HttpResponse
 from django.contrib import messages
 
-from backoffice.models import APIToken
+from api import models
+from backoffice.models import APIToken, AdjustmentMajor, AdjustmentMajorSlot
 from appl.models import AdmissionProject, AdmissionRound, Major, Faculty
 from appl.models import Applicant, ProjectApplication, AdmissionResult, MajorSelection, PersonalProfile
 
@@ -46,11 +47,39 @@ def get_admission_result(application,
     else:
         return results[0]
 
-def extract_raw_data(applicant, application, personal_profile, app_date, cupt_major,
-                   app_type, tcas_id, ranking, applicant_status, interview_description,
-                   admission_round, admission_project, major, faculty,
-                   has_confirmed, status, status_description,
-                   header):
+def build_applicant_json(applicant, application, personal_profile, app_date, cupt_major,
+                         app_type, tcas_id, ranking, applicant_status, interview_description,
+                         admission_round, admission_project, major, faculty,
+                         has_confirmed, status, status_description):
+    APPLICANT_FIELDS = [
+        'university_id',
+        'program_id',
+        'major_id',
+        'project_id',
+        'type',
+        'citizen_id',
+        'title',
+        'first_name_th',
+        'last_name_th',
+        'first_name_en',
+        'last_name_en',
+        'priority',
+        'ranking',
+        'score',
+        'tcas_status',
+        'applicant_status',
+        'interview_reason',
+        'admission_round',
+        'project_title',
+        'major_number',
+        'major_title',
+        'faculty',
+        'campus',
+        'has_confirmed',
+        'status',
+        'status_description'
+    ]
+
     university_id = '002'
 
     data = {
@@ -89,36 +118,8 @@ def extract_raw_data(applicant, application, personal_profile, app_date, cupt_ma
     else:
         data['citizen_id'] = applicant.passport_number
 
-    return { h:data[h] for h in header }
+    return { h:data[h] for h in APPLICANT_FIELDS }
 
-APPLICANT_FIELDS = [
-    'university_id',
-    'program_id',
-    'major_id',
-    'project_id',
-    'type',
-    'citizen_id',
-    'title',
-    'first_name_th',
-    'last_name_th',
-    'first_name_en',
-    'last_name_en',
-    'priority',
-    'ranking',
-    'score',
-    'tcas_status',
-    'applicant_status',
-    'interview_reason',
-    'admission_round',
-    'project_title',
-    'major_number',
-    'major_title',
-    'faculty',
-    'campus',
-    'has_confirmed',
-    'status',
-    'status_description'
-]
 
 def extract_application_data(application, 
                              major_selections, 
@@ -191,7 +192,7 @@ def extract_application_data(application,
             status = 1
             status_description = 'สมัคร'
 
-        results.append(extract_raw_data(
+        results.append(build_applicant_json(
             applicant, application, profile,
             app_date, cupt_major,
             app_type,
@@ -204,8 +205,7 @@ def extract_application_data(application,
             faculty,
             has_confirmed,
             status,
-            status_description,
-            APPLICANT_FIELDS))
+            status_description))
 
     return results
 
@@ -297,6 +297,99 @@ def applicants(request,admission_round_id,project_id=0):
                                             admission_round)
     data = {
         "applications": results,
+        "meta": {
+            "page": page,
+            "size": len(results),
+            "total_pages": page_count,
+        },
+        "links": {
+            "self": request.build_absolute_uri(),
+        }
+    }
+    if page < page_count:
+        next_page = page + 1
+        data['links']['next'] = f"{request.build_absolute_uri().split('?')[0]}?page={next_page}"
+    if page > 1:
+        prev_page = page - 1
+        data['links']['prev'] = f"{request.build_absolute_uri().split('?')[0]}?page={prev_page}"
+    return HttpResponse(json.dumps(data), content_type="application/json")
+
+
+def build_adjustment_slot_json(major, slots, admission_rounds):
+    return [
+        {
+            "id": slot.id,
+            "major_full_code": slot.major_full_code,
+            "cupt_code": slot.cupt_code,
+            "admission_round_number": slot.admission_round_number,
+            "admission_round_title": str(admission_rounds[slot.admission_round_id]),
+            "admission_project_title": slot.admission_project_title,
+
+            "original_slots": slot.original_slots,
+            "current_slots": slot.current_slots,
+            "confirmed_slots": slot.latest_confirmed_slots(),
+
+            "num_applications": slot.num_applications,
+            "num_accepted_applications": slot.num_accepted_applications,
+        }
+        for slot in slots
+    ]
+
+
+@valid_token_required
+def admission_slot_stats(request, year):
+    if year != 2569:
+        return HttpResponse(json.dumps([]), 
+                            content_type="application/json")
+    
+    try:
+        page = int(request.GET.get('page', 1))
+    except:
+        page = 1
+
+    adjustment_majors = AdjustmentMajor.objects.all()
+
+    PAGE_SIZE = 100
+    page_count = (len(adjustment_majors) + PAGE_SIZE - 1) // PAGE_SIZE
+
+    adjustment_majors = adjustment_majors[(page - 1) * PAGE_SIZE:page * PAGE_SIZE]
+
+    faculties = {
+        f.id: f
+        for f in Faculty.objects.all()
+    }
+
+    all_slots = {}
+    for slot in AdjustmentMajorSlot.objects.all():
+        if slot.adjustment_major_id not in all_slots:
+            all_slots[slot.adjustment_major_id] = []
+        all_slots[slot.adjustment_major_id].append(slot)
+
+    admission_rounds = {
+        r.id: r
+        for r in AdmissionRound.objects.all()
+    }
+
+    results = []
+    for major in adjustment_majors:
+        major_slots = build_adjustment_slot_json(major, 
+                                                 all_slots[major.id], 
+                                                 admission_rounds)
+        major_data = {
+            "program_id": major.get_program_id(),
+            "major_id": major.get_major_id(),
+            "full_code": major.full_code,
+            "study_type_code": major.study_type_code,
+            "title": major.title,
+            "faculty": faculties[major.faculty_id].title,
+            "campus": faculties[major.faculty_id].campus.title,
+            "id": major.id,
+            "slots": major_slots,
+        }
+        results.append(major_data)
+
+    data = {
+        "majors": results,
         "meta": {
             "page": page,
             "size": len(results),
