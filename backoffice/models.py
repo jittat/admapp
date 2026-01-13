@@ -278,6 +278,9 @@ class AdjustmentMajorSlot(models.Model):
     confirmed_canceled_slots = models.IntegerField(default=0)
     is_final = models.BooleanField(default=False)
 
+    num_applications = models.IntegerField(default=None, null=True)
+    num_accepted_applications = models.IntegerField(default=None, null=True)
+
     class Meta:
         ordering = ["admission_round_number", "cupt_code"]
 
