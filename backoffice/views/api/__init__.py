@@ -316,8 +316,9 @@ def applicants(request,admission_round_id,project_id=0):
 
 
 def build_adjustment_slot_json(major, slots, admission_rounds):
-    return [
-        {
+    data = []
+    for slot in slots:
+        slot_data = {
             "id": slot.id,
             "major_full_code": slot.major_full_code,
             "cupt_code": slot.cupt_code,
@@ -328,12 +329,13 @@ def build_adjustment_slot_json(major, slots, admission_rounds):
             "original_slots": slot.original_slots,
             "current_slots": slot.current_slots,
             "confirmed_slots": slot.latest_confirmed_slots(),
-
-            "num_applications": slot.num_applications,
-            "num_accepted_applications": slot.num_accepted_applications,
         }
-        for slot in slots
-    ]
+        if slot.num_applications != None:
+            slot_data['num_applications'] = slot.num_applications
+        if slot.num_accepted_applications != None:
+            slot_data['num_accepted_applications'] = slot.num_accepted_applications
+        data.append(slot_data)
+    return data
 
 
 @valid_token_required
