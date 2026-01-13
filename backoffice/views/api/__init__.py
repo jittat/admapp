@@ -212,15 +212,25 @@ def extract_application_data(application,
 @valid_token_required
 def applicants(request,admission_round_id,project_id=0):
     admission_round = get_object_or_404(AdmissionRound, id=admission_round_id)
-    admission_project = get_object_or_404(AdmissionProject, id=project_id)
 
-    applications = (ProjectApplication.objects
-                    .filter(admission_project=admission_project,
-                            is_canceled=False,
-                            cached_has_paid=True)
-                    .select_related('applicant')
-                    .order_by('applicant__national_id')
-                    .all())
+    if project_id == 0:
+        admission_project = None
+        applications = (ProjectApplication.objects
+                        .filter(admission_round=admission_round,
+                                is_canceled=False,
+                                cached_has_paid=True)
+                        .select_related('applicant')
+                        .order_by('applicant__national_id')
+                        .all())
+    else:
+        admission_project = get_object_or_404(AdmissionProject, id=project_id)
+        applications = (ProjectApplication.objects
+                        .filter(admission_project=admission_project,
+                                is_canceled=False,
+                                cached_has_paid=True)
+                        .select_related('applicant')
+                        .order_by('applicant__national_id')
+                        .all())
     
     admission_projects = {
         p.id: p
@@ -232,15 +242,26 @@ def applicants(request,admission_round_id,project_id=0):
         for p in PersonalProfile.objects.all()
     }
 
-    major_selections = { 
-        m.project_application_id: m 
-        for m in MajorSelection.objects.filter(admission_project=admission_project).all() 
-    }
+    if admission_project:
+        major_selections = { 
+            m.project_application_id: m 
+            for m in MajorSelection.objects.filter(admission_project=admission_project).all() 
+        }
 
-    admission_results = { 
-        (r.application_id, r.major_id): r 
-        for r in AdmissionResult.objects.filter(admission_project=admission_project).all() 
-    }
+        admission_results = { 
+            (r.application_id, r.major_id): r 
+            for r in AdmissionResult.objects.filter(admission_project=admission_project).all() 
+        }
+    else:
+        major_selections = { 
+            m.project_application_id: m 
+            for m in MajorSelection.objects.filter(admission_round=admission_round).all() 
+        }
+
+        admission_results = { 
+            (r.application_id, r.major_id): r 
+            for r in AdmissionResult.objects.filter(admission_round=admission_round).all() 
+        }
 
     project_majors = {
         project_id: {
