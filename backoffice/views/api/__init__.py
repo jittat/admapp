@@ -375,7 +375,7 @@ def admission_slot_stats(request, year):
     results = []
     for major in adjustment_majors:
         major_slots = build_adjustment_slot_json(major, 
-                                                 all_slots[major.id], 
+                                                 all_slots.get(major.id, []), 
                                                  admission_rounds)
         major_data = {
             "program_id": major.get_program_id(),

@@ -79,6 +79,7 @@ def main():
             results = []
 
         admission_round_counts[application.admission_round_id] += 1
+        not_found_stats = {}
         for m,r in zip(selected_majors, results):
             if not m:
                 continue
@@ -90,10 +91,10 @@ def main():
                 if r and r.is_accepted:
                     slot.new_num_accepted_applications += 1
             else:
-                print(m)
-                print(r)
-                print('Not found:', full_cupt_code)
-                quit()
+                if full_cupt_code not in not_found_stats:
+                    not_found_stats[full_cupt_code] = { 'majors': m, 'count': 0 }
+                not_found_stats[full_cupt_code]['count'] += 1
+                print(f"Not found {full_cupt_code}: {m}")
 
         counter += 1
         if counter % 1000 == 0:
@@ -115,6 +116,9 @@ def main():
             slot_updated += 1
 
     print(f"Finished updating {slot_updated} slots")
+
+    for cupt_code, stats in not_found_stats.items():
+        print(f"Not found {cupt_code}: {stats['majors']} ({stats['count']})")
 
 if __name__ == '__main__':
     main()
