@@ -351,7 +351,7 @@ def admission_slot_stats(request, year):
 
     adjustment_majors = AdjustmentMajor.objects.all()
 
-    PAGE_SIZE = 100
+    PAGE_SIZE = 500
     page_count = (len(adjustment_majors) + PAGE_SIZE - 1) // PAGE_SIZE
 
     adjustment_majors = adjustment_majors[(page - 1) * PAGE_SIZE:page * PAGE_SIZE]
