@@ -329,6 +329,8 @@ def build_adjustment_slot_json(major, slots, admission_rounds):
             "original_slots": slot.original_slots,
             "current_slots": slot.current_slots,
             "confirmed_slots": slot.latest_confirmed_slots(),
+
+            "num_confirmed_applications": slot.latest_confirmed_slots(),
         }
         if slot.num_applications != None:
             slot_data['num_applications'] = slot.num_applications
