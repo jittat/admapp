@@ -3,9 +3,10 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.http import Http404, HttpResponse
 from django.contrib import messages
+from django.conf import settings
 
 from api import models
-from backoffice.models import APIToken, AdjustmentMajor, AdjustmentMajorSlot
+from backoffice.models import APIToken, AdjustmentMajor, AdjustmentMajorSlot, MajorSlotStat
 from appl.models import AdmissionProject, AdmissionRound, Major, Faculty
 from appl.models import Applicant, ProjectApplication, AdmissionResult, MajorSelection, PersonalProfile
 
@@ -315,11 +316,11 @@ def applicants(request,admission_round_id,project_id=0):
     return HttpResponse(json.dumps(data), content_type="application/json")
 
 
-def build_adjustment_slot_json(major, slots, admission_rounds):
+def build_adjustment_slot_json(major, slots, admission_rounds, id_offset=0):
     data = []
     for slot in slots:
         slot_data = {
-            "id": slot.id,
+            "id": slot.id + id_offset,
             "major_full_code": slot.major_full_code,
             "cupt_code": slot.cupt_code,
             "admission_round_number": slot.admission_round_number,
@@ -340,16 +341,38 @@ def build_adjustment_slot_json(major, slots, admission_rounds):
     return data
 
 
+def build_slot_stats_from_year(request, year):
+    data = {
+        "majors": [],
+        "meta": {
+            "page": 1,
+            "size": 0,
+            "total_pages": 1,
+        },
+        "links": {
+            "self": request.build_absolute_uri(),
+        }
+    }
+
+    for slot in MajorSlotStat.objects.filter(year=year):
+        data["majors"].append(json.loads(slot.json_data))
+ 
+    data["meta"]["size"] = len(data["majors"])
+ 
+    return HttpResponse(json.dumps(data), content_type="application/json")
+
+
 @valid_token_required
 def admission_slot_stats(request, year):
-    if year != 2569:
-        return HttpResponse(json.dumps([]), 
-                            content_type="application/json")
+    if year != settings.ADMISSION_YEAR:
+        return build_slot_stats_from_year(request, year)
     
     try:
         page = int(request.GET.get('page', 1))
     except:
         page = 1
+
+    id_offset = int(request.GET.get('id_offset', 0))
 
     adjustment_majors = AdjustmentMajor.objects.all()
 
@@ -378,7 +401,8 @@ def admission_slot_stats(request, year):
     for major in adjustment_majors:
         major_slots = build_adjustment_slot_json(major, 
                                                  all_slots.get(major.id, []), 
-                                                 admission_rounds)
+                                                 admission_rounds, 
+                                                 id_offset=id_offset)
         major_data = {
             "program_id": major.get_program_id(),
             "major_id": major.get_major_id(),
@@ -387,7 +411,7 @@ def admission_slot_stats(request, year):
             "title": major.title,
             "faculty": faculties[major.faculty_id].title,
             "campus": faculties[major.faculty_id].campus.title,
-            "id": major.id,
+            "id": major.id + id_offset,
             "slots": major_slots,
         }
         results.append(major_data)

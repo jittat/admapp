@@ -339,6 +339,16 @@ class AdjustmentMajorSlot(models.Model):
         ]
 
 
+class MajorSlotStat(models.Model):
+    year = models.IntegerField()
+    full_code = models.CharField(max_length=20)
+
+    json_data = models.TextField(blank=True)
+
+    class Meta:
+        unique_together = (("year", "full_code"),)
+
+
 def interview_preparation_image_path(instance, filename):
     return "documents/interview_description_{0}/preparation/{1}".format(instance.id, filename)
 
