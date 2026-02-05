@@ -99,6 +99,7 @@ class RegistrationTestCase(TestCase):
         response = self.client.get('/appl/')
         self.assertRedirects(response, '/?error=no-login')
 
+    @override_settings(DEBUG_PROPAGATE_EXCEPTIONS=True)
     def test_register_with_no_has_national_id(self):
         from regis.views import RuntimeErrorNoLogging
         from regis.views import register
@@ -116,6 +117,7 @@ class RegistrationTestCase(TestCase):
             self.fail('Expected RuntimeErrorNoLogging exception')
         self.assertEqual(LogItem.objects.filter(message__contains='error').count(), 1)
 
+    @override_settings(DEBUG_PROPAGATE_EXCEPTIONS=True)
     def test_register_with_empty_has_national_id(self):
         from regis.views import RuntimeErrorNoLogging
         from regis.views import register
@@ -153,3 +155,47 @@ class RegistrationTestCase(TestCase):
         a = Applicant.objects.get(national_id=RegistrationTestCase.TEST_NATID)
         a.passport_number = RegistrationTestCase.TEST_PASSPORT_NUMBER;
         a.save()
+
+class LoggingConfigTestCase(TestCase):
+    def test_skip_admin_email_filter_skips_runtime_error_no_logging(self):
+        import logging
+        import sys
+
+        from regis.views import skip_admin_email_for_runtime_error_no_logging
+        from regis.views import RuntimeErrorNoLogging
+
+        try:
+            raise RuntimeErrorNoLogging('expected')
+        except RuntimeErrorNoLogging:
+            record = logging.LogRecord(
+                name='django.request',
+                level=logging.ERROR,
+                pathname=__file__,
+                lineno=1,
+                msg='boom',
+                args=(),
+                exc_info=sys.exc_info(),
+            )
+
+        self.assertFalse(skip_admin_email_for_runtime_error_no_logging(record))
+
+    def test_skip_admin_email_filter_allows_other_exceptions(self):
+        import logging
+        import sys
+
+        from regis.views import skip_admin_email_for_runtime_error_no_logging
+
+        try:
+            raise ValueError('expected')
+        except ValueError:
+            record = logging.LogRecord(
+                name='django.request',
+                level=logging.ERROR,
+                pathname=__file__,
+                lineno=1,
+                msg='boom',
+                args=(),
+                exc_info=sys.exc_info(),
+            )
+
+        self.assertTrue(skip_admin_email_for_runtime_error_no_logging(record))

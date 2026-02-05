@@ -30,7 +30,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -118,6 +117,42 @@ DATABASES = {
 }
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
+
+# Logging
+# In production (DEBUG=False), Django's default 500 handler logs to the
+# 'django.request' logger which may email admins via AdminEmailHandler.
+# We keep that behavior, but suppress emails for RuntimeErrorNoLogging.
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'filters': {
+        'skip_runtime_error_no_logging': {
+            '()': 'django.utils.log.CallbackFilter',
+            'callback': 'admapp.regis.skip_admin_email_for_runtime_error_no_logging',
+        },
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse',
+        },
+    },
+    'handlers': {
+        'mail_admins': {
+            'level': 'ERROR',
+            'class': 'django.utils.log.AdminEmailHandler',
+            'filters': [
+                'require_debug_false', 
+                'skip_runtime_error_no_logging'
+            ],
+        },
+    },
+    'loggers': {
+        'django.request': {
+            'handlers': ['mail_admins'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+    },
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
