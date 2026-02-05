@@ -243,6 +243,9 @@ SERVER_ERROR500_HTML="""<!doctype html>
 </html>
 """
 
+class RuntimeErrorNoLogging(RuntimeError):
+    pass
+
 def register(request):
     registration_enabled = settings.REGISTRATION_ENABLED
     if not registration_enabled:
@@ -275,18 +278,19 @@ def register(request):
                 LogItem.create('Registration form error', None, request)
 
                 from random import random
-                is_sending_email = (random() < 0.05)   # only send 5% of error
+                is_sending_email = (random() < register.sending_mail_prob)   # only send 5% of error
                 if is_sending_email:
-                    raise RuntimeError('Registration form invalid submission')
-                else:
                     return HttpResponseServerError(SERVER_ERROR500_HTML)
-
+                else:
+                    raise RuntimeErrorNoLogging('Registration form invalid submission')
     else:
         form = RegistrationForm()
         
     return render(request,
                   'regis/register.html',
                   { 'form': form })
+
+register.sending_mail_prob = 0.05
 
 def check_recent_forget_logitem(applicant):
     recent_log_item = LogItem.get_applicant_latest_log(applicant,
