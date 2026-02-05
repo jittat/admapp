@@ -120,6 +120,7 @@ PROJECT_CODENAMES = {
         24: 'vet',
         34: 'spe',
     	35: 'med',
+        36: 'anda',
         50: 'int2',
     },
     3: {
