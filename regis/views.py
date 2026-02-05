@@ -5,7 +5,7 @@ from django import forms
 from django.conf import settings
 from django.contrib.auth.password_validation import validate_password
 from django.forms import ValidationError
-from django.http import HttpResponse, HttpResponseForbidden
+from django.http import HttpResponse, HttpResponseForbidden, HttpResponseServerError
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
@@ -136,6 +136,9 @@ class RegistrationForm(forms.Form):
         if not settings.VERIFY_NATIONAL_ID:
             return self.cleaned_data['national_id']
 
+        if 'has_national_id' not in self.cleaned_data:
+            raise ValidationError('invalid_submission',code='form_error')
+
         if self.cleaned_data['has_national_id'] == '0':
             return ''
         
@@ -145,6 +148,9 @@ class RegistrationForm(forms.Form):
         return self.cleaned_data['national_id']
 
     def clean_national_id_confirm(self):
+        if 'has_national_id' not in self.cleaned_data:
+            raise ValidationError('invalid_submission',code='form_error')
+
         if self.cleaned_data['has_national_id'] == '0':
             return ''
         
@@ -158,6 +164,9 @@ class RegistrationForm(forms.Form):
         return self.cleaned_data['national_id_confirm']
 
     def clean_passport_number(self):
+        if 'has_national_id' not in self.cleaned_data:
+            raise ValidationError('invalid_submission',code='form_error')
+
         if self.cleaned_data['has_national_id'] == '1':
             return ''
         
@@ -167,6 +176,9 @@ class RegistrationForm(forms.Form):
         return self.cleaned_data['passport_number']
 
     def clean_passport_number_confirm(self):
+        if 'has_national_id' not in self.cleaned_data:
+            raise ValidationError('invalid_submission',code='form_error')
+
         if self.cleaned_data['has_national_id'] == '1':
             return ''
         
@@ -220,6 +232,16 @@ def create_applicant(form):
     except:
         return None
     
+SERVER_ERROR500_HTML="""<!doctype html>
+<html lang="en">
+<head>
+  <title>Server Error (500)</title>
+</head>
+<body>
+  <h1>Server Error (500)</h1><p></p>
+</body>
+</html>
+"""
 
 def register(request):
     registration_enabled = settings.REGISTRATION_ENABLED
@@ -242,6 +264,23 @@ def register(request):
                               { 'national_id': form.cleaned_data['national_id'],
                                 'passport_number': form.cleaned_data['passport_number'],
                                 'first_name': form.cleaned_data['first_name'] })
+        else:
+            form_submission_error = False
+            for field, errors in form.errors.as_data().items():
+                for e in errors:
+                    if e.code == 'form_error':
+                        form_submission_error = True
+
+            if form_submission_error:
+                LogItem.create('Registration form error', None, request)
+
+                from random import random
+                is_sending_email = (random() < 0.05)   # only send 5% of error
+                if is_sending_email:
+                    raise RuntimeError('Registration form invalid submission')
+                else:
+                    return HttpResponseServerError(SERVER_ERROR500_HTML)
+
     else:
         form = RegistrationForm()
         
