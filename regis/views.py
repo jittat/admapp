@@ -246,26 +246,6 @@ SERVER_ERROR500_HTML="""<!doctype html>
 class RuntimeErrorNoLogging(RuntimeError):
     pass
 
-# Suppress noisy/expected exceptions from triggering error emails.
-# We keep this function in settings so it can be referenced by LOGGING filters
-# without importing app code at settings import time.
-def skip_admin_email_for_runtime_error_no_logging(record):
-    """Return False for RuntimeErrorNoLogging so AdminEmailHandler doesn't email admins.
-
-    Django passes LogRecord objects here (via django.utils.log.CallbackFilter).
-    We only suppress *emails* for this specific exception type.
-    """
-    exc_info = getattr(record, 'exc_info', None)
-    if not exc_info:
-        return True
-
-    exc_type, exc_value, _tb = exc_info
-    if not exc_type:
-        return True
-
-    # Avoid importing regis.views at settings import time.
-    return exc_type.__name__ != 'RuntimeErrorNoLogging'
-
 def register(request):
     registration_enabled = settings.REGISTRATION_ENABLED
     if not registration_enabled:

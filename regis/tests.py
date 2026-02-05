@@ -161,7 +161,7 @@ class LoggingConfigTestCase(TestCase):
         import logging
         import sys
 
-        from regis.views import skip_admin_email_for_runtime_error_no_logging
+        from admapp.settings import skip_admin_email_for_runtime_error_no_logging
         from regis.views import RuntimeErrorNoLogging
 
         try:
@@ -183,7 +183,7 @@ class LoggingConfigTestCase(TestCase):
         import logging
         import sys
 
-        from regis.views import skip_admin_email_for_runtime_error_no_logging
+        from admapp.settings import skip_admin_email_for_runtime_error_no_logging
 
         try:
             raise ValueError('expected')

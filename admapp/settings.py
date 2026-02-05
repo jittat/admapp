@@ -118,6 +118,25 @@ DATABASES = {
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
+# Suppress noisy/expected exceptions from triggering error emails.
+# We keep this function in settings so it can be referenced by LOGGING filters
+# without importing app code at settings import time.
+def skip_admin_email_for_runtime_error_no_logging(record):
+    """Return False for RuntimeErrorNoLogging so AdminEmailHandler doesn't email admins.
+
+    Django passes LogRecord objects here (via django.utils.log.CallbackFilter).
+    We only suppress *emails* for this specific exception type.
+    """
+    exc_info = getattr(record, 'exc_info', None)
+    if not exc_info:
+        return True
+
+    exc_type, exc_value, _tb = exc_info
+    if not exc_type:
+        return True
+
+    # Avoid importing regis.views at settings import time.
+    return exc_type.__name__ != 'RuntimeErrorNoLogging'
 
 # Logging
 # In production (DEBUG=False), Django's default 500 handler logs to the
@@ -129,7 +148,7 @@ LOGGING = {
     'filters': {
         'skip_runtime_error_no_logging': {
             '()': 'django.utils.log.CallbackFilter',
-            'callback': 'admapp.regis.skip_admin_email_for_runtime_error_no_logging',
+            'callback': skip_admin_email_for_runtime_error_no_logging,
         },
         'require_debug_false': {
             '()': 'django.utils.log.RequireDebugFalse',
@@ -153,6 +172,11 @@ LOGGING = {
         },
     },
 }
+
+# When running unit tests we want the test client to receive exceptions
+# (so tests can assert on custom exceptions like RuntimeErrorNoLogging).
+if 'test' in sys.argv:
+    DEBUG_PROPAGATE_EXCEPTIONS = True
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
