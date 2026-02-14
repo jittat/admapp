@@ -387,9 +387,43 @@ class Major(models.Model):
         for row in reader:
             return row
 
+    def process_hidden_info(self, result):
+        lines = result.split("\n")
+        hidden_info_list = []
+        output_list = []
+        outside = True
+        for i, line in enumerate(lines):
+            if "--info-start--" in line:
+                output_list.append(
+                    "<a class=\"badge badge-pill badge-secondary major-info-toggle-links\" " +
+                    "data-major-number=\"" + str(self.number) + "\" href=\"#\">แสดงรายละเอียด</a><br/>" + 
+                    "<div id=\"major_info_" + str(self.number) + "_id\" style=\"display: none; overflow-y: auto; height: 200px;\" class=\"bg-light border rounded mt5 selected-major-details\">"
+                )
+                outside = False
+            elif "--info-end--" in line:
+                outside = True
+                output_list.append("</div>")
+            else:
+                if outside:
+                    output_list.append(line)
+                else:
+                    output_list.append(line)
+                    hidden_info_list.append(line)
+        self.hidden_info = "\n".join(hidden_info_list)
+        return "\n".join(output_list)
+    
+    def has_hidden_info(self):
+        return getattr(self, 'hidden_info', '') != ''
+
+    def get_hidden_info(self):
+        return getattr(self, 'hidden_info', '')
+
     def get_detail_items_as_list_display(self):
-        items = [item.replace("\n", "<br />") for item in self.get_detail_items()]
-        return self.admission_project.get_major_description_list_template().format(*items)
+        items = [item.replace("\n", "<br />\n") for item in self.get_detail_items()]
+        result = self.admission_project.get_major_description_list_template().format(*items)
+        if "--info-start--" in result:
+            result = self.process_hidden_info(result)
+        return result
 
     def get_full_major_cupt_code(self,
                                  admission_project=None,
