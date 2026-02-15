@@ -234,7 +234,7 @@ PROJECT_SUPPLEMENTS = {
                                 'supplements.views.forms.cultural.process_cultural_exam_form',
                                 'supplements/backoffice/cultural/cultural_exam.html'),
     ],
-    'ส่งเสริมโอกาสศึกษาต่อในคณะแพทยศาสตร์และพยาบาลศาสตร์': [
+    'ส่งเสริมโอกาสศึกษาต่อในกลุ่มวิทยาศาสตร์สุขภาพ': [
         ProjectSupplementConfig('med_house_codes',
                                 'เลขรหัสประจำบ้านของผู้สม้ครและบิดาหรือมารดาหรือผู้ปกครอง',
                                 True,
