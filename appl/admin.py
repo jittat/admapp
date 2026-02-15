@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import ProjectUploadedDocument, AdmissionProject, AdmissionRound, AdmissionProjectRound, Faculty
+from .models import ProjectUploadedDocument, AdmissionProject, AdmissionRound, AdmissionProjectRound, Faculty, Major
 from .models import School, Province
 
 class ProjectUploadedDocumentInline(admin.StackedInline):
@@ -80,7 +80,8 @@ class ProjectUploadedDocumentAdmin(admin.ModelAdmin):
     list_display = ['title', 'notes', 'file_prefix', 'is_required', 'requirement_key']
 
 class AdmissionProjectRoundAdmin(admin.ModelAdmin):
-    list_display = ['__str__',
+    list_display = ['admission_project',
+                    'admission_round',
                     'applying_deadline',
                     'is_started',
                     'payment_deadline',
@@ -92,12 +93,17 @@ class AdmissionProjectRoundAdmin(admin.ModelAdmin):
 class SchoolAdmin(admin.ModelAdmin):
     list_display = ['code', 'title']
     search_fields = ['title','code']
-    
+
+class MajorAdmin(admin.ModelAdmin):
+    list_display = ['__str__',
+                    'admission_project']
+
 admin.site.register(AdmissionProject, AdmissionProjectAdmin)
 admin.site.register(AdmissionRound)
 admin.site.register(AdmissionProjectRound, AdmissionProjectRoundAdmin)
 admin.site.register(ProjectUploadedDocument, ProjectUploadedDocumentAdmin)
 admin.site.register(Faculty)
+admin.site.register(Major, MajorAdmin)
 
 admin.site.register(School, SchoolAdmin)
 admin.site.register(Province)
