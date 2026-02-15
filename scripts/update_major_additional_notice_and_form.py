@@ -16,7 +16,7 @@ def update_notice(admission_project, major, criterias):
     if len(additional_notices) != 0:
         print(admission_project, major, additional_notice_str)
 
-        old_notice = MajorAdditionalNotice.get_notice_by_major(major)
+        old_notice = MajorAdditionalNotice.get_notice_for_major(major)
         if old_notice:
             notice = old_notice
         else:

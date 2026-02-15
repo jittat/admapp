@@ -392,12 +392,14 @@ class Major(models.Model):
         hidden_info_list = []
         output_list = []
         outside = True
+        outside_count = 0
         for i, line in enumerate(lines):
             if "--info-start--" in line:
+                outside_count += 1
                 output_list.append(
                     "<a class=\"badge badge-pill badge-secondary major-info-toggle-links\" " +
-                    "data-major-number=\"" + str(self.number) + "\" href=\"#\">แสดงรายละเอียด</a><br/>" + 
-                    "<div id=\"major_info_" + str(self.number) + "_id\" style=\"display: none; overflow-y: auto; height: 200px;\" class=\"bg-light border rounded mt5 selected-major-details\">"
+                    "data-major-number=\"" + str(self.number*10 + outside_count) + "\" href=\"#\">แสดงรายละเอียด</a><br/>" + 
+                    "<div id=\"major_info_" + str(self.number*10 + outside_count) + "_id\" style=\"display: none; overflow-y: auto; height: 200px;\" class=\"bg-light border rounded mt5 selected-major-details\">"
                 )
                 outside = False
             elif "--info-end--" in line:
