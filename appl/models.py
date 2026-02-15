@@ -503,7 +503,7 @@ class ProjectUploadedDocument(models.Model):
     document_key = models.CharField(max_length=30,
                                     blank=True)
 
-    requirement_key = models.CharField(max_length=10,
+    requirement_key = models.CharField(max_length=20,
                                        blank=True,
                                        default='')
 
