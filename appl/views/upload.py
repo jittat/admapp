@@ -162,16 +162,23 @@ def get_uploaded_document_or_403(request, applicant_id, project_uploaded_documen
 
     return uploaded_document
 
+def encode_or_none(path, encoding):
+    try:
+        return path.encode(encoding)
+    except UnicodeEncodeError:
+        return None
 
 def get_file_mime_type(doc_abs_path, buffer=None):
     from magic import Magic
 
     if not buffer:
         filenames = [doc_abs_path,
-                     doc_abs_path.encode('utf8'),
-                     doc_abs_path.encode('tis-620')]
+                     encode_or_none(doc_abs_path, 'utf8'),
+                     encode_or_none(doc_abs_path, 'tis-620')]
 
         for filename in filenames:
+            if filename == None:
+                continue
             try:
                 buffer = open(filename,"rb").read(1024)
                 break
