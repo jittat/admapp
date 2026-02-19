@@ -418,6 +418,8 @@ class InterviewDescription(models.Model):
     interview_date = models.DateTimeField(
         verbose_name="วันและเวลาการสัมภาษณ์", blank=True, null=True
     )
+    is_multiday_interview = models.BooleanField(default=False, 
+                                                verbose_name="สัมภาษณ์หลายวัน")
 
     additional_documents_option = models.IntegerField(
         verbose_name="การส่งเอกสารเพิ่มเติม",
@@ -461,7 +463,14 @@ class InterviewDescription(models.Model):
 
     @staticmethod
     def get_interview_description_id_hash(id):
-        return (id * 683789 + 963046) % 1001933
+        return (id * 683789 + 963046) % 1001933    
+
+    def get_interview_end_date(self):
+        from datetime import timedelta
+        if self.is_multiday_interview and self.interview_date:
+            return self.interview_date + timedelta(days=1)
+        else:
+            return self.interview_date
 
 class AdmissionProjectMajorCuptCodeInterviewDescription(models.Model):
     admission_project = models.ForeignKey(AdmissionProject,

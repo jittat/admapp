@@ -31,7 +31,11 @@
                     วันเวลา
                 </div>
                 <div class="col-md-9" id="preview-interview_date">
-		    {{interview_description.interview_date|thaidate }} เวลา {{interview_description.interview_date|date:'H:i'}}
+		              {{interview_description.interview_date|thaidate }} 
+                  {% if interview_description.is_multiday_interview %}
+                    - {{ interview_description.get_interview_end_date|thaidate }}
+                  {% endif %}
+                  เวลา {{interview_description.interview_date|date:'H:i'}}
                 </div>
             </div>
 
