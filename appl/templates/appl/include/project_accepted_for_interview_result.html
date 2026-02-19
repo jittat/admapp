@@ -13,7 +13,7 @@
               <li>
                 {{ result.major.faculty.title_trans }} - {{ result.major.title_trans }}
                 {% if result.has_interview_rank %}
-                  ({% trans 'สัมภาษณ์ลำดับที่' %} {{ result.interview_rank }})
+                  ({% trans 'ลำดับที่' %} {{ result.interview_rank }})
                 {% endif %}
               </li>
             {% endif %}
@@ -22,15 +22,15 @@
         {% comment %}
         {% include "appl/include/project_accepted_for_interview_result_info_hooks.html" %}
         {% endcomment %}
-	{% if active_application.admission_project.id != 51 %} <!--  HACK for 51 spe  -->
-	  {% if interview_description %}
-	    {% with interview_description.major as major %}
-	      {% with interview_description.admission_project as admission_project %}
-		{% include 'appl/include/interview_description.html' %}
-	      {% endwith %}
-	    {% endwith %}
-	  {% endif %}
-	{% endif %}
+        {% if active_application.admission_project.id != 51 %} <!--  HACK for 51 spe  -->
+          {% if interview_description %}
+            {% with interview_description.major as major %}
+              {% with interview_description.admission_project as admission_project %}
+          {% include 'appl/include/interview_description.html' %}
+              {% endwith %}
+            {% endwith %}
+          {% endif %}
+        {% endif %}
         {% if major_interview_descriptions %}
           <div>
             <h4>รายละเอียดการสอบสัมภาษณ์</h4>
