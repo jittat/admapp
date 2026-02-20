@@ -19,6 +19,7 @@ urlpatterns = [
 
     re_path(r'^apply/(\d+)/(\d+)/$', views.apply_project, name='apply-project'),
     re_path(r'^cancel/(\d+)/(\d+)/$', views.cancel_project, name='cancel-project'),
+    re_path(r'^deactivate/(\d+)/(\d+)/$', views.deactivate_project, name='deactivate-project'),
 
     re_path(r'^cancelsp/(\d+)/(\d+)/$', views.cancel_project_special, name='cancel-project-special'),
 

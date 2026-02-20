@@ -530,6 +530,46 @@ def cancel_project(request, project_id, admission_round_id):
 
 
 @appl_login_required
+def deactivate_project(request, project_id, admission_round_id):
+    if request.method != 'POST':
+        return HttpResponseForbidden()
+
+    if 'ok' not in request.POST:
+        return redirect(reverse('appl:index'))
+    
+    applicant = request.applicant
+    project = get_object_or_404(AdmissionProject, pk=project_id)
+    admission_round = get_object_or_404(AdmissionRound, pk=admission_round_id)
+
+    project_round = project.get_project_round_for(admission_round)
+    if not project_round:
+        return redirect(reverse('appl:index'))
+
+    try:
+        active_application = applicant.accepted_application
+    except ProjectApplication.DoesNotExist:
+        active_application = None
+
+    if ((not active_application) or
+        (active_application.admission_project.id != project.id) or
+        (active_application.admission_round.id != admission_round.id)):
+        return redirect(reverse('appl:index'))
+    
+    admission_results = active_application.admissionresult_set.all()
+    is_accepted_for_interview = len([r for r in admission_results if r.is_accepted_for_interview]) > 0
+    is_accepted = len([r for r in admission_results if r.is_accepted]) > 0
+    
+    if ((project_round.accepted_result_shown and not is_accepted) or
+        (project_round.accepted_for_interview_result_shown and not is_accepted_for_interview)):
+
+        applicant.accepted_application = None
+        applicant.save()
+        LogItem.create('Deactivate application to project %d' % (project.id,), applicant, request)
+
+    return redirect(reverse('appl:index'))
+
+
+@appl_login_required
 def cancel_project_special(request, project_id, admission_round_id):
     return redirect(reverse('appl:index'))
 
