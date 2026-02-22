@@ -61,10 +61,21 @@ def url_check(form, is_detail_required):
 
 @appl_login_required
 def upload(request, document_id):
+    if request.method != 'POST':
+        return HttpResponseForbidden()
+
     applicant = request.applicant
     admission_round = AdmissionRound.get_available()
 
     active_application = applicant.get_active_application(admission_round)
+    if active_application == None:
+        try:
+            active_application = applicant.accepted_application 
+        except:
+            active_application = None
+        if active_application:
+            admission_round = active_application.admission_round
+
     if active_application == None:
         LogItem.create('active application missing', applicant, request)
         return HttpResponse(json.dumps({'result': 'APPLICATION_ERROR'}),
@@ -80,9 +91,6 @@ def upload(request, document_id):
     if is_deadline_passed and (not project_uploaded_document.is_interview_document):
         return HttpResponseForbidden()
             
-    if request.method != 'POST':
-        return HttpResponseForbidden()
-
     form = UploadedDocumentForm(request.POST, request.FILES)
 
     is_detail_required = project_uploaded_document.is_detail_required
