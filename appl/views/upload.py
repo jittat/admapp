@@ -281,6 +281,15 @@ def document_delete(request, applicant_id=0, project_uploaded_document_id=0, doc
             admission_round = AdmissionRound.get_available()
             
             active_application = applicant.get_active_application(admission_round)
+
+            if active_application == None:
+                try:
+                    active_application = applicant.accepted_application 
+                except:
+                    active_application = None
+                if active_application:
+                    admission_round = active_application.admission_round
+
             admission_project = active_application.admission_project
             project_round = admission_project.get_project_round_for(admission_round)
             is_deadline_passed = project_round.is_deadline_passed()
