@@ -7,7 +7,11 @@ import json
 from appl.models import AdmissionProject, AdmissionRound, ProjectApplication, AdmissionResult, PersonalProfile
 from regis.models import CuptUpdatedName
 
-def print_csv_line(applicant, application, personal_profile, app_date, cupt_major,
+APPLICANT_STATUS_APPLYING = '1'
+APPLICANT_STATUS_ACCEPTED = '2'
+APPLICANT_STATUS_REJECTED = '3'
+
+def build_csv_line(applicant, application, personal_profile, app_date, cupt_major,
                    app_type, tcas_id, ranking, applicant_status, interview_description,
                    header):
     university_id = '002'
@@ -50,7 +54,7 @@ def print_csv_line(applicant, application, personal_profile, app_date, cupt_majo
         data['citizen_id'] = applicant.passport_number
         #data['first_name_th'] = data['last_name_th'] = ''
     
-    print(','.join(['"'+str(data[h])+'"' for h in header]))
+    return ','.join(['"'+str(data[h])+'"' for h in header])
 
 
 def get_admission_result(application,
@@ -66,6 +70,18 @@ def get_admission_result(application,
     else:
         return results[0]
 
+def filter_dup_rows(rows):
+    output_rows = []
+    for r in rows:
+        is_dup = False
+        for i in range(len(output_rows)):
+            if r[:2] == output_rows[i][:2]:
+                is_dup = True
+                if r[2] == APPLICANT_STATUS_ACCEPTED:
+                    output_rows[i] = r
+        if not is_dup:
+            output_rows.append(r)
+    return output_rows
 
 def main():
     project_id = sys.argv[1]
@@ -141,6 +157,9 @@ def main():
             for updated_name in cupt_updated_names:
                 updated_name.apply_update(applicant, profile)
             
+
+            output_rows = []
+
             for m in majors:
                 result = None
                 
@@ -160,24 +179,34 @@ def main():
                     cupt_majors[0]['program_id'] = cupt_majors[0]['major_id']
                     cupt_majors[0]['major_id'] = ''
                 
-                applicant_status = '1'
+                applicant_status = APPLICANT_STATUS_APPLYING
                 if with_applicant_status:
                     if not result:
                         result = get_admission_result(app, project, admission_round, m)
 
                     if result and result.is_accepted:
-                        applicant_status = '2'
+                        applicant_status = APPLICANT_STATUS_ACCEPTED
                     else:
-                        applicant_status = '3'
-                
+                        applicant_status = APPLICANT_STATUS_REJECTED
+
                 for cupt_major in cupt_majors:
-                    print_csv_line(applicant, app, profile,
-                                   app_date, cupt_major,
-                                   app_type,
-                                   '0','0',
-                                   applicant_status,
-                                   '0',
-                                   header)
+                    row = build_csv_line(applicant, app, profile,
+                                         app_date, cupt_major,
+                                         app_type,
+                                         '0','0',
+                                         applicant_status,
+                                         '0',
+                                         header)
+                    output_rows.append((
+                        cupt_major['program_id'],
+                        cupt_major['major_id'],
+                        applicant_status,
+                        row,
+                    ))
+            
+            output_rows = filter_dup_rows(output_rows)
+            for r in output_rows:
+                print(r[3])
 
 if __name__ == '__main__':
     main()
