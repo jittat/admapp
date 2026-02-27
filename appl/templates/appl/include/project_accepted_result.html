@@ -41,9 +41,26 @@
             {% endfor %}
           </ul>
 
+          {% if active_application.admission_round_id == 5 %}
+            <div class="alert alert-secondary mt-1">
+              <span class="badge badge-secondary">ประกาศการสมัครรอบที่ 2</span> สำหรับการรับเข้าศึกษาต่อที่มหาวิทยาลัยเกษตรศาสตร์ 
+              ขณะนี้อยู่ระหว่างการรับในรอบที่ 2 (จนถึงวันที่ 12 มี.ค. 69) &nbsp;&nbsp; 
+              ผู้สมัครในรอบที่ 1.2 ที่ทราบผลการคัดเลือกแล้ว สามารถเริ่มสมัครโครงการในรอบที่ 2 ได้ โดยการกดยืนยันด้านล่าง<br>
+              <a href="#" class="btn btn-sm btn-info app-deactivation-links">เริ่มต้นการสมัครรอบ 2</a>
+              <div class="p10 border-a0 app-deactivation-confirmations mb5 mt-2" style="display:none;">
+                กรุณายืนยันการเริ่มต้นสมัครรอบ 2 (16 ก.พ. - 12 มี.ค. 69) &nbsp;&nbsp;
+                <form class="d-inline" method="post" action="{% url 'appl:deactivate-project' active_application.admission_project.id active_application.admission_round.id %}">
+                  {% csrf_token %}
+                  <input type="submit" name="ok" class="btn btn-sm btn-success" value="ยืนยัน" />
+                  <input type="submit" name="cancel" class="btn btn-sm btn-secondary app-deactivation-cancels" value="ไม่ยืนยัน" />
+                </form>
+              </div>
+            </div>
+          {% endif %} 
+
 					<div class="mt10">
 						ฝ่ายรับสมัครและพัฒนาการรับเข้าศึกษา ใคร่ขอรบกวนเวลาผู้สมัครช่วยทำแบบประเมินความพึงพอใจที่มีต่อการรับบุคคลเข้าศึกษา 
-						โดย<a href="https://kasets.art/gzueEe" target="_blank" rel="noopener noreferrer">กรอกแบบสอบถามนี้ https://kasets.art/gzueEe</a>  ทีมงานขอขอบคุณทุกท่าน
+						โดย<a href="https://forms.gle/gAM2epuCVUjk1f8b8" target="_blank" rel="noopener noreferrer">กรอกแบบสอบถามนี้ https://forms.gle/gAM2epuCVUjk1f8b8</a>  ทีมงานขอขอบคุณทุกท่าน
 					</div>
 
           {{ project_round.accepted_for_interview_instructions|safe }}
@@ -56,3 +73,15 @@
     </div>
   </div>
 </div>
+<script>
+  $(function(){
+    $(".app-deactivation-links").click(function(e){
+      e.preventDefault();
+      $(".app-deactivation-confirmations").slideDown();
+    });
+    $(".app-deactivation-cancels").click(function(e){
+      e.preventDefault();
+      $(".app-deactivation-confirmations").slideUp();
+    });
+  });
+</script>
