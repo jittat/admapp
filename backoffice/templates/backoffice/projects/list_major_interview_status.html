@@ -10,11 +10,11 @@
       </h2>
       <table class="table table-striped table-sm table-bordered">
         <thead>
-          <tr>
+          <tr class="table-primary">
             <th>รหัส</th>
             <th>คณะ</th>
             <th>สาขา</th>
-	    <th>จำนวนรับ</th>
+      	    <th>จำนวนรับ</th>
             <th>เรียกสัมภาษณ์</th>
             <th>รับ</th>
             <th>ไม่รับ</th>
@@ -24,22 +24,22 @@
         </thead>
         <tbody>
           {% for major in majors %}
-            <tr>
+            <tr {% if major.is_total %}class="table-info"{% endif %}>
               <td>{{ major.number }}</td>
               <td>{{ major.faculty }}</td>
               <td>{{ major.title }}</td>
               <td>{{ major.slots }}</td>
-	      {% with major.interview_status as status %}
-		<td>{{ status.calls }}</td>
-		<td>{{ status.accepted }}</td>
-		<td>{{ status.rejected }}</td>
-		<td>{{ status.absent }}</td>
-		{% if status.left > 0 %}
-		  <td><span class="text-danger"><b>{{ status.left }}</b></span></td>
-		{% else %}
-		  <td>{{ status.left }}</td>
-		{% endif %}
-	      {% endwith %}
+              {% with major.interview_status as status %}
+                <td>{{ status.calls }}</td>
+                <td>{{ status.accepted }}</td>
+                <td>{{ status.rejected }}</td>
+                <td>{{ status.absent }}</td>
+                {% if status.left > 0 %}
+                  <td><span class="text-danger"><b>{{ status.left }}</b></span></td>
+                {% else %}
+                  <td>{{ status.left }}</td>
+                {% endif %}
+              {% endwith %}
             </tr>
           {% endfor %}
         </tbody>

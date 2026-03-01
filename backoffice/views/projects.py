@@ -1825,12 +1825,29 @@ def list_major_interview_status_response(request, project_id, round_id):
         elif res.is_interview_absent:
             m.interview_status['absent'] += 1
 
+    total_status = {
+        'calls': 0,
+        'accepted': 0,
+        'rejected': 0,
+        'absent': 0,
+        'left': 0,
+    }
+    total_slots = 0
+
     for m in majors:
         m.interview_status['left'] = (m.interview_status['calls']
                                       - m.interview_status['accepted']
                                       - m.interview_status['rejected']
                                       - m.interview_status['absent'])
-    
+        for k in total_status:
+            total_status[k] += m.interview_status[k]
+        total_slots += m.slots
+
+    majors.append({'faculty': 'รวมทั้งหมด', 
+                   'slots': total_slots, 
+                   'interview_status': total_status,
+                   'is_total': True })    
+
     return render(request,
                   'backoffice/projects/list_major_interview_status.html',
                   { 'project': project,
