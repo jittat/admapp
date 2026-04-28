@@ -73,7 +73,7 @@ FIELDS = [
     'min_toefl_ibt',
     'min_toefl_pbt',
     'min_toefl_cbt',
-    'min_toefl_ipt',
+    'min_toefl_itp',
     'min_ielts',
     'min_toeic',
     'min_cutep',
@@ -195,9 +195,11 @@ SCORE_TYPE_FIELD_MAP = {
     "A89Spn": 'min_a_lv_89',
     "VNET": 'min_vnet_51',
     "TOEFL_IBT": 'min_toefl_ibt',
-    "TOEFL_PBT_ITP": 'min_toefl_pbt',
+    "TOEFL_PBT_ITP": 'min_toefl_pbt',  # TODO: fix this
+    "TOEFL_PBT_ITP": 'min_toefl_itp',  # TODO: fix this
     "TOEFL_CBT": 'min_toefl_cbt',
-    "TOEFL_PBT_ITP": 'min_toefl_ipt',
+    "TOEFL_PBT": 'min_toefl_pbt',
+    "TOEFL_ITP": 'min_toefl_itp',
     "IELTS": 'min_ielts',
     "TOEIC": 'min_toeic',
     "CU_TEP": 'min_cutep',
