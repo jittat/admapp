@@ -280,7 +280,8 @@ def min_score_vector_from_criterias(score_criterias, curriculum_major):
             score_type = reverse_score_type(c, curriculum_major)
 
         if score_type != get_score_type_from_description(c.description.strip(), curriculum_major):
-            print_error(f'**** Error mismatched {score_type} {c.id} {curriculum_major.faculty} {curriculum_major.cupt_code} {curriculum_major} "{c.description.strip()}"')
+            real_score_type = get_score_type_from_description(c.description.strip(), curriculum_major)
+            print_error(f'**** Error mismatched {score_type} {c.id} {curriculum_major.faculty} {curriculum_major.cupt_code} {curriculum_major} "{c.description.strip()}" {real_score_type}')
             is_error = True
 
         if c.value != None and c.value > 0:
