@@ -222,6 +222,18 @@ def print_error(*args, **kwargs):
     kwargs['file'] = sys.stderr
     print(*args, **kwargs)
 
+def get_score_type_from_description(description, curriculum_major):
+    if curriculum_major.admission_project_id in PROJECT_SCORE_TYPE_REVERSE_MAP:
+        score_type = find_score_type_from_str(description, PROJECT_SCORE_TYPE_REVERSE_MAP[curriculum_major.admission_project_id])
+        if score_type != 'OTHER':
+            return score_type
+    
+    score_type = find_score_type_from_str(description, SCORE_TYPE_REVERSE_MAP)
+    if score_type != 'OTHER':
+        return score_type
+    else:
+        return 'OTHER'
+
 def reverse_score_type(score_criteria, curriculum_major):
     if score_criteria.score_type != 'OTHER':
         return score_criteria.score_type
@@ -266,6 +278,11 @@ def min_score_vector_from_criterias(score_criterias, curriculum_major):
         score_type = c.score_type
         if score_type == 'OTHER':
             score_type = reverse_score_type(c, curriculum_major)
+
+        if score_type != get_score_type_from_description(c.description.strip(), curriculum_major):
+            print_error(f'**** Error mismatched {score_type} {c.id} {curriculum_major.faculty} {curriculum_major.cupt_code} {curriculum_major} "{c.description.strip()}"')
+            is_error = True
+
         if c.value != None and c.value > 0:
             if score_type == 'IGNORE':
                 continue
