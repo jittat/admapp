@@ -111,6 +111,7 @@ const RequiredCriteria = ({
   initialTopics = []
 }) => {
   const [topics, setTopics] = useState(initialTopics);
+  console.log(topics);
   const isCustomScoreCriteriaAllowed = _isCustomScoreCriteriaAllowed; //from global variable
   const addNewTopic = e => {
     e.preventDefault();
@@ -127,12 +128,14 @@ const RequiredCriteria = ({
   const updateTopic = (topicId, value) => {
     console.log(`Updating topic`, topicId, value);
     const newTopics = topics.slice();
+    console.log('Current topics:', newTopics);
     const index = newTopics.findIndex(t => t.id === topicId);
     newTopics[index] = {
       ...newTopics[index],
       ...value
     };
     console.log('eiei', newTopics[index]);
+    console.log('Updated topics:', newTopics);
     setTopics(newTopics);
   };
   const removeTopic = topic => {
@@ -348,7 +351,6 @@ const PrimaryTopic = ({
       required: false
     },
     tags: requiredTags,
-    name: `required_${number}_title`,
     onSave: v => {
       const tag = requiredTags.find(o => o.description === v);
       updateTopic(topic.id, {
