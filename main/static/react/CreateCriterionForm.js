@@ -111,11 +111,15 @@ const RequiredCriteria = ({
   initialTopics = []
 }) => {
   const [topics, setTopics] = useState(initialTopics);
+  const topicsRef = useRef(topics);
+  useEffect(() => {
+    topicsRef.current = topics;
+  }, [topics]);
   console.log(topics);
   const isCustomScoreCriteriaAllowed = _isCustomScoreCriteriaAllowed; //from global variable
   const addNewTopic = e => {
     e.preventDefault();
-    const newTopic = topics.slice();
+    const newTopic = topicsRef.current.slice();
     newTopic.push({
       id: (() => Date.now())(),
       title: '',
@@ -127,7 +131,7 @@ const RequiredCriteria = ({
   };
   const updateTopic = (topicId, value) => {
     console.log(`Updating topic`, topicId, value);
-    const newTopics = topics.slice();
+    const newTopics = topicsRef.current.slice();
     console.log('Current topics:', newTopics);
     const index = newTopics.findIndex(t => t.id === topicId);
     newTopics[index] = {
@@ -139,13 +143,13 @@ const RequiredCriteria = ({
     setTopics(newTopics);
   };
   const removeTopic = topic => {
-    const newTopics = topics.slice();
+    const newTopics = topicsRef.current.slice();
     const index = newTopics.findIndex(t => t.id === topic.id);
     newTopics.splice(index, 1);
     setTopics(newTopics);
   };
   const setSecondaryTopics = (topicId, newSecondaryTopics) => {
-    const newTopics = topics.slice();
+    const newTopics = topicsRef.current.slice();
     const index = newTopics.findIndex(t => t.id === topicId);
     newTopics[index] = {
       ...newTopics[index],
