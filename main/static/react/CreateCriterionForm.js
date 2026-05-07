@@ -115,7 +115,7 @@ const RequiredCriteria = ({
   useEffect(() => {
     topicsRef.current = topics;
   }, [topics]);
-  console.log(topics);
+  //console.log(topics)
   const isCustomScoreCriteriaAllowed = _isCustomScoreCriteriaAllowed; //from global variable
   const addNewTopic = e => {
     e.preventDefault();
@@ -126,20 +126,20 @@ const RequiredCriteria = ({
       unit: '',
       children: []
     });
-    console.log(newTopic);
+    //console.log(newTopic)
     setTopics(newTopic);
   };
   const updateTopic = (topicId, value) => {
-    console.log(`Updating topic`, topicId, value);
+    //console.log(`Updating topic`, topicId, value)
     const newTopics = topicsRef.current.slice();
-    console.log('Current topics:', newTopics);
+    //console.log('Current topics:', newTopics)
     const index = newTopics.findIndex(t => t.id === topicId);
     newTopics[index] = {
       ...newTopics[index],
       ...value
     };
-    console.log('eiei', newTopics[index]);
-    console.log('Updated topics:', newTopics);
+    //console.log('eiei', newTopics[index])
+    //console.log('Updated topics:', newTopics)
     setTopics(newTopics);
   };
   const removeTopic = topic => {
@@ -155,7 +155,7 @@ const RequiredCriteria = ({
       ...newTopics[index],
       children: newSecondaryTopics
     };
-    console.log('new topic', newTopics[index]);
+    //console.log('new topic', newTopics[index])
     setTopics(newTopics);
   };
   return /*#__PURE__*/React.createElement("div", {
