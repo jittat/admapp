@@ -682,4 +682,4 @@ const SelectMenu = ({ name, choices, className, initialValue, inputProps, onSave
 }
 
 const domContainer = document.querySelector('#add-criterion-form');
-ReactDOM.render(e(Form), domContainer);
+ReactDOM.createRoot(domContainer).render(e(Form));
