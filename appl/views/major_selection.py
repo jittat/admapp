@@ -85,7 +85,10 @@ def select(request, admission_round_id):
         selected_majors = major_selection.get_majors()
     
 
-    majors = project.major_set.all()
+    if project.is_major_with_zero_slots_hidden:
+        majors = project.major_set.filter(slots__gt=0)
+    else:
+        majors = project.major_set.all()
     majors_dic = dict([(m.faculty_id, True) for m in majors])
     faculties = [f for f in Faculty.objects.all()
                   if f.id in majors_dic]
