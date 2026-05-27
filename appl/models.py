@@ -167,6 +167,9 @@ class AdmissionProject(models.Model):
     max_num_selections = models.IntegerField(default=1,
                                              verbose_name='จำนวนสาขาที่เลือกได้')
 
+    is_major_with_zero_slots_hidden = models.BooleanField(default=False,
+                                                          verbose_name='ซ่อนสาขาที่จำนวนรับเป็นศูนย์')
+
     has_selections_with_no_ranks = models.BooleanField(default=False)
     cross_majors_acceptance_visible = models.BooleanField(default=False)
     applicant_details_hidden = models.BooleanField(default=False)
