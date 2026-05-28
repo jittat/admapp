@@ -160,9 +160,11 @@ def load_major_notices(project, major_selection):
         major.notice = MajorAdditionalNotice.get_notice_for_major(major)
 
 def load_major_additional_form_fields(applicant, project, major_selection):
-    if not project.is_additional_admission_form_allowed:
-        return
     if not major_selection:
+        return
+    if not project.is_additional_admission_form_allowed:
+        for major in major_selection.get_majors():
+            major.has_additional_form = False
         return
     for major in major_selection.get_majors():
         major.form_fields = list(major.additional_admission_form_fields.all())
