@@ -155,10 +155,14 @@
               <td class="chboxes">
                 {% if a.is_interview_callable %}
                   {% if accepted_for_interview_result_frozen %}
-                    {% if a.is_called_for_interview %}<i class="fa fa-check" style="color: green;"></i>{% else %}{% if a.is_called_for_interview == False %}<i class="fa fa-times" style="color: red;"></i>{% endif %}{% endif %}
-		    {% if individual_call_only %}
-		      <a class="btn btn-outline-secondary btn-sm" target="_blank" rel="noopener noreferrer" href="{% url 'backoffice:projects-show-applicant' project.id admission_round.id major.number 0 %}?natid={{ a.national_id }}">กรอก</a>
-		    {% endif %}
+                    {% if individual_call_editable %}
+                      <span class="btn-group btn-group-sm interview-call-individual-buttons" data-natid="{{ a.national_id }}" role="group">
+                        <a href="#" class="btn btn-sm interview-call-individual-accept {% if a.is_called_for_interview %}btn-success{% else %}btn-outline-secondary{% endif %}" data-decision="accepted" title="เรียกสัมภาษณ์"><i class="fa fa-check"></i></a>
+                        <a href="#" class="btn btn-sm interview-call-individual-reject {% if a.is_called_for_interview == False %}btn-danger{% else %}btn-outline-secondary{% endif %}" data-decision="rejected" title="ไม่เรียกสัมภาษณ์"><i class="fa fa-times"></i></a>
+                      </span>
+                    {% else %}
+                      {% if a.is_called_for_interview %}<i class="fa fa-check" style="color: green;"></i>{% else %}{% if a.is_called_for_interview == False %}<i class="fa fa-times" style="color: red;"></i>{% endif %}{% endif %}
+                    {% endif %}
                     {% if a.is_called_for_interview %}
                       {% if admission_result.is_tcas_confirmed == False %}
                         <i class="fa fa-times interview-call-rejected" style="color: red;"></i> <!-- ไม่ยืนยัน -->
@@ -290,13 +294,21 @@
     });
   };
   
+  var showSavingNotice = function() {
+    $('#data_load_notice_id').stop(true).html('<i class="fa fa-spinner fa-spin" style="color: red;"></i>').show();
+  };
+
+  var showSavedNotice = function() {
+    $('#data_load_notice_id').html('<i class="fa fa-check" style="color: green;"></i>').show().delay(1500).fadeOut();
+  };
+
   $(function(){
     var url = '{% url 'backoffice:projects-interview-call-score-update' project.id admission_round.id major.number %}';
     $('.call-checkboxes').click(function(){
       var status = $(this).prop('checked') ? 'selected' : 'not-selected';
       var nationalId = $(this).data('natid');
-      
-      $('#data_load_notice_id').html('<span style="color: red;">กำลังจัดเก็บข้อมูล...</span>').show();
+
+      showSavingNotice();
       jQuery.post(url, {
         nationalId: nationalId,
         status: status,
@@ -304,10 +316,50 @@
       }, function(data) {
         updateCall(data);
         $('.interview-count-spans').text(data);
-        $('#data_load_notice_id').html('<span style="color: green;">จัดเก็บข้อมูลเสร็จแล้ว</span>').delay(3000).fadeOut();
+        showSavedNotice();
       });
     });
-    
+
+    var individualCallUrl = '{% url 'backoffice:projects-individual-interview-call-score-update' project.id admission_round.id major.number %}';
+    $('.interview-call-individual-buttons a').click(function(){
+      var elt = $(this);
+      var group = elt.parents('.interview-call-individual-buttons').first();
+      var natid = group.data('natid');
+      var decision = elt.data('decision');
+      var row = elt.parents('tr').first();
+
+      showSavingNotice();
+      jQuery.post(individualCallUrl, {
+        nationalId: natid,
+        decision: decision,
+        csrfmiddlewaretoken: '{{ csrf_token }}'
+      }, function(data) {
+        var isCalled = data.is_accepted_for_interview;
+
+        group.find('.interview-call-individual-accept')
+          .toggleClass('btn-success', isCalled === true)
+          .toggleClass('btn-outline-secondary', isCalled !== true);
+        group.find('.interview-call-individual-reject')
+          .toggleClass('btn-danger', isCalled === false)
+          .toggleClass('btn-outline-secondary', isCalled !== false);
+
+        isAcceptedForInterview[natid] = isCalled;
+        if(isCalled) {
+          row.addClass('app-interview-called');
+          row.removeClass('app-interview-not-called');
+        } else {
+          row.addClass('app-interview-not-called');
+          row.removeClass('app-interview-called');
+        }
+
+        $('.interview-count-spans').text(data.count);
+        updateConflictCounts();
+        showSavedNotice();
+      }, 'json');
+
+      return false;
+    });
+
     updateMajorMarkers();
     updateConflictCounts();
     updateInterviewConfirmation();

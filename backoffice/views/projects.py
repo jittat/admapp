@@ -1027,33 +1027,12 @@ def check_mark_toggle(request, project_id, round_id, national_id, major_number, 
                         content_type='application/json')
 
 
-@user_login_required
-def set_call_for_interview(request, project_id, round_id, national_id, major_number, decision):
-    can_view, error_response = load_applicant_application_and_check_permission(request,
-                                                                               project_id,
-                                                                               round_id,
-                                                                               national_id,
-                                                                               major_number)
-    if not can_view:
-        return error_response
-
-    user = request.user
-    applicant = request.applicant
-    admission_round = request.admission_round
-    major = request.major
-    application = request.application
-
-    if request.project_round.accepted_for_interview_result_frozen:
-        return HttpResponseForbidden()
-
-    if (request.project_round.only_bulk_interview_acceptance) and (not major.is_forced_individual_interview_call):
-        return HttpResponseForbidden()
-
+def apply_interview_call_decision(request, project, admission_round, major, applicant, application, decision):
     admission_result = AdmissionResult.get_for_application_and_major(application, major)
     if not admission_result:
         admission_result = AdmissionResult(applicant=applicant,
                                            application=application,
-                                           admission_project=request.project,
+                                           admission_project=project,
                                            admission_round=admission_round,
                                            major=major)
 
@@ -1065,11 +1044,43 @@ def set_call_for_interview(request, project_id, round_id, national_id, major_num
     admission_result.updated_accepted_for_interview_at = datetime.now()
     admission_result.save()
 
-    LogItem.create('Interview decision (major: {0} {1}) by {2}'.format(major_number,
+    LogItem.create('Interview decision (major: {0} {1}) by {2}'.format(major.number,
                                                                        decision,
-                                                                       user.username),
+                                                                       request.user.username),
                    applicant,
                    request)
+
+    return admission_result
+
+
+@user_login_required
+def set_call_for_interview(request, project_id, round_id, national_id, major_number, decision):
+    can_view, error_response = load_applicant_application_and_check_permission(request,
+                                                                               project_id,
+                                                                               round_id,
+                                                                               national_id,
+                                                                               major_number)
+    if not can_view:
+        return error_response
+
+    applicant = request.applicant
+    admission_round = request.admission_round
+    major = request.major
+    application = request.application
+
+    if request.project_round.accepted_for_interview_result_frozen:
+        return HttpResponseForbidden()
+
+    if (request.project_round.only_bulk_interview_acceptance) and (not major.is_forced_individual_interview_call):
+        return HttpResponseForbidden()
+
+    admission_result = apply_interview_call_decision(request,
+                                                      request.project,
+                                                      admission_round,
+                                                      major,
+                                                      applicant,
+                                                      application,
+                                                      decision)
 
     is_accepted_for_interview = admission_result.is_accepted_for_interview
 
@@ -1453,9 +1464,11 @@ def show_scores(request, project_id, round_id, major_number):
     for decision in interview_call_decisions:
         cross_major_scores[decision.major.number] = decision.interview_call_min_score - MajorInterviewCallDecision.FLOAT_DELTA
 
+    individual_call_editable = individual_call_only and not project_round.accepted_for_interview_result_frozen
+
     if individual_call_only:
         project_round.accepted_for_interview_result_frozen = True
-        
+
 
     menu_flags = ProjectMenuConfig.load_menu_config_flags(admission_round, project)
 
@@ -1473,7 +1486,8 @@ def show_scores(request, project_id, round_id, major_number):
                     'accepted_for_interview_result_frozen':
                     project_round.accepted_for_interview_result_frozen,
                     'individual_call_only': individual_call_only,
-                    
+                    'individual_call_editable': individual_call_editable,
+
                     'is_truncated': is_truncated,
                     'org_count': org_count,
 
@@ -1574,7 +1588,54 @@ def update_interview_call_score(request, project_id, round_id, major_number):
                    request)
 
     return HttpResponse(str(call_decision.interview_call_count))
-        
+
+
+@user_login_required
+def update_individual_interview_call_score(request, project_id, round_id, major_number):
+    national_id = request.POST['nationalId']
+    decision = request.POST['decision']
+
+    can_view, error_response = load_applicant_application_and_check_permission(request,
+                                                                               project_id,
+                                                                               round_id,
+                                                                               national_id,
+                                                                               major_number)
+    if not can_view:
+        return error_response
+
+    project = request.project
+    admission_round = request.admission_round
+    project_round = request.project_round
+    major = request.major
+    applicant = request.applicant
+    application = request.application
+
+    if project_round.accepted_for_interview_result_frozen:
+        return HttpResponseForbidden()
+
+    individual_call_only = (not project_round.only_bulk_interview_acceptance) or (major.is_forced_individual_interview_call)
+    if not individual_call_only:
+        return HttpResponseForbidden()
+
+    admission_result = AdmissionResult.get_for_application_and_major(application, major)
+    if not admission_result or not admission_result.is_interview_callable():
+        return HttpResponseForbidden()
+
+    admission_result = apply_interview_call_decision(request,
+                                                      project,
+                                                      admission_round,
+                                                      major,
+                                                      applicant,
+                                                      application,
+                                                      decision)
+
+    major_accepted_for_interview_count = AdmissionResult.accepted_for_interview_count(admission_round,
+                                                                                      major)
+
+    return HttpResponse(json.dumps({ 'is_accepted_for_interview': admission_result.is_accepted_for_interview,
+                                     'count': major_accepted_for_interview_count }),
+                        content_type='application/json')
+
 
 def sort_applicants_by_name(applicants):
     from .reports import sorted_by_name

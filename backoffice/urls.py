@@ -141,6 +141,11 @@ urlpatterns = [
         name="projects-interview-call-score-update",
     ),
     re_path(
+        r"^projects/scores/(?P<project_id>\d+)/(?P<round_id>\d+)/(?P<major_number>\d+)/individual_interview_score/$",
+        projects.update_individual_interview_call_score,
+        name="projects-individual-interview-call-score-update",
+    ),
+    re_path(
         r"^projects/calls/(?P<project_id>\d+)/(?P<round_id>\d+)/(?P<major_number>\d+)/$",
         projects.list_applicants_for_acceptance_calls,
         name="projects-list-applicants-for-acceptance-calls",
