@@ -13,8 +13,15 @@
 	<span class="badge badge-info" id="app_cancel_toggle_id">ยืนยัน</span>
 	{% if user.is_super_admin %}
 	  <button class="btn btn-sm btn-danger d-none" id="app_cancel_id">ยกเลิก</button>
-	  <form class="d-none" id="app_cancel_form_id" method="post" action="{% url 'backoffice:update-applicant-cancel-confirmed-app' applicant.national_id %}">
+	  <form class="d-none mt-2" id="app_cancel_form_id" method="post" action="{% url 'backoffice:update-applicant-cancel-confirmed-app' applicant.national_id %}">
 	    {% csrf_token %}
+	    <div class="form-group mb-2">
+	      <label for="app_cancel_confirm_id" class="mb-1">กรอกเลข 4 หลักท้ายของเลขประจำตัวประชาชนเพื่อยืนยันการยกเลิก</label>
+	      <input type="text" class="form-control form-control-sm" id="app_cancel_confirm_id" name="confirm_digits"
+		     maxlength="4" inputmode="numeric" autocomplete="off" style="max-width: 8rem;" />
+	      <div class="text-danger d-none" id="app_cancel_error_id">เลข 4 หลักท้ายไม่ถูกต้อง</div>
+	    </div>
+	    <button type="submit" class="btn btn-sm btn-danger">ยืนยันการยกเลิก</button>
 	  </form>
 	{% endif %}
       {% endif %}
@@ -37,12 +44,22 @@
 {% endfor %}
 <script>
  $(function(){
+   var last4 = "{{ applicant.national_id|slice:'-4:' }}";
    $("#app_cancel_toggle_id").click(function(){
      $("#app_cancel_id").removeClass('d-none');
    });
    $("#app_cancel_id").click(function(){
-     if(confirm("แน่ใจที่จะยกเลิกการยืนยัน")) {
-       $("#app_cancel_form_id").trigger("submit");
+     $(this).addClass('d-none');
+     $("#app_cancel_form_id").removeClass('d-none').hide().slideDown();
+     $("#app_cancel_confirm_id").focus();
+   });
+   $("#app_cancel_confirm_id").on('input', function(){
+     $("#app_cancel_error_id").addClass('d-none');
+   });
+   $("#app_cancel_form_id").submit(function(e){
+     if($("#app_cancel_confirm_id").val().trim() !== last4) {
+       e.preventDefault();
+       $("#app_cancel_error_id").removeClass('d-none');
      }
    });
  });

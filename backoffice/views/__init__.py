@@ -244,11 +244,17 @@ def cancel_confirmed_application(request, national_id):
 
     applicant = get_object_or_404(Applicant, national_id=national_id)
 
+    if request.POST.get('confirm_digits', '').strip() != applicant.national_id[-4:]:
+        request.session['notice'] = 'ไม่สามารถยกเลิกได้ เลข 4 หลักท้ายของเลขประจำตัวประชาชนไม่ถูกต้อง'
+        return redirect(reverse('backoffice:show-applicant', args=[applicant.national_id]))
+
     if applicant.confirmed_application_id != None:
         LogItem.create('Removed confirmed application ({0})'.format(applicant.confirmed_application_id), applicant, request)
-    
+
         applicant.confirmed_application_id = None
         applicant.save()
+
+        request.session['notice'] = 'ยกเลิกการยืนยันสิทธิ์เรียบร้อยแล้ว'
 
     return redirect(reverse('backoffice:show-applicant', args=[applicant.national_id]))
 

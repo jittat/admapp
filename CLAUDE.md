@@ -47,3 +47,7 @@ analyses):
 - `docs/interview-call.md` — interview-call decision model (bulk
   score-cutoff vs. per-applicant decisions), score-list page, per-applicant
   page, and the AJAX endpoints that update `AdmissionResult.is_accepted_for_interview`.
+- `docs/applicant-info.md` — staff-facing applicant show page
+  (`backoffice.views.show` + `backoffice/templates/backoffice/show.html`):
+  URLs, view flow & access control, `ApplicantForm`, the include-partial
+  template structure, and extension points for adding features.
