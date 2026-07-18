@@ -207,6 +207,10 @@ USE_I18N = True
 
 USE_TZ = False
 
+# Opt into the Django 6.0 default: forms.URLField assumes 'https'.
+# Transitional setting available from Django 5.1; silences RemovedInDjango60Warning.
+FORMS_URLFIELD_ASSUME_HTTPS = True
+
 LANGUAGES = [
     ('th', _('Thai')),
     ('en', _('English')),
