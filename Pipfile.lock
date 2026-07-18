@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "a1dad579ea05439699f4570ac3e7636e970ff9074c30ac9a247e79f0058daddd"
+            "sha256": "048f9f2faf475df6fd9a2d8bb0fb10cbe2512914417fa0bf5a9509a784d75394"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -52,12 +52,12 @@
         },
         "django": {
             "hashes": [
-                "sha256:4d07aaf1c62f9984842b67c2874ebbf7056a17be253860299b93ae1881faad65",
-                "sha256:4ebc7a434e3819db6cf4b399fb5b3f536310a30e8486f08b66886840be84b37c"
+                "sha256:29019a5763dbd48da1720d687c3522ef40d1c61be6fb2fad27ed79e9f655bc11",
+                "sha256:e762bef8629ee704de215ebbd32062b84f4e56327eed412e5544f6f6eb1dfd74"
             ],
             "index": "pypi",
-            "markers": "python_version >= '3.8'",
-            "version": "==4.2.30"
+            "markers": "python_version >= '3.10'",
+            "version": "==5.0.14"
         },
         "django-crispy-forms": {
             "hashes": [
@@ -105,12 +105,12 @@
         },
         "django-mailer": {
             "hashes": [
-                "sha256:d667ae8633d6b7c1e259d7142e6fbad0a4b079a528ecc6854b452d7bcb3e6aed",
-                "sha256:eefa89b8abf3f10574a3322b08c82e1265d7b0822c4bbb9bd7b9a4110c823ac9"
+                "sha256:6ea0cbec09f57eb91376780a5f20ab7a834b942435a575e92e8e021f7838d78f",
+                "sha256:c7ef5ad63d5484246908bd1ce583c22837c66c1a7b593c9b816f4ead2421c995"
             ],
             "index": "pypi",
             "markers": "python_version >= '3.8'",
-            "version": "==2.3.1"
+            "version": "==2.3.2"
         },
         "django-ses": {
             "hashes": [

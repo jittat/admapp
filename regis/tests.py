@@ -47,7 +47,7 @@ class RegistrationTestCase(TestCase):
         data['national_id_confirm'] = '1234567890139'
         response = self.client.post('/regis/register/',
                                     data)
-        self.assertFormError(response,'form','national_id_confirm','รหัสประจำตัวประชาชนที่ยืนยันไม่ตรงกัน')
+        self.assertFormError(response.context['form'],'national_id_confirm','รหัสประจำตัวประชาชนที่ยืนยันไม่ตรงกัน')
 
     @override_settings(FAKE_LOGIN=False)
     def test_login_with_nat_id(self):
