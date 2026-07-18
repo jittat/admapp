@@ -199,7 +199,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
 
-LANGUAGE_CODE = 'th'
+# Default 'th' for the served site (web via wsgi). Management commands opt into
+# English by setting ADMAPP_LANGUAGE_CODE=en in manage.py (see that file).
+LANGUAGE_CODE = os.environ.get('ADMAPP_LANGUAGE_CODE', 'th')
 
 TIME_ZONE = 'Asia/Bangkok'
 
