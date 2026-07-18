@@ -66,7 +66,6 @@ DEBUG_TOOLBAR_PANELS = [
     'debug_toolbar.panels.templates.TemplatesPanel',
     'debug_toolbar.panels.cache.CachePanel',
     'debug_toolbar.panels.signals.SignalsPanel',
-    'debug_toolbar.panels.logging.LoggingPanel',
     'debug_toolbar.panels.redirects.RedirectsPanel',
     'template_timings_panel.panels.TemplateTimings.TemplateTimings',
     'debug_toolbar.panels.profiling.ProfilingPanel',
@@ -205,8 +204,6 @@ LANGUAGE_CODE = 'th'
 TIME_ZONE = 'Asia/Bangkok'
 
 USE_I18N = True
-
-USE_L10N = True
 
 USE_TZ = False
 
