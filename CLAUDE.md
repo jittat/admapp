@@ -51,6 +51,11 @@ analyses):
   (`backoffice.views.show` + `backoffice/templates/backoffice/show.html`):
   URLs, view flow & access control, `ApplicantForm`, the include-partial
   template structure, and extension points for adding features.
+- `docs/admission-project-models.md` — field reference for the core
+  `appl/models.py` models: `AdmissionProject` (content + feature flags),
+  `AdmissionRound`, `AdmissionProjectRound` (per project+round workflow
+  state), and `Major` (slots, fees, CUPT codes). Grouped by purpose with
+  what each flag actually controls.
 - `docs/criteria.md` — the `criteria` app: data model
   (`AdmissionCriteria`, `ScoreCriteria`, `CurriculumMajor(AdmissionCriteria)`,
   `MajorCuptCode`), the **copy-on-write versioning** of criteria in
