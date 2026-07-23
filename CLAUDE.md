@@ -56,6 +56,11 @@ analyses):
   `AdmissionRound`, `AdmissionProjectRound` (per project+round workflow
   state), and `Major` (slots, fees, CUPT codes). Grouped by purpose with
   what each flag actually controls.
+- `docs/uploaded-documents.md` — applicant document uploads: the
+  definition→instance model pair (`ProjectUploadedDocument` /
+  `UploadedDocument`), applicant upload flow, staff review flow, file
+  serving/storage + encrypted S3 backup, and a section on mirroring this for
+  the planned per-criteria `additional_admission_upload_fields`.
 - `docs/criteria.md` — the `criteria` app: data model
   (`AdmissionCriteria`, `ScoreCriteria`, `CurriculumMajor(AdmissionCriteria)`,
   `MajorCuptCode`), the **copy-on-write versioning** of criteria in
