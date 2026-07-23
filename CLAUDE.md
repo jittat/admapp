@@ -51,3 +51,8 @@ analyses):
   (`backoffice.views.show` + `backoffice/templates/backoffice/show.html`):
   URLs, view flow & access control, `ApplicantForm`, the include-partial
   template structure, and extension points for adding features.
+- `docs/criteria.md` — the `criteria` app: data model
+  (`AdmissionCriteria`, `ScoreCriteria`, `CurriculumMajor(AdmissionCriteria)`,
+  `MajorCuptCode`), the **copy-on-write versioning** of criteria in
+  `upsert_admission_criteria`, in-place AJAX toggles, views/URLs, and the
+  CUPT export/import pipeline (`criteria/views/cuptexport.py`).

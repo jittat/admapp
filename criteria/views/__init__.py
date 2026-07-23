@@ -402,6 +402,7 @@ def upsert_admission_criteria(post_request, project=None, faculty=None, admissio
                 additional_description=old_admission_criteria.additional_description,
                 additional_condition=old_admission_criteria.additional_condition,
                 accepted_student_curriculum_type_flags=old_admission_criteria.accepted_student_curriculum_type_flags,
+                accepted_graduate_year_flags=old_admission_criteria.accepted_graduate_year_flags,
                 additional_interview_condition=additional_interview_condition,
                 interview_date=custom_interview_date,
                 additional_admission_form_fields_json=additional_admission_form_fields_json,
