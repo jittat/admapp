@@ -282,6 +282,31 @@ specific project ids. When adding a new exam/subject, update both
 `CRITERIA_OPTIONS` here and `EXAM_FIELD_MAP` in `cuptexport_fields.py` (the
 export maps `score_type` → CUPT column).
 
+### Round-specific scoring choices
+
+Extra **scoring** choices can be shown only for portfolio rounds. The gate is
+`AdmissionRound.is_portfolio_round()` (`appl/models.py`, currently
+`number == 1`) — the criteria app never checks the round number directly.
+The choices live in `PORTFOLIO_SCORING_TAGS` in `criteria_options.py`, a
+module-level constant (kept **out** of `CRITERIA_OPTIONS` so the
+`criteria_options_as_js` emit loop doesn't serialize it) with two lists:
+`prepend` (shown at the beginning of the scoring choice list) and `append`
+(shown at the end).
+
+`criteria_options_as_js` now takes `admission_round`; via
+`get_round_scoring_extra_tags` it emits `portfolio_scoring_prepend_tags` /
+`portfolio_scoring_append_tags` JS consts — populated on a portfolio round,
+empty arrays otherwise. `criteria/templates/criteria/include/criteria_form_option_script.html`
+builds the list as
+`prepend ⧺ general_scoring_tags ⧺ test_tags ⧺ append`, so non-portfolio
+rounds render an unchanged `scoringTags`. Applies to both create and edit
+(shared include).
+
+> The entries in `PORTFOLIO_SCORING_TAGS` are currently **placeholder**
+> values. They are also not yet wired into CUPT export
+> (`SCORING_SCORE_TYPE_TAGS` / `EXAM_FIELD_MAP`) — export for these is planned
+> via a separate mechanism.
+
 ## Gotchas / notes for future work
 
 - Editing criteria is copy-on-write; anything you attach to a criteria that
