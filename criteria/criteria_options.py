@@ -152,3 +152,19 @@ CRITERIA_OPTIONS = {
 
 REQUIRED_SCORE_TYPE_TAGS = CRITERIA_OPTIONS['general_required_tags'] + CRITERIA_OPTIONS['test_tags']
 SCORING_SCORE_TYPE_TAGS = CRITERIA_OPTIONS['general_scoring_tags'] + CRITERIA_OPTIONS['test_tags']
+
+# Extra scoring-criteria choices shown only for portfolio rounds
+# (AdmissionRound.is_portfolio_round()). 'prepend' entries appear at the
+# beginning of the scoring choice list; 'append' entries at the end. Kept out
+# of CRITERIA_OPTIONS so the criteria_options_as_js emit loop does not
+# serialize them wholesale. Placeholder values — replace with real choices.
+# NOTE: these are not yet wired into CUPT export (SCORING_SCORE_TYPE_TAGS /
+# EXAM_FIELD_MAP); export is handled by a separate mechanism.
+PORTFOLIO_SCORING_TAGS = {
+    'prepend': [
+        { "score_type": "PLACEHOLDER_PORTFOLIO_FIRST", "description": "ตัวเลือกต้นรายการ (placeholder)", "unit": "" },
+    ],
+    'append': [
+        { "score_type": "PLACEHOLDER_PORTFOLIO_LAST", "description": "ตัวเลือกท้ายรายการ (placeholder)", "unit": "" },
+    ],
+}

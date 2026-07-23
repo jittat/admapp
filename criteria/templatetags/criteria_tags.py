@@ -3,7 +3,7 @@ import json
 from django import template
 from django.utils.safestring import mark_safe
 
-from criteria.criteria_options import CRITERIA_OPTIONS
+from criteria.criteria_options import CRITERIA_OPTIONS, PORTFOLIO_SCORING_TAGS
 
 register = template.Library()
 
@@ -76,12 +76,23 @@ def exclude_tags(options, admission_project):
 
     return updated_options
     
+def get_round_scoring_extra_tags(admission_round):
+    if admission_round is None or not admission_round.is_portfolio_round():
+        return [], []
+    return (PORTFOLIO_SCORING_TAGS.get('prepend', []),
+            PORTFOLIO_SCORING_TAGS.get('append', []))
+
+
 @register.simple_tag
-def criteria_options_as_js(admission_project=None):
+def criteria_options_as_js(admission_project=None, admission_round=None):
     items = []
     criteria_options = exclude_tags(CRITERIA_OPTIONS, admission_project)
     for cname in criteria_options:
         items.append(f'const {cname} = ' +
                      json.dumps(criteria_options[cname]))
+
+    prepend_tags, append_tags = get_round_scoring_extra_tags(admission_round)
+    items.append('const portfolio_scoring_prepend_tags = ' + json.dumps(prepend_tags))
+    items.append('const portfolio_scoring_append_tags = ' + json.dumps(append_tags))
 
     return mark_safe('\n'.join(items))

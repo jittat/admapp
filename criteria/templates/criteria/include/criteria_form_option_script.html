@@ -1,10 +1,13 @@
 {% load criteria_tags %}
 <script>
-  {% criteria_options_as_js project %}
+  {% criteria_options_as_js project admission_round %}
 
   {% if not uses_component_weights %}
     const requiredTags = general_required_tags.concat(test_tags)
-    const scoringTags = general_scoring_tags.concat(test_tags)
+    const scoringTags = portfolio_scoring_prepend_tags
+      .concat(general_scoring_tags)
+      .concat(test_tags)
+      .concat(portfolio_scoring_append_tags)
     const hideRequiredSection = false;
     const useComponentWeightType = false;
   {% else %}

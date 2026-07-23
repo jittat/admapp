@@ -92,6 +92,9 @@ class AdmissionRound(models.Model):
         else:
             return '%d/%d' % (self.number, self.subround_number)
 
+    def is_portfolio_round(self):
+        return self.number == 1
+
     @staticmethod
     def get_available():
         rounds = AdmissionRound.objects.filter(is_available=True).all()
