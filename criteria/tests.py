@@ -55,3 +55,30 @@ class AdmissionCriteriaVersioningTestCase(TestCase):
         # Companion flag (already copied before the fix) should also survive.
         self.assertEqual(
             new_criteria.accepted_student_curriculum_type_flags, '2,3')
+
+    def test_edit_persists_additional_admission_upload_fields(self):
+        from criteria.views import upsert_admission_criteria
+
+        # The upload-fields editor only appears (and is only parsed) when the
+        # project opts in.
+        self.project.is_additional_admission_upload_allowed = True
+        self.project.save()
+
+        post = {
+            'required_1_type': 'GPAX',
+            'required_1_title': 'GPAX',
+            'additional_admission_upload_fields-1-title': 'แฟ้มสะสมผลงาน',
+            'additional_admission_upload_fields-1-descriptions': 'อัพโหลดไฟล์ PDF',
+            'additional_admission_upload_fields-1-is_required': '1',
+        }
+
+        upsert_admission_criteria(post, admission_criteria=self.criteria_v1)
+
+        new_criteria = self._live_criteria()
+        self.assertEqual(new_criteria.version, 2)
+
+        upload_fields = new_criteria.get_additional_admission_upload_fields()
+        self.assertEqual(len(upload_fields), 1)
+        self.assertEqual(upload_fields[0]['title'], 'แฟ้มสะสมผลงาน')
+        self.assertEqual(upload_fields[0]['descriptions'], 'อัพโหลดไฟล์ PDF')
+        self.assertTrue(upload_fields[0]['is_required'])

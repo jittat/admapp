@@ -49,6 +49,7 @@ class AdmissionCriteria(models.Model):
     additional_condition = models.CharField(max_length=500, blank=True)
     additional_interview_condition = models.TextField(blank=True)
     additional_admission_form_fields_json = models.TextField(blank=True)
+    additional_admission_upload_fields_json = models.TextField(blank=True)
     additional_notice = models.TextField(blank=True)
 
     accepted_student_curriculum_type_flags = models.CharField(max_length=10,
@@ -224,6 +225,31 @@ class AdmissionCriteria(models.Model):
         except:
             additional_form_fields = []
         return additional_form_fields
+
+    def get_additional_admission_upload_fields(self):
+        additional_upload_fields = []
+
+        if ((self.additional_admission_upload_fields_json is None) or
+            (self.additional_admission_upload_fields_json.strip() == '') or
+            (self.additional_admission_upload_fields_json.strip() == '[]')):
+            return additional_upload_fields
+
+        import json
+        try:
+            if self.additional_admission_upload_fields_json != '':
+                additional_upload_fields = json.loads(self.additional_admission_upload_fields_json)
+            additional_upload_fields = [
+                {
+                    'title': f['title'].strip(),
+                    'descriptions': f.get('descriptions', '').strip(),
+                    'is_required': bool(f.get('is_required', False)),
+                }
+                for f in additional_upload_fields
+                if 'title' in f and f['title'].strip() != ''
+            ]
+        except:
+            additional_upload_fields = []
+        return additional_upload_fields
 
     def get_interview_date(self):
         faculty_interview_date = AdmissionProjectFacultyInterviewDate.objects.filter(

@@ -326,6 +326,26 @@ def extract_additional_admission_form_fields_as_json(project, post_request):
                 })
     return json.dumps(additional_admission_form_fields)
 
+def extract_additional_admission_upload_fields_as_json(project, post_request):
+    if not project.is_additional_admission_upload_allowed:
+        return ''
+    additional_admission_upload_fields = []
+    for key in post_request:
+        if key.startswith("additional_admission_upload_fields-") and key.endswith("-title"):
+            index = key.split("-")[1]
+            title = post_request[key].strip()
+            descriptions = post_request.get(
+                f"additional_admission_upload_fields-{index}-descriptions", "").strip()
+            is_required = post_request.get(
+                f"additional_admission_upload_fields-{index}-is_required", "") != ""
+            if title != '':
+                additional_admission_upload_fields.append({
+                    "title": title,
+                    "descriptions": descriptions,
+                    "is_required": is_required,
+                })
+    return json.dumps(additional_admission_upload_fields)
+
 def extract_additional_notice(project, post_request):
     if not project.is_additional_notice_allowed:
         return ''
@@ -373,6 +393,7 @@ def upsert_admission_criteria(post_request, project=None, faculty=None, admissio
     additional_interview_condition = extract_additional_interview_condition(post_request)
     custom_interview_date = extract_custom_interview_date(post_request)
     additional_admission_form_fields_json = extract_additional_admission_form_fields_as_json(project, post_request)
+    additional_admission_upload_fields_json = extract_additional_admission_upload_fields_as_json(project, post_request)
     additional_notice = extract_additional_notice(project, post_request)
 
     if (len(selected_major_dict) == 0) and (len(score_criteria_dict) == 0):
@@ -388,6 +409,7 @@ def upsert_admission_criteria(post_request, project=None, faculty=None, admissio
                 additional_interview_condition=additional_interview_condition,
                 interview_date=custom_interview_date,
                 additional_admission_form_fields_json=additional_admission_form_fields_json,
+                additional_admission_upload_fields_json=additional_admission_upload_fields_json,
                 additional_notice=additional_notice,
                 version=version)
             admission_criteria.save()
@@ -406,6 +428,7 @@ def upsert_admission_criteria(post_request, project=None, faculty=None, admissio
                 additional_interview_condition=additional_interview_condition,
                 interview_date=custom_interview_date,
                 additional_admission_form_fields_json=additional_admission_form_fields_json,
+                additional_admission_upload_fields_json=additional_admission_upload_fields_json,
                 additional_notice=additional_notice,
                 version=version)
             admission_criteria.save()
@@ -529,8 +552,11 @@ def render_create_criteria(admission_round, faculty, majors, project, request):
 
     faculty_interview_date = AdmissionProjectFacultyInterviewDate.get_from(project, faculty)
 
-    has_additional_form_fields = project.is_additional_admission_form_allowed 
+    has_additional_form_fields = project.is_additional_admission_form_allowed
     additional_form_fields = []
+
+    has_additional_upload_fields = project.is_additional_admission_upload_allowed
+    additional_upload_fields = []
     has_additional_notice = project.is_additional_notice_allowed
     additional_notice = ''
     
@@ -555,6 +581,9 @@ def render_create_criteria(admission_round, faculty, majors, project, request):
 
                    'has_additional_form_fields': has_additional_form_fields,
                    'additional_form_fields': additional_form_fields,
+
+                   'has_additional_upload_fields': has_additional_upload_fields,
+                   'additional_upload_fields': additional_upload_fields,
 
                    'has_additional_notice': has_additional_notice,
                    'additional_notice': additional_notice,
@@ -636,8 +665,11 @@ def render_edit_criteria(admission_criteria, admission_round, faculty, majors, p
 
     faculty_interview_date = AdmissionProjectFacultyInterviewDate.get_from(project, faculty)
     
-    has_additional_form_fields = project.is_additional_admission_form_allowed 
+    has_additional_form_fields = project.is_additional_admission_form_allowed
     additional_form_fields = admission_criteria.get_additional_admission_form_fields()
+
+    has_additional_upload_fields = project.is_additional_admission_upload_allowed
+    additional_upload_fields = admission_criteria.get_additional_admission_upload_fields()
 
     has_additional_notice = project.is_additional_notice_allowed
     additional_notice = admission_criteria.additional_notice
@@ -665,6 +697,9 @@ def render_edit_criteria(admission_criteria, admission_round, faculty, majors, p
 
                    'has_additional_form_fields': has_additional_form_fields,
                    'additional_form_fields': additional_form_fields,
+
+                   'has_additional_upload_fields': has_additional_upload_fields,
+                   'additional_upload_fields': additional_upload_fields,
 
                    'has_additional_notice': has_additional_notice,
                    'additional_notice': additional_notice,

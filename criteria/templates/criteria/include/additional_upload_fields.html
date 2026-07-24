@@ -1,0 +1,125 @@
+{% if has_additional_upload_fields %}
+  <div class="form-group">
+    <label for="additional-upload-fields">
+      เอกสารเพิ่มเติมที่ให้ผู้สมัครอัพโหลดตามเกณฑ์
+      <button class="btn btn-outline-secondary btn-sm" {% if additional_upload_fields %}style="display: none;"{% endif %}  id="additionalUploadFieldsToggleId">ป้อนข้อมูล</button>
+    </label>
+    <div class="additional-upload-fields-form" {% if not additional_upload_fields %}style="display: none;"{% endif %}>
+      <small class="form-text text-muted">
+        สามารถกำหนดรายการเอกสารเพิ่มเติมให้ผู้สมัครอัพโหลด (สามารถอัพโหลดได้หลายไฟล์หรือแนบลิงก์)
+        เพื่อใช้ประกอบการพิจารณาได้ ควรระบุหัวข้อให้ชัดเจน สั้นและกระชับ
+      </small>
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th></th>
+            <th class="w-25">หัวข้อ</th>
+            <th>คำอธิบาย</th>
+            <th>บังคับ</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for f in additional_upload_fields %}
+            <tr>
+              <td>{{ forloop.counter }}</td>
+              <td>
+                <input class="form-control additional-upload-fields-title" style="border-width: 1px;" type="text" name="additional_admission_upload_fields-{{ forloop.counter }}-title" value="{{ f.title }}" />
+              </td>
+              <td>
+                <input class="form-control additional-upload-fields-descriptions" style="border-width: 1px;" type="text" name="additional_admission_upload_fields-{{ forloop.counter }}-descriptions" value="{{ f.descriptions }}" />
+              </td>
+              <td class="text-center">
+                <input class="additional-upload-fields-is-required" type="checkbox" name="additional_admission_upload_fields-{{ forloop.counter }}-is_required" value="1" {% if f.is_required %}checked{% endif %} />
+              </td>
+              <td>
+                <button class="btn btn-secondary btn-sm additional-upload-fields-row-delete-buttons">-</button>
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td>1</td>
+              <td>
+                <input class="form-control additional-upload-fields-title" style="border-width: 1px;" type="text" name="additional_admission_upload_fields-1-title" value="" />
+              </td>
+              <td>
+                <input class="form-control additional-upload-fields-descriptions" style="border-width: 1px;" type="text" name="additional_admission_upload_fields-1-descriptions" value="" />
+              </td>
+              <td class="text-center">
+                <input class="additional-upload-fields-is-required" type="checkbox" name="additional_admission_upload_fields-1-is_required" value="1" />
+              </td>
+              <td>
+                <button class="btn btn-secondary btn-sm additional-upload-fields-row-delete-buttons">-</button>
+              </td>
+            </tr>
+          {% endfor %}
+          <tr>
+            <td>
+              <button class="btn btn-primary additional-upload-fields-row-add-buttons">+</button>
+            </td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <script>
+    $(function(){
+      $("#additionalUploadFieldsToggleId").click(function(){
+        $(".additional-upload-fields-form").slideDown();
+        return false;
+      });
+
+      {% if additional_upload_fields %}
+        $(".additional-upload-fields-form").show();
+        $("#additionalUploadFieldsToggleId").hide();
+      {% endif %}
+    });
+
+    function renumberAdditionalUploadFields() {
+      $('.additional-upload-fields-form table tbody tr').each(function(index, tr) {
+        if (index < $('.additional-upload-fields-form table tbody tr').length - 1) {
+          $(tr).find('td:first').text(index + 1);
+          $(tr).find('.additional-upload-fields-title').attr('name', 'additional_admission_upload_fields-' + (index + 1) + '-title');
+          $(tr).find('.additional-upload-fields-descriptions').attr('name', 'additional_admission_upload_fields-' + (index + 1) + '-descriptions');
+          $(tr).find('.additional-upload-fields-is-required').attr('name', 'additional_admission_upload_fields-' + (index + 1) + '-is_required');
+        }
+      });
+    }
+
+    function addNewUploadFieldRow() {
+      var formRowTemplate = `<tr class="additional-upload-fields-form-rows">
+                <td class="additional-upload-fields-form-index">2</td>
+                <td>
+                  <input class="form-control additional-upload-fields-title" style="border-width: 1px;" type="text" name="additional_admission_upload_fields-2-title" value="" />
+                </td>
+                <td>
+                  <input class="form-control additional-upload-fields-descriptions" style="border-width: 1px;" type="text" name="additional_admission_upload_fields-2-descriptions" value="" />
+                </td>
+                <td class="text-center">
+                  <input class="additional-upload-fields-is-required" type="checkbox" name="additional_admission_upload_fields-2-is_required" value="1" />
+                </td>
+                <td>
+                  <button class="btn btn-secondary btn-sm additional-upload-fields-row-delete-buttons">-</button>
+                </td>
+              </tr>`;
+      var newRow = $(formRowTemplate);
+      newRow.find('.additional-upload-fields-form-index').text($('.additional-upload-fields-form table tbody tr').length);
+      $('.additional-upload-fields-form table tbody').find('tr:last').before(newRow);
+      renumberAdditionalUploadFields();
+    }
+
+    $(document).on('click', '.additional-upload-fields-row-add-buttons', function() {
+      addNewUploadFieldRow();
+      return false;
+    });
+
+    $(document).on('click', '.additional-upload-fields-row-delete-buttons', function() {
+      $(this).closest('tr').remove();
+      renumberAdditionalUploadFields();
+      return false;
+    });
+  </script>
+{% endif %}
