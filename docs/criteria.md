@@ -43,9 +43,17 @@ Models live in `criteria/models/` (re-exported from
     `scripts/export_major_criterias_as_json.py`). The in-app `cuptexport.py`
     ignores them.
   - `additional_interview_condition`, `interview_date`,
-    `additional_admission_form_fields_json`, `additional_notice` — edited
-    via the form (the latter two only when the project enables
-    `is_additional_admission_form_allowed` / `is_additional_notice_allowed`).
+    `additional_admission_form_fields_json`,
+    `additional_admission_upload_fields_json`, `additional_notice` — edited
+    via the form (the form-fields, upload-fields and notice ones only when the
+    project enables `is_additional_admission_form_allowed` /
+    `is_additional_admission_upload_allowed` / `is_additional_notice_allowed`).
+  - `additional_admission_upload_fields_json` — JSON list of extra documents
+    (`{title, descriptions, is_required}`) applicants upload according to the
+    criteria; read via `get_additional_admission_upload_fields()`. Only the
+    authoring side is implemented (see
+    [uploaded-documents.md](uploaded-documents.md) for the full feature status
+    and what remains).
   - `accepted_student_curriculum_type_flags` (default `'*'` =
     `INITIAL_CURR_TYPE_FLAG`) and `accepted_graduate_year_flags` — CSV
     strings of accepted type ids. `'*'` means "not yet set" and is treated
@@ -148,7 +156,8 @@ sources:
 
 **Re-read fresh from the submitted POST:**
 - `additional_interview_condition`, `interview_date`,
-  `additional_admission_form_fields_json`, `additional_notice`
+  `additional_admission_form_fields_json`,
+  `additional_admission_upload_fields_json`, `additional_notice`
 - `version` (incremented)
 
 > ⚠️ **Subtleties worth knowing:**

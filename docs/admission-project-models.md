@@ -96,6 +96,7 @@ These gate what staff can edit in the `criteria` app (see
 | `custom_interview_start_date` / `custom_interview_end_date` | null | Bounds for custom interview dates. |
 | `is_additional_admission_form_allowed` | `False` | Allow extra applicant-form questions (`AdmissionCriteria.additional_admission_form_fields_json`). |
 | `is_additional_admission_form_edit_allowed` | `True` | Allow editing those extra questions. |
+| `is_additional_admission_upload_allowed` | `False` | Allow extra per-criteria upload documents (`AdmissionCriteria.additional_admission_upload_fields_json`); authoring only so far — see [uploaded-documents.md](uploaded-documents.md). |
 | `is_additional_notice_allowed` | `False` | Allow an extra applicant-facing notice (`AdmissionCriteria.additional_notice`). |
 
 ### Export & basic acceptance criteria

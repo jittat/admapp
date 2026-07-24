@@ -7,11 +7,12 @@ is a code-reading of `appl/models.py`, `appl/views/upload.py`,
 `appl/views/__init__.py`, `backoffice/views/projects.py`, and their
 templates — a point-in-time analysis; verify against current code.
 
-It also includes a **"mirroring this for `additional_admission_upload_fields`"**
-section at the end, since the planned per-criteria upload fields on
-`AdmissionCriteria` are meant to eventually behave like
+It also includes a section at the end on
+**`additional_admission_upload_fields`** — the per-criteria upload documents
+on `AdmissionCriteria` that are meant to eventually behave like
 `ProjectUploadedDocument` (contrast with the JSON-blob
-`additional_admission_form_fields_json` — see [criteria.md](criteria.md)).
+`additional_admission_form_fields_json` — see [criteria.md](criteria.md)) —
+covering what is implemented so far and what is left.
 
 ## The two-model pattern
 
@@ -211,57 +212,46 @@ they share MIME handling and the S3 fallback.
 
 ---
 
-## Mirroring this for `additional_admission_upload_fields`
+## `additional_admission_upload_fields` (per-criteria upload documents)
 
-Context: `AdmissionCriteria` will get `additional_admission_upload_fields`
-(planned), analogous to its existing `additional_admission_form_fields_json`
-but for **file uploads** that must "eventually behave like
-`ProjectUploadedDocument`." Two shapes are in play in this codebase for
-"extra per-criteria/per-major inputs":
+`AdmissionCriteria` is gaining `additional_admission_upload_fields`: a
+per-criteria list of extra documents applicants upload *according to the
+criteria*, analogous to its existing `additional_admission_form_fields_json`
+(text form fields) but for **file uploads** that must "eventually behave like
+`ProjectUploadedDocument`" — file validation, storage, single/multi, the
+deadline & interview-document rules, and S3-backed serving described above.
 
-1. **JSON-blob definition + typed value rows** — how additional *text* form
-   fields already work: the definition is a JSON string on `AdmissionCriteria`
-   (`additional_admission_form_fields_json`, list of `{title, size}`), which
-   is materialized into `MajorAdditionalAdmissionFormField` rows, and
-   applicant answers land in `ApplicantAdditionalAdmissionFormValue`
-   (`appl/models.py:1377`, `:1402`). See [criteria.md](criteria.md).
-2. **Definition model + instance model** — how *documents* work
-   (`ProjectUploadedDocument` → `UploadedDocument`), described above.
+This is being built in phases. Only the **authoring** side is implemented so
+far; the runtime (applicant upload, staff review) is not yet wired up.
 
-For upload fields you want the **document pattern's runtime behavior**
-(file validation, storage path, single/multi, deadline & interview-document
-rules, S3-backed serving), so the cleanest target is:
+### Implemented (authoring, in the `criteria` app)
 
-- **Authoring** (criteria app, like the JSON form fields): store the field
-  *definitions* on `AdmissionCriteria` — either a JSON blob
-  `additional_admission_upload_fields` mirroring the `{title, size}` shape but
-  carrying upload attributes (`allowed_extentions`, `size_limit`,
-  `is_required`, `can_have_multiple_files`, `is_url_document`, `rank`), or a
-  child definition model keyed to the criteria.
-- **Materialization**: turn those definitions into per-major upload *slots*.
-  The existing bridge from a criteria to majors is
-  `CurriculumMajorAdmissionCriteria` / `Major.get_admission_criterias()`
-  (see criteria.md) — the equivalent of how
-  `additional_admission_form_fields_json` becomes
-  `MajorAdditionalAdmissionFormField` rows.
-- **Instances**: reuse the `UploadedDocument` storage/serving machinery
-  (`applicant_document_path`, `download_uploaded_document_response`, the S3
-  backup) rather than reinventing it — that is what "behave like
-  `ProjectUploadedDocument`" buys you.
+- `AdmissionProject.is_additional_admission_upload_allowed` — the per-project
+  opt-in flag that gates the whole feature.
+- `AdmissionCriteria.additional_admission_upload_fields_json` — the field
+  *definitions*, stored as a JSON blob (like
+  `additional_admission_form_fields_json`), read via
+  `get_additional_admission_upload_fields()` which returns entries of
+  `{title, descriptions, is_required}`.
+- Editing UI in the criteria create/edit form
+  (`criteria/include/additional_upload_fields.html`), extracted from POST and
+  carried through the criteria **copy-on-write versioning** in
+  `upsert_admission_criteria` (see [criteria.md](criteria.md)).
 
-Things to carry over so behavior matches existing documents:
-- the **deadline guard** (`project_round.is_deadline_passed()` +
-  `is_interview_document` exception),
-- **single-file replace** semantics vs. `can_have_multiple_files`,
-- **requiredness / OR-group** logic (`is_required`, `requirement_key`) if the
-  new fields participate in application-completion checks,
-- **ownership checks** on download/delete (`get_uploaded_document_or_403`),
-- **copy-on-write versioning** on the criteria side: if the definitions live
-  on `AdmissionCriteria`, remember that editing a criteria creates a new
-  version — anything the edit form doesn't re-submit must be copied forward in
-  `upsert_admission_criteria` (see criteria.md's versioning section).
+Definitions currently carry only `title`, `descriptions`, and `is_required`.
+Multiple files / URL links are intended to always be allowed (not per-field
+options).
 
-Open design question to settle first: do upload *instances* attach to the
-`AdmissionCriteria`/major, or continue to reuse `ProjectUploadedDocument`
-slots generated from the criteria definitions? The latter maximizes reuse of
-the flows documented above.
+### Not yet done (later phases)
+
+- **Materialization** — turning the per-criteria definitions into concrete
+  per-major upload *slots*.
+- **Applicant upload flow** — letting applicants actually upload files/URLs
+  against these fields, with the same storage, deadline/interview-document
+  rules, and multi-file handling as `UploadedDocument`.
+- **Staff review** — surfacing these uploads on the applicant detail page /
+  download paths.
+- **Completion checks** — whether required upload fields participate in
+  application-completeness validation.
+- **Export** — including these fields in the CUPT export pipeline (a separate
+  mechanism will be used; see [criteria.md](criteria.md)).
