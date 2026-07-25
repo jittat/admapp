@@ -581,9 +581,9 @@ def render_create_criteria(admission_round, faculty, majors, project, request):
                    'uses_component_weights': uses_component_weights,
                    'component_weight_type_choices': component_weight_type_choices,
 
-                   'data_required': json.dumps(data_required),
-                   'data_scoring': json.dumps(data_scoring),
-                   'data_selected_majors': json.dumps(data_selected_majors),
+                   'data_required': json.dumps(data_required).replace("'","&#39;"),
+                   'data_scoring': json.dumps(data_scoring).replace("'","&#39;"),
+                   'data_selected_majors': json.dumps(data_selected_majors).replace("'","&#39;"),
 
                    'faculty_interview_date': faculty_interview_date,
                    'additional_interview_condition': additional_interview_condition,
