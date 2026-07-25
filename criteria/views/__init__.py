@@ -353,6 +353,18 @@ def extract_additional_notice(project, post_request):
         return post_request['additional_notice'].strip()
     return ''
 
+# Fields that are NOT re-submitted by the create/edit form (they are set only
+# by the in-place AJAX toggle endpoints or by offline scripts). Editing a
+# criteria is copy-on-write, so on a version bump these must be copied from the
+# previous version or they silently reset to their model defaults.
+CRITERIA_CARRIED_FIELDS = (
+    'additional_description',
+    'additional_condition',
+    'accepted_student_curriculum_type_flags',
+    'accepted_graduate_year_flags',
+)
+
+
 def upsert_admission_criteria(post_request, project=None, faculty=None, admission_criteria=None, user=None):
     score_criteria_dict = dict()
     selected_major_dict = dict()
@@ -396,6 +408,15 @@ def upsert_admission_criteria(post_request, project=None, faculty=None, admissio
     additional_admission_upload_fields_json = extract_additional_admission_upload_fields_as_json(project, post_request)
     additional_notice = extract_additional_notice(project, post_request)
 
+    # Fields taken fresh from the submitted form on every save (create or edit).
+    fresh_fields = dict(
+        additional_interview_condition=additional_interview_condition,
+        interview_date=custom_interview_date,
+        additional_admission_form_fields_json=additional_admission_form_fields_json,
+        additional_admission_upload_fields_json=additional_admission_upload_fields_json,
+        additional_notice=additional_notice,
+    )
+
     if (len(selected_major_dict) == 0) and (len(score_criteria_dict) == 0):
         raise Http404("Error ")
 
@@ -403,36 +424,25 @@ def upsert_admission_criteria(post_request, project=None, faculty=None, admissio
 
         if admission_criteria is None:
             version = 1
-            admission_criteria = AdmissionCriteria(
-                admission_project=project,
-                faculty=faculty,
-                additional_interview_condition=additional_interview_condition,
-                interview_date=custom_interview_date,
-                additional_admission_form_fields_json=additional_admission_form_fields_json,
-                additional_admission_upload_fields_json=additional_admission_upload_fields_json,
-                additional_notice=additional_notice,
-                version=version)
-            admission_criteria.save()
             old_admission_criteria = None
+            criteria_faculty = faculty
+            carried_fields = {}
         else:
             old_admission_criteria = admission_criteria
             version = old_admission_criteria.version + 1
+            criteria_faculty = old_admission_criteria.faculty
+            carried_fields = {f: getattr(old_admission_criteria, f)
+                              for f in CRITERIA_CARRIED_FIELDS}
 
-            admission_criteria = AdmissionCriteria(
-                admission_project=old_admission_criteria.admission_project,
-                faculty=admission_criteria.faculty,
-                additional_description=old_admission_criteria.additional_description,
-                additional_condition=old_admission_criteria.additional_condition,
-                accepted_student_curriculum_type_flags=old_admission_criteria.accepted_student_curriculum_type_flags,
-                accepted_graduate_year_flags=old_admission_criteria.accepted_graduate_year_flags,
-                additional_interview_condition=additional_interview_condition,
-                interview_date=custom_interview_date,
-                additional_admission_form_fields_json=additional_admission_form_fields_json,
-                additional_admission_upload_fields_json=additional_admission_upload_fields_json,
-                additional_notice=additional_notice,
-                version=version)
-            admission_criteria.save()
+        admission_criteria = AdmissionCriteria(
+            admission_project=project,
+            faculty=criteria_faculty,
+            version=version,
+            **fresh_fields,
+            **carried_fields)
+        admission_criteria.save()
 
+        if old_admission_criteria is not None:
             old_admission_criteria.is_deleted = True
             old_admission_criteria.save()
         scoring_criterias = [ScoreCriteria(
