@@ -5,7 +5,7 @@
   "fields": {
     "number": 1,
     "subround_number": 1,
-    "rank": 1,
+    "rank": 10,
     "short_descriptions": "Portfolio (1.1)",
     "admission_dates": "ต.ค. - พ.ย. 69",
     "is_available": false,
@@ -22,7 +22,7 @@
   "fields": {
     "number": 2,
     "subround_number": 0,
-    "rank": 2,
+    "rank": 20,
     "short_descriptions": "Quota",
     "admission_dates": "มี.ค. 70",
     "is_available": false,
@@ -39,7 +39,7 @@
   "fields": {
     "number": 3,
     "subround_number": 0,
-    "rank": 3,
+    "rank": 30,
     "short_descriptions": "Admission",
     "admission_dates": "พ.ค. 69",
     "is_available": false,
@@ -56,7 +56,7 @@
   "fields": {
     "number": 4,
     "subround_number": 0,
-    "rank": 4,
+    "rank": 40,
     "short_descriptions": "Direct Admission",
     "admission_dates": "ปลาย พ.ค. 69",
     "is_available": false,
@@ -73,7 +73,7 @@
   "fields": {
     "number": 1,
     "subround_number": 2,
-    "rank": 1,
+    "rank": 15,
     "short_descriptions": "Portfolio (1.2)",
     "admission_dates": "ธ.ค. 69 - ม.ค. 70",
     "is_available": false,
