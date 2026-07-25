@@ -506,6 +506,63 @@ def upsert_admission_criteria(post_request, project=None, faculty=None, admissio
         admission_criteria.save_curriculum_majors(major_criterias)
 
 
+def score_criterias_to_data(score_criterias):
+    """Serialize primary ScoreCriteria (with their children) into the
+    (data_required, data_scoring) lists the create/edit JS expects."""
+    data_criteria = [
+        [{
+            "id": str(s.primary_order),
+            "title": s.description,
+            "value": float(s.value) if s.value is not None else None,
+            "unit": s.unit,
+            "relation": s.relation if s.relation is not None else None,
+            "score_type": s.score_type,
+            "children": [{
+                "id": "%s.%s" % (ss.primary_order, ss.secondary_order),
+                "title": ss.description,
+                "value": float(ss.value) if ss.value is not None else None,
+                "unit": ss.unit,
+                "score_type": ss.score_type,
+            } for ss in s.childs.all()]
+        }, s.criteria_type] for s in score_criterias
+    ]
+    data_required = [d[0] for d in data_criteria if d[1] == "required"]
+    data_scoring = [d[0] for d in data_criteria if d[1] == "scoring"]
+    return data_required, data_scoring
+
+
+def majors_to_json(majors):
+    """JSON list of {id, title} for the major picker, sorted by cupt code."""
+    return json.dumps([dict({"id": m.id, "title": ("%s (%s) %s") % (
+        m.cupt_code.title, m.cupt_code.program_type, m.cupt_code.major_title)}) for m in
+                       sorted(majors, key=(
+                           lambda m: (m.cupt_code.program_code, m.cupt_code.major_title)))])
+
+
+def additional_fields_context(project, admission_criteria=None):
+    """Template context for the optional additional form-fields / upload-fields
+    / notice sections. Values are empty on create; loaded from the criteria on
+    edit. The has_* gates come from the project either way."""
+    if admission_criteria is None:
+        additional_form_fields = []
+        additional_upload_fields = []
+        additional_notice = ''
+    else:
+        additional_form_fields = admission_criteria.get_additional_admission_form_fields()
+        additional_upload_fields = admission_criteria.get_additional_admission_upload_fields()
+        additional_notice = admission_criteria.additional_notice
+    return {
+        'has_additional_form_fields': project.is_additional_admission_form_allowed,
+        'additional_form_fields': additional_form_fields,
+
+        'has_additional_upload_fields': project.is_additional_admission_upload_allowed,
+        'additional_upload_fields': additional_upload_fields,
+
+        'has_additional_notice': project.is_additional_notice_allowed,
+        'additional_notice': additional_notice,
+    }
+
+
 def render_create_criteria(admission_round, faculty, majors, project, request):
     notice = None
     data_required = []
@@ -520,26 +577,7 @@ def render_create_criteria(admission_round, faculty, majors, project, request):
                                                pk=duplicate_score_id)
         score_criterias = admission_criteria.scorecriteria_set.filter(secondary_order=0)
         additional_interview_condition = admission_criteria.additional_interview_condition
-        data_criteria = [
-            [{
-                "id": str(s.primary_order),
-                "title": s.description,
-                "value": float(s.value) if s.value is not None else None,
-                "unit": s.unit,
-                "relation": s.relation if s.relation is not None else None,
-                "score_type": s.score_type,
-                "children": [{
-                    "id": "%s.%s" % (ss.primary_order, ss.secondary_order),
-                    "title": ss.description,
-                    "value": float(ss.value) if ss.value is not None else None,
-                    "unit": ss.unit,
-                    "score_type": ss.score_type,
-                } for ss in s.childs.all()]
-            }, s.criteria_type] for s in score_criterias
-        ]
-
-        data_required = [d[0] for d in data_criteria if d[1] == "required"]
-        data_scoring = [d[0] for d in data_criteria if d[1] == "scoring"]
+        data_required, data_scoring = score_criterias_to_data(score_criterias)
 
         notice = 'นำเข้าเกณฑ์การรับแล้ว แต่ยังไม่ได้จัดเก็บ อย่าลืมจัดเก็บเงื่อนไขด้วย'
     if selected_major_id is not None:
@@ -561,23 +599,12 @@ def render_create_criteria(admission_round, faculty, majors, project, request):
 
     faculty_interview_date = AdmissionProjectFacultyInterviewDate.get_from(project, faculty)
 
-    has_additional_form_fields = project.is_additional_admission_form_allowed
-    additional_form_fields = []
-
-    has_additional_upload_fields = project.is_additional_admission_upload_allowed
-    additional_upload_fields = []
-    has_additional_notice = project.is_additional_notice_allowed
-    additional_notice = ''
-    
     return render(request,
                   'criteria/create.html',
                   {'project': project,
                    'admission_round': admission_round,
                    'faculty': faculty,
-                   'majors': json.dumps([dict({"id": m.id, "title": ("%s (%s) %s") % (
-                       m.cupt_code.title, m.cupt_code.program_type, m.cupt_code.major_title)}) for m in
-                                         sorted(majors, key=(
-                                             lambda m: (m.cupt_code.program_code, m.cupt_code.major_title)))]),
+                   'majors': majors_to_json(majors),
                    'uses_component_weights': uses_component_weights,
                    'component_weight_type_choices': component_weight_type_choices,
 
@@ -588,14 +615,7 @@ def render_create_criteria(admission_round, faculty, majors, project, request):
                    'faculty_interview_date': faculty_interview_date,
                    'additional_interview_condition': additional_interview_condition,
 
-                   'has_additional_form_fields': has_additional_form_fields,
-                   'additional_form_fields': additional_form_fields,
-
-                   'has_additional_upload_fields': has_additional_upload_fields,
-                   'additional_upload_fields': additional_upload_fields,
-
-                   'has_additional_notice': has_additional_notice,
-                   'additional_notice': additional_notice,
+                   **additional_fields_context(project),
 
                    'notice': notice,
                    })
@@ -641,25 +661,7 @@ def render_edit_criteria(admission_criteria, admission_round, faculty, majors, p
     score_criterias = admission_criteria.scorecriteria_set.filter(
         secondary_order=0)
     selected_majors = admission_criteria.curriculummajoradmissioncriteria_set.all()
-    data_criteria = [
-        [{
-            "id": str(s.primary_order),
-            "title": s.description,
-            "value": float(s.value) if s.value is not None else None,
-            "unit": s.unit,
-            "relation": s.relation if s.relation is not None else None,
-            "score_type": s.score_type,
-            "children": [{
-                "id": "%s.%s" % (ss.primary_order, ss.secondary_order),
-                "title": ss.description,
-                "value": float(ss.value) if ss.value is not None else None,
-                "unit": ss.unit,
-                "score_type": ss.score_type,
-            } for ss in s.childs.all()]
-        }, s.criteria_type] for s in score_criterias
-    ]
-    data_required = [d[0] for d in data_criteria if d[1] == "required"]
-    data_scoring = [d[0] for d in data_criteria if d[1] == "scoring"]
+    data_required, data_scoring = score_criterias_to_data(score_criterias)
     data_selected_majors = [
         {
             "id": m.curriculum_major.id,
@@ -673,25 +675,13 @@ def render_edit_criteria(admission_criteria, admission_round, faculty, majors, p
     component_weight_type_choices = CurriculumMajor.get_component_weight_type_choices_unique(majors)
 
     faculty_interview_date = AdmissionProjectFacultyInterviewDate.get_from(project, faculty)
-    
-    has_additional_form_fields = project.is_additional_admission_form_allowed
-    additional_form_fields = admission_criteria.get_additional_admission_form_fields()
 
-    has_additional_upload_fields = project.is_additional_admission_upload_allowed
-    additional_upload_fields = admission_criteria.get_additional_admission_upload_fields()
-
-    has_additional_notice = project.is_additional_notice_allowed
-    additional_notice = admission_criteria.additional_notice
- 
     return render(request,
                   'criteria/edit.html',
                   {'project': project,
                    'admission_round': admission_round,
                    'faculty': faculty,
-                   'majors': json.dumps([dict({"id": m.id, "title": ("%s (%s) %s") % (
-                       m.cupt_code.title, m.cupt_code.program_type, m.cupt_code.major_title)}) for m in
-                                         sorted(majors, key=(
-                                             lambda m: (m.cupt_code.program_code, m.cupt_code.major_title)))]),
+                   'majors': majors_to_json(majors),
 
                    'uses_component_weights': uses_component_weights,
                    'component_weight_type_choices': component_weight_type_choices,
@@ -704,14 +694,7 @@ def render_edit_criteria(admission_criteria, admission_round, faculty, majors, p
                    'additional_interview_condition': admission_criteria.additional_interview_condition,
                    'interview_date': admission_criteria.interview_date,
 
-                   'has_additional_form_fields': has_additional_form_fields,
-                   'additional_form_fields': additional_form_fields,
-
-                   'has_additional_upload_fields': has_additional_upload_fields,
-                   'additional_upload_fields': additional_upload_fields,
-
-                   'has_additional_notice': has_additional_notice,
-                   'additional_notice': additional_notice,
+                   **additional_fields_context(project, admission_criteria),
                    })
 
 
