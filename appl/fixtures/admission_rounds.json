@@ -6,14 +6,14 @@
     "number": 1,
     "subround_number": 1,
     "rank": 1,
-    "short_descriptions": "Portfolio (1/1)",
-    "admission_dates": "15 ต.ค. - 13 พ.ย. 68",
+    "short_descriptions": "Portfolio (1.1)",
+    "admission_dates": "ต.ค. - พ.ย. 69",
     "is_available": false,
     "is_application_available": false,
     "clearing_house_description": "",
-    "clearing_house_dates": "6 - 7 กุมภาพันธ์ พ.ศ. 2569",
-    "clearing_house_dates_short": "6 - 7 ก.พ. 69",
-    "acceptance_result_date": "2025-12-10"
+    "clearing_house_dates": "10 - 11 มีนาคม พ.ศ. 2570",
+    "clearing_house_dates_short": "10 - 11 มี.ค. 70",
+    "acceptance_result_date": "2026-12-10"
   }
 },
 {
@@ -24,13 +24,13 @@
     "subround_number": 0,
     "rank": 2,
     "short_descriptions": "Quota",
-    "admission_dates": "13 ก.พ. - 12 มี.ค. 69",
+    "admission_dates": "มี.ค. 70",
     "is_available": false,
     "is_application_available": false,
     "clearing_house_description": "",
-    "clearing_house_dates": "2 - 3 พฤษภาคม พ.ศ. 2569",
-    "clearing_house_dates_short": "2 - 3 พ.ค. 69",
-    "acceptance_result_date": "2026-04-28"
+    "clearing_house_dates": "3 - 4 พฤษภาคม พ.ศ. 2570",
+    "clearing_house_dates_short": "3 - 4 พ.ค. 70",
+    "acceptance_result_date": "2027-04-28"
   }
 },
 {
@@ -47,7 +47,7 @@
     "clearing_house_description": "",
     "clearing_house_dates": "",
     "clearing_house_dates_short": "",
-    "acceptance_result_date": "2026-05-26"
+    "acceptance_result_date": "2027-05-22"
   }
 },
 {
@@ -64,7 +64,7 @@
     "clearing_house_description": "",
     "clearing_house_dates": "",
     "clearing_house_dates_short": "",
-    "acceptance_result_date": "2026-06-10"
+    "acceptance_result_date": "2027-06-10"
   }
 },
 {
@@ -74,14 +74,14 @@
     "number": 1,
     "subround_number": 2,
     "rank": 1,
-    "short_descriptions": "Portfolio (1/2)",
-    "admission_dates": "19 ธ.ค. 68 - 15 ม.ค. 69",
+    "short_descriptions": "Portfolio (1.2)",
+    "admission_dates": "ธ.ค. 69 - ม.ค. 70",
     "is_available": false,
     "is_application_available": false,
     "clearing_house_description": "",
-    "clearing_house_dates": "6 - 7 กุมภาพันธ์ พ.ศ. 2569",
-    "clearing_house_dates_short": "6 - 7 ก.พ. 69",
-    "acceptance_result_date": "2026-01-29"
+    "clearing_house_dates": "10 - 11 มีนาคม พ.ศ. 2570",
+    "clearing_house_dates_short": "10 - 11 มี.ค. 70",
+    "acceptance_result_date": "2027-01-29"
   }
 }
 ]
