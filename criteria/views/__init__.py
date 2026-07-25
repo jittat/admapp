@@ -356,6 +356,10 @@ def extract_additional_notice(project, post_request):
 # by the in-place AJAX toggle endpoints or by offline scripts). Editing a
 # criteria is copy-on-write, so on a version bump these must be copied from the
 # previous version or they silently reset to their model defaults.
+#
+# Note: not every save goes through here. edit_additional_admission_form_fields
+# deliberately saves additional_admission_form_fields_json in place on the
+# existing row (no version bump) — see the note at its save() call.
 CRITERIA_CARRIED_FIELDS = (
     'additional_description',
     'additional_condition',
@@ -768,6 +772,8 @@ def edit_additional_admission_form_fields(request, project_id, round_id, criteri
 
         additional_admission_form_fields_json = extract_additional_admission_form_fields_as_json(project, request.POST)
         admission_criteria.additional_admission_form_fields_json = additional_admission_form_fields_json
+        # In-place save on the existing row: unlike upsert_admission_criteria
+        # (copy-on-write), this targeted edit does NOT create a new version.
         admission_criteria.save()
         notice = "จัดเก็บคำถามเพิ่มเติมเรียบร้อย"
 
