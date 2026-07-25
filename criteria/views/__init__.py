@@ -310,41 +310,40 @@ def extract_additional_interview_condition(post_request):
         additional_interview_condition = post_request['additional_interview_condition'].strip()
     return additional_interview_condition
 
+def extract_indexed_rows_as_json(post_request, prefix, extra_fields):
+    """Collect repeated form rows named "<prefix>-<i>-<field>" into a JSON list
+    of dicts, one per row with a non-blank title.
+
+    `extra_fields` maps each additional field name (also its "-<field>" key
+    suffix) to a transform applied to the raw POST value (defaulting to "")."""
+    rows = []
+    for key in post_request:
+        if key.startswith(f"{prefix}-") and key.endswith("-title"):
+            index = key.split("-")[1]
+            title = post_request[key].strip()
+            if title == '':
+                continue
+            row = {"title": title}
+            for field_name, transform in extra_fields.items():
+                row[field_name] = transform(
+                    post_request.get(f"{prefix}-{index}-{field_name}", ""))
+            rows.append(row)
+    return json.dumps(rows)
+
 def extract_additional_admission_form_fields_as_json(project, post_request):
     if not project.is_additional_admission_form_allowed:
         return ''
-    additional_admission_form_fields = []
-    for key in post_request:
-        if key.startswith("additional_admission_form_fields-") and key.endswith("-title"):
-            index = key.split("-")[1]
-            title = post_request[key].strip()
-            size = post_request.get(f"additional_admission_form_fields-{index}-size", "").strip()
-            if title != '':
-                additional_admission_form_fields.append({
-                    "title": title,
-                    "size": size
-                })
-    return json.dumps(additional_admission_form_fields)
+    return extract_indexed_rows_as_json(
+        post_request, "additional_admission_form_fields",
+        {"size": lambda v: v.strip()})
 
 def extract_additional_admission_upload_fields_as_json(project, post_request):
     if not project.is_additional_admission_upload_allowed:
         return ''
-    additional_admission_upload_fields = []
-    for key in post_request:
-        if key.startswith("additional_admission_upload_fields-") and key.endswith("-title"):
-            index = key.split("-")[1]
-            title = post_request[key].strip()
-            descriptions = post_request.get(
-                f"additional_admission_upload_fields-{index}-descriptions", "").strip()
-            is_required = post_request.get(
-                f"additional_admission_upload_fields-{index}-is_required", "") != ""
-            if title != '':
-                additional_admission_upload_fields.append({
-                    "title": title,
-                    "descriptions": descriptions,
-                    "is_required": is_required,
-                })
-    return json.dumps(additional_admission_upload_fields)
+    return extract_indexed_rows_as_json(
+        post_request, "additional_admission_upload_fields",
+        {"descriptions": lambda v: v.strip(),
+         "is_required": lambda v: v != ""})
 
 def extract_additional_notice(project, post_request):
     if not project.is_additional_notice_allowed:
