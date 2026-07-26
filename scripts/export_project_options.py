@@ -12,6 +12,9 @@ FIELDS = [
     'is_custom_graduate_year_allowed',
     'is_custom_add_limit_criteria',
 
+    'admission_student_type',
+    'admission_school_type',
+
     'is_custom_score_criteria_allowed',
 
     'is_custom_interview_date_allowed',

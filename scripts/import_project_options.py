@@ -44,6 +44,21 @@ def parse_date(value, field_name):
                                                        field_name))
 
 
+def parse_integer(value, field_name):
+    field = AdmissionProject._meta.get_field(field_name)
+    try:
+        int_value = int(value)
+    except ValueError:
+        raise ValueError('bad integer value {} for {}'.format(repr(value),
+                                                              field_name))
+    if field.choices:
+        valid_values = [c[0] for c in field.choices]
+        if int_value not in valid_values:
+            raise ValueError('value {} for {} is not one of {}'.format(
+                int_value, field_name, valid_values))
+    return int_value
+
+
 def parse_value(value, field_name):
     """Returns the parsed value, or NO_CHANGE when the field should be left alone."""
     value = value.strip()
@@ -61,6 +76,8 @@ def parse_value(value, field_name):
         return parse_boolean(value, field_name)
     elif ftype == models.DateField:
         return parse_date(value, field_name)
+    elif ftype == models.IntegerField:
+        return parse_integer(value, field_name)
     else:
         return value
 
@@ -90,7 +107,11 @@ def import_row(row, import_fields, dry_run):
 
     changes = []
     for field_name in import_fields:
-        value = parse_value(row[field_name], field_name)
+        try:
+            value = parse_value(row[field_name], field_name)
+        except ValueError as e:
+            print('SKIP: project id {}: {}'.format(project_id, e))
+            return
         if value is NO_CHANGE:
             continue
         old_value = getattr(project, field_name)
