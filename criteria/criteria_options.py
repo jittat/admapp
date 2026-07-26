@@ -143,10 +143,35 @@ CRITERIA_OPTIONS = {
         { "score_type": "DET", "description": "Duolingo English Test", "unit": "คะแนน" },
         { "score_type": "MU_ELT", "description": "MU-ELT", "unit": "คะแนน" },
 
+        { "score_type": "TS_TGAT", "description": "T-Score ของวิชา TGAT ความถนัดทั่วไป", "unit": "คะแนน" },
         { "score_type": "TS_TGAT1", "description": "T-Score ของวิชา TGAT1 การสื่อสารภาษาอังกฤษ", "unit": "คะแนน" },
+        { "score_type": "TS_TGAT2", "description": "T-Score ของวิชา TGAT2 การคิดอย่างมีเหตุผล", "unit": "คะแนน" },
+        { "score_type": "TS_TGAT3", "description": "T-Score ของวิชา TGAT3 สมรรถนะการทำงาน", "unit": "คะแนน" },
+        { "score_type": "TS_TPAT1", "description": "T-Score ของวิชา TPAT1 วิชาเฉพาะ กสพท", "unit": "คะแนน" },
+        { "score_type": "TS_TPAT2", "description": "T-Score ของวิชา TPAT2 ความถนัดศิลปกรรมศาสตร์", "unit": "คะแนน" },
+        { "score_type": "TS_TPAT21", "description": "T-Score ของวิชา TPAT21 ทัศนศิลป์", "unit": "คะแนน" },
+        { "score_type": "TS_TPAT22", "description": "T-Score ของวิชา TPAT22 ดนตรี", "unit": "คะแนน" },
+        { "score_type": "TS_TPAT23", "description": "T-Score ของวิชา TPAT23 นาฏศิลป์", "unit": "คะแนน" },
         { "score_type": "TS_TPAT3", "description": "T-Score ของวิชา TPAT3 ความถนัดวิทยาศาสตร์ เทคโนโลยี วิศวกรรมศาสตร์", "unit": "คะแนน" },
+        { "score_type": "TS_TPAT4", "description": "T-Score ของวิชา TPAT4 ความถนัดสถาปัตยกรรมศาสตร์", "unit": "คะแนน" },
+        { "score_type": "TS_TPAT5", "description": "T-Score ของวิชา TPAT5 ความถนัดครุศาสตร์-ศึกษาศาสตร์", "unit": "คะแนน" },
+
         { "score_type": "TS_A61Math1", "description": "T-Score ของวิชา A-Level Math1 คณิตศาสตร์ประยุกต์ 1", "unit": "คะแนน" },
+        { "score_type": "TS_A62Math2", "description": "T-Score ของวิชา A-Level Math2 คณิตศาสตร์ประยุกต์ 2", "unit": "คะแนน" },
+        { "score_type": "TS_A63Sci", "description": "T-Score ของวิชา A-Level Sci วิทยาศาสตร์ประยุกต์", "unit": "คะแนน" },
         { "score_type": "TS_A64Phy", "description": "T-Score ของวิชา A-Level Phy ฟิสิกส์", "unit": "คะแนน" },
+        { "score_type": "TS_A65Chem", "description": "T-Score ของวิชา A-Level Chem เคมี", "unit": "คะแนน" },
+        { "score_type": "TS_A66Bio", "description": "T-Score ของวิชา A-Level Bio ชีววิทยา", "unit": "คะแนน" },
+        { "score_type": "TS_A70Soc", "description": "T-Score ของวิชา A-Level Soc สังคมศาสตร์", "unit": "คะแนน" },
+        { "score_type": "TS_A81Thai", "description": "T-Score ของวิชา A-Level Thai ภาษาไทย", "unit": "คะแนน" },
+        { "score_type": "TS_A82Eng", "description": "T-Score ของวิชา A-Level Eng ภาษาอังกฤษ", "unit": "คะแนน" },
+        { "score_type": "TS_A83Fre", "description": "T-Score ของวิชา A-Level Fre ภาษาฝรั่งเศส", "unit": "คะแนน" },
+        { "score_type": "TS_A84Ger", "description": "T-Score ของวิชา A-Level Ger ภาษาเยอรมัน", "unit": "คะแนน" },
+        { "score_type": "TS_A85Jap", "description": "T-Score ของวิชา A-Level Jap ภาษาญี่ปุ่น", "unit": "คะแนน" },
+        { "score_type": "TS_A86Kor", "description": "T-Score ของวิชา A-Level Kor ภาษาเกาหลี", "unit": "คะแนน" },
+        { "score_type": "TS_A87Chi", "description": "T-Score ของวิชา A-Level Chi ภาษาจีน", "unit": "คะแนน" },
+        { "score_type": "TS_A88Bal", "description": "T-Score ของวิชา A-Level Bal ภาษาบาลี", "unit": "คะแนน" },
+        { "score_type": "TS_A89Spn", "description": "T-Score ของวิชา A-Level Spn ภาษาสเปน", "unit": "คะแนน" },
     ]
 }
 
@@ -162,9 +187,19 @@ SCORING_SCORE_TYPE_TAGS = CRITERIA_OPTIONS['general_scoring_tags'] + CRITERIA_OP
 # EXAM_FIELD_MAP); export is handled by a separate mechanism.
 PORTFOLIO_SCORING_TAGS = {
     'prepend': [
-        { "score_type": "PLACEHOLDER_PORTFOLIO_FIRST", "description": "ตัวเลือกต้นรายการ (placeholder)", "unit": "" },
+        {
+            "score_type": "PORTFORLIO",
+            "description": "คะแนนแฟ้มผลงาน", "unit": ""
+        },
+        {
+            "score_type": "INTERVIEW",
+            "description": "การสอบสัมภาษณ์", "unit": ""
+        },
+        {
+            "score_type": "INTERVIEW_ENGLISH",
+            "description": "การสอบสัมภาษณ์เป็นภาษาอังกฤษ", "unit": ""
+        },      
     ],
     'append': [
-        { "score_type": "PLACEHOLDER_PORTFOLIO_LAST", "description": "ตัวเลือกท้ายรายการ (placeholder)", "unit": "" },
     ],
 }
