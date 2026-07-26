@@ -163,7 +163,7 @@ class AdmissionProject(models.Model):
     is_additional_admission_form_edit_allowed = models.BooleanField(default=True,
                                                                     verbose_name='อนุญาตให้แก้ไขแบบฟอร์มเพิ่มเติม')
     is_additional_admission_upload_allowed = models.BooleanField(default=False,
-                                                                 verbose_name='อนุญาตให้อัพโหลดเอกสารเพิ่มเติมตามเกณฑ์')
+                                                                 verbose_name='อนุญาตให้อัพโหลดเอกสารเพิ่มเติม')
     is_additional_notice_allowed = models.BooleanField(default=False,
                                                        verbose_name='อนุญาตให้มีประกาศเพิ่มเติมในระบบรับสมัคร')
     is_portfolio_submission_required = models.BooleanField(default=False,

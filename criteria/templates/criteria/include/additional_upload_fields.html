@@ -1,12 +1,15 @@
 {% if has_additional_upload_fields %}
   <div class="form-group">
     <label for="additional-upload-fields">
-      เอกสารเพิ่มเติมที่ให้ผู้สมัครอัพโหลดตามเกณฑ์
+      เอกสารเพิ่มเติมที่ให้ผู้สมัครอัพโหลดในระบบรับตรงของ KU
+      <small class="text-muted">
+        เฉพาะในกรณีที่มีผลงานในรูปแบบอื่นที่ไม่สามารถระบุได้ผ่านทางคำถามใน TCASFolio เท่านั้น
+      </small>
       <button class="btn btn-outline-secondary btn-sm" {% if additional_upload_fields %}style="display: none;"{% endif %}  id="additionalUploadFieldsToggleId">ป้อนข้อมูล</button>
     </label>
     <div class="additional-upload-fields-form" {% if not additional_upload_fields %}style="display: none;"{% endif %}>
       <small class="form-text text-muted">
-        สามารถกำหนดรายการเอกสารเพิ่มเติมให้ผู้สมัครอัพโหลด (สามารถอัพโหลดได้หลายไฟล์หรือแนบลิงก์)
+        สามารถกำหนดรายการเอกสาร หลักฐาน หรือผลงานเพิ่มเติมเฉพาะสาขาให้ผู้สมัครอัพโหลด (สามารถอัพโหลดได้หลายไฟล์หรือแนบลิงก์)
         เพื่อใช้ประกอบการพิจารณาได้ ควรระบุหัวข้อให้ชัดเจน สั้นและกระชับ
       </small>
       <table class="table table-bordered">

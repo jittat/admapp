@@ -1,14 +1,19 @@
 {% if has_additional_form_fields %}
   <div class="form-group">
     <label for="additional-form-fields">
-      ฟอร์มกรอกข้อมูลเพิ่มเติมสำหรับผู้สมัคร
+      คำถามเพิ่มเติมสำหรับผู้สมัครในระบบ TCASFolio
+      <small class="text-muted">
+        คำถามจะอยู่ในหมวดที่ 5 ของการทำพอร์ตฟอลิโอในระบบ TCASFolio
+      </small>
       <button class="btn btn-outline-secondary btn-sm" {% if additional_form_fields %}style="display: none;"{% endif %}  id="additionalFormFieldsToggleId">ป้อนข้อมูล</button>
     </label>
     <div class="additional-form-fields-form" {% if not additional_form_fields %}style="display: none;"{% endif %}>
       <small class="form-text text-muted">
-	      สามารถเพิ่มฟอร์มให้ผู้สมัครกรอกรายละเอีดยเพิ่มเติม เพื่อใช้ประกอบการพิจารณาเรียกสัมภาษณ์ได้
-        ควรระบุหัวข้อให้ชัดเจน สั้นและกระชับ <strong>ไม่ควรมีเกิน 3 คำถาม</strong> &nbsp; &nbsp;
-        สำหรับคำถามที่ระบุว่าเป็นคำตอบสั้น ในระบบ TCAS Folio จะแจ้งเป็น "คำถามปลายปิด" ส่วนคำถามที่ระบุว่าเป็นข้อความยาว จะแจ้งในระบบ TCAS Folio ว่าเป็น "คำถามปลายเปิด"
+	      สามารถเพิ่มฟอร์มให้ผู้สมัครตอบคำถามเพิ่มเติม เพื่อใช้ประกอบการพิจารณาเรียกสัมภาษณ์ได้
+        ควรระบุหัวข้อให้ชัดเจน สั้นและกระชับ <strong>จะระบุได้มากที่สุด 5 คำถาม</strong> &nbsp; &nbsp;
+        สำหรับคำถามที่ระบุว่าเป็นคำตอบสั้น ในระบบ TCASFolio จะแจ้งเป็น "คำถามปลายปิด" 
+        ส่วนคำถามที่ระบุว่าเป็นข้อความยาว จะแจ้งในระบบ TCASFolio ว่าเป็น "คำถามปลายเปิด" &nbsp; &nbsp;
+        ในระบบ TCASFolio จะมีหมวดที่ 2 ที่ให้กรอกเรียงความ/เหตุผลในการสมัครแล้ว ไม่ควรเพิ่มในคำถามอีก ควรระบุเป็นประเด็นอื่น 
       </small>
       <table class="table table-bordered">
         <thead>
