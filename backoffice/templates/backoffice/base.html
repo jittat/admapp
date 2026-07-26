@@ -25,7 +25,10 @@
       <span class="navbar-text">
         {{ user.get_full_name }}
       </span>
-      <a class="btn btn-secondary nav-link nav-item" href="{% url 'backoffice-logout' %}">ออกจากระบบ</a>
+      <form class="nav-item form-inline" action="{% url 'backoffice-logout' %}" method="post">
+        {% csrf_token %}
+        <button class="btn btn-secondary nav-link" type="submit">ออกจากระบบ</button>
+      </form>
     {% endif %}
   </div>
 </nav>
