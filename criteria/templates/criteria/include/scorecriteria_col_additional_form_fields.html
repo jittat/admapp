@@ -20,7 +20,7 @@
             <tr>
               <td>{{ forloop.counter }}</td>
               <td>{{ f.title }}</td>
-              <td>{% if f.size == "short" %}คำตอบสั้น{% elif f.size == "paragraph" %}ข้อความยาว{% endif %}</td>
+              <td>{% if f.size == "short" %}คำตอบสั้น{% elif f.size == "paragraph" %}ข้อความยาว{% elif f.size == "paragraphimage" %}ข้อความยาว+รูป{% endif %}</td>
             </tr>
           {% endfor %}
         </tbody>

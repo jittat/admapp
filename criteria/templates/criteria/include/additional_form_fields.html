@@ -1,4 +1,5 @@
 {% if has_additional_form_fields %}
+  {% with max_form_fields=5 %}
   <div class="form-group">
     <label for="additional-form-fields">
       คำถามเพิ่มเติมสำหรับผู้สมัครในระบบ TCASFolio
@@ -10,7 +11,7 @@
     <div class="additional-form-fields-form" {% if not additional_form_fields %}style="display: none;"{% endif %}>
       <small class="form-text text-muted">
 	      สามารถเพิ่มฟอร์มให้ผู้สมัครตอบคำถามเพิ่มเติม เพื่อใช้ประกอบการพิจารณาเรียกสัมภาษณ์ได้
-        ควรระบุหัวข้อให้ชัดเจน สั้นและกระชับ <strong>จะระบุได้มากที่สุด 5 คำถาม</strong> &nbsp; &nbsp;
+        ควรระบุหัวข้อให้ชัดเจน สั้นและกระชับ <strong>จะระบุได้มากที่สุด {{ max_form_fields }} คำถาม</strong> &nbsp; &nbsp;
         สำหรับคำถามที่ระบุว่าเป็นคำตอบสั้น ในระบบ TCASFolio จะแจ้งเป็น "คำถามปลายปิด" 
         ส่วนคำถามที่ระบุว่าเป็นข้อความยาว จะแจ้งในระบบ TCASFolio ว่าเป็น "คำถามปลายเปิด" &nbsp; &nbsp;
         ในระบบ TCASFolio จะมีหมวดที่ 2 ที่ให้กรอกเรียงความ/เหตุผลในการสมัครแล้ว ไม่ควรเพิ่มในคำถามอีก ควรระบุเป็นประเด็นอื่น 
@@ -35,6 +36,7 @@
                 <select class="form-control additional-form-fields-size" name="additional_admission_form_fields-{{ forloop.counter }}-size">
                   <option {% if f.size == "short" %}selected{% endif %} value="short">คำตอบสั้น</option>
                   <option {% if f.size == "paragraph" %}selected{% endif %} value="paragraph">ข้อความยาว</option>
+                  <option {% if f.size == "paragraphimage" %}selected{% endif %} value="paragraphimage">ข้อความยาว+รูป</option>
                 </select>
               </td>
               <td>
@@ -51,6 +53,7 @@
                 <select class="form-control additional-form-fields-size" name="additional_admission_form_fields-1-size">
                   <option value="short">คำตอบสั้น</option>
                   <option value="paragraph">ข้อความยาว</option>
+                  <option value="paragraphimage">ข้อความยาว+รูป</option>
                 </select>
               </td>
               <td>
@@ -67,9 +70,14 @@
           </tr>
         </tbody>
       </table>
+      <small class="form-text text-danger additional-form-fields-limit-message" style="display: none;">
+        ระบุได้มากที่สุด {{ max_form_fields }} คำถาม
+      </small>
     </div>
   </div>
   <script>
+    const MAX_ADDITIONAL_FORM_FIELDS = {{ max_form_fields }};
+
     $(function(){
       $("#additionalFormFieldsToggleId").click(function(){
         $(".additional-form-fields-form").slideDown();
@@ -80,7 +88,21 @@
         $(".additional-form-fields-form").show();
         $("#additionalFormFieldsToggleId").hide();
       {% endif %}
+
+      // existing criteria may already hold more rows than the limit
+      updateAdditionalFormFieldsAddButton();
     });
+
+    // the last row holds the add button, so it does not count as a question
+    function countAdditionalFormFieldRows() {
+      return $('.additional-form-fields-form table tbody tr').length - 1;
+    }
+
+    function updateAdditionalFormFieldsAddButton() {
+      var isFull = countAdditionalFormFieldRows() >= MAX_ADDITIONAL_FORM_FIELDS;
+      $('.additional-form-fields-row-add-buttons').prop('disabled', isFull);
+      $('.additional-form-fields-limit-message').toggle(isFull);
+    }
 
     function renumberAdditionalFormFields() {
       $('.additional-form-fields-form table tbody tr').each(function(index, tr) {
@@ -90,9 +112,13 @@
           $(tr).find('.additional-form-fields-size').attr('name', 'additional_admission_form_fields-' + (index + 1) + '-size');
         }
       });
+      updateAdditionalFormFieldsAddButton();
     }
 
     function addNewFormRow() {
+      if (countAdditionalFormFieldRows() >= MAX_ADDITIONAL_FORM_FIELDS) {
+        return;
+      }
       var formRowTemplate = `<tr class="additional-form-fields-form-rows">
                 <td class="additional-form-fields-form-index">2</td>
                 <td>
@@ -102,6 +128,7 @@
                   <select class="form-control form-control additional-form-fields-size" name="additional_admission_form_fields-2-size">
                     <option value="short">คำตอบสั้น</option>
                     <option value="paragraph">ข้อความยาว</option>
+                    <option value="paragraphimage">ข้อความยาว+รูป</option>
                   </select>
                 </td>
                 <td>
@@ -125,4 +152,5 @@
       return false;
     });
   </script>
+  {% endwith %}
 {% endif %}

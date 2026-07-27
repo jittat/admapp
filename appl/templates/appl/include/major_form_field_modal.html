@@ -14,9 +14,11 @@
             {% if field.size == 'short' %}
               <small>กรอกคำตอบสั้น ความยาวไม่เกิน 200 ตัวอักษร</small> <span class="text-danger major-form-modal-errors"></span>
               <textarea class="form-control major-form-modal-inputs" name="answer" rows="3">{{ field.value.value|default_if_none:'' }}</textarea>
-            {% elif field.size == 'paragraph' %}
+            {% elif field.size == 'paragraph' or field.size == 'paragraphimage' %}
+              {# paragraphimage is authored as "ข้อความยาว+รูป" but the image half
+                 is not implemented yet, so it renders as a plain long answer. #}
               <small>เขียนอธิบายได้ ความยาวไม่เกิน 2000 ตัวอักษร</small> <span class="text-danger major-form-modal-errors"></span>
-              <textarea class="form-control major-form-modal-inputs" style="field-sizing: content; min-height: 120px;" name="answer" rows="10">{{ f.value.value|default_if_none:'' }}</textarea>
+              <textarea class="form-control major-form-modal-inputs" style="field-sizing: content; min-height: 120px;" name="answer" rows="10">{{ field.value.value|default_if_none:'' }}</textarea>
             {% endif %}
           </div>
         </form>

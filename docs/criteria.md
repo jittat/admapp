@@ -288,8 +288,10 @@ The `has_*` context vars are set in `additional_fields_context`
 The two **row-based** partials (form-fields, upload-fields) are copy-paste
 twins differing only in prefix and columns:
 
-- form-fields — หัวข้อ + ขนาด (`short` / `paragraph`), prefix
-  `additional_admission_form_fields-{n}-`;
+- form-fields — หัวข้อ + ขนาด, prefix
+  `additional_admission_form_fields-{n}-`. `size` is one of `short`
+  (คำตอบสั้น), `paragraph` (ข้อความยาว) or `paragraphimage` (ข้อความยาว+รูป);
+  see the note below before adding another;
 - upload-fields — หัวข้อ + คำอธิบาย + บังคับ (checkbox `value="1"`), prefix
   `additional_admission_upload_fields-{n}-`.
 
@@ -299,8 +301,63 @@ side and `upsert_admission_criteria`'s splitter use. Both ship inline jQuery
 with a `+` row that appends a hardcoded template row and a `renumber…()`
 that rewrites the counter cell and every `name` attribute, skipping the
 trailing button row; add/delete handlers are delegated and `return false`.
-The form-fields help text claims a **max of 5 questions but nothing enforces
-it client-side**.
+
+The form-fields table is capped at **5 questions, client-side only**. The
+limit lives in a single `{% with max_form_fields=5 %}` in the partial,
+feeding both the Thai help text and a `MAX_ADDITIONAL_FORM_FIELDS` JS const,
+so the promise and the enforcement cannot drift; because it is
+template-local it covers all three includers with no view changes.
+`updateAdditionalFormFieldsAddButton()` disables the `+` button and reveals
+a `.additional-form-fields-limit-message` notice when the row count (DOM
+rows minus the trailing button row) reaches the limit; it runs on ready and
+at the end of `renumberAdditionalFormFields()`, which already fires after
+every add and delete. `addNewFormRow()` re-checks the limit itself.
+Deliberate consequences: rows are counted from the DOM, so five blank rows
+block the button even though the server drops blank titles; criteria that
+already exceed the limit still render and still post, with the button
+disabled until enough rows are deleted; and **the server does not enforce
+the cap at all** (`extract_additional_admission_form_fields_as_json` takes
+whatever is posted), so a replayed POST or edited DOM can exceed it. The
+upload-fields table has no cap.
+
+### Adding a new `size` value (five places, all outside this app)
+
+`size` is a free string carried verbatim from the criteria JSON to the
+applicant's answer box. Nothing validates it, so a value the runtime does
+not recognise fails silently. All five touch points:
+
+1. `criteria/include/additional_form_fields.html` — three `<select>`s
+   (existing rows, the `{% empty %}` row, **and the JS row template inside
+   `addNewFormRow()`**; missing the third means new rows lack the option).
+2. `criteria/include/scorecriteria_col_additional_form_fields.html` — the
+   read-only "รูปแบบ" column, an `if/elif` chain that renders blank for an
+   unknown value.
+3. `scripts/update_major_additional_notice_and_form.py` — copies `size`
+   into `MajorAdditionalAdmissionFormField.size` (`CharField(max_length=20)`)
+   with no validation; nothing to change unless the value exceeds 20 chars.
+4. `appl/models.py` `MajorAdditionalAdmissionFormField.text_size()` —
+   `'short'` → 220, **else** → 2050, so any new value silently inherits the
+   paragraph length limit.
+5. `appl/templates/appl/include/major_form_field_modal.html` — the applicant
+   answer modal. Another `if/elif` with **no `else`**: an unrecognised size
+   renders a modal with no input at all and the applicant simply cannot
+   answer.
+
+> ⚠️ `paragraphimage` is authored as "ข้อความยาว+รูป" but **the image half
+> does not exist**. `ApplicantAdditionalAdmissionFormValue.value` is a plain
+> `TextField`, `appl.views.major_additional_form` reads only
+> `request.POST['answer']` and never `request.FILES`, and the staff readers
+> (`backoffice/views/reports.py`, `projects.py`) treat the value as text. It
+> currently renders as a plain long answer.
+>
+> **Do not build image support into the `appl` side.** As of 2026-07 the
+> applicant-facing runtime for these questions (points 3–5 above:
+> `MajorAdditionalAdmissionFormField`,
+> `ApplicantAdditionalAdmissionFormValue`, `appl.views.major_additional_form`
+> and the answer modal) is slated for **removal** — the questions are to be
+> answered in TCASFolio instead, which is what the authoring help text
+> already tells staff. The authoring side in this app stays; the `appl`
+> rendering is the part going away.
 
 `additional_form_fields.html` additionally honours
 `shows_additional_form_fields`, set only by the standalone
@@ -323,9 +380,13 @@ faculty user is pinned to their own faculty).
 - `create` / `edit` / `delete` — the versioning flow above. `create`
   supports pre-filling via `?duplicate_score_id=` (import another criteria's
   scores) and `?selected_major_id=&slots=`.
-- `edit-form-fields` (`edit_additional_admission_form_fields`) — editing
-  additional applicant-form questions (currently mostly disabled — the POST
-  path returns `HttpResponseForbidden` except for cancel).
+- `edit-form-fields` (`edit_additional_admission_form_fields`) — a targeted
+  page for editing just the additional applicant-form questions of an
+  existing criteria. The whole view `HttpResponseForbidden`s when the
+  project does not set `is_additional_admission_form_allowed`; otherwise
+  POST saves `additional_admission_form_fields_json` **in place on the
+  existing row — no version bump**, unlike everything else in this app
+  (`'cancel'` in POST redirects back to the project index instead).
 
 **In-place AJAX toggles (mutate the existing criteria, no new version)**
 - `update-add-limit` — set a join row's `add_limit` (validated `A`/`B`/`C<n>`).
