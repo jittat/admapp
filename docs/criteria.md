@@ -198,6 +198,117 @@ Finally `created_by` is set to the acting user and
 Numeric-looking values are coerced to `Decimal`. An empty submission (no
 majors and no score criteria) raises `Http404`.
 
+## The criteria form UI
+
+`criteria/templates/criteria/create.html` and `edit.html` are near-identical
+and render **one** `<form method="post">` whose body comes from two very
+different worlds:
+
+1. the **majors + required + scoring tables**, rendered by a React component
+   into `<div id="add-criterion-form">`;
+2. a stack of **optional server-rendered partials** for the "additional"
+   fields, appended after it.
+
+Both write plain `<input>`s into the same form, and the single submit button
+posts everything to `upsert_admission_criteria` at once. Nothing here is a
+Django `Form`/`ModelForm` — the field names in these templates *are* the API.
+
+### React component (`main/static/react/src/CreateCriterionForm.js`)
+
+- One 685-line file, no bundler and no npm React. It is compiled JSX→JS
+  **in place** by Babel: `main/static/react/` holds `package.json` with
+  `yarn dev` = `babel --watch src --out-dir .`, and only
+  `@babel/preset-react` is applied. Editing `src/CreateCriterionForm.js`
+  does nothing until that watcher (or a one-off `yarn dev`) rewrites the
+  sibling `CreateCriterionForm.js`, which is what `{% static %}` serves.
+  **Commit both files.**
+- `React` / `ReactDOM` are loaded from the unpkg CDN by
+  `include/criteria_script_and_style.html`; `$` is the page's global jQuery
+  (jQuery UI `autocomplete` / `selectmenu` are used heavily). All are
+  globals, not imports.
+- Server data arrives as `data-*` attributes read once at module scope via
+  `document.currentScript`: `data-majors`, `data-selected-majors`,
+  `data-required`, `data-scoring`, `data-mode` (`create`/`edit`, currently
+  unused beyond commented-out code) and
+  `data-is_custom_score_criteria_allowed`, which is compared against the
+  **string `'True'`** (it interpolates the raw Python bool repr).
+  `data_required` / `data_scoring` are built by `score_criterias_to_data`
+  (`value` serialized as `float`), the major list by `majors_to_json`.
+- A second set of globals comes from
+  `include/criteria_form_option_script.html`: `requiredTags`, `scoringTags`,
+  `unitTags`, `hideRequiredSection`, `useComponentWeightType`, plus
+  `relationRequired` / `relationScoring` emitted by `criteria_options_as_js`.
+  This is where the `PORTFOLIO_SCORING_TAGS` splice happens
+  (`prepend ⧺ general_scoring ⧺ test_tags ⧺ append`); when
+  `uses_component_weights` is set, scoring collapses to
+  `component_type_tags` built from `component_weight_type_choices`.
+- Tree: `Form` → `SelectMajors` + `RequiredCriteria` (skipped when
+  `hideRequiredSection`) + `ScoringCriteria`. Each section renders
+  `PrimaryTopic` / `PrimaryScoringTopic`, which render their own children
+  rows inline in a `React.Fragment`.
+- **It generates exactly the POST keys documented above** — `majors_{n}_id`,
+  `majors_{n}_slot`, `required_{n}_title|value|unit|type|relation`,
+  `scoring_{n}_title|value|type|relation`, with children as `{n}.{i}`. The
+  hidden `_type` input carries `score_type`, defaulting to `"OTHER"` — that
+  default is what later surfaces as `OTHER`/`ERROR-*` in the CUPT export.
+- Two switches shape every row:
+  - `is_custom_score_criteria_allowed` — true renders a free-text
+    `EditableCell` (auto-growing `<textarea>` + jQuery UI autocomplete over
+    the tags); false renders a constrained `SelectMenu` limited to catalog
+    descriptions. Same project flag that hides the interview-condition
+    partial below.
+  - `topic.relation === 'MAX'` — in scoring, blanks the per-child value
+    input and percentage cell, matching the export's `cal_type=1` handling.
+- `EditableCell` and `SelectMenu` both auto-fill the unit field on select by
+  string-munging the field `name` (split on `_`, replace the last segment
+  with `unit`) and writing `unitEl.value` through jQuery — i.e. mutating a
+  React-rendered input from outside React. Duplicated in both components
+  (one carries a `TODO: refactor this`).
+- Both templates delete the form and the submit button outright on IE and
+  show a Thai "unsupported browser" message.
+
+### Additional-fields partials (`criteria/templates/criteria/include/`)
+
+Server-rendered, included in the same form in this order:
+`additional_form_fields` → `additional_notice_form` →
+`additional_upload_fields` → `interview_date_form` →
+`additional_interview_condition_form`. Each is entirely wrapped in its own
+gate, so when a gate is off **no input is rendered and no key is posted**.
+
+| Partial | Model field | Gate |
+| --- | --- | --- |
+| `additional_form_fields.html` | `additional_admission_form_fields_json` | `has_additional_form_fields` ← `project.is_additional_admission_form_allowed` |
+| `additional_upload_fields.html` | `additional_admission_upload_fields_json` | `has_additional_upload_fields` ← `project.is_additional_admission_upload_allowed` |
+| `additional_notice_form.html` | `additional_notice` | `project.is_additional_notice_allowed` (read directly, not via context var) |
+| `additional_interview_condition_form.html` | `additional_interview_condition` | `not project.is_custom_score_criteria_allowed` |
+
+The `has_*` context vars are set in `additional_fields_context`
+(`criteria/views/__init__.py`) straight from the project flags.
+
+The two **row-based** partials (form-fields, upload-fields) are copy-paste
+twins differing only in prefix and columns:
+
+- form-fields — หัวข้อ + ขนาด (`short` / `paragraph`), prefix
+  `additional_admission_form_fields-{n}-`;
+- upload-fields — หัวข้อ + คำอธิบาย + บังคับ (checkbox `value="1"`), prefix
+  `additional_admission_upload_fields-{n}-`.
+
+Both use a **1-indexed, dash-separated** naming scheme
+(`prefix-{n}-attr`) — note this is *not* the underscore scheme the React
+side and `upsert_admission_criteria`'s splitter use. Both ship inline jQuery
+with a `+` row that appends a hardcoded template row and a `renumber…()`
+that rewrites the counter cell and every `name` attribute, skipping the
+trailing button row; add/delete handlers are delegated and `return false`.
+The form-fields help text claims a **max of 5 questions but nothing enforces
+it client-side**.
+
+`additional_form_fields.html` additionally honours
+`shows_additional_form_fields`, set only by the standalone
+`edit_additional_admission_form_fields` view (`edit-form-fields`) to
+force-open the panel; on create/edit the inline `style` gate governs
+instead. The two single-field partials hide themselves with
+`{% if value == '' %}`, which does not catch `None`.
+
 ## Views & URLs
 
 Namespaced `backoffice:criteria:*` (see `criteria/urls.py`). All are
@@ -332,3 +443,33 @@ rounds render an unchanged `scoringTags`. Applies to both create and edit
 - `additional_description` / `additional_condition` are script-only and
   invisible to the in-app UI and in-app export — see the standalone
   `scripts/export_*` for their only consumers.
+- **Turning a project flag off silently drops stored data on the next
+  edit.** The four "additional" fields are in the re-read-from-POST group
+  above, which is only safe because their partial renders an input whenever
+  the gate is on. Flip `is_additional_admission_form_allowed` (or any of the
+  others) off between edits and the partial disappears, the key is absent
+  from the POST, and the next version bump blanks the field — the same
+  failure mode as the old `accepted_graduate_year_flags` bug.
+- The React source and its Babel output are two checked-in copies of the
+  same file. Editing `src/` without re-running `yarn dev` in
+  `main/static/react/` changes nothing in the browser.
+- Known rough edges in `CreateCriterionForm.js`, if you touch it:
+  - new topics get `id: Date.now()`, used both as the React `key` and as the
+    `findIndex` identity — two rows added in the same millisecond collide
+    and corrupt subsequent edits. (Ids loaded from the server are instead
+    order strings like `"1"` / `"1.2"`.)
+  - **⚠️ TO INVESTIGATE (not yet verified in a browser):** the row-delete
+    buttons have no `type="button"` and their handlers don't
+    `preventDefault()` — unlike the add handlers, which do. A `<button>`
+    inside a form defaults to `type="submit"`, so these may submit the form
+    instead of (or as well as) removing the row. `SelectMajors`' "ลบ" button
+    additionally carries a bogus `htmltype="button"` attribute, which is not
+    a real DOM attribute and does **not** set the button type; React just
+    passes it through. Affects `SelectMajors`, `PrimaryTopic` and
+    `PrimaryScoringTopic` (both primary and secondary rows). Reasoned from
+    reading the code only — confirm by clicking a delete button on a real
+    create/edit page before changing anything.
+  - `SelectRelation` / `SelectMenu` mix controlled `value=` with
+    `<option selected>`, which React warns about.
+  - `SelectMajors` keeps a `jRef` written during render as a workaround for
+    the jQuery autocomplete callback closing over stale state.
