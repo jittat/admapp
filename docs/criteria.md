@@ -519,17 +519,25 @@ rounds render an unchanged `scoringTags`. Applies to both create and edit
     `findIndex` identity — two rows added in the same millisecond collide
     and corrupt subsequent edits. (Ids loaded from the server are instead
     order strings like `"1"` / `"1.2"`.)
-  - **⚠️ TO INVESTIGATE (not yet verified in a browser):** the row-delete
-    buttons have no `type="button"` and their handlers don't
-    `preventDefault()` — unlike the add handlers, which do. A `<button>`
-    inside a form defaults to `type="submit"`, so these may submit the form
-    instead of (or as well as) removing the row. `SelectMajors`' "ลบ" button
-    additionally carries a bogus `htmltype="button"` attribute, which is not
-    a real DOM attribute and does **not** set the button type; React just
-    passes it through. Affects `SelectMajors`, `PrimaryTopic` and
-    `PrimaryScoringTopic` (both primary and secondary rows). Reasoned from
-    reading the code only — confirm by clicking a delete button on a real
-    create/edit page before changing anything.
+  - the five row-delete buttons (`SelectMajors` line ~83, and the primary +
+    secondary `-` in `PrimaryTopic` / `PrimaryScoringTopic`) have no
+    `type="button"` and their handlers never call `preventDefault()` —
+    unlike the add handlers, which do. A `<button>` inside a form defaults
+    to `type="submit"`, so on paper these should submit the criteria form
+    rather than just remove a row. **They were tested in the browser
+    (2026-07) and delete works correctly**, so something cancels the
+    submit; nothing in the page or `backoffice/base.html` intercepts it.
+    The likeliest explanation is HTML5 constraint validation — the form is
+    full of `required` fields (e.g. a major added from the autocomplete has
+    no `slot`, leaving `majors_N_slot` empty and invalid), and a submit on
+    an invalid form is cancelled before navigation while `onClick` still
+    runs. If that is the mechanism the safety is **conditional**: deletes
+    would begin submitting once every required field is filled. Adding
+    `type="button"` to the five buttons would make it unconditional.
+    `SelectMajors`' "ลบ" also carries a bogus `htmltype="button"` attribute
+    — not a real DOM attribute, so it does **not** set the button type;
+    React just passes it through to the HTML. Someone clearly hit this and
+    reached for an Ant-Design-style prop name that does not apply here.
   - `SelectRelation` / `SelectMenu` mix controlled `value=` with
     `<option selected>`, which React warns about.
   - `SelectMajors` keeps a `jRef` written during render as a workaround for
