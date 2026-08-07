@@ -340,10 +340,18 @@ def extract_additional_admission_form_fields_as_json(project, post_request):
 def extract_additional_admission_upload_fields_as_json(project, post_request):
     if not project.is_additional_admission_upload_allowed:
         return ''
+    # The late-upload checkbox is only offered (and only stored) when the
+    # project allows it; otherwise every row is saved as not-late, so turning
+    # the project flag off and re-saving clears any stale values.
+    if project.is_additional_admission_late_upload_allowed:
+        is_late_upload_allowed = lambda v: v != ""
+    else:
+        is_late_upload_allowed = lambda v: False
     return extract_indexed_rows_as_json(
         post_request, "additional_admission_upload_fields",
         {"descriptions": lambda v: v.strip(),
-         "is_required": lambda v: v != ""})
+         "is_required": lambda v: v != "",
+         "is_late_upload_allowed": is_late_upload_allowed})
 
 def extract_additional_notice(project, post_request):
     if not project.is_additional_notice_allowed:
@@ -560,6 +568,10 @@ def additional_fields_context(project, admission_criteria=None):
         'additional_form_fields': additional_form_fields,
 
         'has_additional_upload_fields': project.is_additional_admission_upload_allowed,
+        'has_additional_late_upload_fields': (
+            project.is_additional_admission_upload_allowed and
+            project.is_additional_admission_late_upload_allowed),
+        'late_upload_date': project.late_upload_date,
         'additional_upload_fields': additional_upload_fields,
 
         'has_additional_notice': project.is_additional_notice_allowed,

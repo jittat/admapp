@@ -164,6 +164,13 @@ class AdmissionProject(models.Model):
                                                                     verbose_name='อนุญาตให้แก้ไขแบบฟอร์มเพิ่มเติม')
     is_additional_admission_upload_allowed = models.BooleanField(default=False,
                                                                  verbose_name='อนุญาตให้อัพโหลดเอกสารเพิ่มเติม')
+    # takes effect only when is_additional_admission_upload_allowed is True
+    is_additional_admission_late_upload_allowed = models.BooleanField(default=False,
+                                                                      verbose_name='อนุญาตให้เอกสารอัพโหลดเพิ่มเติมอัพโหลดหลังกำหนดได้')
+    late_upload_date = models.DateField(verbose_name='วันสุดท้ายที่อนุญาตให้อัพโหลดล่าช้าได้',
+                                        blank=True,
+                                        null=True,
+                                        default=None)
     is_additional_notice_allowed = models.BooleanField(default=False,
                                                        verbose_name='อนุญาตให้มีประกาศเพิ่มเติมในระบบรับสมัคร')
     is_portfolio_submission_required = models.BooleanField(default=False,

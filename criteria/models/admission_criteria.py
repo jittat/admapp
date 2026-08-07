@@ -243,6 +243,7 @@ class AdmissionCriteria(models.Model):
                     'title': f['title'].strip(),
                     'descriptions': f.get('descriptions', '').strip(),
                     'is_required': bool(f.get('is_required', False)),
+                    'is_late_upload_allowed': bool(f.get('is_late_upload_allowed', False)),
                 }
                 for f in additional_upload_fields
                 if 'title' in f and f['title'].strip() != ''

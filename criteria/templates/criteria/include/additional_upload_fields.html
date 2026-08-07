@@ -1,3 +1,4 @@
+{% load appl_tags %}
 {% if has_additional_upload_fields %}
   <div class="form-group">
     <label for="additional-upload-fields">
@@ -11,14 +12,24 @@
       <small class="form-text text-muted">
         สามารถกำหนดรายการเอกสาร หลักฐาน หรือผลงานเพิ่มเติมเฉพาะสาขาให้ผู้สมัครอัพโหลด (สามารถอัพโหลดได้หลายไฟล์หรือแนบลิงก์)
         เพื่อใช้ประกอบการพิจารณาได้ ควรระบุหัวข้อให้ชัดเจน สั้นและกระชับ
+        {% if has_additional_late_upload_fields %}
+          สามารถเลือกให้สามารถอัพโหลดหลังหมดเขตรับสมัครได้ <b>กรุณาเลือกเฉพาะที่จำเป็นจริง ๆ เท่านั้น</b>
+          เพราะผู้สมัครสามารถส่งใบสมัครโดยที่ยังไม่อัพโหลดเอกสารนี้ก็ได้
+          {% if late_upload_date %}
+            ผู้สมัครจะสามารถอัพโหลดได้ถึงวันที่ {{ late_upload_date|thaidate }}
+          {% endif %}
+        {% endif %}
       </small>
       <table class="table table-bordered">
         <thead>
           <tr>
             <th></th>
             <th class="w-25">หัวข้อ</th>
-            <th>คำอธิบาย</th>
+            <th class="w-50">คำอธิบาย</th>
             <th>บังคับ</th>
+            {% if has_additional_late_upload_fields %}
+              <th>อัพโหลด<br>หลังหมดเขต</th>
+            {% endif %}
             <th></th>
           </tr>
         </thead>
@@ -35,6 +46,11 @@
               <td class="text-center">
                 <input class="additional-upload-fields-is-required" type="checkbox" name="additional_admission_upload_fields-{{ forloop.counter }}-is_required" value="1" {% if f.is_required %}checked{% endif %} />
               </td>
+              {% if has_additional_late_upload_fields %}
+                <td class="text-center">
+                  <input class="additional-upload-fields-is-late-upload-allowed" type="checkbox" name="additional_admission_upload_fields-{{ forloop.counter }}-is_late_upload_allowed" value="1" {% if f.is_late_upload_allowed %}checked{% endif %} />
+                </td>
+              {% endif %}
               <td>
                 <button class="btn btn-secondary btn-sm additional-upload-fields-row-delete-buttons">-</button>
               </td>
@@ -51,6 +67,11 @@
               <td class="text-center">
                 <input class="additional-upload-fields-is-required" type="checkbox" name="additional_admission_upload_fields-1-is_required" value="1" />
               </td>
+              {% if has_additional_late_upload_fields %}
+                <td class="text-center">
+                  <input class="additional-upload-fields-is-late-upload-allowed" type="checkbox" name="additional_admission_upload_fields-1-is_late_upload_allowed" value="1" />
+                </td>
+              {% endif %}
               <td>
                 <button class="btn btn-secondary btn-sm additional-upload-fields-row-delete-buttons">-</button>
               </td>
@@ -63,6 +84,7 @@
             <td></td>
             <td></td>
             <td></td>
+            {% if has_additional_late_upload_fields %}<td></td>{% endif %}
           </tr>
         </tbody>
       </table>
@@ -88,6 +110,7 @@
           $(tr).find('.additional-upload-fields-title').attr('name', 'additional_admission_upload_fields-' + (index + 1) + '-title');
           $(tr).find('.additional-upload-fields-descriptions').attr('name', 'additional_admission_upload_fields-' + (index + 1) + '-descriptions');
           $(tr).find('.additional-upload-fields-is-required').attr('name', 'additional_admission_upload_fields-' + (index + 1) + '-is_required');
+          $(tr).find('.additional-upload-fields-is-late-upload-allowed').attr('name', 'additional_admission_upload_fields-' + (index + 1) + '-is_late_upload_allowed');
         }
       });
     }
@@ -104,6 +127,11 @@
                 <td class="text-center">
                   <input class="additional-upload-fields-is-required" type="checkbox" name="additional_admission_upload_fields-2-is_required" value="1" />
                 </td>
+                {% if has_additional_late_upload_fields %}
+                  <td class="text-center">
+                    <input class="additional-upload-fields-is-late-upload-allowed" type="checkbox" name="additional_admission_upload_fields-2-is_late_upload_allowed" value="1" />
+                  </td>
+                {% endif %}
                 <td>
                   <button class="btn btn-secondary btn-sm additional-upload-fields-row-delete-buttons">-</button>
                 </td>
@@ -124,5 +152,22 @@
       renumberAdditionalUploadFields();
       return false;
     });
+
+    {% if has_additional_late_upload_fields %}
+      // Allowing a late upload weakens the application deadline for this
+      // document, so ask for confirmation when it is turned on (unchecking
+      // needs no confirmation).
+      $(document).on('change', '.additional-upload-fields-is-late-upload-allowed', function() {
+        if (this.checked) {
+          var confirmed = confirm('จำเป็นต้องอนุญาตให้อัพโหลดเอกสารนี้หลังหมดเขตจริง ๆ หรือไม่\n\n' + 
+                                  'หมายเหตุ: การอนุญาตให้อัพโหลดเอกสารนี้หลังหมดเขตรับสมัคร ' +
+                                  'ทำให้ผู้สมัครส่งใบสมัครโดยที่ยังไม่อัพโหลดเอกสารนี้ได้\n\n' +
+                                  'ถ้าแน่ใจกด Ok');
+          if (!confirmed) {
+            this.checked = false;
+          }
+        }
+      });
+    {% endif %}
   </script>
 {% endif %}

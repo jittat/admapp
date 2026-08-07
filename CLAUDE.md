@@ -25,6 +25,14 @@ acceptance, document uploads, etc.). UI/labels are primarily Thai.
 - **`main`** — public-facing site.
 - **`backupmedia`** — media backup utility/scripts.
 
+## Working agreement
+
+For feature work, **describe the plan first and wait for an explicit
+go-ahead before editing any files** — even when the request looks small or
+fully specified. Answer scoping questions, lay out the files to touch and
+the decision points, list open questions, then stop. (Trivial fixes the
+user asked for directly are fine to just do.)
+
 ## Where to look
 
 - Staff score/interview-call UI:

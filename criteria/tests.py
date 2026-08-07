@@ -66,6 +66,7 @@ class AdmissionCriteriaVersioningTestCase(TestCase):
         # The upload-fields editor only appears (and is only parsed) when the
         # project opts in.
         self.project.is_additional_admission_upload_allowed = True
+        self.project.is_additional_admission_late_upload_allowed = True
         self.project.save()
 
         post = {
@@ -74,6 +75,7 @@ class AdmissionCriteriaVersioningTestCase(TestCase):
             'additional_admission_upload_fields-1-title': 'แฟ้มสะสมผลงาน',
             'additional_admission_upload_fields-1-descriptions': 'อัพโหลดไฟล์ PDF',
             'additional_admission_upload_fields-1-is_required': '1',
+            'additional_admission_upload_fields-1-is_late_upload_allowed': '1',
         }
 
         upsert_admission_criteria(post, admission_criteria=self.criteria_v1)
@@ -86,6 +88,7 @@ class AdmissionCriteriaVersioningTestCase(TestCase):
         self.assertEqual(upload_fields[0]['title'], 'แฟ้มสะสมผลงาน')
         self.assertEqual(upload_fields[0]['descriptions'], 'อัพโหลดไฟล์ PDF')
         self.assertTrue(upload_fields[0]['is_required'])
+        self.assertTrue(upload_fields[0]['is_late_upload_allowed'])
 
 
 class UpsertAdmissionCriteriaWritePathTestCase(TestCase):
@@ -261,6 +264,11 @@ class CriteriaViewHelpersTestCase(TestCase):
 
         self.assertTrue(ctx['has_additional_form_fields'])
         self.assertTrue(ctx['has_additional_upload_fields'])
+        # late uploads need their own opt-in on top of the upload flag
+        self.assertFalse(ctx['has_additional_late_upload_fields'])
+        self.project.is_additional_admission_late_upload_allowed = True
+        self.assertTrue(additional_fields_context(
+            self.project)['has_additional_late_upload_fields'])
         self.assertEqual(ctx['additional_form_fields'], [])
         self.assertEqual(ctx['additional_upload_fields'], [])
         self.assertEqual(ctx['additional_notice'], '')
@@ -328,4 +336,27 @@ class ExtractAdditionalFieldsTestCase(TestCase):
         rows = json.loads(
             extract_additional_admission_upload_fields_as_json(self.project, post))
         self.assertEqual(rows, [{'title': 'doc', 'descriptions': 'desc',
-                                 'is_required': True}])
+                                 'is_required': True,
+                                 'is_late_upload_allowed': False}])
+
+    def test_upload_fields_late_upload_checkbox_requires_project_flag(self):
+        from criteria.views import extract_additional_admission_upload_fields_as_json
+        import json
+
+        self.project.is_additional_admission_upload_allowed = True
+        post = {
+            'additional_admission_upload_fields-1-title': 'doc',
+            'additional_admission_upload_fields-1-is_late_upload_allowed': '1',
+        }
+
+        # The project does not allow late uploads: the checkbox is not rendered,
+        # and a submitted value is forced to False (so turning the flag off and
+        # re-saving clears stale values).
+        rows = json.loads(
+            extract_additional_admission_upload_fields_as_json(self.project, post))
+        self.assertFalse(rows[0]['is_late_upload_allowed'])
+
+        self.project.is_additional_admission_late_upload_allowed = True
+        rows = json.loads(
+            extract_additional_admission_upload_fields_as_json(self.project, post))
+        self.assertTrue(rows[0]['is_late_upload_allowed'])

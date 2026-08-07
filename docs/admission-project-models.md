@@ -97,6 +97,8 @@ These gate what staff can edit in the `criteria` app (see
 | `is_additional_admission_form_allowed` | `False` | Allow extra applicant-form questions (`AdmissionCriteria.additional_admission_form_fields_json`). |
 | `is_additional_admission_form_edit_allowed` | `True` | Allow editing those extra questions. |
 | `is_additional_admission_upload_allowed` | `False` | Allow extra per-criteria upload documents (`AdmissionCriteria.additional_admission_upload_fields_json`); authoring only so far — see [uploaded-documents.md](uploaded-documents.md). |
+| `is_additional_admission_late_upload_allowed` | `False` | "อนุญาตให้เอกสารอัพโหลดเพิ่มเติมอัพโหลดหลังกำหนดได้" — adds a per-upload-field "อัพโหลดหลังหมดเขต" checkbox in the criteria editor. Only takes effect when `is_additional_admission_upload_allowed` is also on. |
+| `late_upload_date` | null | "วันสุดท้ายที่อนุญาตให้อัพโหลดล่าช้าได้" — cut-off for those late uploads. Shown (via `thaidate`) in the criteria editor's help text when set; not enforced anywhere yet — that belongs to the not-yet-built upload runtime. |
 | `is_additional_notice_allowed` | `False` | Allow an extra applicant-facing notice (`AdmissionCriteria.additional_notice`). |
 
 ### Export & basic acceptance criteria

@@ -49,8 +49,13 @@ Models live in `criteria/models/` (re-exported from
     project enables `is_additional_admission_form_allowed` /
     `is_additional_admission_upload_allowed` / `is_additional_notice_allowed`).
   - `additional_admission_upload_fields_json` — JSON list of extra documents
-    (`{title, descriptions, is_required}`) applicants upload according to the
-    criteria; read via `get_additional_admission_upload_fields()`. Only the
+    (`{title, descriptions, is_required, is_late_upload_allowed}`) applicants
+    upload according to the criteria; read via
+    `get_additional_admission_upload_fields()`. The `is_late_upload_allowed`
+    checkbox is only offered when the project sets
+    `is_additional_admission_late_upload_allowed` on top of
+    `is_additional_admission_upload_allowed`; with the flag off, extraction
+    forces every row to `False`, so re-saving clears stale values. Only the
     authoring side is implemented (see
     [uploaded-documents.md](uploaded-documents.md) for the full feature status
     and what remains).
@@ -278,7 +283,7 @@ gate, so when a gate is off **no input is rendered and no key is posted**.
 | Partial | Model field | Gate |
 | --- | --- | --- |
 | `additional_form_fields.html` | `additional_admission_form_fields_json` | `has_additional_form_fields` ← `project.is_additional_admission_form_allowed` |
-| `additional_upload_fields.html` | `additional_admission_upload_fields_json` | `has_additional_upload_fields` ← `project.is_additional_admission_upload_allowed` |
+| `additional_upload_fields.html` | `additional_admission_upload_fields_json` | `has_additional_upload_fields` ← `project.is_additional_admission_upload_allowed` (its late-upload column has a second, nested gate `has_additional_late_upload_fields` ← that flag **and** `is_additional_admission_late_upload_allowed`) |
 | `additional_notice_form.html` | `additional_notice` | `project.is_additional_notice_allowed` (read directly, not via context var) |
 | `additional_interview_condition_form.html` | `additional_interview_condition` | `not project.is_custom_score_criteria_allowed` |
 
@@ -292,7 +297,13 @@ twins differing only in prefix and columns:
   `additional_admission_form_fields-{n}-`. `size` is one of `short`
   (คำตอบสั้น), `paragraph` (ข้อความยาว) or `paragraphimage` (ข้อความยาว+รูป);
   see the note below before adding another;
-- upload-fields — หัวข้อ + คำอธิบาย + บังคับ (checkbox `value="1"`), prefix
+- upload-fields — หัวข้อ + คำอธิบาย + บังคับ (checkbox `value="1"`) +
+  อัพโหลดหลังหมดเขต (a second checkbox, rendered only under the nested
+  `has_additional_late_upload_fields` gate — header cell, both row variants,
+  the `+` row's filler `<td>`, the JS row template and
+  `renumberAdditionalUploadFields()` all branch on it; ticking it raises a
+  `confirm()` asking whether the late upload is really needed — unticking does
+  not), prefix
   `additional_admission_upload_fields-{n}-`.
 
 Both use a **1-indexed, dash-separated** naming scheme

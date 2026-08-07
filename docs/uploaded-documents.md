@@ -232,15 +232,23 @@ far; the runtime (applicant upload, staff review) is not yet wired up.
   *definitions*, stored as a JSON blob (like
   `additional_admission_form_fields_json`), read via
   `get_additional_admission_upload_fields()` which returns entries of
-  `{title, descriptions, is_required}`.
+  `{title, descriptions, is_required, is_late_upload_allowed}`.
+- `AdmissionProject.is_additional_admission_late_upload_allowed` — a second,
+  nested opt-in that adds the per-field `is_late_upload_allowed` checkbox
+  ("อัพโหลดหลังหมดเขต"). It only means anything when the upload flag above is
+  also on; with it off, extraction forces every row's value to `False`.
+  `AdmissionProject.late_upload_date` ("วันสุดท้ายที่อนุญาตให้อัพโหลดล่าช้าได้")
+  is the cut-off; it reaches the criteria editor's help text through
+  `additional_fields_context` and is displayed when set, but nothing enforces
+  it yet — that is for the runtime phases below.
 - Editing UI in the criteria create/edit form
   (`criteria/include/additional_upload_fields.html`), extracted from POST and
   carried through the criteria **copy-on-write versioning** in
   `upsert_admission_criteria` (see [criteria.md](criteria.md)).
 
-Definitions currently carry only `title`, `descriptions`, and `is_required`.
-Multiple files / URL links are intended to always be allowed (not per-field
-options).
+Definitions currently carry `title`, `descriptions`, `is_required`, and
+`is_late_upload_allowed`. Multiple files / URL links are intended to always be
+allowed (not per-field options).
 
 ### Not yet done (later phases)
 

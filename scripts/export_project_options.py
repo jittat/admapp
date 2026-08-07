@@ -23,6 +23,8 @@ FIELDS = [
 
     'is_portfolio_submission_required',
     'is_additional_admission_upload_allowed',
+    'is_additional_admission_late_upload_allowed',
+    'late_upload_date',
 
     'is_additional_admission_form_allowed',
     'is_additional_admission_form_edit_allowed',
