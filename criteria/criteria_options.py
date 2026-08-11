@@ -30,7 +30,7 @@ CRITERIA_OPTIONS = {
     'general_required_tags': [
         {
           "score_type": "STUDY_AT_12",
-          "description": "กำลังศึกษาอยู่ชั้นมัธยมศึกษาปีที่ 6 หรือเทียบเท่าในปีการศึกษา 2568", "unit": ""
+          "description": "กำลังศึกษาอยู่ชั้นมัธยมศึกษาปีที่ 6 หรือเทียบเท่าในปีการศึกษา 2569", "unit": ""
         },
         {
           "score_type": "GRAD_OR_STUDY_AT_12",
