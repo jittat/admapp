@@ -245,6 +245,12 @@ far; the runtime (applicant upload, staff review) is not yet wired up.
   (`criteria/include/additional_upload_fields.html`), extracted from POST and
   carried through the criteria **copy-on-write versioning** in
   `upsert_admission_criteria` (see [criteria.md](criteria.md)).
+- A read-only display on the criteria index page
+  (`criteria/include/scorecriteria_col_additional_info.html`) — a collapsed
+  อัพโหลดเพิ่มเติม note that expands to the defined rows, for staff checking
+  criteria by hand. It shows stored definitions even when
+  `is_additional_admission_upload_allowed` has since been turned off. See
+  [criteria.md](criteria.md#the-project-index-page).
 
 Definitions currently carry `title`, `descriptions`, `is_required`, and
 `is_late_upload_allowed`. Multiple files / URL links are intended to always be

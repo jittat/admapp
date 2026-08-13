@@ -56,7 +56,8 @@ Models live in `criteria/models/` (re-exported from
     `is_additional_admission_late_upload_allowed` on top of
     `is_additional_admission_upload_allowed`; with the flag off, extraction
     forces every row to `False`, so re-saving clears stale values. Only the
-    authoring side is implemented (see
+    authoring side plus the read-only index display (see [the project index
+    page](#the-project-index-page)) is implemented — no applicant runtime (see
     [uploaded-documents.md](uploaded-documents.md) for the full feature status
     and what remains).
   - `accepted_student_curriculum_type_flags` (default `'*'` =
@@ -202,6 +203,69 @@ Finally `created_by` is set to the acting user and
 - `majors_<n>_<attr>` → selected-major rows (`id`, `slot`).
 Numeric-looking values are coerced to `Decimal`. An empty submission (no
 majors and no score criteria) raises `Http404`.
+
+## The project index page
+
+`criteria/index.html` (view `project_index`) is the per-project+round criteria
+list staff use to review and edit a faculty's criteria. The table itself is
+`include/criteria_table.html`, which also carries all of the page's inline
+jQuery (add-limit editing, the curriculum-type / graduate-year AJAX toggles,
+the delete confirm, popovers). Columns: สาขาวิชา / จำนวนรับ /
+[สัมภาษณ์] / เงื่อนไขขั้นต่ำ / เกณฑ์การพิจารณา / แก้ไข, with `rowspan`
+handling many-majors-per-criteria and many-criterias-per-major. Majors with no
+criteria are listed at the bottom.
+
+The two criteria columns come from `include/criteria_table_scorecriteria_cols.html`,
+which is where the per-criteria extras are rendered into the เงื่อนไขขั้นต่ำ
+cell, in order: curriculum-type / graduate-year toggle forms, the required
+score list, `additional_description` / `additional_condition`, the questions
+card, and the additional-info card.
+
+`criteria_table.html` is shared with `report_index.html`, so two context flags
+shape it:
+
+- `is_edit_link_hidden` — set by read-only includers to drop every edit
+  affordance.
+- `is_criteria_edit_allowed` — `project.is_criteria_edit_allowed or
+  user.is_super_admin`, computed in `project_index`.
+
+**Every edit affordance must test both** (`is_edit_link_hidden or not
+is_criteria_edit_allowed`). `report_index` passes neither, so anything that
+checks only `is_edit_link_hidden` leaks an edit link onto the report page —
+which is exactly what the questions card used to do.
+
+### The two extra-content cards
+
+Both live in the เงื่อนไขขั้นต่ำ cell and render nothing when they have no
+content, so a plain criteria costs no extra space.
+
+- **`include/scorecriteria_col_additional_form_fields.html`** — the คำถามเพิ่มเติม
+  card: the questions from `additional_admission_form_fields_json` as a table
+  (`#` / คำถาม / รูปแบบ), plus a แก้ไข (or เพิ่มคำถาม when there are none)
+  link to `edit-form-fields`. Gated by
+  `project.is_additional_admission_form_allowed` at the include site. Where the
+  questions are answered depends on the round, so the subtitle branches on
+  `admission_round.is_portfolio_round` — "แสดงใน TCASFolio" vs. "แสดงในระบบ
+  KU Admission" — mirroring the authoring form's own branch. When editing is
+  not allowed the links go, but the question list stays (it is data); the
+  "no questions yet" card is *only* an edit affordance and disappears whole.
+- **`include/scorecriteria_col_additional_info.html`** — a card holding two
+  collapsed notes on one line, อัพโหลดเพิ่มเติม (with a count) and
+  รายละเอียดเพิ่มเติม, each a Bootstrap 4 `collapse` toggle whose panel is
+  keyed `additionalUploadFieldsId-<criteria id>` /
+  `additionalNoticeId-<criteria id>`. The panels are the upload-field rows
+  (with a หลังหมดเขต column only under
+  `project.is_additional_admission_late_upload_allowed`) and the
+  `additional_notice` text through `linebreaksbr`. No JS of its own —
+  Bootstrap's collapse is already loaded via `main/templates/base.html`.
+
+  It deliberately does **not** check
+  `is_additional_admission_upload_allowed` / `is_additional_notice_allowed`,
+  unlike the questions card: content stored under a flag that has since been
+  turned off is precisely the anomaly a manual check should surface, and it is
+  what the next edit would silently blank (see the gotcha below). It is
+  read-only — these two fields are edited through the full criteria form, so
+  there is no edit link and nothing to gate on `is_criteria_edit_allowed`.
 
 ## The criteria form UI
 
@@ -394,10 +458,13 @@ faculty user is pinned to their own faculty).
 - `edit-form-fields` (`edit_additional_admission_form_fields`) — a targeted
   page for editing just the additional applicant-form questions of an
   existing criteria. The whole view `HttpResponseForbidden`s when the
-  project does not set `is_additional_admission_form_allowed`; otherwise
-  POST saves `additional_admission_form_fields_json` **in place on the
-  existing row — no version bump**, unlike everything else in this app
-  (`'cancel'` in POST redirects back to the project index instead).
+  project does not set `is_additional_admission_form_allowed`, and again when
+  `(not project.is_criteria_edit_allowed) and (not user.is_super_admin)` —
+  the same guard `handle_create_criteria` / `handle_edit_criteria` apply, and
+  it covers both the GET render and the POST. Otherwise POST saves
+  `additional_admission_form_fields_json` **in place on the existing row — no
+  version bump**, unlike everything else in this app (`'cancel'` in POST
+  redirects back to the project index instead).
 
 **In-place AJAX toggles (mutate the existing criteria, no new version)**
 - `update-add-limit` — set a join row's `add_limit` (validated `A`/`B`/`C<n>`).
@@ -499,6 +566,25 @@ rounds render an unchanged `scoringTags`. Applies to both create and edit
 > (`SCORING_SCORE_TYPE_TAGS` / `EXAM_FIELD_MAP`) — export for these is planned
 > via a separate mechanism.
 
+## Tests
+
+`criteria/tests.py` covers the write path (`upsert_admission_criteria`
+versioning, the POST-key parsing and the additional-field extractors) and the
+index-page rendering (the two extra-content cards and the `edit-form-fields`
+permission gates, the latter through real `Client` requests).
+
+Run them with **`python manage.py test criteria.tests`**, not
+`python manage.py test criteria`: discovery walks the `criteria/views/`
+package and importing it stand-alone trips the circular import between
+`criteria.views` and `backoffice.decorators`, producing a spurious
+`unittest.loader._FailedTest`. This is also why the existing tests import
+`criteria.views` lazily *inside* test methods rather than at module scope —
+keep doing that.
+
+Template-level tests render the partial directly with `render_to_string`, so
+they assert on the exact Thai label text; renaming a label in a template will
+fail them, which is intended.
+
 ## Gotchas / notes for future work
 
 - Editing criteria is copy-on-write; anything you attach to a criteria that
@@ -515,6 +601,12 @@ rounds render an unchanged `scoringTags`. Applies to both create and edit
 - `additional_description` / `additional_condition` are script-only and
   invisible to the in-app UI and in-app export — see the standalone
   `scripts/export_*` for their only consumers.
+- Anything that offers an edit affordance on the criteria index must check
+  **both** `is_edit_link_hidden` and `is_criteria_edit_allowed` — see
+  [the project index page](#the-project-index-page). Server-side, the matching
+  guard is `(not project.is_criteria_edit_allowed) and (not
+  user.is_super_admin)`; a template gate alone is not enough, since the
+  `edit-form-fields` URL can be hit directly.
 - **Turning a project flag off silently drops stored data on the next
   edit.** The four "additional" fields are in the re-read-from-POST group
   above, which is only safe because their partial renders an input whenever
@@ -522,6 +614,11 @@ rounds render an unchanged `scoringTags`. Applies to both create and edit
   others) off between edits and the partial disappears, the key is absent
   from the POST, and the next version bump blanks the field — the same
   failure mode as the old `accepted_graduate_year_flags` bug.
+- Django's `{# ... #}` comment **cannot span multiple lines** — the multi-line
+  form is not parsed as a comment and leaks into the page as literal text. Use
+  `{% comment %}` for anything longer than one line. There is a live instance
+  of this bug at `appl/templates/appl/include/major_form_field_modal.html:18`
+  (in the `appl` runtime that is slated for removal anyway).
 - The React source and its Babel output are two checked-in copies of the
   same file. Editing `src/` without re-running `yarn dev` in
   `main/static/react/` changes nothing in the browser.
