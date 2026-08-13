@@ -1,0 +1,84 @@
+{% comment %}
+  Collapsed notes for the extra criteria content, for manual checking.
+  Shown whenever a value is stored, even if the project flag that authored it
+  is now off: that mismatch is exactly what a manual check should surface.
+{% endcomment %}
+{% with upload_fields=admission_criteria.get_additional_admission_upload_fields %}
+  {% if upload_fields or admission_criteria.additional_notice %}
+    <div class="card mt-1" id="additionalInfoId-{{ admission_criteria.id }}">
+      <div class="card-body p-1">
+        <div>
+          {% if upload_fields %}
+            <span class="mr-3">
+              <span class="badge badge-pill badge-info"><i class="fa fa-upload" aria-hidden="true"></i></span>
+              <strong>อัพโหลดเพิ่มเติม</strong> ({{ upload_fields|length }})
+              <button class="btn btn-sm btn-outline-secondary" type="button"
+                      data-toggle="collapse"
+                      data-target="#additionalUploadFieldsId-{{ admission_criteria.id }}">แสดง</button>
+            </span>
+          {% endif %}
+          {% if admission_criteria.additional_notice %}
+            <span>
+              <span class="badge badge-pill badge-success"><i class="fa fa-info"></i></span>
+              <strong>รายละเอียดเพิ่มเติม</strong>
+              <button class="btn btn-sm btn-outline-secondary" type="button"
+                      data-toggle="collapse"
+                      data-target="#additionalNoticeId-{{ admission_criteria.id }}">แสดง</button>
+            </span>
+          {% endif %}
+        </div>
+
+        {% if upload_fields %}
+          <div class="collapse" id="additionalUploadFieldsId-{{ admission_criteria.id }}">
+            <table class="table table-sm table-bordered mt-1">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>เอกสาร</th>
+                  <th>คำอธิบาย</th>
+                  <th>บังคับ</th>
+                  {% if project.is_additional_admission_late_upload_allowed %}
+                    <th>หลังหมดเขต</th>
+                  {% endif %}
+                </tr>
+              </thead>
+              <tbody>
+                {% for f in upload_fields %}
+                  <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ f.title }}</td>
+                    <td>{{ f.descriptions }}</td>
+                    <td>
+                      {% if f.is_required %}
+                        <i class="fa fa-check"></i>
+                      {% else %}
+                        <i class="fa fa-times"></i>
+                      {% endif %}
+                    </td>
+                    {% if project.is_additional_admission_late_upload_allowed %}
+                      <td>
+                        {% if f.is_late_upload_allowed %}
+                          <i class="fa fa-check"></i> อัพโหลดได้
+                        {% else %}
+                          <i class="fa fa-times"></i> ไม่ให้อัพโหลด
+                        {% endif %}
+                      </td>
+                    {% endif %}
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% endif %}
+
+        {% if admission_criteria.additional_notice %}
+          <div class="collapse" id="additionalNoticeId-{{ admission_criteria.id }}">
+            <div class="mt-1">
+              <b>รายละเอียดแจ้งผู้สมัคร:</b> {{ admission_criteria.additional_notice|linebreaksbr }}
+            </div>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  {% endif %}
+{% endwith %}

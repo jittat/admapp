@@ -451,6 +451,123 @@ class AdditionalFormFieldsEditLinkTestCase(TestCase):
         self.assertEqual(html.strip(), '')
 
 
+class AdditionalUploadFieldsAndNoticeDisplayTestCase(TestCase):
+    """The upload-fields and notice panels on the criteria index are collapsed
+    notes for manual checking. They must render nothing when their field is
+    empty (so they cost no space in the common case), and must show up on
+    stored content even when the project flag that authored it is now off."""
+
+    TEMPLATE = 'criteria/include/scorecriteria_col_additional_info.html'
+
+    def setUp(self):
+        campus = Campus.objects.create(title='Bang Khen', short_title='BK')
+        self.faculty = Faculty.objects.create(title='Engineering', campus=campus)
+        self.project = AdmissionProject.objects.create(
+            title='Test Project', short_title='Test',
+            is_additional_admission_upload_allowed=True)
+
+    def _criteria(self, **fields):
+        return AdmissionCriteria.objects.create(
+            admission_project=self.project, faculty=self.faculty, version=1,
+            **fields)
+
+    def _render(self, admission_criteria):
+        return render_to_string(self.TEMPLATE,
+                                {'project': self.project,
+                                 'admission_criteria': admission_criteria})
+
+    def test_renders_nothing_when_both_fields_are_empty(self):
+        html = self._render(self._criteria())
+
+        self.assertEqual(html.strip(), '')
+
+    def test_upload_fields_show_rows_in_a_collapsed_panel(self):
+        criteria = self._criteria(
+            additional_admission_upload_fields_json=(
+                '[{"title": "แฟ้มสะสมผลงาน", "descriptions": "ไฟล์ PDF",'
+                ' "is_required": true},'
+                ' {"title": "ใบรับรอง", "descriptions": "", "is_required": false}]'))
+
+        html = self._render(criteria)
+
+        self.assertIn('<strong>อัพโหลดเพิ่มเติม</strong> (2)', html)
+        self.assertIn('แฟ้มสะสมผลงาน', html)
+        self.assertIn('ใบรับรอง', html)
+        # Collapsed by default, keyed per criteria so rows do not collide.
+        self.assertIn('additionalUploadFieldsId-%d' % criteria.id, html)
+        self.assertIn('class="collapse"', html)
+        # No notice stored: only the upload note is offered.
+        self.assertNotIn('รายละเอียดเพิ่มเติม', html)
+
+    def test_upload_fields_late_upload_column_follows_project_flag(self):
+        criteria = self._criteria(
+            additional_admission_upload_fields_json=(
+                '[{"title": "แฟ้มสะสมผลงาน", "is_required": true,'
+                ' "is_late_upload_allowed": true}]'))
+
+        html = self._render(criteria)
+        self.assertNotIn('หลังหมดเขต', html)
+
+        self.project.is_additional_admission_late_upload_allowed = True
+        html = self._render(criteria)
+        self.assertIn('หลังหมดเขต', html)
+        self.assertIn('อัพโหลดได้', html)
+
+    def test_upload_fields_shown_even_when_project_flag_is_off(self):
+        # Stored content with the flag since turned off is the anomaly a manual
+        # check needs to see (the next edit would silently blank it).
+        self.project.is_additional_admission_upload_allowed = False
+        criteria = self._criteria(
+            additional_admission_upload_fields_json=(
+                '[{"title": "แฟ้มสะสมผลงาน", "is_required": true}]'))
+
+        html = self._render(criteria)
+
+        self.assertIn('แฟ้มสะสมผลงาน', html)
+
+    def test_notice_shows_text_in_a_collapsed_panel(self):
+        criteria = self._criteria(additional_notice='บรรทัดแรก\nบรรทัดที่สอง')
+
+        html = self._render(criteria)
+
+        self.assertIn('รายละเอียดเพิ่มเติม', html)
+        self.assertIn('บรรทัดแรก<br>บรรทัดที่สอง', html)
+        self.assertIn('additionalNoticeId-%d' % criteria.id, html)
+        self.assertIn('class="collapse"', html)
+        self.assertNotIn('อัพโหลดเพิ่มเติม', html)
+
+    def test_notice_shown_even_when_project_flag_is_off(self):
+        self.project.is_additional_notice_allowed = False
+        criteria = self._criteria(additional_notice='ประกาศ')
+
+        self.assertIn('ประกาศ', self._render(criteria))
+
+    def test_both_notes_share_one_line_with_panels_below(self):
+        criteria = self._criteria(
+            additional_admission_upload_fields_json=(
+                '[{"title": "แฟ้มสะสมผลงาน", "is_required": true}]'),
+            additional_notice='ประกาศ')
+
+        html = self._render(criteria)
+
+        # The whole section is one card, matching the questions card above it.
+        self.assertIn('additionalInfoId-%d' % criteria.id, html)
+        self.assertIn('class="card mt-1"', html)
+        # Both notes sit in the single wrapper div that opens the partial, and
+        # both collapse panels follow it.
+        self.assertLess(html.index('อัพโหลดเพิ่มเติม'), html.index('รายละเอียดเพิ่มเติม'))
+        self.assertLess(html.index('รายละเอียดเพิ่มเติม'),
+                        html.index('id="additionalUploadFieldsId-%d"' % criteria.id))
+
+    def test_django_comment_is_not_rendered(self):
+        # {# #} cannot span multiple lines; the multi-line form leaks into the
+        # page as literal text, so the header comment uses {% comment %}.
+        html = self._render(self._criteria(additional_notice='ประกาศ'))
+
+        self.assertNotIn('manual check', html)
+        self.assertNotIn('#}', html)
+
+
 class EditAdditionalFormFieldsPermissionTestCase(TestCase):
     """edit_additional_admission_form_fields saves in place with no version
     bump, so it must refuse when the project has criteria editing locked --

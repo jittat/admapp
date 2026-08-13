@@ -28,6 +28,8 @@
   {% if project.is_additional_admission_form_allowed %}
     {% include "criteria/include/scorecriteria_col_additional_form_fields.html" %}
   {% endif %}
+
+  {% include "criteria/include/scorecriteria_col_additional_info.html" %}
 </td>
 <td rowspan="{% if major_count %}{{ major_count }}{% else %}1{% endif %}">
   {% with scorecriterias=admission_criteria.get_all_scoring_score_criteria %}

@@ -1,6 +1,7 @@
 {% if admission_criteria.get_additional_admission_form_fields %}
   <div class="card" id="additionalFormFieldId-{{ admission_criteria.id }}">
     <div class="card-header">
+      <span class="badge badge-pill badge-primary"><i class="fa fa-question" aria-hidden="true"></i></span>
       <strong>คำถามเพิ่มเติม</strong> <small>{% if admission_round.is_portfolio_round %}แสดงใน TCASFolio{% else %}แสดงในระบบ KU Admission{% endif %}</small>
       {% if not is_edit_link_hidden and is_criteria_edit_allowed %}
         <a class="btn btn-sm btn-outline-secondary" href="{% url 'backoffice:criteria:edit-form-fields' project.id admission_round.id admission_criteria.id %}">แก้ไข</a>
