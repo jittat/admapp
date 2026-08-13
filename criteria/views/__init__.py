@@ -775,6 +775,9 @@ def edit_additional_admission_form_fields(request, project_id, round_id, criteri
     if not has_additional_form_fields:
         return HttpResponseForbidden()
 
+    if (not project.is_criteria_edit_allowed) and (not user.is_super_admin):
+        return HttpResponseForbidden()
+
     notice = None
 
     if request.method == 'POST':

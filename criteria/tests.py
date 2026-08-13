@@ -1,9 +1,13 @@
+import datetime
 from decimal import Decimal
 
+from django.contrib.auth.models import User
 from django.http import Http404
+from django.template.loader import render_to_string
 from django.test import TestCase
+from django.urls import reverse
 
-from appl.models import AdmissionProject, Campus, Faculty
+from appl.models import AdmissionProject, AdmissionRound, Campus, Faculty
 from criteria.models import (AdmissionCriteria, ScoreCriteria, CurriculumMajor,
                              CurriculumMajorAdmissionCriteria, MajorCuptCode)
 
@@ -360,3 +364,176 @@ class ExtractAdditionalFieldsTestCase(TestCase):
         rows = json.loads(
             extract_additional_admission_upload_fields_as_json(self.project, post))
         self.assertTrue(rows[0]['is_late_upload_allowed'])
+
+
+ADDITIONAL_FORM_FIELDS_COL_TEMPLATE = (
+    'criteria/include/scorecriteria_col_additional_form_fields.html')
+
+
+class AdditionalFormFieldsEditLinkTestCase(TestCase):
+    """The 'คำถามเพิ่มเติม' section of the criteria index offers links into
+    edit-form-fields. They must follow the same gates as every other edit
+    control on the page: is_criteria_edit_allowed (the project flag, OR'd with
+    super-admin by the view) and is_edit_link_hidden (set by read-only pages)."""
+
+    def setUp(self):
+        campus = Campus.objects.create(title='Bang Khen', short_title='BK')
+        self.faculty = Faculty.objects.create(title='Engineering', campus=campus)
+        self.project = AdmissionProject.objects.create(
+            title='Test Project', short_title='Test',
+            is_additional_admission_form_allowed=True)
+        self.admission_round = AdmissionRound.objects.create(
+            number=1, rank=1, acceptance_result_date=datetime.date(2026, 1, 1))
+
+        self.criteria_with_fields = AdmissionCriteria.objects.create(
+            admission_project=self.project, faculty=self.faculty, version=1,
+            additional_admission_form_fields_json=(
+                '[{"title": "เหตุผลที่เลือกสาขานี้", "size": "short"}]'))
+        self.criteria_without_fields = AdmissionCriteria.objects.create(
+            admission_project=self.project, faculty=self.faculty, version=1)
+
+    def _render(self, admission_criteria, **context):
+        return render_to_string(ADDITIONAL_FORM_FIELDS_COL_TEMPLATE,
+                                {'project': self.project,
+                                 'admission_round': self.admission_round,
+                                 'admission_criteria': admission_criteria,
+                                 **context})
+
+    def _edit_url(self, admission_criteria):
+        return reverse('backoffice:criteria:edit-form-fields',
+                       args=[self.project.id, self.admission_round.id,
+                             admission_criteria.id])
+
+    def test_edit_link_shown_when_criteria_edit_allowed(self):
+        html = self._render(self.criteria_with_fields,
+                            is_criteria_edit_allowed=True)
+
+        self.assertIn(self._edit_url(self.criteria_with_fields), html)
+        # The questions themselves are shown either way.
+        self.assertIn('เหตุผลที่เลือกสาขานี้', html)
+
+    def test_edit_link_hidden_when_criteria_edit_not_allowed(self):
+        html = self._render(self.criteria_with_fields,
+                            is_criteria_edit_allowed=False)
+
+        self.assertNotIn(self._edit_url(self.criteria_with_fields), html)
+        # The existing questions are data, not an edit affordance: still shown.
+        self.assertIn('เหตุผลที่เลือกสาขานี้', html)
+
+    def test_edit_link_hidden_when_context_flag_missing(self):
+        # Read-only pages (e.g. report_index) share this include and pass no
+        # is_criteria_edit_allowed at all, which must fail closed.
+        html = self._render(self.criteria_with_fields)
+
+        self.assertNotIn(self._edit_url(self.criteria_with_fields), html)
+
+    def test_edit_link_hidden_when_edit_links_hidden(self):
+        html = self._render(self.criteria_with_fields,
+                            is_criteria_edit_allowed=True,
+                            is_edit_link_hidden=True)
+
+        self.assertNotIn(self._edit_url(self.criteria_with_fields), html)
+
+    def test_add_link_shown_when_criteria_edit_allowed(self):
+        html = self._render(self.criteria_without_fields,
+                            is_criteria_edit_allowed=True)
+
+        self.assertIn(self._edit_url(self.criteria_without_fields), html)
+        self.assertIn('เพิ่มคำถาม', html)
+
+    def test_add_card_hidden_when_criteria_edit_not_allowed(self):
+        # With no questions to show, the whole card is only an edit affordance.
+        html = self._render(self.criteria_without_fields,
+                            is_criteria_edit_allowed=False)
+
+        self.assertNotIn(self._edit_url(self.criteria_without_fields), html)
+        self.assertNotIn('เพิ่มคำถาม', html)
+        self.assertEqual(html.strip(), '')
+
+
+class EditAdditionalFormFieldsPermissionTestCase(TestCase):
+    """edit_additional_admission_form_fields saves in place with no version
+    bump, so it must refuse when the project has criteria editing locked --
+    the same guard handle_create_criteria / handle_edit_criteria apply."""
+
+    def setUp(self):
+        campus = Campus.objects.create(title='Bang Khen', short_title='BK')
+        self.faculty = Faculty.objects.create(title='Engineering', campus=campus)
+        self.project = AdmissionProject.objects.create(
+            title='Test Project', short_title='Test',
+            is_additional_admission_form_allowed=True,
+            is_criteria_edit_allowed=False)
+        self.admission_round = AdmissionRound.objects.create(
+            number=1, rank=1, acceptance_result_date=datetime.date(2026, 1, 1))
+        self.criteria = AdmissionCriteria.objects.create(
+            admission_project=self.project, faculty=self.faculty, version=1)
+
+        self.url = reverse('backoffice:criteria:edit-form-fields',
+                           args=[self.project.id, self.admission_round.id,
+                                 self.criteria.id])
+
+        self.user = self._staff_user('faculty01')
+
+    def _staff_user(self, username, is_super_admin=False):
+        # A Profile is auto-created by a post_save signal on User.
+        user = User.objects.create_user(username=username, password='x',
+                                        is_staff=is_super_admin)
+        user.profile.faculty = self.faculty
+        user.profile.save()
+        user.profile.admission_projects.add(self.project)
+        return user
+
+    def _post_a_question(self):
+        return self.client.post(self.url, {
+            'additional_admission_form_fields-1-title': 'คำถามใหม่',
+            'additional_admission_form_fields-1-size': 'short',
+        })
+
+    def test_get_forbidden_when_criteria_edit_not_allowed(self):
+        self.client.force_login(self.user)
+
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, 403)
+
+    def test_post_does_not_save_when_criteria_edit_not_allowed(self):
+        self.client.force_login(self.user)
+
+        response = self._post_a_question()
+
+        self.assertEqual(response.status_code, 403)
+        self.criteria.refresh_from_db()
+        self.assertEqual(self.criteria.get_additional_admission_form_fields(), [])
+
+    def test_post_saves_when_criteria_edit_allowed(self):
+        self.project.is_criteria_edit_allowed = True
+        self.project.save()
+        self.client.force_login(self.user)
+
+        response = self._post_a_question()
+
+        self.assertEqual(response.status_code, 200)
+        self.criteria.refresh_from_db()
+        fields = self.criteria.get_additional_admission_form_fields()
+        self.assertEqual(len(fields), 1)
+        self.assertEqual(fields[0]['title'], 'คำถามใหม่')
+
+    def test_super_admin_can_edit_when_criteria_edit_not_allowed(self):
+        # is_criteria_edit_allowed is OR'd with super-admin everywhere else.
+        self.client.force_login(self._staff_user('admin01', is_super_admin=True))
+
+        response = self._post_a_question()
+
+        self.assertEqual(response.status_code, 200)
+        self.criteria.refresh_from_db()
+        self.assertEqual(
+            len(self.criteria.get_additional_admission_form_fields()), 1)
+
+    def test_forbidden_when_additional_form_not_allowed_by_project(self):
+        # Pre-existing gate, kept ahead of the new one.
+        self.project.is_criteria_edit_allowed = True
+        self.project.is_additional_admission_form_allowed = False
+        self.project.save()
+        self.client.force_login(self.user)
+
+        self.assertEqual(self.client.get(self.url).status_code, 403)
