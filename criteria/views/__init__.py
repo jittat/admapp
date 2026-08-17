@@ -45,6 +45,22 @@ def get_user_faculty_choices(user):
             return Faculty.objects.all()
 
 
+def can_user_edit_faculty(user, faculty):
+    """Authorization check against a faculty owned by the object being edited.
+
+    Note this is deliberately independent of the faculty currently *selected*
+    in the UI (what extract_user_faculty returns): a campus admin manages every
+    faculty in their campus, and most edit URLs carry no ?faculty_id= at all.
+    """
+    if faculty is None:
+        return False
+    if user.profile.is_admission_admin:
+        return True
+    if user.profile.is_campus_admin:
+        return faculty.campus_id == user.profile.campus_id
+    return user.profile.faculty_id == faculty.id
+
+
 def extract_user_faculty(request, user):
     faculty_choices = get_user_faculty_choices(user)
     if (not user.profile.is_admission_admin) and (not user.profile.is_campus_admin):
@@ -185,6 +201,13 @@ def project_index(request, project_id, round_id):
         return redirect(reverse('backoffice:index'))
 
     faculty, faculty_choices = extract_user_faculty(request, user)
+
+    if faculty is None:
+        # a campus admin asked for a faculty outside their campus: fall back to
+        # their own campus instead of crashing on faculty.id below.
+        if not faculty_choices:
+            return redirect(reverse('backoffice:index'))
+        faculty = faculty_choices[0]
 
     project_faculty_interview_date = AdmissionProjectFacultyInterviewDate.get_from(project, faculty)
     
@@ -735,16 +758,18 @@ def edit(request, project_id, round_id, criteria_id):
     if not can_user_view_project(user, project):
         return redirect_to_project_index(project_id, round_id)
 
-    faculty, faculty_choices = extract_user_faculty(request, user)
+    _, faculty_choices = extract_user_faculty(request, user)
     if admission_criteria.admission_project.id != project_id or (
-            not user.profile.is_admission_admin and faculty.id != admission_criteria.faculty.id):
+            not can_user_edit_faculty(user, admission_criteria.faculty)):
         return redirect_to_project_index(project_id, round_id)
+
+    # work on the criteria's own faculty, not the one selected in the UI
+    faculty = admission_criteria.faculty
 
     majors = CurriculumMajor.objects.filter(
         admission_project_id=project_id).select_related('cupt_code')
 
-    if faculty:
-        majors = [m for m in majors if m.faculty_id == faculty.id]
+    majors = [m for m in majors if m.faculty_id == faculty.id]
 
     if request.method == 'POST':
         return handle_edit_criteria(admission_criteria, faculty, faculty_choices, request, user, project_id, round_id,
@@ -764,9 +789,8 @@ def edit_additional_admission_form_fields(request, project_id, round_id, criteri
     if not can_user_view_project(user, project):
         return redirect_to_project_index(project_id, round_id)
 
-    user_faculty, faculty_choices = extract_user_faculty(request, user)
     if admission_criteria.admission_project.id != project_id or (
-            not user.profile.is_admission_admin and user_faculty.id != faculty.id):
+            not can_user_edit_faculty(user, faculty)):
         return redirect_to_project_index(project_id, round_id)
     
     selected_majors = admission_criteria.curriculummajoradmissioncriteria_set.all()
@@ -823,10 +847,12 @@ def delete(request, project_id, round_id, criteria_id):
     if not can_user_view_project(user, project):
         return redirect_to_project_index(project_id, round_id)
 
-    faculty, faculty_choices = extract_user_faculty(request, user)
+    _, faculty_choices = extract_user_faculty(request, user)
     if admission_criteria.admission_project.id != project_id or (
-            not user.profile.is_admission_admin and faculty.id != admission_criteria.faculty.id):
+            not can_user_edit_faculty(user, admission_criteria.faculty)):
         return redirect_to_project_index(project_id, round_id)
+
+    faculty = admission_criteria.faculty
 
     if request.method == 'POST':
         admission_criteria.is_deleted = True
@@ -849,9 +875,8 @@ def update_add_limit(request, project_id, round_id, mid):
     if not can_user_view_project(user, project):
         return redirect_to_project_index(project_id, round_id)
 
-    faculty, faculty_choices = extract_user_faculty(request, user)
     if admission_criteria.admission_project.id != project_id or (
-            not user.profile.is_admission_admin and faculty.id != admission_criteria.faculty.id):
+            not can_user_edit_faculty(user, admission_criteria.faculty)):
         return redirect_to_project_index(project_id, round_id)
 
     if request.method != 'POST':
@@ -880,9 +905,8 @@ def update_accepted_curriculum_type(request, project_id, round_id, acid, ctypeid
     if not can_user_view_project(user, project):
         return redirect_to_project_index(project_id, round_id)
 
-    faculty, faculty_choices = extract_user_faculty(request, user)
     if admission_criteria.admission_project.id != project_id or (
-            not user.profile.is_admission_admin and faculty.id != admission_criteria.faculty.id):
+            not can_user_edit_faculty(user, admission_criteria.faculty)):
         return redirect_to_project_index(project_id, round_id)
 
     if request.method != 'POST':
@@ -910,9 +934,8 @@ def update_accepted_graduate_year(request, project_id, round_id, acid, ytypeid):
     if not can_user_view_project(user, project):
         return redirect_to_project_index(project_id, round_id)
 
-    faculty, faculty_choices = extract_user_faculty(request, user)
     if admission_criteria.admission_project.id != project_id or (
-            not user.profile.is_admission_admin and faculty.id != admission_criteria.faculty.id):
+            not can_user_edit_faculty(user, admission_criteria.faculty)):
         return redirect_to_project_index(project_id, round_id)
 
     if request.method != 'POST':
@@ -939,8 +962,7 @@ def update_faculty_interview_date(request, project_id, round_id, faculty_id):
     if not can_user_view_project(user, project):
         return redirect_to_project_index(project_id, round_id)
     
-    user_faculty, faculty_choices = extract_user_faculty(request, user)
-    if not user.profile.is_admission_admin and ((user_faculty == None) or (faculty.id != user_faculty.id)):
+    if not can_user_edit_faculty(user, faculty):
         return redirect_to_project_index(project_id, round_id)
 
     if request.method != 'POST':
@@ -962,6 +984,7 @@ def update_faculty_interview_date(request, project_id, round_id, faculty_id):
 
     faculty_interview_date.save()
         
+    faculty_choices = get_user_faculty_choices(user)
     faculty_url_query = '' if faculty_choices == [] else '?faculty_id=' + str(faculty.id)
 
     return redirect_to_project_index_with_query(faculty_url_query, project_id, round_id)

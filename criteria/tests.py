@@ -654,3 +654,122 @@ class EditAdditionalFormFieldsPermissionTestCase(TestCase):
         self.client.force_login(self.user)
 
         self.assertEqual(self.client.get(self.url).status_code, 403)
+
+
+class FacultyScopeAuthorizationTestCase(TestCase):
+    """Edit endpoints authorize on the *criteria's own* faculty, not on the
+    faculty currently selected in the UI. A campus admin manages every faculty
+    in their campus, and most of these URLs carry no ?faculty_id= at all, so
+    comparing against extract_user_faculty's fallback (faculty_choices[0])
+    locked campus admins out of every faculty but the first."""
+
+    def setUp(self):
+        self.campus = Campus.objects.create(title='Bang Khen', short_title='BK')
+        self.other_campus = Campus.objects.create(title='Sriracha', short_title='SR')
+
+        # deliberately not the first faculty of the campus by id
+        self.first_faculty = Faculty.objects.create(title='Engineering',
+                                                    campus=self.campus)
+        self.faculty = Faculty.objects.create(title='Science',
+                                              campus=self.campus)
+        self.other_campus_faculty = Faculty.objects.create(title='Economics',
+                                                           campus=self.other_campus)
+
+        self.project = AdmissionProject.objects.create(
+            title='Test Project', short_title='Test',
+            is_additional_admission_form_allowed=True,
+            is_criteria_edit_allowed=True)
+        self.admission_round = AdmissionRound.objects.create(
+            number=1, rank=1, acceptance_result_date=datetime.date(2026, 1, 1))
+        self.criteria = AdmissionCriteria.objects.create(
+            admission_project=self.project, faculty=self.faculty, version=1)
+
+        self.form_fields_url = reverse(
+            'backoffice:criteria:edit-form-fields',
+            args=[self.project.id, self.admission_round.id, self.criteria.id])
+        self.curriculum_type_url = reverse(
+            'backoffice:criteria:update-accepted-curriculum-type',
+            args=[self.project.id, self.admission_round.id, self.criteria.id, 1])
+
+    def _user(self, username, faculty=None, is_campus_admin=False,
+              campus=None, is_admission_admin=False):
+        # A Profile is auto-created by a post_save signal on User.
+        user = User.objects.create_user(username=username, password='x')
+        user.profile.faculty = faculty
+        user.profile.is_campus_admin = is_campus_admin
+        user.profile.campus = campus
+        user.profile.is_admission_admin = is_admission_admin
+        user.profile.save()
+        user.profile.admission_projects.add(self.project)
+        return user
+
+    def _campus_admin(self):
+        return self._user('campus01', is_campus_admin=True, campus=self.campus)
+
+    def test_campus_admin_can_open_form_fields_of_any_faculty_in_campus(self):
+        # no ?faculty_id= -- extract_user_faculty would pick first_faculty
+        self.client.force_login(self._campus_admin())
+
+        response = self.client.get(self.form_fields_url)
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_campus_admin_can_toggle_curriculum_type_of_any_faculty_in_campus(self):
+        self.client.force_login(self._campus_admin())
+
+        response = self.client.post(self.curriculum_type_url)
+
+        self.assertEqual(response.status_code, 200)
+        self.criteria.refresh_from_db()
+        self.assertNotEqual(self.criteria.accepted_student_curriculum_type_flags,
+                            AdmissionCriteria.INITIAL_CURR_TYPE_FLAG)
+
+    def test_campus_admin_cannot_edit_faculty_in_another_campus(self):
+        self.criteria.faculty = self.other_campus_faculty
+        self.criteria.save()
+        self.client.force_login(self._campus_admin())
+
+        response = self.client.post(self.curriculum_type_url)
+
+        self.assertEqual(response.status_code, 302)
+        self.criteria.refresh_from_db()
+        self.assertEqual(self.criteria.accepted_student_curriculum_type_flags,
+                         AdmissionCriteria.INITIAL_CURR_TYPE_FLAG)
+
+    def test_faculty_user_cannot_edit_another_faculty(self):
+        self.client.force_login(self._user('faculty01',
+                                           faculty=self.first_faculty))
+
+        response = self.client.post(self.curriculum_type_url)
+
+        self.assertEqual(response.status_code, 302)
+        self.criteria.refresh_from_db()
+        self.assertEqual(self.criteria.accepted_student_curriculum_type_flags,
+                         AdmissionCriteria.INITIAL_CURR_TYPE_FLAG)
+
+    def test_faculty_user_can_edit_own_faculty(self):
+        self.client.force_login(self._user('faculty02', faculty=self.faculty))
+
+        response = self.client.post(self.curriculum_type_url)
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_admission_admin_can_edit_any_faculty(self):
+        self.criteria.faculty = self.other_campus_faculty
+        self.criteria.save()
+        self.client.force_login(self._user('admin01', is_admission_admin=True))
+
+        response = self.client.post(self.curriculum_type_url)
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_project_index_falls_back_when_faculty_id_is_cross_campus(self):
+        # extract_user_faculty returns None here; the page must not blow up.
+        self.client.force_login(self._campus_admin())
+        url = reverse('backoffice:criteria:project-index',
+                      args=[self.project.id, self.admission_round.id])
+
+        response = self.client.get(url,
+                                   {'faculty_id': self.other_campus_faculty.id})
+
+        self.assertEqual(response.status_code, 200)

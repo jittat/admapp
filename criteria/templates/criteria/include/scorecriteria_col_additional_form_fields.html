@@ -4,7 +4,7 @@
       <span class="badge badge-pill badge-primary"><i class="fa fa-question" aria-hidden="true"></i></span>
       <strong>คำถามเพิ่มเติม</strong> <small>{% if admission_round.is_portfolio_round %}แสดงใน TCASFolio{% else %}แสดงในระบบ KU Admission{% endif %}</small>
       {% if not is_edit_link_hidden and is_criteria_edit_allowed %}
-        <a class="btn btn-sm btn-outline-secondary" href="{% url 'backoffice:criteria:edit-form-fields' project.id admission_round.id admission_criteria.id %}">แก้ไข</a>
+        <a class="btn btn-sm btn-outline-secondary" href="{% url 'backoffice:criteria:edit-form-fields' project.id admission_round.id admission_criteria.id %}{{ faculty_url_query }}">แก้ไข</a>
       {% endif %}
     </div>
     <div class="card-body p-1">
@@ -33,7 +33,7 @@
     <div class="card" id="additionalFormFieldId-{{ admission_criteria.id }}">
       <div class="card-body p-1">
         <strong>คำถามเพิ่มเติม</strong>: ไม่มี
-        <a class="btn btn-sm btn-outline-secondary" href="{% url 'backoffice:criteria:edit-form-fields' project.id admission_round.id admission_criteria.id %}">เพิ่มคำถาม</a>
+        <a class="btn btn-sm btn-outline-secondary" href="{% url 'backoffice:criteria:edit-form-fields' project.id admission_round.id admission_criteria.id %}{{ faculty_url_query }}">เพิ่มคำถาม</a>
         <br> 
         <small>คำถามที่ระบุจะแสดงใน{% if admission_round.is_portfolio_round %} TCASFolio{% else %}ระบบ KU Admission{% endif %}</small>
       </div>

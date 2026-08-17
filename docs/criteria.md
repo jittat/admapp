@@ -449,6 +449,23 @@ Namespaced `backoffice:criteria:*` (see `criteria/urls.py`). All are
 (admission admins see all faculties; campus admins see their campus; a
 faculty user is pinned to their own faculty).
 
+**Two different faculty questions — don't mix them up.**
+`extract_user_faculty` answers *which faculty is currently selected in the
+UI*: it reads `?faculty_id=` and, when that is absent, falls back to
+`faculty_choices[0]` — an arbitrary faculty. It also returns `None` when a
+campus admin asks for a faculty outside their campus, so its result is not
+safe to dereference. Authorization is a separate question, answered by
+`can_user_edit_faculty(user, faculty)` against the faculty of the object
+being edited (admission admin → any; campus admin → same campus; otherwise
+the user's own faculty). Every write endpoint (`edit`, `delete`,
+`edit-form-fields`, the three AJAX toggles, `update-faculty-interview-date`)
+uses the latter. Comparing the selected faculty against the object's faculty
+instead — which they all used to do — locks campus admins out of every
+faculty but the first, because most of those URLs carry no `?faculty_id=`.
+`edit` / `delete` additionally re-point `faculty` at
+`admission_criteria.faculty` after the check, so the major list and the
+redirect query follow the criteria rather than the selection.
+
 **Authoring**
 - `project-index` (`project_index`) — the main per-project+round criteria
   list for a faculty; rows are assembled by `prepare_admission_criteria`.
