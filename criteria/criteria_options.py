@@ -182,9 +182,14 @@ SCORING_SCORE_TYPE_TAGS = CRITERIA_OPTIONS['general_scoring_tags'] + CRITERIA_OP
 # (AdmissionRound.is_portfolio_round()). 'prepend' entries appear at the
 # beginning of the scoring choice list; 'append' entries at the end. Kept out
 # of CRITERIA_OPTIONS so the criteria_options_as_js emit loop does not
-# serialize them wholesale. Placeholder values — replace with real choices.
-# NOTE: these are not yet wired into CUPT export (SCORING_SCORE_TYPE_TAGS /
-# EXAM_FIELD_MAP); export is handled by a separate mechanism.
+# serialize them wholesale.
+# NOTE: these have no CUPT column of their own (they are not in
+# SCORING_SCORE_TYPE_TAGS / EXAM_FIELD_MAP). For portfolio projects the export
+# folds all scoring criteria into the portfolio/interview columns and treats
+# INTERVIEW / INTERVIEW_ENGLISH (and any description containing 'สัมภาษณ์') as
+# interview weight - see preprocess_portfolio_admission_criteria in
+# criteria/views/cuptexport.py. Renaming these score types changes what the
+# export reports.
 PORTFOLIO_SCORING_TAGS = {
     'prepend': [
         {

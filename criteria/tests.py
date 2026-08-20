@@ -4,7 +4,7 @@ from decimal import Decimal
 from django.contrib.auth.models import User
 from django.http import Http404
 from django.template.loader import render_to_string
-from django.test import TestCase
+from django.test import SimpleTestCase, TestCase
 from django.urls import reverse
 
 from appl.models import AdmissionProject, AdmissionRound, Campus, Faculty
@@ -773,3 +773,151 @@ class FacultyScopeAuthorizationTestCase(TestCase):
                                    {'faculty_id': self.other_campus_faculty.id})
 
         self.assertEqual(response.status_code, 200)
+
+
+class PortfolioInterviewPercentTestCase(SimpleTestCase):
+    """Portfolio projects report two scoring columns to CUPT, portfolio and
+    interview. The split is derived from the top-level scoring criteria the
+    faculty authored: everything that is not interview weight is portfolio
+    weight, normalized to 100."""
+
+    def _percents(self, items):
+        # Imported inside the test: importing criteria.views at module scope
+        # trips the circular import with backoffice.decorators.
+        from criteria.views.cuptexport import compute_portfolio_interview_percents
+        return compute_portfolio_interview_percents(items)
+
+    def _item(self, score_type, base_weight, description='', **extra):
+        item = {'score_type': score_type,
+                'description': description,
+                'base_weight': base_weight}
+        item.update(extra)
+        return item
+
+    def test_interview_recognized_by_score_type(self):
+        portfolio, interview, _ = self._percents([
+            self._item('PORTFORLIO', 70.0, 'คะแนนแฟ้มผลงาน'),
+            self._item('INTERVIEW', 30.0, 'การสอบสัมภาษณ์'),
+        ])
+
+        self.assertEqual((portfolio, interview), (70, 30))
+
+    def test_english_interview_counts_as_interview(self):
+        portfolio, interview, _ = self._percents([
+            self._item('PORTFORLIO', 80.0),
+            self._item('INTERVIEW_ENGLISH', 20.0),
+        ])
+
+        self.assertEqual((portfolio, interview), (80, 20))
+
+    def test_interview_recognized_by_description(self):
+        # Free-text criteria keep score_type OTHER, so the Thai word is the
+        # only signal.
+        portfolio, interview, _ = self._percents([
+            self._item('OTHER', 75.0, 'แฟ้มสะสมผลงาน'),
+            self._item('OTHER', 25.0, 'คะแนนการสอบสัมภาษณ์'),
+        ])
+
+        self.assertEqual((portfolio, interview), (75, 25))
+
+    def test_weights_are_normalized_to_100(self):
+        portfolio, interview, _ = self._percents([
+            self._item('PORTFORLIO', 30.0),
+            self._item('INTERVIEW', 10.0),
+        ])
+
+        self.assertEqual((portfolio, interview), (75, 25))
+
+    def test_rounding_remainder_goes_to_portfolio(self):
+        portfolio, interview, messages = self._percents([
+            self._item('PORTFORLIO', 2.0),
+            self._item('INTERVIEW', 1.0),
+        ])
+
+        self.assertEqual((portfolio, interview), (67, 33))
+        self.assertEqual(portfolio + interview, 100)
+        self.assertTrue(any('rounded' in m for m in messages))
+
+    def test_max_group_is_judged_by_the_group_row_not_its_children(self):
+        # The group row itself is interview; its children are not.
+        group = self._item('GROUP-MAX', 40.0, 'การสอบสัมภาษณ์ (ใช้คะแนนมากที่สุด)',
+                           group_score_type='OTHER',
+                           children=[{'score_type': 'TGAT', 'value': 1}])
+
+        portfolio, interview, _ = self._percents([
+            self._item('PORTFORLIO', 60.0),
+            group,
+        ])
+
+        self.assertEqual((portfolio, interview), (60, 40))
+
+    def test_max_group_of_interview_children_is_not_interview_by_itself(self):
+        group = self._item('GROUP-MAX', 40.0, 'ใช้คะแนนมากที่สุด',
+                           group_score_type='OTHER',
+                           children=[{'score_type': 'INTERVIEW', 'value': 1}])
+
+        portfolio, interview, _ = self._percents([
+            self._item('PORTFORLIO', 60.0),
+            group,
+        ])
+
+        self.assertEqual((portfolio, interview), (100, 0))
+
+    def test_max_group_tagged_as_interview_counts_as_interview(self):
+        group = self._item('GROUP-MAX', 40.0, 'ใช้คะแนนมากที่สุด',
+                           group_score_type='INTERVIEW',
+                           children=[])
+
+        portfolio, interview, _ = self._percents([
+            self._item('PORTFORLIO', 60.0),
+            group,
+        ])
+
+        self.assertEqual((portfolio, interview), (60, 40))
+
+    def test_all_interview_gives_zero_portfolio(self):
+        portfolio, interview, _ = self._percents([
+            self._item('INTERVIEW', 100.0),
+        ])
+
+        self.assertEqual((portfolio, interview), (0, 100))
+
+    def test_no_scoring_weights_gives_zero_zero(self):
+        portfolio, interview, messages = self._percents([])
+
+        self.assertEqual((portfolio, interview), (0, 0))
+        self.assertTrue(any('0/0' in m for m in messages))
+
+    def test_preprocess_replaces_extracted_scoring_criteria(self):
+        from criteria.views.cuptexport import preprocess_portfolio_admission_criteria
+
+        class FakeCriteria:
+            pass
+
+        criteria = FakeCriteria()
+        criteria.extracted_scoring_criteria = ([
+            self._item('PORTFORLIO', 70.0),
+            self._item('INTERVIEW', 30.0),
+        ], ['earlier message'])
+
+        preprocess_portfolio_admission_criteria(None, [criteria])
+
+        items, messages = criteria.extracted_scoring_criteria
+        self.assertEqual(items, [
+            {'score_type': 'R1_PORTFOLIO', 'base_weight': 70.0},
+            {'score_type': 'R1_INTERVIEW', 'base_weight': 30.0},
+        ])
+        self.assertIn('earlier message', messages)
+
+    def test_preprocess_handles_criteria_with_no_extraction(self):
+        from criteria.views.cuptexport import preprocess_portfolio_admission_criteria
+
+        class FakeCriteria:
+            pass
+
+        criteria = FakeCriteria()
+
+        preprocess_portfolio_admission_criteria(None, [criteria])
+
+        items, _ = criteria.extracted_scoring_criteria
+        self.assertEqual([i['base_weight'] for i in items], [0.0, 0.0])

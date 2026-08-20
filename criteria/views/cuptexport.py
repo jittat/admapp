@@ -196,7 +196,16 @@ def check_other_score_type(score_criterias):
             if c.score_type == 'OTHER':
                 messages.append(c.score_type + ": " + c.description)
         else:
-            if (c.description != score_type_description_map[c.score_type]):
+            # Not every score_type has a catalog entry: the portfolio-round
+            # scoring tags (PORTFORLIO / INTERVIEW / INTERVIEW_ENGLISH) live in
+            # PORTFOLIO_SCORING_TAGS, which is deliberately kept out of
+            # REQUIRED/SCORING_SCORE_TYPE_TAGS. A missing entry must not raise
+            # here - load_all_criterias now extracts every criteria, so a
+            # KeyError would take down both CSV exports.
+            expected_description = score_type_description_map.get(c.score_type)
+            if expected_description is None:
+                messages.append('UNKNOWN-SCORETYPE: ' + c.score_type + ' and ' + c.description)
+            elif c.description != expected_description:
                 messages.append('ERROR:MISMATCH-SCORETYPE: ' + c.score_type + ' and ' + c.description)
 
     return score_criterias, messages
@@ -272,6 +281,7 @@ def extract_one_scoring_score_criteria(score_criteria):
     if (score_criteria.value != None) and (score_criteria.value != 0):
         item = {
             'score_type': score_criteria.score_type,
+            'description': score_criteria.description,
             'base_weight': float(score_criteria.value),
         }
         return item, None
@@ -291,6 +301,8 @@ def extract_max_group_scoring_criteria(score_criteria):
                       'value': c.value })
     return { 'grouping': 'MAX',
              'score_type': 'GROUP-MAX',
+             'group_score_type': score_criteria.score_type,
+             'description': score_criteria.description,
              'children': items,
              'base_weight': float(score_criteria.value) }, None
         
@@ -564,7 +576,7 @@ def sort_csv_rows(rows):
 
 def load_all_criterias():
     admission_projects = { p.id:p for p in AdmissionProject.objects.all() }
-    
+
     admission_criterias = defaultdict(list)
     curriculum_major_admission_criteria_map = defaultdict(list)
     curriculum_majors = { cm.id: cm
@@ -590,10 +602,28 @@ def load_all_criterias():
                      .order_by('faculty_id')):
         project = admission_projects[criteria.admission_project_id]
 
+        # REMARK (2026-08): consequences of extracting scoring criteria for
+        # only-major-list projects too (see the TODO below), still to be
+        # worked through:
+        #   - scoring extraction cost is paid for every project, not just the
+        #     exported ones;
+        #   - warnings from criteria that are not exported now reach
+        #     CuptExportLog (via the projects that ARE exported);
+        #   - score types with no catalog entry no longer raise (see
+        #     check_other_score_type) but are reported as UNKNOWN-SCORETYPE;
+        #   - project_validation still does its own guarded extraction and is
+        #     NOT changed here, so the two paths now disagree for
+        #     only-major-list projects.
+
         if not project.is_cupt_export_only_major_list:
             criteria.cache_score_criteria_children()
             criteria.extracted_required_criteria = extract_required_criteria(criteria)
             criteria.extracted_scoring_criteria = extract_scoring_criteria(criteria)
+        else:
+            # TODO: will work on this later.  This is required for interview/portfolio percent calculation
+            criteria.cache_score_criteria_children()
+            criteria.extracted_scoring_criteria = extract_scoring_criteria(criteria)
+
 
         admission_criterias[criteria.admission_project_id].append(criteria)
 
@@ -1023,12 +1053,71 @@ def write_scoring_row(writer, row, zero_fields):
     out_row.update(update)
     writer.writerow(out_row)
 
+INTERVIEW_SCORE_TYPES = set(['INTERVIEW', 'INTERVIEW_ENGLISH'])
+INTERVIEW_DESCRIPTION_KEYWORD = 'สัมภาษณ์'
+
+def is_interview_scoring_item(item):
+    """Is this top-level scoring item interview weight?
+
+    A MAX group is judged by the group row itself (its own score_type and
+    description), never by its children.
+    """
+    for key in ['score_type', 'group_score_type']:
+        if item.get(key, '') in INTERVIEW_SCORE_TYPES:
+            return True
+    return INTERVIEW_DESCRIPTION_KEYWORD in (item.get('description') or '')
+
+def compute_portfolio_interview_percents(scoring_items):
+    """Split the top-level scoring weights into (portfolio, interview) percents.
+
+    The ratio is taken over every top-level scoring item (a MAX group counts
+    once, with the group weight) and normalized to 100. Interview is rounded
+    to an integer and portfolio takes the remainder, so the pair always sums
+    to 100. With no weights at all the pair is 0/0.
+    """
+    total = 0.0
+    interview = 0.0
+    for item in scoring_items:
+        base_weight = item.get('base_weight', 0) or 0
+        total += base_weight
+        if is_interview_scoring_item(item):
+            interview += base_weight
+
+    if total <= 0:
+        return 0, 0, ['no scoring weights: portfolio/interview set to 0/0']
+
+    messages = []
+    exact_interview_percent = 100.0 * interview / total
+    interview_percent = int(round(exact_interview_percent))
+    portfolio_percent = 100 - interview_percent
+
+    if abs(exact_interview_percent - interview_percent) > 0.005:
+        messages.append('rounded interview percent %.2f to %d' %
+                        (exact_interview_percent, interview_percent))
+
+    return portfolio_percent, interview_percent, messages
+
 def preprocess_portfolio_admission_criteria(admission_project, admission_criterias):
+    """Turn the authored scoring criteria of a portfolio project into the two
+    score types the CUPT scoring file wants: R1_PORTFOLIO and R1_INTERVIEW.
+
+    Every other scoring weight is portfolio weight, so this is purely a
+    re-grouping of what the faculty authored - it does not invent values.
+    Per-major overrides from the export config's interview_percents are
+    applied later, in extract_scoring_rows' postprocess.
+    """
     for criteria in admission_criterias:
+        scoring_items, messages = getattr(criteria,
+                                          'extracted_scoring_criteria',
+                                          ([], []))
+
+        portfolio_percent, interview_percent, percent_messages = (
+            compute_portfolio_interview_percents(scoring_items))
+
         criteria.extracted_scoring_criteria = ([
-            {'score_type': 'R1_PORTFOLIO', 'base_weight': 100.0},
-            {'score_type': 'R1_INTERVIEW', 'base_weight': 0},
-        ],[])
+            {'score_type': 'R1_PORTFOLIO', 'base_weight': float(portfolio_percent)},
+            {'score_type': 'R1_INTERVIEW', 'base_weight': float(interview_percent)},
+        ], messages + percent_messages)
 
 @user_login_required
 def export_scoring_csv(request):
