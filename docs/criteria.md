@@ -1,12 +1,15 @@
 # Criteria Module
 
 This document describes the `criteria` app: how admission criteria are
-modeled, how they are edited with **copy-on-write versioning**, how
-curriculum majors are linked, and how the whole thing is exported to the
-CUPT/TCAS central system. It is the result of a code-reading session over
-the entire app (`criteria/models/`, `criteria/views/__init__.py`,
-`criteria/views/cuptexport.py`, `criteria/urls.py`, `criteria_options.py`,
-templates). It is a point-in-time analysis — verify against current code.
+modeled, how they are edited with **copy-on-write versioning**, and how
+curriculum majors are linked. It is the result of a code-reading session
+over the app (`criteria/models/`, `criteria/views/__init__.py`,
+`criteria/urls.py`, `criteria_options.py`, templates). It is a
+point-in-time analysis — verify against current code.
+
+The **CUPT/ทปอ. export/import pipeline** (`criteria/views/cuptexport.py`,
+`cuptexport_fields.py` and the `export/*` URLs) lives in its own document:
+[criteria-export.md](criteria-export.md).
 
 ## What the app is (and isn't)
 
@@ -15,7 +18,8 @@ criteria for each project+faculty: the required conditions (min scores /
 qualifications), the scoring weights, which curriculum majors a criteria
 applies to, slot counts, interview dates, accepted student types, etc. It
 also owns the **CUPT export/import** pipeline that turns those definitions
-into the CSV files uploaded to the central admission system.
+into the CSV files uploaded to the central admission system — documented
+separately in [criteria-export.md](criteria-export.md).
 
 It does **not** evaluate individual applicants. Computing
 `AdmissionResult.calculated_score` / `is_criteria_passed` lives outside this
@@ -116,15 +120,11 @@ Models live in `criteria/models/` (re-exported from
   all. `get_from()` returns an existing row or an unsaved default; a
   criteria's effective date resolves in `AdmissionCriteria.get_interview_date()`.
 
-- **CUPT export config models** (`cupt_export_config.py`) —
-  `CuptExportConfig` (per-project JSON config, or `GLOBAL`),
-  `CuptExportLog` (export run log), `CuptExportCustomProject` and
-  `CuptExportAdditionalProjectRule` (rules that re-map a curriculum major
-  to a custom CUPT project id based on criteria content).
-
-- **`ImportedCriteriaJSON`** (`imported_criteria_JSON.py`) — round-trip
-  buffer: rows of a previously-exported CSV re-imported so the validation
-  page can diff current criteria against what was last submitted.
+- **CUPT export models** (`cupt_export_config.py`, `imported_criteria_JSON.py`)
+  — `CuptExportConfig`, `CuptExportLog`, `CuptExportCustomProject`,
+  `CuptExportAdditionalProjectRule` and `ImportedCriteriaJSON`. They belong
+  to the export pipeline only; see
+  [criteria-export.md](criteria-export.md#data-model-export-side-only).
 
 ## Versioning: copy-on-write (the important part)
 
@@ -508,44 +508,19 @@ merges majors that end up with a single non-zero-slot criteria.
 ## CUPT export/import pipeline
 
 Lives in `criteria/views/cuptexport.py` (+ `cuptexport_fields.py` for the
-big CSV field lists and `EXAM_FIELD_MAP`). All views are admin-only.
-URLs under `export/*`.
+big CSV field lists and `EXAM_FIELD_MAP`), under the `export/*` URLs, all
+admin-only. It turns the authored criteria into the two CSVs uploaded to
+ทปอ. (conditions + scoring), re-imports submitted CSVs for validation, and
+carries a JSON config layer for per-major overrides and custom project ids.
 
-- **`index`** — landing page; shows how many `ImportedCriteriaJSON` rows
-  exist per type.
-- **`export_required_csv`** / **`export_scoring_csv`** — generate the two
-  CSVs uploaded to CUPT. For every visible project they walk all non-deleted
-  criteria (`load_all_criterias`), convert each join row to a base row
-  (`convert_to_base_row`), and fill in condition/scoring columns:
-  - required: `extract_required_criteria` flattens `ScoreCriteria` into
-    min-score columns; an `OR` group becomes `score_condition=1` +
-    `subject_names` + `score_minimum`. Only **one** `OR` group is allowed.
-  - scoring: `extract_scoring_criteria`; a `MAX` group becomes `cal_type=1`
-    + `cal_subject_name` + `cal_score_sum`. Only **one** `MAX` allowed.
-  - `score_type` values are normalized against `criteria_options.py`
-    descriptions (`normalize_score_type`); unknowns surface as
-    `OTHER`/`ERROR-*` and are logged.
-  - `update_project_information` applies the JSON export config:
-    `custom_comments` → `condition`, `custom_options` (e.g.
-    `accepts_male_only`, custom values), and custom-project re-mapping via
-    `validate_project_ids` / `is_criteria_match`.
-  - portfolio projects (`is_portfolio_project`, a hardcoded id list) get
-    extra folio columns and interview-percent handling.
-  - each run writes a `CuptExportLog` with any messages; optional
-    `?adjustment=true[&diff=true]` re-applies `AdjustmentMajorSlot`.
-- **`project_validation`** — per-project page diffing current criteria
-  against the last-imported CSV (`ImportedCriteriaJSON` via
-  `load_imported_data`), surfacing errors before re-export.
-- **`import_file`** — upload a previously-exported CSV back into
-  `ImportedCriteriaJSON` (replaces all rows of that `criteria_type`).
-- **`import_config`** — bulk-load `CuptExportCustomProject` /
-  `CuptExportAdditionalProjectRule` rows from pasted JSON-ish lines.
+**See [criteria-export.md](criteria-export.md)** for the full description:
+the row pipeline, the config format, custom-project re-mapping, portfolio
+handling, slot adjustment, the validation page and the known gotchas.
 
-Config precedence in `load_export_config`: a config whose top level is
-`GLOBAL` applies to all projects; otherwise a `CuptExportConfig` only
-applies to its own project. `CuptExportCustomProject` rows are appended as
-selectable `projects`, and `CuptExportAdditionalProjectRule` rows become
-`custom_projects` keyed by program+major code.
+The one coupling to keep in mind while working in *this* document's
+territory: `ScoreCriteria.score_type` values are what the export maps to
+CSV columns, so adding a tag to `criteria_options.py` without adding it to
+`EXAM_FIELD_MAP` breaks the export.
 
 ## Score-type catalog
 
@@ -578,10 +553,16 @@ builds the list as
 rounds render an unchanged `scoringTags`. Applies to both create and edit
 (shared include).
 
-> The entries in `PORTFOLIO_SCORING_TAGS` are currently **placeholder**
-> values. They are also not yet wired into CUPT export
-> (`SCORING_SCORE_TYPE_TAGS` / `EXAM_FIELD_MAP`) — export for these is planned
-> via a separate mechanism.
+> These tags are **not** in `SCORING_SCORE_TYPE_TAGS` / `EXAM_FIELD_MAP`, so
+> they have no CSV column of their own. For **portfolio projects** they do
+> now reach CUPT: the export folds every top-level scoring criteria into the
+> `portfolio` / `interview` columns, counting `INTERVIEW` /
+> `INTERVIEW_ENGLISH` (or any description containing `สัมภาษณ์`) as interview
+> weight — see
+> [criteria-export.md](criteria-export.md#the-portfolio--interview-split).
+> On any **other** project they still export as nothing (`ERROR-*`, stripped
+> or crashing). Note the `PORTFORLIO` score type is misspelled in the
+> catalog.
 
 ## Tests
 
@@ -617,7 +598,12 @@ fail them, which is intended.
   from what a given `version` "was" at creation time.
 - `additional_description` / `additional_condition` are script-only and
   invisible to the in-app UI and in-app export — see the standalone
-  `scripts/export_*` for their only consumers.
+  `scripts/export_*` for their only consumers, and
+  [criteria-export.md](criteria-export.md#related-standalone-scripts).
+- Anything you change about `score_type` values, criteria structure or the
+  major/slot join affects what gets sent to ทปอ. — check
+  [criteria-export.md](criteria-export.md#gotchas-summary) before changing
+  them.
 - Anything that offers an edit affordance on the criteria index must check
   **both** `is_edit_link_hidden` and `is_criteria_edit_allowed` — see
   [the project index page](#the-project-index-page). Server-side, the matching

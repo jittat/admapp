@@ -73,5 +73,11 @@ analyses):
 - `docs/criteria.md` — the `criteria` app: data model
   (`AdmissionCriteria`, `ScoreCriteria`, `CurriculumMajor(AdmissionCriteria)`,
   `MajorCuptCode`), the **copy-on-write versioning** of criteria in
-  `upsert_admission_criteria`, in-place AJAX toggles, views/URLs, and the
-  CUPT export/import pipeline (`criteria/views/cuptexport.py`).
+  `upsert_admission_criteria`, in-place AJAX toggles, the criteria form UI
+  and views/URLs (authoring side only).
+- `docs/criteria-export.md` — the CUPT/ทปอ. export pipeline
+  (`criteria/views/cuptexport.py`, `cuptexport_fields.py`, `export/*` URLs):
+  the two CSVs and how their rows are built, the export config JSON
+  (`CuptExportConfig` / custom projects / project rules), custom-project
+  re-mapping, portfolio handling, slot adjustment, the validation page,
+  CSV/config import, and the field-list constants.
