@@ -509,7 +509,47 @@ def index(request):
                   'criteria/cuptexport/index.html',
                   { 'admission_projects': admission_projects,
                     'condition_json_count': condition_json_count,
-                    'scoring_json_count': scoring_json_count })
+                    'scoring_json_count': scoring_json_count,
+                    'export_logs': load_latest_export_logs() })
+
+
+LATEST_EXPORT_LOG_COUNT = 5
+
+DOWNLOAD_TOKEN_COOKIE_NAME = 'cupt_export_dl'
+
+
+def load_latest_export_logs(since_id=None):
+    """Returns the latest export logs, marking as new those created after since_id.
+
+    With no since_id (e.g., on page load) no log is marked as new.
+    """
+    logs = list(CuptExportLog.objects.all()[:LATEST_EXPORT_LOG_COUNT])
+    for log in logs:
+        log.is_new = (since_id != None) and (log.id > since_id)
+    return logs
+
+
+@user_login_required
+def export_logs(request):
+    user = request.user
+    if not user.profile.is_admission_admin:
+        return redirect(reverse('backoffice:index'))
+
+    try:
+        since_id = int(request.GET['since'])
+    except (KeyError, ValueError):
+        since_id = None
+
+    return render(request,
+                  'criteria/cuptexport/include/log_list.html',
+                  { 'export_logs': load_latest_export_logs(since_id) })
+
+
+def set_download_token_cookie(request, response):
+    """Signals the export page that the download has been generated."""
+    download_token = request.GET.get('dl', '')
+    if download_token:
+        response.set_cookie(DOWNLOAD_TOKEN_COOKIE_NAME, download_token, max_age=600)
 
 
 CONDITION_FILE_FIELDS = [f.strip() for f in CONDITION_FILE_FIELD_STR.split() if f.strip() != '']
@@ -963,6 +1003,8 @@ def export_required_csv(request):
     log = CuptExportLog(output_filename=csv_filename,
                         message='\n'.join(all_messages))
     log.save()
+
+    set_download_token_cookie(request, response)
     
     return response
 
@@ -1177,6 +1219,8 @@ def export_scoring_csv(request):
     log = CuptExportLog(output_filename=csv_filename,
                         message='\n'.join(all_messages))
     log.save()
+
+    set_download_token_cookie(request, response)
         
     return response
 

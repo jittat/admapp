@@ -6,12 +6,21 @@
     <h3>รายการข้อมูล</h3>
     <ul>
       <li>
-	เงื่อนไขการรับ: <a class="btn btn-sm btn-primary" target="_blank" rel="noopener noreferrer" href="{% url 'backoffice:criteria:export-required-csv' %}">ดาวน์โหลด</a>
-	<a class="btn btn-sm btn-outline-secondary" target="_blank" rel="noopener noreferrer" href="{% url 'backoffice:criteria:export-required-csv' %}?adjustment=true">ดาวน์โหลดข้อมูลหลังปรับจำนวน (ทั้งหมด)</a>
-	<a class="btn btn-sm btn-outline-secondary" target="_blank" rel="noopener noreferrer" href="{% url 'backoffice:criteria:export-required-csv' %}?adjustment=true&diff=true">ดาวน์โหลดข้อมูลหลังปรับจำนวน (เฉพาะที่เปลี่ยนแปลง)</a><br>
+	เงื่อนไขการรับ: <a class="btn btn-sm btn-primary js-export-download" target="_blank" rel="noopener noreferrer" href="{% url 'backoffice:criteria:export-required-csv' %}">ดาวน์โหลด</a>
+	<a class="btn btn-sm btn-outline-secondary js-export-download" target="_blank" rel="noopener noreferrer" href="{% url 'backoffice:criteria:export-required-csv' %}?adjustment=true">ดาวน์โหลดข้อมูลหลังปรับจำนวน (ทั้งหมด)</a>
+	<a class="btn btn-sm btn-outline-secondary js-export-download" target="_blank" rel="noopener noreferrer" href="{% url 'backoffice:criteria:export-required-csv' %}?adjustment=true&diff=true">ดาวน์โหลดข้อมูลหลังปรับจำนวน (เฉพาะที่เปลี่ยนแปลง)</a><br>
       </li>
       <li>
-	Scoring <a class="btn btn-sm btn-primary" target="_blank" rel="noopener noreferrer" href="{% url 'backoffice:criteria:export-scoring-csv' %}">ดาวน์โหลด</a>
+	Scoring <a class="btn btn-sm btn-primary js-export-download" target="_blank" rel="noopener noreferrer" href="{% url 'backoffice:criteria:export-scoring-csv' %}">ดาวน์โหลด</a>
+      </li>
+      <li>
+	Log การ export ล่าสุด
+	<a class="btn btn-sm btn-outline-secondary" id="reloadLogsId" href="#">โหลดใหม่</a>
+	<a class="btn btn-sm btn-outline-secondary" target="_blank" rel="noopener noreferrer" href="{% url 'admin:criteria_cuptexportlog_changelist' %}">ดูทั้งหมด</a>
+	<span id="exportLogsStatusId" class="text-muted small"></span>
+	<div id="exportLogsId">
+	  {% include 'criteria/cuptexport/include/log_list.html' %}
+	</div>
       </li>
     </ul>
     
@@ -67,6 +76,120 @@
   $(function(){
     $('#importConfigFormToggleButtonId').click(function(){
       $('#importConfigFormId').show();
+      return false;
+    });
+  })
+
+  $(function(){
+    var LOGS_URL = "{% url 'backoffice:criteria:export-logs' %}";
+    var COOKIE_NAME = 'cupt_export_dl';
+    var POLL_INTERVAL = 10000;
+    var COOKIE_CHECK_INTERVAL = 500;
+    var WAIT_TIME_LIMIT = 5 * 60 * 1000;
+
+    // logs newer than this are highlighted for as long as this page stays open
+    var baselineId = $('#exportLogsTableId').data('latest-id');
+
+    var pollTimer = null;
+    var cookieTimer = null;
+    var deadline = 0;
+    var downloadToken = '';
+
+    var setStatus = function(message) {
+      $('#exportLogsStatusId').text(message);
+    }
+
+    var reloadLogs = function(callback) {
+      $.get(LOGS_URL, { since: baselineId }, function(data) {
+        $('#exportLogsId').html(data);
+        if (callback) {
+          callback();
+        }
+      });
+    }
+
+    var stopWatching = function() {
+      if (pollTimer) {
+        clearInterval(pollTimer);
+        pollTimer = null;
+      }
+      if (cookieTimer) {
+        clearInterval(cookieTimer);
+        cookieTimer = null;
+      }
+    }
+
+    var readCookie = function(name) {
+      var items = document.cookie.split(';');
+      for (var i = 0; i < items.length; i++) {
+        var item = items[i].trim();
+        if (item.indexOf(name + '=') === 0) {
+          return item.substring(name.length + 1);
+        }
+      }
+      return '';
+    }
+
+    var clearCookie = function(name) {
+      document.cookie = name + '=; path=/; max-age=0';
+    }
+
+    var checkDeadline = function() {
+      if (new Date().getTime() < deadline) {
+        return false;
+      }
+      stopWatching();
+      reloadLogs(function() {
+        setStatus('หมดเวลารอ กด "โหลดใหม่" เพื่อตรวจสอบอีกครั้ง');
+      });
+      return true;
+    }
+
+    var startWatching = function() {
+      deadline = new Date().getTime() + WAIT_TIME_LIMIT;
+      setStatus('กำลังรอผลการ export...');
+
+      if (pollTimer) {
+        return;
+      }
+
+      pollTimer = setInterval(function() {
+        if (checkDeadline()) {
+          return;
+        }
+        reloadLogs();
+      }, POLL_INTERVAL);
+
+      cookieTimer = setInterval(function() {
+        if (checkDeadline()) {
+          return;
+        }
+        if (readCookie(COOKIE_NAME) !== downloadToken) {
+          return;
+        }
+        clearCookie(COOKIE_NAME);
+        stopWatching();
+        reloadLogs(function() {
+          setStatus('export เสร็จแล้ว');
+        });
+      }, COOKIE_CHECK_INTERVAL);
+    }
+
+    $('.js-export-download').click(function() {
+      var link = $(this);
+      var href = link.attr('href').split('&dl=')[0].split('?dl=')[0];
+
+      downloadToken = 'dl' + new Date().getTime() + Math.floor(Math.random() * 100000);
+      link.attr('href', href + (href.indexOf('?') >= 0 ? '&' : '?') + 'dl=' + downloadToken);
+
+      clearCookie(COOKIE_NAME);
+      startWatching();
+    });
+
+    $('#reloadLogsId').click(function() {
+      reloadLogs(function() {
+        setStatus('');
+      });
       return false;
     });
   })

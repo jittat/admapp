@@ -55,6 +55,9 @@ urlpatterns += [
     path('export/',
          cuptexport.index, name='export-index'),
 
+    path('export/logs/',
+         cuptexport.export_logs, name='export-logs'),
+
     path('export/required/csv/',
          cuptexport.export_required_csv, name='export-required-csv'),
 

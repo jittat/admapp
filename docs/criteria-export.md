@@ -24,9 +24,11 @@ projects at once (not per project):
 | `scoring-<timestamp>.csv` | `export_scoring_csv` — `export/scoring/csv/` | one row per (project, curriculum major): the **scoring weights** per exam column, plus the `cal_*` MAX-group columns |
 
 Each run also writes a `CuptExportLog` row (filename + all collected
-messages), which is the only place export warnings are persisted — they are
-**not** shown in the browser, the response is the CSV itself. Read them in
-the Django admin.
+messages), which is the only place export warnings are persisted — the
+response itself is the CSV, so the messages never appear in it. The export
+index lists the latest few runs and links each to its admin page (see
+[The export log list](#the-export-log-list)); the messages themselves are
+only readable in the Django admin.
 
 The required export additionally accepts
 `?adjustment=true[&diff=true]`, which re-applies post-publication slot
@@ -42,15 +44,16 @@ backoffice index, not 403'd).
 
 | URL name | View | Purpose |
 | --- | --- | --- |
-| `export-index` | `index` | landing page: download links, the CSV re-import form, the config paste form, and a link to the validation page for every project+round |
+| `export-index` | `index` | landing page: download links, the latest export logs, the CSV re-import form, the config paste form, and a link to the validation page for every project+round |
+| `export-logs` | `export_logs` | AJAX refresh of the log list (an HTML fragment, not JSON) |
 | `export-required-csv` | `export_required_csv` | conditions CSV |
 | `export-scoring-csv` | `export_scoring_csv` | scoring CSV |
 | `export-project-validate` | `project_validation` | per project+round validation table |
 | `export-import-file` | `import_file` | upload a previously-exported CSV into `ImportedCriteriaJSON` |
 | `export-import-config` | `import_config` | paste-import custom projects / project rules |
 
-Templates: `criteria/templates/criteria/cuptexport/index.html` and
-`validate.html`.
+Templates: `criteria/templates/criteria/cuptexport/index.html`,
+`validate.html` and `include/log_list.html`.
 
 ## Data model (export-side only)
 
@@ -76,7 +79,8 @@ models these read from (`AdmissionCriteria`, `ScoreCriteria`,
   (project prefix stripped); `rule_json` is the match condition
   (see [Custom project re-mapping](#custom-project-re-mapping)).
 - **`CuptExportLog`** — `(output_filename, message, created_at)`, newest
-  first. One row per export run.
+  first. One row per export run; surfaced by
+  [the export log list](#the-export-log-list).
 - **`ImportedCriteriaJSON`** (`criteria/models/imported_criteria_JSON.py`) —
   `(criteria_type, project_id, program_id, major_id, data_json)`. A CSV row
   that was previously submitted to (or received back from) CUPT, re-imported
@@ -409,6 +413,45 @@ from `original_slots`** get `slots` (and `gender_male_number`, if set)
 replaced. With `&diff=true` the export additionally keeps *only* those rows,
 producing a delta file to submit.
 
+## The export log list
+
+The export index shows the **5 latest `CuptExportLog` rows** (time,
+filename, a link to the row's Django admin change page) as an item of the
+"รายการข้อมูล" list. It is rendered by
+`criteria/cuptexport/include/log_list.html` from
+`load_latest_export_logs(since_id)`, which annotates each log with a
+non-model `is_new` attribute (`log.id > since_id`; nothing is new when
+`since_id` is `None`). The same helper and partial serve both the initial
+page render and the AJAX refresh, so there is one renderer.
+
+`export_logs` (`export/logs/`) re-renders that partial for
+`?since=<log id>` and returns the HTML fragment. The page captures the
+newest id **once at load** (`data-latest-id` on the table) and sends it as
+`since` on every refresh, so a log that arrives while the page is open keeps
+its `new` pill until the page is reloaded. A request without `since` — the
+initial render — marks nothing as new.
+
+### Knowing when a download finished
+
+The CSV downloads are plain links opening in a new tab, so the page cannot
+observe the response. It uses the standard **download cookie** handshake:
+
+1. clicking a download link (class `js-export-download`) generates a random
+   token, appends it to that link's href as `dl=<token>`, and clears any
+   stale cookie;
+2. `export_required_csv` / `export_scoring_csv` call
+   `set_download_token_cookie(request, response)` **after** `log.save()`,
+   which sets `cupt_export_dl=<token>` (`max_age=600`, not httponly) when
+   `dl` is present. Because it runs after the save, seeing the cookie
+   guarantees the log row exists;
+3. the page polls `document.cookie` every 500 ms; on a match it clears the
+   cookie, refreshes the list once, reports `export เสร็จแล้ว` and stops.
+
+A 10-second interval refresh runs in parallel as the fallback (an export
+that 500s never sets the cookie, and never writes a log either). Both timers
+stop 5 minutes after the click, after one final refresh. `dl` is ignored by
+everything else in the export path, so it cannot affect the CSV.
+
 ## The validation page
 
 `project_validation(project_id, round_id)` renders one table per project+
@@ -484,8 +527,9 @@ Notably those scripts *do* read `AdmissionCriteria.additional_description` /
 - Export views are **global**: they walk every project with
   `is_visible_in_backoffice=True`, so a half-finished project is included as
   soon as it is visible in the backoffice.
-- Warnings only reach `CuptExportLog`; nobody sees them unless they open the
-  admin. Check the log after every export.
+- Warning *messages* only reach `CuptExportLog`; the export page shows that
+  a run happened, but reading what it complained about still means opening
+  the admin. Check the log after every export.
 - `normalize_int_value` turns non-integral values into blanks silently.
 - An unmapped score type crashes the export via `DictWriter`, unless it
   happens to be one of the two hardcoded `ERROR-*` names.

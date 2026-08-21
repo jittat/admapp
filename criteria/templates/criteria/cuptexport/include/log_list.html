@@ -1,0 +1,17 @@
+<table id="exportLogsTableId" class="table table-sm table-borderless small w-auto mb-1"
+       data-latest-id="{% if export_logs %}{{ export_logs.0.id }}{% else %}0{% endif %}">
+  <tbody>
+    {% for log in export_logs %}
+      <tr>
+        <td class="py-0">{{ log.created_at|date:"Y-m-d H:i:s" }}</td>
+        <td class="py-0">{{ log.output_filename }}</td>
+        <td class="py-0"><a target="_blank" rel="noopener noreferrer" href="{% url 'admin:criteria_cuptexportlog_change' log.id %}">ดู log</a></td>
+        <td class="py-0">{% if log.is_new %}<span class="badge badge-pill badge-info">new</span>{% endif %}</td>
+      </tr>
+    {% empty %}
+      <tr>
+        <td class="py-0">ยังไม่มี log</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
