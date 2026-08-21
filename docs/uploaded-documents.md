@@ -250,7 +250,11 @@ far; the runtime (applicant upload, staff review) is not yet wired up.
   อัพโหลดเพิ่มเติม note that expands to the defined rows, for staff checking
   criteria by hand. It shows stored definitions even when
   `is_additional_admission_upload_allowed` has since been turned off. See
-  [criteria.md](criteria.md#the-project-index-page).
+  [criteria.md](criteria.md#the-project-index-page). The same card also
+  renders on both report pages (`report_index.html`, `report_major.html`),
+  which share the cell template; the per-field หลังหมดเขต column needs
+  `project` in the template context, so the major report has to pass its
+  row's project (and round) into the include.
 
 Definitions currently carry `title`, `descriptions`, `is_required`, and
 `is_late_upload_allowed`. Multiple files / URL links are intended to always be

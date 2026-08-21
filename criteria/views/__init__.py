@@ -280,7 +280,8 @@ def major_report(request, code_id):
 
     curriculum_majors = (CurriculumMajor.objects
                            .filter(cupt_code_id=code_id)
-                           .select_related('admission_project'))
+                           .select_related('admission_project')
+                           .prefetch_related('admission_project__admission_rounds'))
 
     curriculum_majors = sorted(curriculum_majors, 
                                key=lambda cm: (cm.admission_project.get_single_round_number(),
@@ -300,11 +301,13 @@ def major_report(request, code_id):
                 'admission_criteria': criteria
             })
         admission_project = cm.admission_project
+        admission_round = admission_project.admission_rounds.first()
         project_faculty_interview_date = AdmissionProjectFacultyInterviewDate.get_from(admission_project, faculty)
         project_criterias.append({
             'admission_project': admission_project, 
+            'admission_round': admission_round,
             'faculty_interview_date': project_faculty_interview_date,
-            'round_number': cm.admission_project.get_single_round_number(),
+            'round_number': admission_round.number,
             'criterias': criterias
         })
 

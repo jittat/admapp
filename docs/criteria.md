@@ -221,8 +221,9 @@ cell, in order: curriculum-type / graduate-year toggle forms, the required
 score list, `additional_description` / `additional_condition`, the questions
 card, and the additional-info card.
 
-`criteria_table.html` is shared with `report_index.html`, so two context flags
-shape it:
+`criteria_table.html` is shared with `report_index.html`, and
+`criteria_table_scorecriteria_cols.html` is included directly by
+`report_major.html`, so two context flags shape it:
 
 - `is_edit_link_hidden` — set by read-only includers to drop every edit
   affordance.
@@ -233,6 +234,20 @@ shape it:
 is_criteria_edit_allowed`). `report_index` passes neither, so anything that
 checks only `is_edit_link_hidden` leaks an edit link onto the report page —
 which is exactly what the questions card used to do.
+
+Two *other* context variables are just as load-bearing: the cell reads
+`project` (four feature flags) and `admission_round` (a label, and the
+`{% url %}` args of the toggle forms). A page that includes the cell without
+them silently drops the curriculum-type / graduate-year lines, the questions
+card and the หลังหมดเขต column — and passing `project` **without**
+`admission_round` is worse than passing neither: the toggle forms render an
+`{% url ... project.id admission_round.id ... %}` with an empty argument and
+the page 500s with `NoReverseMatch`. (The forms' hidden choices `<div>` is
+rendered even when `is_edit_link_hidden` is set; only the แก้ไข toggle is
+dropped.) The major report supplies both **per row**
+(`project=row.admission_project admission_round=row.admission_round`),
+because its rows span several projects and rounds — a page-level context
+variable would not do.
 
 ### The two extra-content cards
 
@@ -499,6 +514,14 @@ redirect query follow the criteria rather than the selection.
 - `project-report`, `major-report`, `report-num-slots`,
   `report-num-slots-by-faculty` — read-only slot/criteria summaries
   (`report_num_slots` sums `slots` across projects per faculty/major).
+  `major_report` is per **`MajorCuptCode`**, not per project+round: it lists
+  every `CurriculumMajor` with that cupt code across all projects, sorted by
+  round then `display_rank`, so each row carries its own `admission_project`
+  / `admission_round`. Reaching it takes three clicks — backoffice index →
+  รายงานจำนวนรับและเกณฑ์ตามคณะ (`report-num-slots`, round hardcoded to 1 in
+  that link) → the faculty folder icon → the major folder icon. It
+  prefetches `admission_project__admission_rounds`; without that, the sort
+  key and the per-row round lookup cost two queries per major.
 
 **Row assembly helpers** (`prepare_admission_criteria`): caches score-criteria
 children, groups majors per criteria, computes free (uncovered) majors,

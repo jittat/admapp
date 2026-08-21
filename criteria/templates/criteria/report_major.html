@@ -47,7 +47,7 @@
                 {% include "criteria/include/interview_date.html" with faculty_interview_date=row.faculty_interview_date admission_criteria=c.admission_criteria %}
               </td>
               {% with c.admission_criteria as admission_criteria %}
-                {% include "criteria/include/criteria_table_scorecriteria_cols.html" with major_count=1 is_edit_link_hidden=True %}
+                {% include "criteria/include/criteria_table_scorecriteria_cols.html" with major_count=1 is_edit_link_hidden=True project=row.admission_project admission_round=row.admission_round %}
               {% endwith %}
             </tr>
           {% endfor %}
