@@ -34,6 +34,11 @@ urlpatterns = [
     path('report/major/<int:code_id>/',
          views.major_report, name='major-report'),
 
+    path('report/form-fields/',
+         views.additional_form_fields_report, name='report-form-fields'),
+    path('report/upload-fields/',
+         views.additional_upload_fields_report, name='report-upload-fields'),
+
     path('<int:project_id>/<int:round_id>/addlimit/<int:mid>/',
          views.update_add_limit, name='update-add-limit'),
     path('<int:project_id>/<int:round_id>/currtype/<int:acid>/<int:ctypeid>/',

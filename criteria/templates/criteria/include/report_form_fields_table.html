@@ -1,0 +1,10 @@
+<ol class="pl-3 mb-0">
+  {% for f in row.fields %}
+    <li>
+      {{ f.title }}
+      <small class="text-muted">
+        ({% if f.size == "short" %}คำตอบสั้น{% elif f.size == "paragraph" %}ข้อความยาว{% elif f.size == "paragraphimage" %}ข้อความยาว+รูป{% else %}{{ f.size }}{% endif %})
+      </small>
+    </li>
+  {% endfor %}
+</ol>

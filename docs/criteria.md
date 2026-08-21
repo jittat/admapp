@@ -522,6 +522,64 @@ redirect query follow the criteria rather than the selection.
   that link) → the faculty folder icon → the major folder icon. It
   prefetches `admission_project__admission_rounds`; without that, the sort
   key and the per-row round lookup cost two queries per major.
+- `report-form-fields` / `report-upload-fields` — the two
+  additional-fields reports, see below.
+
+### The additional-fields reports
+
+`report/form-fields/` and `report/upload-fields/` (i.e.
+`/backoffice/criteria/report/{form,upload}-fields/`) list **every**
+non-deleted `AdmissionCriteria` that stores
+`additional_admission_form_fields_json` /
+`additional_admission_upload_fields_json`, across all projects and years —
+the cross-project view the per-project criteria pages cannot give.
+
+`ADDITIONAL_FIELDS_REPORT_TYPES` in `criteria/views/__init__.py` is the only
+difference between the two: field name, getter name, Thai title, the
+project flag that gates the feature, and the template that renders the field
+list. `additional_form_fields_report` / `additional_upload_fields_report` are
+thin wrappers over the shared `additional_fields_report`, so a third
+JSON-field report would be a dict entry plus a template.
+
+- **Rows** are one per **(criteria, curriculum major)** — a criteria covering
+  several majors appears once per major — sorted by round → `display_rank` →
+  project id → faculty title → `program_type_code` → `program_code` →
+  `major_code`, with projects separated by an `{% ifchanged %}` band and the
+  `#` restarting inside each project. A criteria attached to no major still
+  gets one row ("ไม่ระบุสาขา"), sorted last in its group.
+- The **DB filter can only exclude `''` and `'[]'`**, so rows are filtered
+  again in Python on the getter's parsed output (it drops blank-title entries
+  and swallows malformed JSON). What survives the DB filter but parses to
+  nothing is listed at the bottom under ข้อมูลผิดรูปแบบ with its raw stored
+  value, rather than disappearing — that is an authoring bug worth seeing.
+- A **โครงการปิดการใช้งานแล้ว** badge marks rows whose project flag
+  (`is_additional_admission_form_allowed` /
+  `is_additional_admission_upload_allowed`) has since been turned off. The
+  data is still stored, and the next criteria edit blanks it silently — same
+  reasoning as the additional-info card on the criteria page.
+- **แสดงเกณฑ์** expands a per-row Bootstrap `collapse` holding the full
+  required / scoring criteria in two columns
+  (`include/report_criteria_scores.html` → the shared
+  `scorecriteria_list.html`). It is rendered inline, not fetched: with
+  `prefetch_related('scorecriteria_set__childs')` over the already-filtered
+  criteria, all the score criteria and their children cost **two** queries
+  for the whole page. The collapse target is keyed on
+  `<criteria id>-<join row id>`, because one criteria can occupy two rows and
+  a shared id would toggle both. A small script flips the button label to
+  ซ่อนเกณฑ์ on `show.bs.collapse`.
+- The whole page is ~7-8 queries. Templates:
+  `report_additional_fields.html` plus
+  `include/report_form_fields_table.html`,
+  `include/report_upload_fields_table.html` and
+  `include/report_criteria_scores.html`. The field-list includes are new
+  rather than reused: the criteria page's cards are collapsed, carry edit
+  affordances and depend on `project` / `admission_round`, none of which a
+  report wants.
+
+Both are linked from the backoffice index's พิจารณา: line, which renders
+only under `is_application_admin` — computed in `backoffice.views.index` as
+`user.is_super_admin` alone, so every viewer of the link also passes the
+reports' own `is_admission_admin` gate.
 
 **Row assembly helpers** (`prepare_admission_criteria`): caches score-criteria
 children, groups majors per criteria, computes free (uncovered) majors,

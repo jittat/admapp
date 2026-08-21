@@ -255,6 +255,11 @@ far; the runtime (applicant upload, staff review) is not yet wired up.
   which share the cell template; the per-field หลังหมดเขต column needs
   `project` in the template context, so the major report has to pass its
   row's project (and round) into the include.
+- A cross-project report at `report/upload-fields/` listing every criteria
+  that defines upload fields, with the fields themselves and an expandable
+  full-criteria panel. See
+  [criteria.md](criteria.md#the-additional-fields-reports); its twin does the
+  same for `additional_admission_form_fields_json`.
 
 Definitions currently carry `title`, `descriptions`, `is_required`, and
 `is_late_upload_allowed`. Multiple files / URL links are intended to always be

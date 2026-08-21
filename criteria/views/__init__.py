@@ -320,6 +320,147 @@ def major_report(request, code_id):
                    })
 
 
+ADDITIONAL_FIELDS_REPORT_TYPES = {
+    'form': {
+        'field_name': 'additional_admission_form_fields_json',
+        'getter_name': 'get_additional_admission_form_fields',
+        'title': 'คำถามเพิ่มเติม',
+        'project_flag_name': 'is_additional_admission_form_allowed',
+        'fields_template': 'criteria/include/report_form_fields_table.html',
+    },
+    'upload': {
+        'field_name': 'additional_admission_upload_fields_json',
+        'getter_name': 'get_additional_admission_upload_fields',
+        'title': 'อัพโหลดเพิ่มเติม',
+        'project_flag_name': 'is_additional_admission_upload_allowed',
+        'fields_template': 'criteria/include/report_upload_fields_table.html',
+    },
+}
+
+
+def get_admission_criteria_report_rows(admission_criteria, report_type):
+    """Builds one row per (criteria, curriculum major), plus rows of criteria
+    whose stored JSON does not parse into any usable field."""
+
+    rows = []
+    unparsable_rows = []
+
+    for criteria in admission_criteria:
+        criteria.cache_score_criteria_children()
+
+        fields = getattr(criteria, report_type['getter_name'])()
+        admission_project = criteria.admission_project
+        is_project_flag_on = getattr(admission_project,
+                                     report_type['project_flag_name'])
+
+        major_criterias = list(criteria.curriculummajoradmissioncriteria_set.all())
+        if len(major_criterias) == 0:
+            major_criterias = [None]
+
+        for major_criteria in major_criterias:
+            if major_criteria != None:
+                curriculum_major = major_criteria.curriculum_major
+                cupt_code = curriculum_major.cupt_code
+            else:
+                curriculum_major = None
+                cupt_code = None
+
+            row = {
+                'admission_criteria': criteria,
+                'admission_project': admission_project,
+                'faculty': criteria.faculty,
+                'major_criteria': major_criteria,
+                'curriculum_major': curriculum_major,
+                'cupt_code': cupt_code,
+                'fields': fields,
+                'field_value': getattr(criteria, report_type['field_name']),
+                'is_project_flag_on': is_project_flag_on,
+            }
+
+            if len(fields) != 0:
+                rows.append(row)
+            else:
+                unparsable_rows.append(row)
+
+    return (number_admission_criteria_report_rows(sort_admission_criteria_report_rows(rows)),
+            number_admission_criteria_report_rows(sort_admission_criteria_report_rows(unparsable_rows)))
+
+
+def admission_criteria_report_row_sort_key(row):
+    admission_project = row['admission_project']
+    admission_round = admission_project.admission_rounds.first()
+    cupt_code = row['cupt_code']
+
+    return (admission_round.number if admission_round != None else 0,
+            admission_project.display_rank,
+            admission_project.id,
+            row['faculty'].title if row['faculty'] != None else '',
+            cupt_code.program_type_code if cupt_code != None else 'zzz',
+            cupt_code.program_code if cupt_code != None else '',
+            cupt_code.major_code if cupt_code != None else '')
+
+
+def sort_admission_criteria_report_rows(rows):
+    return sorted(rows, key=admission_criteria_report_row_sort_key)
+
+
+def number_admission_criteria_report_rows(rows):
+    """Numbers rows within each admission project, and keys each row's
+    show-criteria panel on the (criteria, major) pair."""
+
+    last_project_id = None
+    number = 0
+    for row in rows:
+        if row['admission_project'].id != last_project_id:
+            last_project_id = row['admission_project'].id
+            number = 0
+        number += 1
+
+        major_criteria = row['major_criteria']
+        row['number'] = number
+        row['row_id'] = '{}-{}'.format(row['admission_criteria'].id,
+                                       major_criteria.id if major_criteria != None else 0)
+    return rows
+
+
+def additional_fields_report(request, report_type_key):
+    user = request.user
+    if not user.profile.is_admission_admin:
+        return redirect(reverse('backoffice:index'))
+
+    report_type = ADDITIONAL_FIELDS_REPORT_TYPES[report_type_key]
+
+    admission_criteria = (AdmissionCriteria
+                          .objects
+                          .filter(is_deleted=False)
+                          .exclude(**{report_type['field_name'] + '__in': ['', '[]']})
+                          .select_related('admission_project', 'faculty')
+                          .prefetch_related('admission_project__admission_rounds',
+                                            'curriculummajoradmissioncriteria_set__curriculum_major__cupt_code',
+                                            'scorecriteria_set__childs'))
+
+    rows, unparsable_rows = get_admission_criteria_report_rows(admission_criteria,
+                                                               report_type)
+
+    return render(request,
+                  'criteria/report_additional_fields.html',
+                  {'report_type_key': report_type_key,
+                   'report_type': report_type,
+                   'rows': rows,
+                   'unparsable_rows': unparsable_rows,
+                   })
+
+
+@user_login_required
+def additional_form_fields_report(request):
+    return additional_fields_report(request, 'form')
+
+
+@user_login_required
+def additional_upload_fields_report(request):
+    return additional_fields_report(request, 'upload')
+
+
 def extract_custom_interview_date(post_request):
     from datetime import date
 

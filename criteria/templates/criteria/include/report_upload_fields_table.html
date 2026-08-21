@@ -1,0 +1,16 @@
+<ol class="pl-3 mb-0">
+  {% for f in row.fields %}
+    <li>
+      {{ f.title }}
+      {% if f.is_required %}
+        <span class="badge badge-danger">บังคับ</span>
+      {% endif %}
+      {% if row.admission_project.is_additional_admission_late_upload_allowed and f.is_late_upload_allowed %}
+        <span class="badge badge-warning">หลังหมดเขต</span>
+      {% endif %}
+      {% if f.descriptions %}
+        <br><small class="text-muted">{{ f.descriptions }}</small>
+      {% endif %}
+    </li>
+  {% endfor %}
+</ol>

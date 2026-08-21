@@ -1,0 +1,106 @@
+{% extends 'backoffice/base.html' %}
+{% block content %}
+<div class="row">
+  <div class="col-md-12">
+    <h2>รายงาน{{ report_type.title }}</h2>
+
+    <p>
+      รวม {{ rows|length }} รายการ (เกณฑ์ที่ระบุ{{ report_type.title }} ทุกโครงการ)
+    </p>
+
+    <table class="table table-sm table-bordered">
+      <tbody>
+        {% for row in rows %}
+          {% ifchanged row.admission_project.id %}
+            <tr class="table-info">
+              <th colspan="300">{{ row.admission_project }}</th>
+            </tr>
+            <tr class="table-secondary">
+              <th style="width: 3rem;">#</th>
+              <th style="width: 12rem;">คณะ</th>
+              <th style="width: 20rem;">สาขา</th>
+              <th>{{ report_type.title }}</th>
+              <th style="width: 8rem;"></th>
+            </tr>
+          {% endifchanged %}
+          <tr>
+            <td>{{ row.number }}</td>
+            <td>
+              {% if row.faculty %}{{ row.faculty.title }}{% else %}<span class="text-muted">ไม่ระบุคณะ</span>{% endif %}
+            </td>
+            <td>
+              {% if row.cupt_code %}
+                {{ row.cupt_code.display_title }}
+              {% else %}
+                <span class="text-muted">ไม่ระบุสาขา</span>
+              {% endif %}
+              {% if not row.is_project_flag_on %}
+                <br><span class="badge badge-secondary">โครงการปิดการใช้งานแล้ว</span>
+              {% endif %}
+            </td>
+            <td>
+              {% include report_type.fields_template %}
+            </td>
+            <td>
+              <button class="btn btn-sm btn-outline-secondary" type="button"
+                      data-toggle="collapse"
+                      data-target="#fullCriteriaId-{{ row.row_id }}">แสดงเกณฑ์</button>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="300" class="p-0 border-0">
+              <div class="collapse" id="fullCriteriaId-{{ row.row_id }}">
+                <div class="p-2">
+                  {% include "criteria/include/report_criteria_scores.html" %}
+                </div>
+              </div>
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td>ไม่มีเกณฑ์ที่ระบุ{{ report_type.title }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    {% if unparsable_rows %}
+      <h3>ข้อมูลผิดรูปแบบ</h3>
+      <p>
+        เกณฑ์ที่มีข้อมูล{{ report_type.title }}บันทึกไว้ แต่อ่านข้อมูลไม่ได้ (หรือไม่มีรายการที่ระบุชื่อ)
+      </p>
+      <table class="table table-sm table-bordered">
+        <thead class="thead-dark">
+          <tr>
+            <th>โครงการ</th>
+            <th>คณะ</th>
+            <th>สาขา</th>
+            <th>ข้อมูลที่บันทึกไว้</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in unparsable_rows %}
+            <tr>
+              <td>{{ row.admission_project }}</td>
+              <td>{% if row.faculty %}{{ row.faculty.title }}{% endif %}</td>
+              <td>{% if row.cupt_code %}{{ row.cupt_code.display_title }}{% endif %}</td>
+              <td><small>{{ row.field_value|truncatechars:300 }}</small></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% endif %}
+  </div>
+</div>
+<script>
+  $(function(){
+    $('.collapse')
+      .on('show.bs.collapse', function(){
+        $('[data-target="#' + this.id + '"]').text('ซ่อนเกณฑ์');
+      })
+      .on('hide.bs.collapse', function(){
+        $('[data-target="#' + this.id + '"]').text('แสดงเกณฑ์');
+      });
+  })
+</script>
+{% endblock %}
