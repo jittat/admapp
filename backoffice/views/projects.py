@@ -11,7 +11,7 @@ from appl.models import ProjectUploadedDocument, UploadedDocument, ExamScoreProv
 from appl.models import ApplicantAdditionalAdmissionFormValue, MajorAdditionalAdmissionFormField
 from backoffice.decorators import user_login_required
 from backoffice.models import CheckMarkGroup, JudgeComment, MajorInterviewCallDecision, InterviewDescription, AdmissionProjectMajorCuptCodeInterviewDescription, ProjectMenuConfig
-from backoffice.views.permissions import can_user_view_project, can_user_view_applicant_in_major, \
+from backoffice.permissions import can_user_view_project, can_user_view_applicant_in_major, \
     can_user_view_applicants_in_major
 from regis.models import Applicant, LogItem
 from supplements.models import load_supplement_configs_with_instance

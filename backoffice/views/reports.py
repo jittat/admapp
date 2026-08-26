@@ -6,7 +6,7 @@ from appl.models import AdmissionProject, AdmissionRound
 from appl.models import Major, AdmissionResult
 from appl.models import MajorAdditionalAdmissionFormField, ApplicantAdditionalAdmissionFormValue
 from backoffice.decorators import user_login_required
-from backoffice.views.permissions import can_user_view_applicants_in_major
+from backoffice.permissions import can_user_view_applicants_in_major
 from .projects import load_major_applicants, load_check_marks_and_results, load_major_applicants_no_cache, \
     load_all_judge_comments
 

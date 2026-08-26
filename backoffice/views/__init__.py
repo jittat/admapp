@@ -11,7 +11,7 @@ from backoffice.models import Profile
 from regis.models import Applicant, LogItem, CuptRequestQueueItem, CuptConfirmation
 from supplements.models import load_supplement_configs_with_instance
 from supplements.views import render_supplement_for_backoffice
-from .permissions import can_user_view_project
+from backoffice.permissions import can_user_view_project
 
 
 class ApplicantForm(forms.Form):

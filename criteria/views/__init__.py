@@ -10,7 +10,7 @@ from django.urls import reverse
 from appl.models import AdmissionProject, AdmissionRound
 from appl.models import Faculty
 from backoffice.decorators import user_login_required
-from backoffice.views.permissions import can_user_view_project
+from backoffice.permissions import can_user_view_project
 from criteria.models import AdmissionCriteria, ScoreCriteria, CurriculumMajorAdmissionCriteria, \
     MajorCuptCode, CurriculumMajor, AdmissionProjectFacultyInterviewDate
 

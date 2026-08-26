@@ -4,7 +4,7 @@ from django.urls import reverse
 from appl.models import Faculty, AdmissionRound
 from backoffice.decorators import number_adjustment_login_required, user_login_required
 from backoffice.models import AdjustmentMajor, AdjustmentMajorSlot
-from backoffice.views.permissions import can_user_adjust_major, can_user_confirm_major_adjustment
+from backoffice.permissions import can_user_adjust_major, can_user_confirm_major_adjustment
 from regis.models import LogItem
 
 

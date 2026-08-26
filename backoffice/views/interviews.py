@@ -11,7 +11,7 @@ from backoffice.models import (
     InterviewDescription,
     AdmissionProjectMajorCuptCodeInterviewDescription,
 )
-from backoffice.views.permissions import (
+from backoffice.permissions import (
     can_user_view_applicants_in_major,
     can_user_edit_interview_description_span_option,
 )

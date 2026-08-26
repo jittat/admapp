@@ -2,7 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
 from django.urls import reverse
 
-from backoffice.views.permissions import is_super_admin, is_number_adjustment_admin
+from backoffice.permissions import is_super_admin, is_number_adjustment_admin
 
 
 def user_login_required(view_function):

@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from django.shortcuts import render
 
 from backoffice.decorators import super_admin_login_required
-from .permissions import is_super_admin
+from backoffice.permissions import is_super_admin
 
 
 @super_admin_login_required
