@@ -6,35 +6,13 @@ import csv
 
 from appl.models import AdmissionProject, Faculty
 from criteria.models import AdmissionCriteria
+from criteria.models.admission_criteria import criteria_as_str
 
 
 def render_score_criterias(score_criterias, hide_percent=False, short=False):
-    lines = []
-    counter = 0
-    for s in score_criterias:
-        if not hide_percent:
-            if not short:
-                sdisplay = str(s)
-            else:
-                sdisplay = s.display_with_short_relation()
-        else:
-            sdisplay = s.description
-
-        counter += 1
-        lines.append(f'{counter}. {sdisplay}')
-
-        ccounter = 0
-        if s.has_children:
-            for child in s.childs.all():
-                if not hide_percent:
-                    sdisplay = str(child)
-                else:
-                    sdisplay = child.description
-
-                ccounter += 1
-                lines.append(f'&nbsp;&nbsp;&nbsp;&nbsp {counter}.{ccounter} {sdisplay}')
-
-    return '\n'.join(lines)
+    display_fn = (lambda c: c.display_with_short_relation()) if (short and not hide_percent) else None
+    return criteria_as_str(score_criterias, numbered=True, hide_percent=hide_percent,
+                           indent_chars='&nbsp;&nbsp;&nbsp;&nbsp ', display_fn=display_fn)
 
 def get_interview_date(admission_criteria):
     MONTHS = ['','ม.ค.','ก.พ.','มี.ค.','เม.ย.',

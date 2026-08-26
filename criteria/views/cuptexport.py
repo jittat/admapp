@@ -776,6 +776,7 @@ def extract_portfolio_information(row_items, admission_criteria):
                    'folio_closed_date','folio_page_limit']
     for f in ZERO_FIELDS:
         row_items[f] = '0'
+    row_items['folio_criteria'] = ''
 
     if not is_portfolio_project(admission_criteria.admission_project_id):
         return
@@ -799,6 +800,7 @@ def extract_portfolio_information(row_items, admission_criteria):
             row_items[ftype] = 'C'
 
     row_items['folio_closed_date'] = get_portfolio_closed_date(admission_criteria)
+    row_items['folio_criteria'] = admission_criteria.get_all_scoring_score_criteria_as_numbered_str()
 
 
 def extract_rows(project, admission_criterias, base_row_conversion_f, extract_f, postprocess_f):

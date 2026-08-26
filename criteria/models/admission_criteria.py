@@ -3,13 +3,29 @@ from django.db import models
 from appl.models import AdmissionProject, Faculty
 
 
-def criteria_as_str(criteria):
+def criteria_as_str(criteria, numbered=False, hide_percent=False, indent_chars='  - ',
+                     display_fn=None):
+    def render(c):
+        if display_fn is not None:
+            return display_fn(c)
+        return c.description if hide_percent else str(c)
+
     items = []
+    counter = 0
     for c in criteria:
-        items.append(str(c))
+        counter += 1
+        display = render(c)
+        items.append(f'{counter}. {display}' if numbered else display)
+
         if c.has_children():
+            ccounter = 0
             for child in c.childs.all():
-                items.append('  - ' + str(child))
+                cdisplay = render(child)
+                if numbered:
+                    ccounter += 1
+                    items.append(f'{indent_chars}{counter}.{ccounter} {cdisplay}')
+                else:
+                    items.append(indent_chars + cdisplay)
     return '\n'.join(items)
 
 
@@ -89,6 +105,11 @@ class AdmissionCriteria(models.Model):
 
     def get_all_scoring_score_criteria_as_str(self):
         return criteria_as_str(self.get_all_scoring_score_criteria())
+
+    def get_all_scoring_score_criteria_as_numbered_str(self, hide_percent=False, indent_chars='    '):
+        return criteria_as_str(self.get_all_scoring_score_criteria(),
+                               numbered=True, hide_percent=hide_percent,
+                               indent_chars=indent_chars)
 
     def required_score_criteria_includes(self, conds):
         criteria = self.get_all_required_score_criteria()

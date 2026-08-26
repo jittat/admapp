@@ -921,3 +921,102 @@ class PortfolioInterviewPercentTestCase(SimpleTestCase):
 
         items, _ = criteria.extracted_scoring_criteria
         self.assertEqual([i['base_weight'] for i in items], [0.0, 0.0])
+
+
+class CriteriaAsStrTestCase(TestCase):
+    """criteria_as_str renders a criteria list to text, in four combinable
+    modes: plain vs. numbered, percent-shown vs. description-only
+    (hide_percent), and an optional display_fn that overrides both. It backs
+    get_all_required/scoring_score_criteria_as_str (unnumbered, used by the
+    validation page) and get_all_scoring_score_criteria_as_numbered_str
+    (numbered, used for the folio_criteria CUPT export column), and is also
+    what scripts/export_majors_from_criteria.py's render_score_criterias
+    delegates to."""
+
+    def setUp(self):
+        campus = Campus.objects.create(title='Bang Khen', short_title='BK')
+        faculty = Faculty.objects.create(title='Engineering', campus=campus)
+        project = AdmissionProject.objects.create(
+            title='Test Project', short_title='Test')
+        self.admission_criteria = AdmissionCriteria.objects.create(
+            admission_project=project, faculty=faculty, version=1)
+
+        # A plain item with no children.
+        self.parent1 = ScoreCriteria.objects.create(
+            admission_criteria=self.admission_criteria,
+            primary_order=1, secondary_order=0,
+            criteria_type='scoring', score_type='GPAX',
+            value=Decimal('60.00'), description='GPAX')
+
+        # A group item with one child, exercising the indented-child path.
+        self.parent2 = ScoreCriteria.objects.create(
+            admission_criteria=self.admission_criteria,
+            primary_order=2, secondary_order=0,
+            criteria_type='scoring', score_type='GROUP-MAX',
+            value=Decimal('40.00'), description='วิชาเฉพาะ', relation='MAX')
+        self.child = ScoreCriteria.objects.create(
+            admission_criteria=self.admission_criteria,
+            primary_order=2, secondary_order=1,
+            criteria_type='scoring', score_type='TGAT',
+            value=Decimal('40.00'), description='TGAT', parent=self.parent2)
+
+        self.criteria = [self.parent1, self.parent2]
+
+    def test_default_matches_plain_str_join_with_dash_indented_children(self):
+        from criteria.models.admission_criteria import criteria_as_str
+
+        result = criteria_as_str(self.criteria)
+
+        self.assertEqual(result, '\n'.join([
+            str(self.parent1),
+            str(self.parent2),
+            '  - ' + str(self.child),
+        ]))
+
+    def test_numbered_shows_percent_with_given_indent(self):
+        from criteria.models.admission_criteria import criteria_as_str
+
+        result = criteria_as_str(self.criteria, numbered=True, indent_chars='    ')
+
+        self.assertEqual(result, '\n'.join([
+            f'1. {self.parent1}',
+            f'2. {self.parent2}',
+            f'    2.1 {self.child}',
+        ]))
+
+    def test_hide_percent_uses_description_only(self):
+        from criteria.models.admission_criteria import criteria_as_str
+
+        result = criteria_as_str(self.criteria, numbered=True, hide_percent=True,
+                                 indent_chars='    ')
+
+        self.assertEqual(result, '\n'.join([
+            f'1. {self.parent1.description}',
+            f'2. {self.parent2.description}',
+            f'    2.1 {self.child.description}',
+        ]))
+
+    def test_display_fn_overrides_hide_percent(self):
+        # display_fn wins even when hide_percent is also set, since
+        # render_score_criterias(short=True) relies on this to fall through
+        # to display_with_short_relation() instead of .description.
+        from criteria.models.admission_criteria import criteria_as_str
+
+        result = criteria_as_str(
+            self.criteria, numbered=True, hide_percent=True, indent_chars='    ',
+            display_fn=lambda c: c.display_with_short_relation())
+
+        self.assertEqual(result, '\n'.join([
+            f'1. {self.parent1.display_with_short_relation()}',
+            f'2. {self.parent2.display_with_short_relation()}',
+            f'    2.1 {self.child.display_with_short_relation()}',
+        ]))
+
+    def test_get_all_scoring_score_criteria_as_numbered_str_uses_model_defaults(self):
+        result = self.admission_criteria.get_all_scoring_score_criteria_as_numbered_str()
+
+        self.assertEqual(result, '\n'.join([
+            f'1. {self.parent1}',
+            f'2. {self.parent2}',
+            f'    2.1 {self.child}',
+        ]))

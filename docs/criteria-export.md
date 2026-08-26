@@ -321,11 +321,28 @@ For those projects:
   `additional_admission_form_fields_json` — at most **3** questions (extras
   are `print`ed and dropped), blank titles skipped, `size == 'short'` → type
   `'A'`, anything else → `'C'`. Non-portfolio projects get all `folio_*`
-  columns zeroed;
+  columns zeroed (`folio_criteria` is the exception — it's `''`, not `'0'`,
+  for non-portfolio projects);
 - `folio_closed_date` comes from `get_portfolio_closed_date`: a per-project
   override table first, then a `(campus_id, sub-round)` table. **Both are
   hardcoded Thai dates in the source** and must be edited each admission
   year;
+- `folio_criteria` is the applicant-facing scoring criteria text, via
+  `AdmissionCriteria.get_all_scoring_score_criteria_as_numbered_str()`
+  (`criteria/models/admission_criteria.py`): each top-level scoring criteria
+  numbered `"1. <str(criteria)>"` (percent included), children numbered
+  `"1.1 <str(child)>"` indented with 4 spaces. That method wraps the shared
+  `criteria_as_str(criteria, numbered=False, hide_percent=False,
+  indent_chars='  - ', display_fn=None)` helper — the same function backing
+  `get_all_required_score_criteria_as_str` /
+  `get_all_scoring_score_criteria_as_str` used elsewhere in this pipeline,
+  just with `numbered=True` and a different indent. `display_fn(c)`, when
+  given, overrides how an item renders and takes priority over
+  `hide_percent`; it exists for
+  `scripts/export_majors_from_criteria.py`'s `render_score_criterias`, whose
+  `short=True` mode renders via `c.display_with_short_relation()` instead of
+  `str(c)` — that script now delegates to `criteria_as_str` rather than
+  duplicating the traversal;
 - the scoring export replaces the extracted criteria wholesale with two
   synthetic items, `R1_PORTFOLIO` and `R1_INTERVIEW`
   (`preprocess_portfolio_admission_criteria`, see below), and then overrides
