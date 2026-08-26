@@ -513,6 +513,77 @@ def get_criteria_report_project_stats(projects):
     return stats
 
 
+def get_criteria_report_projects():
+    """Projects the cross-project criteria reports cover: the same set the
+    CUPT export page uses."""
+    return (AdmissionProject
+            .objects
+            .filter(Q(is_available=True) | Q(is_visible_in_backoffice=True)))
+
+
+def get_multiple_criteria_major_rows(projects):
+    """One row per CurriculumMajor carrying more than one non-deleted
+    AdmissionCriteria, with those criteria attached.
+
+    This is the CUPT export's "Too many rows" condition: the export emits one
+    row per (criteria, major), so such a major needs a custom_projects rule to
+    give each row a distinct project id.
+
+    The prefetch reaches scorecriteria_set__childs because
+    scorecriteria_list.html iterates `childs.all` - caching children on the
+    criteria only saves the has_children lookup, not that one."""
+
+    curriculum_majors = (CurriculumMajor
+                         .objects
+                         .filter(admission_project__in=projects)
+                         .annotate(criteria_count=Count(
+                             'admission_criterias',
+                             filter=Q(admission_criterias__is_deleted=False)))
+                         .filter(criteria_count__gt=1)
+                         .select_related('admission_project', 'cupt_code', 'faculty')
+                         .prefetch_related(
+                             'admission_project__admission_rounds',
+                             'curriculummajoradmissioncriteria_set__admission_criteria__scorecriteria_set__childs'))
+
+    rows = []
+    for curriculum_major in curriculum_majors:
+        criterias = []
+        for mc in curriculum_major.curriculummajoradmissioncriteria_set.all():
+            admission_criteria = mc.admission_criteria
+            if admission_criteria.is_deleted:
+                continue
+            admission_criteria.cache_score_criteria_children()
+            criterias.append({'major_criteria': mc,
+                              'admission_criteria': admission_criteria})
+
+        admission_project = curriculum_major.admission_project
+        rows.append({
+            'admission_project': admission_project,
+            'admission_round': admission_project.admission_rounds.first(),
+            'curriculum_major': curriculum_major,
+            'cupt_code': curriculum_major.cupt_code,
+            'faculty': curriculum_major.faculty,
+            'criteria_count': len(criterias),
+            'criterias': criterias,
+        })
+
+    return sort_admission_criteria_report_rows(rows)
+
+
+@user_login_required
+def multiple_criteria_majors_report(request):
+    """Majors carrying more than one criteria, grouped by project."""
+    user = request.user
+    if not user.profile.is_admission_admin:
+        return redirect(reverse('backoffice:index'))
+
+    rows = get_multiple_criteria_major_rows(get_criteria_report_projects())
+
+    return render(request,
+                  'criteria/report_multiple_criteria_majors.html',
+                  {'rows': rows})
+
+
 @user_login_required
 def report_index(request):
     """Landing page for the cross-project criteria reports."""
@@ -520,9 +591,7 @@ def report_index(request):
     if not user.profile.is_admission_admin:
         return redirect(reverse('backoffice:index'))
 
-    projects = list(AdmissionProject
-                    .objects
-                    .filter(Q(is_available=True) | Q(is_visible_in_backoffice=True))
+    projects = list(get_criteria_report_projects()
                     .order_by('display_rank', 'id')
                     .prefetch_related('admission_rounds'))
 

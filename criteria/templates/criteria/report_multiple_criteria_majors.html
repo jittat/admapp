@@ -1,0 +1,72 @@
+{% extends 'backoffice/base.html' %}
+{% block content %}
+<div class="row">
+  <div class="col-md-12">
+    <h2>สาขาที่มีมากกว่า 1 เกณฑ์</h2>
+
+    <p>
+      รวม {{ rows|length }} สาขา
+    </p>
+
+    <p class="text-muted">
+      <small>
+	สาขาเหล่านี้คือสาขาที่การ export ข้อมูลไป ทปอ. จะแจ้งว่า &ldquo;Too many rows&rdquo;
+	เพราะ export สร้างข้อมูลหนึ่งแถวต่อหนึ่ง (เกณฑ์, สาขา)
+	จึงต้องมีกฎ custom_projects เพื่อแยกรหัสโครงการของแต่ละแถว
+	<a target="_blank" rel="noopener noreferrer" href="{% url 'backoffice:criteria:export-index' %}">ไปที่หน้า Export ข้อมูล</a>
+      </small>
+    </p>
+
+    <table class="table table-sm table-bordered">
+      <tbody>
+        {% for row in rows %}
+          {% ifchanged row.admission_project.id %}
+            <tr class="table-info">
+              <th colspan="300">{{ row.admission_project }}</th>
+            </tr>
+            <tr class="table-secondary">
+              <th style="width: 12rem;">คณะ</th>
+              <th style="width: 20rem;">สาขา</th>
+              <th style="width: 5rem;">จำนวนรับ</th>
+              <th>เงื่อนไขขั้นต่ำ</th>
+              <th>เกณฑ์การพิจารณา</th>
+              <th></th>
+            </tr>
+          {% endifchanged %}
+          {% for c in row.criterias %}
+            <tr>
+              {% if forloop.first %}
+                <td rowspan="{{ row.criteria_count }}">{{ row.faculty.title }}</td>
+                <td rowspan="{{ row.criteria_count }}">
+                  {{ row.cupt_code.display_title }}
+                  <br>
+                  <span class="badge badge-warning">{{ row.criteria_count }} เกณฑ์</span>
+                  <small class="text-muted">{{ row.cupt_code.program_code }}{% if row.cupt_code.major_code %} / {{ row.cupt_code.major_code }}{% endif %}</small>
+                </td>
+              {% endif %}
+              <td>{{ c.major_criteria.slots }}</td>
+              {% with c.admission_criteria as admission_criteria %}
+                {% include "criteria/include/criteria_table_scorecriteria_cols.html" with major_count=1 is_edit_link_hidden=True project=row.admission_project admission_round=row.admission_round %}
+              {% endwith %}
+            </tr>
+          {% endfor %}
+        {% empty %}
+          <tr>
+            <td class="text-muted">ไม่มีสาขาที่มีมากกว่า 1 เกณฑ์</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+<script>
+  $(function () {
+    $('[data-toggle="popover"]').popover()
+  })
+</script>
+<style>
+  .popover-body {
+    font-size: 1rem;
+  }
+</style>
+{% endblock %}

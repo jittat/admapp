@@ -41,6 +41,9 @@ urlpatterns = [
          views.additional_form_fields_report, name='report-form-fields'),
     path('report/upload-fields/',
          views.additional_upload_fields_report, name='report-upload-fields'),
+    path('report/multiple-criteria-majors/',
+         views.multiple_criteria_majors_report,
+         name='report-multiple-criteria-majors'),
 
     path('<int:project_id>/<int:round_id>/addlimit/<int:mid>/',
          views.update_add_limit, name='update-add-limit'),

@@ -540,6 +540,23 @@ redirect query follow the criteria rather than the selection.
 - `report-form-fields` / `report-upload-fields` — the two
   additional-fields reports, see below. Reached from `report-index`; they
   are no longer linked directly from the backoffice index.
+- `report-multiple-criteria-majors` (`report/multiple-criteria-majors/`,
+  สาขาที่มีมากกว่า 1 เกณฑ์) — every `CurriculumMajor` holding **more than one
+  non-deleted** `AdmissionCriteria`, grouped by project, major-first, with
+  each criteria rendered through the same
+  `criteria_table_scorecriteria_cols.html` include `report_major` uses
+  (`is_edit_link_hidden=True`, which also suppresses the curriculum-type
+  toggle, so the page is read-only). This is exactly the CUPT export's
+  **"Too many rows"** condition — the export emits one row per (criteria,
+  major), so these majors need a `custom_projects` rule to give each row a
+  distinct project id — and the page says so with a link to the export page.
+  Same project set as `report-index`.
+  ⚠️ `get_multiple_criteria_major_rows` prefetches down to
+  `…__admission_criteria__scorecriteria_set__childs`. That last hop is not
+  optional: `cache_score_criteria_children()` only saves the `has_children`
+  lookup, while `scorecriteria_list.html` iterates `childs.all`. With the
+  full chain the page costs 6 queries for 141 majors / 323 criteria; without
+  it, one query per parent criteria.
 
 ### The additional-fields reports
 

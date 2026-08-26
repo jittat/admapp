@@ -1209,3 +1209,124 @@ class CriteriaReportIndexTestCase(TestCase):
         response = self.client.get(self.url)
 
         self.assertIsNone(self._stats_for(response, hidden_project))
+
+
+class MultipleCriteriaMajorsReportTestCase(TestCase):
+    """The สาขาที่มีมากกว่า 1 เกณฑ์ report lists every CurriculumMajor holding
+    more than one *non-deleted* AdmissionCriteria - the CUPT export's "Too many
+    rows" condition. Deleted criteria must not count towards the threshold,
+    which is what the filtered Count in the annotation is for."""
+
+    def setUp(self):
+        self.campus = Campus.objects.create(title='Bang Khen', short_title='BK')
+        self.faculty = Faculty.objects.create(title='Engineering',
+                                              campus=self.campus)
+        self.admission_round = AdmissionRound.objects.create(
+            number=1, rank=1, acceptance_result_date=datetime.date(2026, 1, 1))
+        self.project = AdmissionProject.objects.create(
+            title='Visible Project', short_title='Visible',
+            is_visible_in_backoffice=True)
+        self.project.admission_rounds.add(self.admission_round)
+
+        self.url = reverse('backoffice:criteria:report-multiple-criteria-majors')
+        self.code_counter = 0
+
+    def _curriculum_major(self, project=None):
+        self.code_counter += 1
+        cupt_code = MajorCuptCode.objects.create(
+            program_code='1002010421230%d' % self.code_counter,
+            program_type='ปกติ', program_type_code='A',
+            faculty=self.faculty, title='Major %d' % self.code_counter)
+        return CurriculumMajor.objects.create(
+            admission_project=project or self.project,
+            cupt_code=cupt_code, faculty=self.faculty)
+
+    def _attach_criteria(self, curriculum_major, count, is_deleted=False):
+        for _ in range(count):
+            admission_criteria = AdmissionCriteria.objects.create(
+                admission_project=curriculum_major.admission_project,
+                faculty=self.faculty, version=1, is_deleted=is_deleted)
+            CurriculumMajorAdmissionCriteria.objects.create(
+                curriculum_major=curriculum_major,
+                admission_criteria=admission_criteria, slots=10)
+
+    def _admin(self):
+        # A Profile is auto-created by a post_save signal on User.
+        user = User.objects.create_user(username='admin01', password='x')
+        user.profile.is_admission_admin = True
+        user.profile.save()
+        return user
+
+    def _majors_in(self, response):
+        return [row['curriculum_major'].id for row in response.context['rows']]
+
+    def test_non_admission_admin_is_redirected(self):
+        user = User.objects.create_user(username='staff01', password='x')
+        self.client.force_login(user)
+
+        response = self.client.get(self.url)
+
+        self.assertRedirects(response, reverse('backoffice:index'),
+                             fetch_redirect_response=False)
+
+    def test_major_with_two_criteria_is_listed_with_both(self):
+        curriculum_major = self._curriculum_major()
+        self._attach_criteria(curriculum_major, 2)
+        self.client.force_login(self._admin())
+
+        response = self.client.get(self.url)
+
+        self.assertEqual(self._majors_in(response), [curriculum_major.id])
+        row = response.context['rows'][0]
+        self.assertEqual(row['criteria_count'], 2)
+        self.assertEqual(len(row['criterias']), 2)
+
+    def test_major_with_one_criteria_is_not_listed(self):
+        curriculum_major = self._curriculum_major()
+        self._attach_criteria(curriculum_major, 1)
+        self.client.force_login(self._admin())
+
+        response = self.client.get(self.url)
+
+        self.assertNotIn(curriculum_major.id, self._majors_in(response))
+
+    def test_deleted_criteria_do_not_count_towards_the_threshold(self):
+        # One live criteria plus one deleted is not "more than one".
+        curriculum_major = self._curriculum_major()
+        self._attach_criteria(curriculum_major, 1)
+        self._attach_criteria(curriculum_major, 1, is_deleted=True)
+        self.client.force_login(self._admin())
+
+        response = self.client.get(self.url)
+
+        self.assertNotIn(curriculum_major.id, self._majors_in(response))
+
+    def test_deleted_criteria_are_not_shown_for_a_listed_major(self):
+        curriculum_major = self._curriculum_major()
+        self._attach_criteria(curriculum_major, 2)
+        self._attach_criteria(curriculum_major, 1, is_deleted=True)
+        self.client.force_login(self._admin())
+
+        response = self.client.get(self.url)
+
+        row = response.context['rows'][0]
+        self.assertEqual(row['criteria_count'], 2)
+        self.assertEqual(len(row['criterias']), 2)
+
+    def test_major_of_a_project_neither_available_nor_visible_is_not_listed(self):
+        hidden_project = AdmissionProject.objects.create(
+            title='Old Project', short_title='Old')
+        curriculum_major = self._curriculum_major(project=hidden_project)
+        self._attach_criteria(curriculum_major, 2)
+        self.client.force_login(self._admin())
+
+        response = self.client.get(self.url)
+
+        self.assertNotIn(curriculum_major.id, self._majors_in(response))
+
+    def test_report_index_links_this_report(self):
+        self.client.force_login(self._admin())
+
+        response = self.client.get(reverse('backoffice:criteria:report-index'))
+
+        self.assertContains(response, self.url)
