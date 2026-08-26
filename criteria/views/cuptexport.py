@@ -783,7 +783,7 @@ def extract_portfolio_information(row_items, admission_criteria):
     count = 0
     for fields in additional_admission_form_fields:
         count += 1
-        if count > 3:
+        if count > 5:
             print("Too many portfolio fields")
             break
         fname = f'folio_q{count}'

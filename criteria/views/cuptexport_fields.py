@@ -168,6 +168,8 @@ min_swu_set
 min_det
 min_sat
 min_cefr
+min_tec_w
+min_mu_elt
 min_ged_score
 description
 condition
@@ -228,11 +230,17 @@ score_minimum
 folio_q1
 folio_q2
 folio_q3
+folio_q4
+folio_q5
 folio_q1_type
 folio_q2_type
 folio_q3_type
+folio_q4_type
+folio_q5_type
+folio_closed_edit_date
 folio_closed_date
 folio_page_limit
+folio_criteria
 """
 
 SCORING_FILE_FIELD_STR = """
@@ -357,6 +365,8 @@ gsat
 gsat_l
 gsat_m
 kmitl_tep
+tec_w
+mu_elt
 portfolio
 interview
 """
@@ -585,6 +595,8 @@ min_swu_set
 min_det
 min_sat
 min_cefr
+min_tec_w
+min_mu_elt
 min_ged_score
 min_cotmes_01
 min_cotmes_02
