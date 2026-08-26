@@ -24,6 +24,32 @@ from .cuptexport_fields import SCORING_FILE_FIELD_STR, SCORING_FILE_ZERO_FIELD_S
 
 from criteria.models import CuptExportLog
 
+def uses_grouped_major_rows(project):
+    """Does the export emit one combined row per curriculum major?
+
+    When true the rows of a major are merged by combine_slots, the row carries
+    no criteria of its own, and add_limit is forced to 0.
+    """
+    return project.is_cupt_export_only_major_list
+
+
+def zeroes_score_fields(project):
+    """Does the export leave this project's min scores and scoring weights at 0?
+
+    is_cupt_export_only_major_list implies this; is_cupt_export_zero_score_fields
+    asks for it *without* the row grouping above - required criteria are not
+    extracted at all, and of the scoring criteria only the portfolio/interview
+    split reaches the CSV.
+    """
+    return (project.is_cupt_export_only_major_list
+            or project.is_cupt_export_zero_score_fields)
+
+
+# The only scoring score types a zeroes_score_fields project still exports;
+# preprocess_portfolio_admission_criteria produces them for portfolio projects.
+PORTFOLIO_SCORE_TYPES = set(['R1_PORTFOLIO', 'R1_INTERVIEW'])
+
+
 def combine_slots(curriculum_major_rows):
     if len(curriculum_major_rows) == 0:
         return []
@@ -369,7 +395,7 @@ def convert_to_base_row(project, curriculum_major, admission_criteria, curriculu
         'curriculum_major': curriculum_major,
         'slots': mc.slots,
     }
-    if project.is_cupt_export_only_major_list:
+    if uses_grouped_major_rows(project):
         row['add_limit'] = 0
     return row
 
@@ -435,17 +461,18 @@ def project_validation(request, project_id, round_id):
     for admission_criteria in admission_criterias:
         curriculum_major_admission_criterias = admission_criteria.curriculummajoradmissioncriteria_set.select_related('curriculum_major').all()
         
-        if not project.is_cupt_export_only_major_list:
-            admission_criteria.cache_score_criteria_children()
+        # Mirrors load_all_criterias, so the export and this page agree.
+        admission_criteria.cache_score_criteria_children()
+        admission_criteria.extracted_scoring_criteria = extract_scoring_criteria(admission_criteria)
+        if not zeroes_score_fields(project):
             admission_criteria.extracted_required_criteria = extract_required_criteria(admission_criteria)
-            admission_criteria.extracted_scoring_criteria = extract_scoring_criteria(admission_criteria)
 
         for mc in curriculum_major_admission_criterias:
             curriculum_major = mc.curriculum_major
 
             row_criteria = admission_criteria
 
-            if project.is_cupt_export_only_major_list:
+            if uses_grouped_major_rows(project):
                 row_criteria = None
 
             row_items = convert_to_base_row(project, curriculum_major, row_criteria, mc)
@@ -457,7 +484,7 @@ def project_validation(request, project_id, round_id):
                 majors[curriculum_major.id] = []
             majors[curriculum_major.id].append(row_items)
     
-    if project.is_cupt_export_only_major_list:
+    if uses_grouped_major_rows(project):
         for mid in majors:
             majors[mid] = combine_slots(majors[mid])
     else:
@@ -474,7 +501,7 @@ def project_validation(request, project_id, round_id):
                 r['scoring_json'] = scoring_jsons[json_key]
                 r['scoring_json_display'] = scoring_jsons[json_key].replace("|","|&#8203;")
 
-            if not project.is_cupt_export_only_major_list:
+            if not uses_grouped_major_rows(project):
                 r['required_criteria_str'] = r['criteria'].get_all_required_score_criteria_as_str()
                 r['scoring_criteria_str'] = r['criteria'].get_all_scoring_score_criteria_as_str()
 
@@ -642,27 +669,23 @@ def load_all_criterias():
                      .order_by('faculty_id')):
         project = admission_projects[criteria.admission_project_id]
 
-        # REMARK (2026-08): consequences of extracting scoring criteria for
-        # only-major-list projects too (see the TODO below), still to be
-        # worked through:
+        # REMARK (2026-08): scoring criteria are extracted for every project,
+        # including the ones whose weights never reach a CSV, because
+        # preprocess_portfolio_admission_criteria derives the
+        # portfolio/interview split from them. Consequences still not worked
+        # through:
         #   - scoring extraction cost is paid for every project, not just the
         #     exported ones;
         #   - warnings from criteria that are not exported now reach
         #     CuptExportLog (via the projects that ARE exported);
         #   - score types with no catalog entry no longer raise (see
-        #     check_other_score_type) but are reported as UNKNOWN-SCORETYPE;
-        #   - project_validation still does its own guarded extraction and is
-        #     NOT changed here, so the two paths now disagree for
-        #     only-major-list projects.
+        #     check_other_score_type) but are reported as UNKNOWN-SCORETYPE.
+        # project_validation now mirrors this branch, so the two paths agree.
 
-        if not project.is_cupt_export_only_major_list:
-            criteria.cache_score_criteria_children()
+        criteria.cache_score_criteria_children()
+        criteria.extracted_scoring_criteria = extract_scoring_criteria(criteria)
+        if not zeroes_score_fields(project):
             criteria.extracted_required_criteria = extract_required_criteria(criteria)
-            criteria.extracted_scoring_criteria = extract_scoring_criteria(criteria)
-        else:
-            # TODO: will work on this later.  This is required for interview/portfolio percent calculation
-            criteria.cache_score_criteria_children()
-            criteria.extracted_scoring_criteria = extract_scoring_criteria(criteria)
 
 
         admission_criterias[criteria.admission_project_id].append(criteria)
@@ -824,7 +847,7 @@ def extract_rows(project, admission_criterias, base_row_conversion_f, extract_f,
 def extract_condition_rows(project, admission_criterias):
 
     def condition_extract_f(row_items, project, admission_criteria, curriculum_major):
-        if not project.is_cupt_export_only_major_list:
+        if not zeroes_score_fields(project):
             for required_score in admission_criteria.extracted_required_criteria[0]:
                 if required_score['score_type'] != 'GROUP-OR':
                     row_items[exam_name_to_required_field(required_score['score_type'])] = normalize_int_value(required_score['min_value'])
@@ -845,13 +868,13 @@ def extract_condition_rows(project, admission_criterias):
 
 
     def condition_postprocess_f(rows, project):
-        if project.is_cupt_export_only_major_list:
+        if uses_grouped_major_rows(project):
             rows = group_condition_rows(rows)
         return rows
 
     # extract messages
     all_messages = []
-    if not project.is_cupt_export_only_major_list:
+    if not zeroes_score_fields(project):
         for admission_criteria in admission_criterias:
             all_messages += [ str(admission_criteria.id) + '-' + m for m in admission_criteria.extracted_required_criteria[1]]
             
@@ -1064,7 +1087,13 @@ def extract_scoring_rows(project, admission_criterias):
         row_items['cal_type'] = 0
         row_items['cal_score_sum'] = 0
         row_items['cal_subject_name'] = 0
+        zeroes_scores = zeroes_score_fields(project)
         for scoring_score in admission_criteria.extracted_scoring_criteria[0]:
+            if zeroes_scores and scoring_score['score_type'] not in PORTFOLIO_SCORE_TYPES:
+                # Every weight stays 0; cal_* keep the 0 set above rather than
+                # being left out (they are not in the scoring zero-field list,
+                # so an absent key would be written as an empty cell).
+                continue
             if scoring_score['score_type'] != 'GROUP-MAX':
                 row_items[exam_name_to_scoring_field(scoring_score['score_type'])] = normalize_int_value(scoring_score['base_weight'])
             else:
@@ -1077,7 +1106,7 @@ def extract_scoring_rows(project, admission_criterias):
                 row_items['cal_subject_name'] = '|'.join(names)
 
     def scoring_postprocess_f(rows, project):
-        if project.is_cupt_export_only_major_list:
+        if uses_grouped_major_rows(project):
             rows = group_condition_rows(rows)
         if is_portfolio_project(project):
             for r in rows:
@@ -1223,7 +1252,10 @@ def export_scoring_csv(request):
     admission_criterias = load_all_criterias()
     
     for project in admission_projects:
-        if (not project.is_cupt_export_only_major_list) or is_portfolio_project(project):
+        # Grouped-row projects carry no scoring data at all; a
+        # zeroes_score_fields project still needs its row, to carry the
+        # portfolio/interview split (or a row of zeros).
+        if (not uses_grouped_major_rows(project)) or is_portfolio_project(project):
             if is_portfolio_project(project):
                 preprocess_portfolio_admission_criteria(project, admission_criterias[project.id])
 

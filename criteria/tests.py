@@ -1330,3 +1330,191 @@ class MultipleCriteriaMajorsReportTestCase(TestCase):
         response = self.client.get(reverse('backoffice:criteria:report-index'))
 
         self.assertContains(response, self.url)
+
+
+class ZeroScoreFieldsExportTestCase(TestCase):
+    """is_cupt_export_zero_score_fields sits half way between
+    is_cupt_export_only_major_list True and False: rows stay per-criteria (NOT
+    combined per major, and add_limit is not forced to 0), but min scores and
+    scoring weights are all exported as 0. Only the portfolio/interview split
+    still carries a value.
+
+    The two flags are read through uses_grouped_major_rows / zeroes_score_fields,
+    which is what keeps those two concerns separable."""
+
+    def setUp(self):
+        self.campus = Campus.objects.create(title='Bang Khen', short_title='BK')
+        self.faculty = Faculty.objects.create(title='Engineering',
+                                              campus=self.campus)
+        self.cupt_code = MajorCuptCode.objects.create(
+            program_code='10020104212301', program_type='ปกติ',
+            program_type_code='A', faculty=self.faculty, title='Major')
+
+    def _project(self, **flags):
+        project = AdmissionProject.objects.create(
+            title='P', short_title='P', cupt_code='A0100',
+            is_visible_in_backoffice=True, **flags)
+        self.curriculum_major = CurriculumMajor.objects.create(
+            admission_project=project, cupt_code=self.cupt_code,
+            faculty=self.faculty)
+        return project
+
+    def _criteria(self, project, gpax_min='3.00', tgat_weight='30.00'):
+        # NOTE: gpax_min must be integral. normalize_int_value returns None for
+        # a non-integral value (see docs/criteria-export.md), so a 2.50 minimum
+        # would be written as an empty cell and this fixture would be testing
+        # that bug rather than the flag.
+        """One criteria with a required minimum and a scoring weight, attached
+        to the project's single curriculum major."""
+        admission_criteria = AdmissionCriteria.objects.create(
+            admission_project=project, faculty=self.faculty, version=1)
+        ScoreCriteria.objects.create(
+            admission_criteria=admission_criteria,
+            primary_order=1, secondary_order=0,
+            criteria_type='required', score_type='GPAX',
+            value=Decimal(gpax_min), description='GPAX')
+        ScoreCriteria.objects.create(
+            admission_criteria=admission_criteria,
+            primary_order=1, secondary_order=0,
+            criteria_type='scoring', score_type='TGAT',
+            value=Decimal(tgat_weight), description='TGAT')
+        CurriculumMajorAdmissionCriteria.objects.create(
+            curriculum_major=self.curriculum_major,
+            admission_criteria=admission_criteria, slots=10)
+        return admission_criteria
+
+    def _condition_rows(self, project):
+        from criteria.views.cuptexport import (load_all_criterias,
+                                               extract_condition_rows)
+        criterias = load_all_criterias()[project.id]
+        rows, _ = extract_condition_rows(project, criterias)
+        return rows
+
+    def _scoring_rows(self, project):
+        from criteria.views.cuptexport import (load_all_criterias,
+                                               extract_scoring_rows)
+        criterias = load_all_criterias()[project.id]
+        rows, _ = extract_scoring_rows(project, criterias)
+        return rows
+
+    # --- predicates ---------------------------------------------------
+
+    def test_predicates_separate_the_two_concerns(self):
+        from criteria.views.cuptexport import (uses_grouped_major_rows,
+                                               zeroes_score_fields)
+
+        grouped = self._project(is_cupt_export_only_major_list=True)
+        zeroed = self._project(is_cupt_export_only_major_list=False,
+                               is_cupt_export_zero_score_fields=True)
+        plain = self._project(is_cupt_export_only_major_list=False)
+
+        self.assertEqual(
+            [uses_grouped_major_rows(p) for p in [grouped, zeroed, plain]],
+            [True, False, False])
+        self.assertEqual(
+            [zeroes_score_fields(p) for p in [grouped, zeroed, plain]],
+            [True, True, False])
+
+    # --- conditions CSV -----------------------------------------------
+
+    def test_min_scores_are_not_written(self):
+        project = self._project(is_cupt_export_only_major_list=False,
+                                is_cupt_export_zero_score_fields=True)
+        self._criteria(project)
+
+        row = self._condition_rows(project)[0]
+
+        self.assertNotIn('min_gpax', row)
+        self.assertNotIn('score_condition', row)
+
+    def test_min_scores_are_written_without_the_flag(self):
+        project = self._project(is_cupt_export_only_major_list=False)
+        self._criteria(project)
+
+        row = self._condition_rows(project)[0]
+
+        self.assertEqual(row['min_gpax'], 3)
+
+    def test_rows_are_not_combined_per_major(self):
+        # The whole point of the new flag: two criteria on one major stay two
+        # rows, where only_major_list would have merged them into one.
+        project = self._project(is_cupt_export_only_major_list=False,
+                                is_cupt_export_zero_score_fields=True)
+        self._criteria(project)
+        self._criteria(project)
+
+        self.assertEqual(len(self._condition_rows(project)), 2)
+
+    def test_only_major_list_still_combines_rows(self):
+        project = self._project(is_cupt_export_only_major_list=True)
+        self._criteria(project)
+        self._criteria(project)
+
+        rows = self._condition_rows(project)
+
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(rows[0]['slots'], 20)
+
+    def test_add_limit_is_not_forced_to_zero(self):
+        project = self._project(is_cupt_export_only_major_list=False,
+                                is_cupt_export_zero_score_fields=True)
+        self._criteria(project)
+
+        row = self._condition_rows(project)[0]
+
+        self.assertEqual(row['add_limit'],
+                         CurriculumMajorAdmissionCriteria.DEFAULT_ADD_LIMIT)
+
+    def test_folio_criteria_still_rendered(self):
+        # Score extraction still runs, so the portfolio columns are available.
+        project = self._project(is_cupt_export_only_major_list=False,
+                                is_cupt_export_zero_score_fields=True)
+        self._criteria(project)
+
+        row = self._condition_rows(project)[0]
+
+        self.assertIn('folio_criteria', row)
+
+    # --- scoring CSV ---------------------------------------------------
+
+    def test_scoring_weights_are_not_written(self):
+        project = self._project(is_cupt_export_only_major_list=False,
+                                is_cupt_export_zero_score_fields=True)
+        self._criteria(project)
+
+        row = self._scoring_rows(project)[0]
+
+        self.assertNotIn('tgat', row)
+        # cal_* are not in the scoring zero-field list, so they must stay
+        # explicitly 0 rather than be left out (an absent key is written as an
+        # empty cell, not a zero).
+        self.assertEqual(row['cal_type'], 0)
+        self.assertEqual(row['cal_score_sum'], 0)
+        self.assertEqual(row['cal_subject_name'], 0)
+
+    def test_scoring_weights_are_written_without_the_flag(self):
+        project = self._project(is_cupt_export_only_major_list=False)
+        self._criteria(project)
+
+        row = self._scoring_rows(project)[0]
+
+        self.assertEqual(row['tgat'], 30)
+
+    def test_portfolio_and_interview_percents_survive(self):
+        from criteria.views.cuptexport import (
+            load_all_criterias, extract_scoring_rows,
+            preprocess_portfolio_admission_criteria)
+
+        project = self._project(is_cupt_export_only_major_list=False,
+                                is_cupt_export_zero_score_fields=True)
+        self._criteria(project)
+
+        criterias = load_all_criterias()[project.id]
+        # What export_scoring_csv does for a portfolio project: replaces the
+        # extracted scoring criteria with the R1_PORTFOLIO / R1_INTERVIEW pair.
+        preprocess_portfolio_admission_criteria(project, criterias)
+        rows, _ = extract_scoring_rows(project, criterias)
+
+        self.assertEqual(rows[0]['portfolio'], 100)
+        self.assertEqual(rows[0]['interview'], 0)
+        self.assertNotIn('tgat', rows[0])

@@ -194,6 +194,12 @@ class AdmissionProject(models.Model):
     is_cupt_export_only_major_list = models.BooleanField(default=True,
                                                          verbose_name='ส่งข้อมูลทปอ.เป็นรายการสาขาเท่านั้น')
 
+    # Half-way between only_major_list True and False: rows stay per-criteria
+    # (not combined per major), but min scores and scoring weights are all
+    # exported as 0. Portfolio/interview percents still carry their values.
+    is_cupt_export_zero_score_fields = models.BooleanField(default=False,
+                                                           verbose_name='ส่งข้อมูลทปอ.โดยไม่ส่งเกณฑ์ขั้นต่ำและคะแนน')
+
     is_auto_select_single_major = models.BooleanField(default=False,
                                                       verbose_name='มีสาขาเดียวและเลือกสาขานั้นโดยอัตโนมัติ')
     

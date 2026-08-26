@@ -183,17 +183,18 @@ project id. Every consumer downstream reads those two attributes rather than
 re-extracting.
 
 **Scoring** extraction runs for every criteria; **required** extraction only
-for projects that are not `is_cupt_export_only_major_list`. So on a
-only-major-list project `extracted_required_criteria` simply **does not
-exist** — every reader of it is behind the same flag check.
+for projects where `zeroes_score_fields(project)` is false. So on such a
+project `extracted_required_criteria` simply **does not
+exist** — every reader of it is behind the same predicate.
 
 > ⚠️ **Scoring extraction now runs for every criteria** (2026-08). It used to
 > be skipped for `is_cupt_export_only_major_list` projects, whose rows carry
 > no criteria columns. It cannot be any more:
 > [`preprocess_portfolio_admission_criteria`](#portfolio-projects) derives
 > the portfolio/interview split from the authored scoring criteria, and most
-> portfolio projects *are* only-major-list projects. Consequences that have
-> **not** been worked through yet:
+> portfolio projects *are* only-major-list projects. `project_validation`
+> now mirrors this branch, so the export and the validation page agree.
+> Consequences that have **not** been worked through yet:
 >
 > - scoring extraction is paid for on every project, exported or not;
 > - warnings raised by criteria that are never exported now reach
@@ -201,26 +202,41 @@ exist** — every reader of it is behind the same flag check.
 > - `check_other_score_type` used to `KeyError` on a `score_type` with no
 >   catalog entry — including the portfolio-round tags. It now reports
 >   `UNKNOWN-SCORETYPE` instead, because a crash there would take down both
->   CSV exports;
-> - `project_validation` still does its own extraction guarded by the flag,
->   so the two paths now disagree for only-major-list projects.
+>   CSV exports.
 
 **`convert_to_base_row`** produces the common columns:
 `project_id` (`project.cupt_code`), `project_name_th`
 (`project.short_title`), `program_id`, `major_id`, `add_limit`
 (`mc.add_limit_display()`), `type` (`get_project_type`), plus three
 non-CSV working keys — `criteria`, `curriculum_major`, `slots` — that the
-writers strip again. For `is_cupt_export_only_major_list` projects
-`add_limit` is forced to `0`.
+writers strip again. For grouped-row projects `add_limit` is forced to `0`.
 
-**`is_cupt_export_only_major_list`** (an `AdmissionProject` flag, default
-**True**) means "send ทปอ. only the list of majors, no criteria". For such
-projects no required extraction happens and no extracted score reaches any
-column (scoring is still extracted, see the remark above), `criteria` is
-`None` on
-validation rows, and the post-process step collapses the per-criteria rows
-of one major into a single row with `combine_slots` (which sums `slots`,
-mutates and returns the *first* row, and drops the rest).
+### The two export flags
+
+Two `AdmissionProject` flags shape the export, and **no code reads them
+directly** — every branch goes through one of two predicates, which is what
+keeps the concerns separable:
+
+| predicate | true when | what it decides |
+|---|---|---|
+| `uses_grouped_major_rows(project)` | `is_cupt_export_only_major_list` | one combined row per major (`combine_slots`), `criteria` is `None` on validation rows, `add_limit` forced to `0`, and the scoring CSV skips the project entirely unless it is a portfolio project |
+| `zeroes_score_fields(project)` | either flag | no required extraction, so no `min_*` / `score_condition` / `subject_names` / `score_minimum`; and of the scoring criteria only `PORTFOLIO_SCORE_TYPES` (`R1_PORTFOLIO` / `R1_INTERVIEW`) reaches a column |
+
+**`is_cupt_export_only_major_list`** (default **True**) means "send ทปอ. only
+the list of majors, no criteria" — it implies both predicates.
+`combine_slots` sums `slots`, mutates and returns the *first* row, and drops
+the rest.
+
+**`is_cupt_export_zero_score_fields`** (default **False**) is the half-way
+case: rows stay per-criteria and `add_limit` is normal, but every score
+exports as `0`. Portfolio projects still export their portfolio/interview
+split, because `preprocess_portfolio_admission_criteria` has already reduced
+their scoring criteria to exactly those two score types.
+
+> `cal_type` / `cal_score_sum` / `cal_subject_name` are **not** in
+> `SCORING_FILE_SCORING_ZERO_FIELD_STR`, so `scoring_extract_f` must keep
+> setting them to `0` explicitly when it skips the weights — an absent key is
+> written as an empty cell, not a zero.
 
 ### Conditions: `extract_condition_rows`
 
@@ -261,8 +277,10 @@ Per row, `scoring_extract_f`:
   `cal_subject_name = 'f1|f2|...'` (pipe separated). One `MAX` group only —
   a second logs `ERROR: Too many MAXs`.
 
-Projects that are `is_cupt_export_only_major_list` are **skipped entirely**
-by the scoring export unless they are portfolio projects.
+Projects where `uses_grouped_major_rows` is true are **skipped entirely**
+by the scoring export unless they are portfolio projects. A
+`zeroes_score_fields` project still gets its row — carrying the
+portfolio/interview split, or all zeros if it is not a portfolio project.
 
 `write_scoring_row` strips the working keys plus a handful of
 conditions-only columns (`condition`, `gender_male_number`,

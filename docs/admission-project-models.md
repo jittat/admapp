@@ -105,7 +105,8 @@ These gate what staff can edit in the `criteria` app (see
 
 | Field | Default | Meaning |
 |---|---|---|
-| `is_cupt_export_only_major_list` | `True` | "ส่งข้อมูลทปอ.เป็นรายการสาขาเท่านั้น" — on CUPT export, emit only the major list (skip extracting score/condition criteria). See `cuptexport.py`. |
+| `is_cupt_export_only_major_list` | `True` | "ส่งข้อมูลทปอ.เป็นรายการสาขาเท่านั้น" — on CUPT export, emit only the major list: one combined row per major, no min scores or scoring weights, `add_limit` forced to `0`. See `cuptexport.py`. |
+| `is_cupt_export_zero_score_fields` | `False` | "ส่งข้อมูลทปอ.โดยไม่ส่งเกณฑ์ขั้นต่ำและคะแนน" — half way between the flag above being `True` and `False`: rows stay **per-criteria** (not combined, `add_limit` normal), but min scores and scoring weights all export as `0`. The portfolio/interview split still carries its values. |
 | `cross_majors_acceptance_visible` | `False` | Show cross-major acceptance info in the score table. |
 | `admission_student_type` | `1` | `STUDENT_TYPE_CHOICES`: 1 = only current M.6; 2 = M.6 + graduates. |
 | `admission_school_type` | `1` | `SCHOOL_TYPE_CHOICES`: 1 = any; 2–6 = restrict to core/international/vocational/non-formal/GED curricula. |
