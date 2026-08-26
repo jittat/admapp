@@ -323,9 +323,21 @@ Rows with `value = None` are logged as `Value=None: <description>`
 `value = 0` are silently dropped.
 
 > ⚠️ `normalize_int_value(val)` returns `int(val)` when the value is
-> integral and **implicitly `None` otherwise**. A non-integer weight or
-> minimum (e.g. `2.5`) is therefore written as an empty cell, silently. All
-> extracted values pass through it.
+> integral and **implicitly `None` otherwise**. A non-integer value (e.g.
+> `2.5`) is therefore written as an empty cell, silently — or, inside an `OR`
+> group's space-joined `score_minimum`, as the literal string `"None"`.
+>
+> The **conditions** export no longer calls it directly: minimums go through
+> `normalize_min_value(field_name, val)`, which skips normalization when the
+> column name contains **`gpa`** or **`tscore`** (`NON_NORMALIZED_FIELD_KEYWORDS`)
+> — the columns that carry genuine decimals. Consequences: a GPAX minimum of
+> `2.75` now exports as `2.75` instead of blank, and an integral one exports
+> as `3.0` rather than `3`, since the raw value is passed straight through.
+> A non-integral minimum on any *other* column (e.g. `min_ielts 3.5`) is
+> still lost — that was left out of scope deliberately.
+>
+> The **scoring** export still calls `normalize_int_value` unconditionally,
+> so an integral `gpax` *weight* keeps exporting as `20`, not `20.0`.
 
 ### Portfolio projects
 
@@ -586,7 +598,10 @@ Notably those scripts *do* read `AdmissionCriteria.additional_description` /
 - Warning *messages* only reach `CuptExportLog`; the export page shows that
   a run happened, but reading what it complained about still means opening
   the admin. Check the log after every export.
-- `normalize_int_value` turns non-integral values into blanks silently.
+- `normalize_int_value` turns non-integral values into blanks silently. The
+  conditions export works around this for `gpa`/`tscore` columns via
+  `normalize_min_value`; the scoring export and every other column still
+  drop decimals.
 - An unmapped score type crashes the export via `DictWriter`, unless it
   happens to be one of the two hardcoded `ERROR-*` names.
 - `load_export_config` cannot merge dict-valued keys across config rows.

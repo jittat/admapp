@@ -724,6 +724,26 @@ def normalize_int_value(val):
     if int(val) == val:
         return int(val)
 
+
+# Minimums on these condition columns are genuine decimals - a GPAX of 2.75, a
+# T-score of 33.5 - so they must not go through normalize_int_value, which
+# returns None for anything non-integral. A None reaches the CSV as an empty
+# cell, or, inside an OR group's space-joined score_minimum, as the literal
+# string "None".
+NON_NORMALIZED_FIELD_KEYWORDS = ['gpa', 'tscore']
+
+
+def normalize_min_value(field_name, val):
+    """normalize_int_value, except on the columns that carry decimals.
+
+    Conditions CSV only: scoring weights keep normalizing unconditionally, so
+    an integral gpax weight still exports as 20 rather than 20.0.
+    """
+    lowered = field_name.lower()
+    if any(k in lowered for k in NON_NORMALIZED_FIELD_KEYWORDS):
+        return val
+    return normalize_int_value(val)
+
 def extract_student_curriculum_type(row_items, admission_criteria):
     TYPE_CHOICE_FIELDS = {
         1: 'only_formal',
@@ -850,13 +870,17 @@ def extract_condition_rows(project, admission_criterias):
         if not zeroes_score_fields(project):
             for required_score in admission_criteria.extracted_required_criteria[0]:
                 if required_score['score_type'] != 'GROUP-OR':
-                    row_items[exam_name_to_required_field(required_score['score_type'])] = normalize_int_value(required_score['min_value'])
+                    field_name = exam_name_to_required_field(required_score['score_type'])
+                    row_items[field_name] = normalize_min_value(field_name,
+                                                                required_score['min_value'])
                 else:
                     names = []
                     mins = []
                     for item_score in required_score['children']:
-                        names.append(exam_name_to_required_field(item_score['score_type']))
-                        mins.append(normalize_int_value(item_score['min_value']))
+                        field_name = exam_name_to_required_field(item_score['score_type'])
+                        names.append(field_name)
+                        mins.append(normalize_min_value(field_name,
+                                                        item_score['min_value']))
 
                     row_items['score_condition'] = 1
                     row_items['subject_names'] = ' '.join(names)

@@ -1518,3 +1518,105 @@ class ZeroScoreFieldsExportTestCase(TestCase):
         self.assertEqual(rows[0]['portfolio'], 100)
         self.assertEqual(rows[0]['interview'], 0)
         self.assertNotIn('tgat', rows[0])
+
+
+class NormalizeMinValueTestCase(SimpleTestCase):
+    """normalize_int_value returns None for a non-integral value, which the CSV
+    writes as an empty cell - so a GPAX minimum of 2.75 used to vanish.
+    normalize_min_value exempts the columns that carry real decimals (any field
+    name containing 'gpa' or 'tscore') and is used by the conditions export
+    only: scoring weights still normalize unconditionally, so an integral gpax
+    weight keeps exporting as 20 rather than 20.0."""
+
+    def test_non_integral_value_survives_on_a_gpa_field(self):
+        from criteria.views.cuptexport import normalize_min_value
+
+        self.assertEqual(normalize_min_value('min_gpax', 2.75), 2.75)
+        self.assertEqual(normalize_min_value('min_credit_gpa22', 2.5), 2.5)
+
+    def test_non_integral_value_survives_on_a_tscore_field(self):
+        from criteria.views.cuptexport import normalize_min_value
+
+        self.assertEqual(normalize_min_value('min_tgat_tscore', 33.5), 33.5)
+
+    def test_integral_value_on_a_gpa_field_is_left_as_is(self):
+        # Deliberate: 3.00 exports as "3.0", not "3". Keeping the raw value is
+        # what makes the non-integral case work.
+        from criteria.views.cuptexport import normalize_min_value
+
+        self.assertEqual(normalize_min_value('min_gpax', 3.0), 3.0)
+        self.assertIsInstance(normalize_min_value('min_gpax', 3.0), float)
+
+    def test_other_fields_still_normalize_to_int(self):
+        from criteria.views.cuptexport import normalize_min_value
+
+        self.assertEqual(normalize_min_value('min_tgat', 30.0), 30)
+        self.assertIsInstance(normalize_min_value('min_tgat', 30.0), int)
+
+    def test_other_fields_keep_the_old_none_behaviour(self):
+        # Unchanged on purpose - only gpa/tscore columns were in scope.
+        from criteria.views.cuptexport import normalize_min_value
+
+        self.assertIsNone(normalize_min_value('min_ielts', 3.5))
+
+
+class ConditionRowMinValueTestCase(TestCase):
+    """The conditions export writes decimal minimums through
+    normalize_min_value, including inside an OR group - where a dropped value
+    was not merely blank but the literal string "None" in the space-joined
+    score_minimum."""
+
+    def setUp(self):
+        self.campus = Campus.objects.create(title='Bang Khen', short_title='BK')
+        self.faculty = Faculty.objects.create(title='Engineering',
+                                              campus=self.campus)
+        self.cupt_code = MajorCuptCode.objects.create(
+            program_code='10020104212301', program_type='ปกติ',
+            program_type_code='A', faculty=self.faculty, title='Major')
+        self.project = AdmissionProject.objects.create(
+            title='P', short_title='P', cupt_code='A0100',
+            is_visible_in_backoffice=True,
+            is_cupt_export_only_major_list=False)
+        self.curriculum_major = CurriculumMajor.objects.create(
+            admission_project=self.project, cupt_code=self.cupt_code,
+            faculty=self.faculty)
+        self.admission_criteria = AdmissionCriteria.objects.create(
+            admission_project=self.project, faculty=self.faculty, version=1)
+        CurriculumMajorAdmissionCriteria.objects.create(
+            curriculum_major=self.curriculum_major,
+            admission_criteria=self.admission_criteria, slots=10)
+
+    def _required(self, score_type, value, description, **kwargs):
+        return ScoreCriteria.objects.create(
+            admission_criteria=self.admission_criteria,
+            primary_order=kwargs.pop('primary_order', 1),
+            secondary_order=kwargs.pop('secondary_order', 0),
+            criteria_type='required', score_type=score_type,
+            value=Decimal(value), description=description, **kwargs)
+
+    def _row(self):
+        from criteria.views.cuptexport import (load_all_criterias,
+                                               extract_condition_rows)
+        criterias = load_all_criterias()[self.project.id]
+        rows, _ = extract_condition_rows(self.project, criterias)
+        return rows[0]
+
+    def test_decimal_gpax_minimum_is_exported(self):
+        self._required('GPAX', '2.75', 'GPAX')
+
+        self.assertEqual(self._row()['min_gpax'], 2.75)
+
+    def test_decimal_minimum_in_an_or_group_is_not_the_string_none(self):
+        group = self._required('GROUP-OR', '0.00', 'ข้อใดข้อหนึ่ง',
+                               relation='OR')
+        self._required('GPAX', '2.75', 'GPAX',
+                       secondary_order=1, parent=group)
+        self._required('TGAT', '30.00', 'TGAT',
+                       secondary_order=2, parent=group)
+
+        row = self._row()
+
+        self.assertEqual(row['score_condition'], 1)
+        self.assertEqual(row['subject_names'], 'min_gpax min_tgat')
+        self.assertEqual(row['score_minimum'], '2.75 30')
+        self.assertNotIn('None', row['score_minimum'])
