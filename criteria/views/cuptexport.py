@@ -868,6 +868,42 @@ def export_options_as_dict(config):
         d[(project_id, program_major_code)] = val
     return d
 
+def row_export_config_key(row):
+    """The (project_id, program+major code) key an export config entry uses."""
+    pkey = row['program_id']
+    if row['major_id'] != '':
+        pkey = row['program_id'] + '0' + row['major_id']
+    return (row['project_id'], pkey)
+
+FOLIO_CRITERIA_ALL_KEY = '*'
+
+def apply_additional_folio_criteria(project_export_config, rows):
+    """Appends the configured extra text to the folio_criteria column.
+
+    `additional_folio_criteria` is keyed like `custom_comments`, plus a '*'
+    key whose text is appended to every row.  A row matching both gets its own
+    text first and the '*' text last, each on its own line.
+
+    Only rows with a non-empty `folio_criteria` are touched.  That skips
+    non-portfolio rows, which keep the '' set by extract_portfolio_information,
+    and - since the key is absent entirely on scoring rows - keeps the column
+    out of the scoring CSV, whose field list has no folio_criteria and whose
+    DictWriter would raise on it.
+    """
+    config = dict(project_export_config['additional_folio_criteria'])
+    all_rows_text = config.pop(FOLIO_CRITERIA_ALL_KEY, None)
+    extra_texts = export_options_as_dict(config)
+
+    for r in rows:
+        if not r.get('folio_criteria'):
+            continue
+
+        additional_texts = [extra_texts.get(row_export_config_key(r)),
+                            all_rows_text]
+        for text in additional_texts:
+            if text:
+                r['folio_criteria'] += '\n' + text
+
 def update_project_information(project, rows):
     project_export_config = load_export_config(project)
     additional_projects, cupt_code_custom_projects = extract_additional_projects(project_export_config)
@@ -883,20 +919,16 @@ def update_project_information(project, rows):
     if 'custom_comments' in project_export_config:
         comments = export_options_as_dict(project_export_config['custom_comments'])
         for r in rows:
-            pkey = r['program_id']
-            if r['major_id'] != '':
-                pkey = r['program_id'] + '0' + r['major_id']
-            if (r['project_id'],pkey) in comments:
-                r['condition'] = comments[(r['project_id'],pkey)]
+            key = row_export_config_key(r)
+            if key in comments:
+                r['condition'] = comments[key]
 
     if 'custom_options' in project_export_config:
         options = export_options_as_dict(project_export_config['custom_options'])
         for r in rows:
-            pkey = r['program_id']
-            if r['major_id'] != '':
-                pkey = r['program_id'] + '0' + r['major_id']
-            if (r['project_id'],pkey) in options:
-                option = options[(r['project_id'],pkey)]
+            key = row_export_config_key(r)
+            if key in options:
+                option = options[key]
 
                 if 'accepts_male_only' in option:
                     if option['accepts_male_only'] == 1:
@@ -905,6 +937,11 @@ def update_project_information(project, rows):
                 if 'custom_values' in option:
                     for f in option['custom_values']:
                         r[f] = option['custom_values'][f]
+
+    # Last, so the text is appended to the final value - custom_values above
+    # can itself set folio_criteria.
+    if 'additional_folio_criteria' in project_export_config:
+        apply_additional_folio_criteria(project_export_config, rows)
 
 
 def fill_zero_in_rows(rows, zero_fields):

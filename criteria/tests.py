@@ -1020,3 +1020,87 @@ class CriteriaAsStrTestCase(TestCase):
             f'2. {self.parent2}',
             f'    2.1 {self.child}',
         ]))
+
+
+class AdditionalFolioCriteriaTestCase(SimpleTestCase):
+    """apply_additional_folio_criteria appends export-config text to the
+    folio_criteria column of the conditions CSV. Entries are keyed like
+    custom_comments ("<program+major>-<project id>"), plus a '*' key that
+    applies to every row. Rows with an empty or absent folio_criteria are left
+    alone - that covers non-portfolio rows and, crucially, scoring rows, which
+    have no such column at all."""
+
+    def make_row(self, program_id='10020104212301A', major_id='',
+                 project_id='C2800', folio_criteria='1. GPAX 60%'):
+        row = {
+            'program_id': program_id,
+            'major_id': major_id,
+            'project_id': project_id,
+        }
+        if folio_criteria is not None:
+            row['folio_criteria'] = folio_criteria
+        return row
+
+    def apply(self, config, rows):
+        from criteria.views.cuptexport import apply_additional_folio_criteria
+
+        apply_additional_folio_criteria({'additional_folio_criteria': config}, rows)
+        return rows
+
+    def test_appends_matching_entry_on_its_own_line(self):
+        row = self.make_row()
+
+        self.apply({'10020104212301A-C2800': 'ส่งใบรับรองแพทย์'}, [row])
+
+        self.assertEqual(row['folio_criteria'], '1. GPAX 60%\nส่งใบรับรองแพทย์')
+
+    def test_star_key_applies_to_every_row(self):
+        rows = [self.make_row(project_id='C2800'),
+                self.make_row(program_id='10020105303201A', project_id='C2805')]
+
+        self.apply({'*': 'ดูรายละเอียดที่ https://admission.ku.ac.th'}, rows)
+
+        for row in rows:
+            self.assertEqual(row['folio_criteria'],
+                             '1. GPAX 60%\nดูรายละเอียดที่ https://admission.ku.ac.th')
+
+    def test_matching_entry_comes_before_star_text(self):
+        row = self.make_row()
+
+        self.apply({'10020104212301A-C2800': 'เฉพาะสาขานี้',
+                    '*': 'ทุกสาขา'}, [row])
+
+        self.assertEqual(row['folio_criteria'], '1. GPAX 60%\nเฉพาะสาขานี้\nทุกสาขา')
+
+    def test_row_keyed_by_program_and_major_code(self):
+        # A row with a major_id is keyed by program_id + '0' + major_id.
+        row = self.make_row(program_id='10020105303201A', major_id='10')
+
+        self.apply({'10020105303201A010-C2800': 'เฉพาะสาขาย่อย'}, [row])
+
+        self.assertEqual(row['folio_criteria'], '1. GPAX 60%\nเฉพาะสาขาย่อย')
+
+    def test_non_matching_entry_leaves_row_unchanged(self):
+        row = self.make_row()
+
+        self.apply({'99999999999999A-C2800': 'ไม่ตรง'}, [row])
+
+        self.assertEqual(row['folio_criteria'], '1. GPAX 60%')
+
+    def test_empty_folio_criteria_is_not_given_the_star_text(self):
+        # Non-portfolio rows keep the '' that extract_portfolio_information
+        # sets, even when a GLOBAL '*' entry is configured.
+        row = self.make_row(folio_criteria='')
+
+        self.apply({'*': 'ทุกสาขา'}, [row])
+
+        self.assertEqual(row['folio_criteria'], '')
+
+    def test_row_without_folio_criteria_does_not_gain_the_column(self):
+        # Scoring rows never carry folio_criteria, and the scoring CSV has no
+        # such field - adding one would make csv.DictWriter raise.
+        row = self.make_row(folio_criteria=None)
+
+        self.apply({'*': 'ทุกสาขา'}, [row])
+
+        self.assertNotIn('folio_criteria', row)

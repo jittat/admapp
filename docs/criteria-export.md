@@ -134,11 +134,11 @@ id>"`, split on `-` in `export_options_as_dict`.
    `{'project_id': <custom project code>, **rule_json}`.
 
 > ⚠️ Step 2 uses `config[k] += this_config[k]`, which works for lists but
-> **raises `TypeError` for dicts**. `custom_projects`, `custom_comments` and
-> `custom_options` are dicts, so a given key may only appear in **one**
-> config row across the whole table (e.g. `GLOBAL` *or* the project's own
-> row, never both). JSON parse errors are collected under `errors` and shown
-> on the validation page.
+> **raises `TypeError` for dicts**. `custom_projects`, `custom_comments`,
+> `custom_options` and `additional_folio_criteria` are dicts, so a given key
+> may only appear in **one** config row across the whole table (e.g. `GLOBAL`
+> *or* the project's own row, never both). JSON parse errors are collected
+> under `errors` and shown on the validation page.
 
 Recognised keys (samples live in `criteria/views/export-config*.json`, one
 per admission year):
@@ -149,6 +149,7 @@ per admission year):
 | `custom_projects` | `{program+major: [rule, ...]}` | re-map rules, see below |
 | `custom_comments` | `{"prog-project": "ข้อความ"}` | sets the `condition` column |
 | `custom_options` | `{"prog-project": {...}}` | `accepts_male_only: 1` → `gender_male_number = slots`; `custom_values: {field: value}` → set arbitrary CSV columns |
+| `additional_folio_criteria` | `{"prog-project": "ข้อความ", "*": "ข้อความ"}` | appends text to the `folio_criteria` column, see below |
 | `interview_percents` | `{"<project pk>": [{full_code, porfolio, interview}]}` | per-major portfolio/interview weights for portfolio projects (note the misspelled `porfolio` key, which the code reads verbatim) |
 
 `interview_percents` is keyed by the **numeric `AdmissionProject.id` as a
@@ -343,6 +344,18 @@ For those projects:
   `short=True` mode renders via `c.display_with_short_relation()` instead of
   `str(c)` — that script now delegates to `criteria_as_str` rather than
   duplicating the traversal;
+- the config's `additional_folio_criteria` then appends free text to that
+  column, in `apply_additional_folio_criteria`. Entries are keyed like
+  `custom_comments` (`"<program+major>-<project id>"`), plus a `"*"` key
+  applied to **every** row; a row matching both gets its own text first and
+  the `"*"` text last, each on its own line. The pass runs **last** in
+  `update_project_information`, after `custom_options` — which can itself set
+  `folio_criteria` via `custom_values` — so the text is always appended to the
+  final value. Rows whose `folio_criteria` is empty are skipped, so a `"*"`
+  entry never reaches a non-portfolio row; and because scoring rows have no
+  `folio_criteria` key at all, that same guard keeps the column out of the
+  scoring CSV, whose field list has no `folio_criteria` and whose
+  `DictWriter` would raise on it;
 - the scoring export replaces the extracted criteria wholesale with two
   synthetic items, `R1_PORTFOLIO` and `R1_INTERVIEW`
   (`preprocess_portfolio_admission_criteria`, see below), and then overrides
@@ -489,6 +502,14 @@ them as a compact JSON string keyed by `(project_id, program_id, major_id)`.
 So the columns you see are "what was submitted, non-zero only" — a quick
 eyeball diff against the extracted items in the neighbouring cell, not a
 computed diff.
+
+> ⚠️ The page renders the required/scoring criteria strings but **none of the
+> `folio_*` columns**, `folio_criteria` included.
+> `extract_portfolio_information` runs only on the export path (via
+> `extract_condition_rows`), never in `project_validation`, so neither the
+> numbered criteria text nor anything appended to it by
+> `additional_folio_criteria` can be previewed here — staff have to run the
+> export to see the column. **Worth examining later.**
 
 ## Importing
 
