@@ -1104,3 +1104,108 @@ class AdditionalFolioCriteriaTestCase(SimpleTestCase):
         self.apply({'*': 'ทุกสาขา'}, [row])
 
         self.assertNotIn('folio_criteria', row)
+
+
+class CriteriaReportIndexTestCase(TestCase):
+    """The criteria report landing page (/backoffice/criteria/report/) links
+    the two cross-project additional-fields reports and shows per-project
+    criteria counts. It lists projects that are available OR visible in the
+    backoffice - the same set the CUPT export page uses."""
+
+    def setUp(self):
+        self.campus = Campus.objects.create(title='Bang Khen', short_title='BK')
+        self.faculty = Faculty.objects.create(title='Engineering',
+                                              campus=self.campus)
+        self.admission_round = AdmissionRound.objects.create(
+            number=1, rank=1, acceptance_result_date=datetime.date(2026, 1, 1))
+
+        self.project = AdmissionProject.objects.create(
+            title='Visible Project', short_title='Visible',
+            is_visible_in_backoffice=True)
+        self.project.admission_rounds.add(self.admission_round)
+
+        # Two criteria: one storing form fields, one storing nothing. The
+        # deleted one must not be counted at all.
+        AdmissionCriteria.objects.create(
+            admission_project=self.project, faculty=self.faculty, version=1,
+            additional_admission_form_fields_json='[{"title": "q", "size": "short"}]')
+        AdmissionCriteria.objects.create(
+            admission_project=self.project, faculty=self.faculty, version=1,
+            additional_admission_form_fields_json='[]')
+        AdmissionCriteria.objects.create(
+            admission_project=self.project, faculty=self.faculty, version=1,
+            is_deleted=True,
+            additional_admission_form_fields_json='[{"title": "gone", "size": "short"}]')
+
+        cupt_code = MajorCuptCode.objects.create(
+            program_code='10020104212301', program_type='ปกติ',
+            program_type_code='A', faculty=self.faculty, title='Major')
+        CurriculumMajor.objects.create(admission_project=self.project,
+                                       cupt_code=cupt_code,
+                                       faculty=self.faculty)
+
+        self.url = reverse('backoffice:criteria:report-index')
+
+    def _user(self, username, is_admission_admin=False):
+        # A Profile is auto-created by a post_save signal on User.
+        user = User.objects.create_user(username=username, password='x')
+        user.profile.is_admission_admin = is_admission_admin
+        user.profile.save()
+        return user
+
+    def _stats_for(self, response, project):
+        for stat in response.context['project_stats']:
+            if stat['project'].id == project.id:
+                return stat
+        return None
+
+    def test_non_admission_admin_is_redirected(self):
+        self.client.force_login(self._user('staff01'))
+
+        response = self.client.get(self.url)
+
+        self.assertRedirects(response, reverse('backoffice:index'),
+                             fetch_redirect_response=False)
+
+    def test_page_links_both_additional_fields_reports(self):
+        self.client.force_login(self._user('admin01', is_admission_admin=True))
+
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(
+            response, reverse('backoffice:criteria:report-upload-fields'))
+        self.assertContains(
+            response, reverse('backoffice:criteria:report-form-fields'))
+
+    def test_counts_exclude_deleted_criteria_and_empty_json(self):
+        self.client.force_login(self._user('admin01', is_admission_admin=True))
+
+        response = self.client.get(self.url)
+
+        stat = self._stats_for(response, self.project)
+        self.assertEqual(stat['criteria_count'], 2)
+        self.assertEqual(stat['form_fields_count'], 1)
+        self.assertEqual(stat['upload_fields_count'], 0)
+        self.assertEqual(stat['major_count'], 1)
+
+    def test_project_with_no_criteria_still_gets_a_zero_row(self):
+        empty_project = AdmissionProject.objects.create(
+            title='Empty Project', short_title='Empty', is_available=True)
+        self.client.force_login(self._user('admin01', is_admission_admin=True))
+
+        response = self.client.get(self.url)
+
+        stat = self._stats_for(response, empty_project)
+        self.assertIsNotNone(stat)
+        self.assertEqual(stat['criteria_count'], 0)
+        self.assertEqual(stat['major_count'], 0)
+
+    def test_project_neither_available_nor_visible_is_not_listed(self):
+        hidden_project = AdmissionProject.objects.create(
+            title='Old Project', short_title='Old')
+        self.client.force_login(self._user('admin01', is_admission_admin=True))
+
+        response = self.client.get(self.url)
+
+        self.assertIsNone(self._stats_for(response, hidden_project))

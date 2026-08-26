@@ -1,0 +1,50 @@
+{% extends 'backoffice/base.html' %}
+{% block content %}
+<div class="row">
+  <div class="col-md-12">
+    <h2>รายงานเกณฑ์</h2>
+
+    <h3>รายการรายงาน</h3>
+    <ul>
+      <li>
+	<a target="_blank" rel="noopener noreferrer" href="{% url 'backoffice:criteria:report-upload-fields' %}">อัพโหลดเพิ่มเติม</a>
+	&mdash; เกณฑ์ที่ระบุการอัพโหลดเอกสารเพิ่มเติม ทุกโครงการ
+      </li>
+      <li>
+	<a target="_blank" rel="noopener noreferrer" href="{% url 'backoffice:criteria:report-form-fields' %}">คำถามเพิ่มเติม</a>
+	&mdash; เกณฑ์ที่ระบุคำถามเพิ่มเติม ทุกโครงการ
+      </li>
+    </ul>
+
+    <h3>ข้อมูลเกณฑ์แต่ละโครงการ</h3>
+    <table class="table table-sm table-bordered">
+      <thead class="thead-dark">
+        <tr>
+          <th>โครงการ</th>
+          <th style="width: 8rem;">รอบ</th>
+          <th style="width: 7rem;">เกณฑ์</th>
+          <th style="width: 7rem;">สาขา</th>
+          <th style="width: 12rem;">เกณฑ์ที่ระบุคำถามเพิ่มเติม</th>
+          <th style="width: 12rem;">เกณฑ์ที่ระบุอัพโหลดเพิ่มเติม</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for stat in project_stats %}
+          <tr>
+            <td>{{ stat.project.title }}</td>
+            <td>{{ stat.project.get_admission_rounds_display }}</td>
+            <td>{{ stat.criteria_count }}</td>
+            <td>{{ stat.major_count }}</td>
+            <td>{{ stat.form_fields_count }}</td>
+            <td>{{ stat.upload_fields_count }}</td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="6" class="text-muted">ไม่มีโครงการที่เปิดใช้งาน</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

@@ -2,6 +2,7 @@ import json
 from decimal import Decimal
 
 from django.db import transaction
+from django.db.models import Count, Q
 from django.http import Http404
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseNotFound
 from django.shortcuts import render, redirect, get_object_or_404
@@ -459,6 +460,75 @@ def additional_form_fields_report(request):
 @user_login_required
 def additional_upload_fields_report(request):
     return additional_fields_report(request, 'upload')
+
+
+def get_criteria_report_project_stats(projects):
+    """Per-project criteria counts for the report landing page.
+
+    Two aggregate queries for the whole list, merged onto the projects in
+    Python so that a project with no criteria still gets a zero row.
+
+    The two additional-fields counts are "criteria that store something" -
+    exactly what the DB filter can answer. They are deliberately not a
+    preview of the additional-fields reports' row counts, which are one per
+    (criteria, curriculum major)."""
+
+    EMPTY_JSONS = ['', '[]']
+
+    criteria_counts = {
+        c['admission_project']: c
+        for c in (AdmissionCriteria
+                  .objects
+                  .filter(is_deleted=False,
+                          admission_project__in=projects)
+                  .values('admission_project')
+                  .annotate(criteria_count=Count('id'),
+                            form_fields_count=Count(
+                                'id',
+                                filter=~Q(additional_admission_form_fields_json__in=EMPTY_JSONS)),
+                            upload_fields_count=Count(
+                                'id',
+                                filter=~Q(additional_admission_upload_fields_json__in=EMPTY_JSONS))))
+    }
+
+    major_counts = {
+        m['admission_project']: m['major_count']
+        for m in (CurriculumMajor
+                  .objects
+                  .filter(admission_project__in=projects)
+                  .values('admission_project')
+                  .annotate(major_count=Count('id')))
+    }
+
+    stats = []
+    for project in projects:
+        counts = criteria_counts.get(project.id, {})
+        stats.append({
+            'project': project,
+            'criteria_count': counts.get('criteria_count', 0),
+            'form_fields_count': counts.get('form_fields_count', 0),
+            'upload_fields_count': counts.get('upload_fields_count', 0),
+            'major_count': major_counts.get(project.id, 0),
+        })
+    return stats
+
+
+@user_login_required
+def report_index(request):
+    """Landing page for the cross-project criteria reports."""
+    user = request.user
+    if not user.profile.is_admission_admin:
+        return redirect(reverse('backoffice:index'))
+
+    projects = list(AdmissionProject
+                    .objects
+                    .filter(Q(is_available=True) | Q(is_visible_in_backoffice=True))
+                    .order_by('display_rank', 'id')
+                    .prefetch_related('admission_rounds'))
+
+    return render(request,
+                  'criteria/reports.html',
+                  {'project_stats': get_criteria_report_project_stats(projects)})
 
 
 def extract_custom_interview_date(post_request):

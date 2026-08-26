@@ -511,6 +511,21 @@ redirect query follow the criteria rather than the selection.
 - `list-curriculum-majors` — cross-project matrix of majors per round.
 
 **Reports**
+- `report-index` (`report/`) — the landing page for the cross-project
+  criteria reports, and the only link to them from the backoffice index
+  (labelled รายงานเกณฑ์). It links `report-upload-fields` /
+  `report-form-fields` and shows one statistics row per project: criteria
+  count, `CurriculumMajor` count, and how many criteria store
+  `additional_admission_{form,upload}_fields_json`. Projects listed are
+  `is_available OR is_visible_in_backoffice` — the same set the CUPT export
+  page uses. ⚠️ Its template is **`criteria/reports.html`**, not
+  `criteria/report_index.html`, which was already taken by `project_report`.
+  `get_criteria_report_project_stats` does the whole table in **two
+  aggregate queries** merged onto the project list in Python, so a project
+  with no criteria still gets a zero row. The two additional-fields counts
+  are "criteria that store something" — what the `['', '[]']` DB filter can
+  answer — deliberately *not* a preview of the reports' row counts, which
+  are one per (criteria, major).
 - `project-report`, `major-report`, `report-num-slots`,
   `report-num-slots-by-faculty` — read-only slot/criteria summaries
   (`report_num_slots` sums `slots` across projects per faculty/major).
@@ -523,7 +538,8 @@ redirect query follow the criteria rather than the selection.
   prefetches `admission_project__admission_rounds`; without that, the sort
   key and the per-row round lookup cost two queries per major.
 - `report-form-fields` / `report-upload-fields` — the two
-  additional-fields reports, see below.
+  additional-fields reports, see below. Reached from `report-index`; they
+  are no longer linked directly from the backoffice index.
 
 ### The additional-fields reports
 
