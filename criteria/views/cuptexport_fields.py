@@ -382,6 +382,7 @@ SCORING_FILE_ZERO_FIELD_STR = """
 """
 
 EXAM_FIELD_MAP = {
+    'GPAX_4_SEMESTER': '',
     'GPAX_5_SEMESTER': '',
     'GPAX': 'gpax',
     'UNIT_MATH': 'credit_gpa22',
