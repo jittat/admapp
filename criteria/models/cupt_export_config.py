@@ -56,7 +56,7 @@ class CuptExportAdditionalProjectRule(models.Model):
         ordering = ['program_major_codes','custom_project']
     
     def __str__(self):
-        return f'{self.program_major_codes} - {self.custom_project.cupt_code} {self.custom_project.title}'
+        return f'{self.custom_project.cupt_code} {self.custom_project.title} - {self.program_major_codes}'
     
     def clean(self):
         try:
