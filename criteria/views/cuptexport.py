@@ -999,8 +999,7 @@ def update_project_information(project, rows):
 
                 if 'custom_values' in option:
                     for f in option['custom_values']:
-                        if f in r:
-                            r[f] = option['custom_values'][f]
+                        r[f] = option['custom_values'][f]
 
     # Last, so the text is appended to the final value - custom_values above
     # can itself set folio_criteria.
@@ -1171,7 +1170,7 @@ def extract_scoring_rows(project, admission_criterias):
 
 
 def write_scoring_row(writer, row, zero_fields):
-    EXTRA_FIELDS = [
+    EXTRA_FIELDS = [      # TODO: deal with this issue automatically
         'slots',
         'curriculum_major',
         'criteria',
@@ -1181,6 +1180,8 @@ def write_scoring_row(writer, row, zero_fields):
         'interview_location',
         'receive_student_number',
         'join_id',
+        'folio_closed_date',
+        'folio_closed_edit_date',
     ]
 
     curriculum_major = row['curriculum_major']
