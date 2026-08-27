@@ -783,9 +783,9 @@ def extract_portfolio_information(row_items, admission_criteria):
 
     def get_portfolio_closed_date(admission_criteria):
         PROJECT_DATES = {
-            4: '13/11/2568',
-            5: '15/01/2569',
-            6: '15/01/2569',
+            2: '18/10/2569',
+            5: '20/01/2570',
+            6: '20/01/2570',
         }
 
         if admission_criteria.admission_project_id in PROJECT_DATES:
@@ -795,15 +795,19 @@ def extract_portfolio_information(row_items, admission_criteria):
         r = get_subround(admission_criteria)
 
         FORLIO_CLOSED_DATES = {
-            (1,1): '13/11/2568',
-            (1,2): '15/01/2569',
-            (2,1): '20/10/2568',
-            (2,2): '14/01/2569',
-            (3,1): '15/11/2568',
-            (3,2): '15/01/2569',
-            (4,1): '09/01/2569',
-            (5,1): '13/11/2568',
-            (5,2): '15/01/2569',
+            (1,1): '14/10/2569',   # bkn
+            (1,2): '4/02/2570',
+
+            (2,1): '5/11/2569',   # kps
+            (2,2): '10/02/2570',
+
+            (3,1): '15/11/2569',   # src
+            (3,2): '10/02/2570',
+
+            (4,1): '19/02/2570',   # skn
+
+            (5,1): '14/10/2569',   # supan
+            (5,2): '4/02/2570',
         }
         return FORLIO_CLOSED_DATES.get((campus_id,r),'')
 
