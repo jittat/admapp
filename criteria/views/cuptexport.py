@@ -1116,12 +1116,7 @@ def extract_scoring_rows(project, admission_criterias):
 
     portfolio_interview_percents = {}
     if 'interview_percents' in project_export_config:
-        if project_id_str in project_export_config['interview_percents']:
-            portfolio_interview_percents = {
-                p['full_code']:{ 'portfolio': float(p['porfolio']),
-                                 'interview': float(p['interview']) }
-                for p in project_export_config['interview_percents'][project_id_str]
-            }
+        portfolio_interview_percents = export_options_as_dict(project_export_config['interview_percents'])
 
     def scoring_extract_f(row_items, project, admission_criteria, curriculum_major):
         row_items['cal_type'] = 0
@@ -1150,9 +1145,9 @@ def extract_scoring_rows(project, admission_criterias):
             rows = group_condition_rows(rows)
         if is_portfolio_project(project):
             for r in rows:
-                full_code = r['curriculum_major'].cupt_code.get_program_major_code_as_str()
-                if full_code in portfolio_interview_percents:
-                    percents = portfolio_interview_percents[full_code]
+                key = row_export_config_key(r)
+                if key in portfolio_interview_percents:
+                    percents = portfolio_interview_percents[key]
                     r['portfolio'] = normalize_int_value(percents['portfolio'])
                     r['interview'] = normalize_int_value(percents['interview'])
         return rows
