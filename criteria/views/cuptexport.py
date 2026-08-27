@@ -999,7 +999,8 @@ def update_project_information(project, rows):
 
                 if 'custom_values' in option:
                     for f in option['custom_values']:
-                        r[f] = option['custom_values'][f]
+                        if f in r:
+                            r[f] = option['custom_values'][f]
 
     # Last, so the text is appended to the final value - custom_values above
     # can itself set folio_criteria.
