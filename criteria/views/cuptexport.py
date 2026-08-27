@@ -773,6 +773,15 @@ def is_portfolio_project(admission_project):
 
 def extract_portfolio_information(row_items, admission_criteria):
     
+    def get_next_day(date_str):  # get string of the form day/month/year
+        from datetime import date, timedelta
+        items = date_str.split('/')
+        day = int(items[0])
+        month = int(items[1])
+        year = int(items[2])
+        next_day = date(year, month, day) + timedelta(days=1)
+        return next_day.strftime('%d/%m/%Y')
+
     def get_subround(admission_criteria):
         R11_LIST = [1,2,3,4,5,6,7,107,9,10,18,32]
 
@@ -818,8 +827,8 @@ def extract_portfolio_information(row_items, admission_criteria):
     except:
         additional_admission_form_fields = []
 
-    ZERO_FIELDS = ['folio_q1','folio_q2','folio_q3',
-                   'folio_q1_type','folio_q2_type','folio_q3_type',
+    ZERO_FIELDS = ['folio_q1','folio_q2','folio_q3','folio_q4','folio_q5',
+                   'folio_q1_type','folio_q2_type','folio_q3_type','folio_q4_type','folio_q5_type',
                    'folio_closed_date','folio_page_limit']
     for f in ZERO_FIELDS:
         row_items[f] = '0'
@@ -843,10 +852,13 @@ def extract_portfolio_information(row_items, admission_criteria):
         row_items[fname] = fields['title']
         if fields['size'] == 'short':
             row_items[ftype] = 'A'
+        elif fields['size'] == 'paragraph':
+            row_items[ftype] = 'B'
         else:
             row_items[ftype] = 'C'
 
     row_items['folio_closed_date'] = get_portfolio_closed_date(admission_criteria)
+    row_items['folio_closed_edit_date'] = get_next_day(row_items['folio_closed_date'])
     row_items['folio_criteria'] = admission_criteria.get_all_scoring_score_criteria_as_numbered_str()
 
 
