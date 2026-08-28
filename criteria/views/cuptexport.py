@@ -395,7 +395,7 @@ def convert_to_base_row(project, curriculum_major, admission_criteria, curriculu
         'curriculum_major': curriculum_major,
         'slots': mc.slots,
     }
-    if uses_grouped_major_rows(project):
+    if uses_grouped_major_rows(project) or is_portfolio_project(project):
         row['add_limit'] = 0
     return row
 
@@ -805,9 +805,9 @@ def extract_portfolio_information(row_items, admission_criteria):
 
         FORLIO_CLOSED_DATES = {
             (1,1): '14/10/2569',   # bkn
-            (1,2): '4/02/2570',
+            (1,2): '04/02/2570',
 
-            (2,1): '5/11/2569',   # kps
+            (2,1): '05/11/2569',   # kps
             (2,2): '10/02/2570',
 
             (3,1): '15/11/2569',   # src
@@ -816,7 +816,7 @@ def extract_portfolio_information(row_items, admission_criteria):
             (4,1): '19/02/2570',   # skn
 
             (5,1): '14/10/2569',   # supan
-            (5,2): '4/02/2570',
+            (5,2): '04/02/2570',
         }
         return FORLIO_CLOSED_DATES.get((campus_id,r),'')
 
