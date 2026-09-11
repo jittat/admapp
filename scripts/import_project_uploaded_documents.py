@@ -46,7 +46,13 @@ def main():
                 setattr(document, f, items[idx])
 
             document.size_limit = int(items[9])
-            document.is_url_document = (items[10].strip() == '1')
+            document_type_value = items[10].strip()
+            if document_type_value in ['1', 'url']:
+                document.document_type = ProjectUploadedDocument.DOCUMENT_TYPE_URL
+            elif document_type_value in ['2', 'any']:
+                document.document_type = ProjectUploadedDocument.DOCUMENT_TYPE_ANY
+            else:
+                document.document_type = ProjectUploadedDocument.DOCUMENT_TYPE_FILE
             document.is_required = (items[11].strip() == '1')
             document.is_detail_required = (items[12].strip() == '1')
             document.can_have_multiple_files = (items[13].strip() == '1')

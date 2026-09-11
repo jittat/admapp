@@ -27,7 +27,8 @@ vs. a submitted value):
   `ProjectUploadedDocument`.
 
 A slot can be **common** (shown for every project) or attached to specific
-projects via a M2M; it can accept a **file upload** or a **URL**; it can be
+projects via a M2M; it can accept a **file upload**, a **URL**, or **either
+(applicant's choice)**; it can be
 **single** or **multi-file**. Requiredness and grouped "one of these"
 requirements are expressed on the definition.
 
@@ -70,10 +71,10 @@ as a `StackedInline` on `AdmissionProject` (through the M2M). Bulk-loaded by
 | `allowed_extentions` | Char | Comma-separated allowed extensions (matched case-insensitively; see `upload_check`). |
 | `size_limit` | `2000000` | Max bytes. Note the check is strict `<` (`size_limit <= size` fails), so a file of exactly the limit is rejected. |
 | `file_prefix` | Char (blank) | Optional filename prefix. |
-| `is_url_document` | Bool (F) | If true, the applicant submits a **URL** instead of a file (`url_check` path). |
+| `document_type` | Char, default `'file'` | `'file'` (upload), `'url'` (submit a link, `url_check` path), or `'any'` (**the applicant picks per submission** — a file-or-link toggle in the upload form). Read via the `is_file_document` / `is_url_document` / `is_any_document` properties. |
 | `is_required` | Bool (T) | Applicant must provide it (see requiredness below). |
 | `is_detail_required` | Bool (F) | The free-text `detail` field must be filled. |
-| `can_have_multiple_files` | Bool (F) | Allow multiple `UploadedDocument`s; if false, a new upload **replaces** the previous one (old file + row deleted). |
+| `can_have_multiple_files` | Bool (F) | Allow multiple `UploadedDocument`s; if false, a new upload **replaces** the previous one (old file + row deleted), regardless of kind. On an `'any'` slot with this on, the applicant can **mix** files and URLs in the same slot. |
 
 ### Workflow / keys
 
@@ -85,6 +86,9 @@ as a `StackedInline` on `AdmissionProject` (through the M2M). Bulk-loaded by
 
 ### Methods
 
+- `is_file_document` / `is_url_document` / `is_any_document` (properties) —
+  `document_type` tests; `is_url_document` used to be a DB column and was
+  replaced by `document_type` (migration `appl/0106`).
 - `get_common_documents()` (static) — all `is_common_document=True` slots.
 - `get_uploaded_documents_for_applicant(applicant)` — this slot's
   `UploadedDocument`s for one applicant (via `related_name='uploaded_document_set'`).
@@ -103,7 +107,7 @@ as a `StackedInline` on `AdmissionProject` (through the M2M). Bulk-loaded by
 | `detail` | Char(200, blank) | Free-text label/description (required when the slot's `is_detail_required`). |
 | `uploaded_file` | FileField | The file; `upload_to=applicant_document_path`. Blank for URL documents. |
 | `original_filename` | Char(200, blank) | Original client filename. (Note: the upload view assigns `orginal_filename` — a **typo attribute**, not this field; `original_filename` is largely unset via the normal flow.) |
-| `document_url` | URLField (blank) | The URL, for `is_url_document` slots. |
+| `document_url` | URLField (blank) | The URL, for URL submissions. |
 | `local_document_url` | URLField (blank) | Optional locally-cached URL (preferred over `document_url` in the staff menu when present). |
 
 **Storage path** (`applicant_document_path`):
@@ -111,6 +115,13 @@ as a `StackedInline` on `AdmissionProject` (through the M2M). Bulk-loaded by
 documents/applicant_<applicant.id>/doc_<project_uploaded_document.id>/<filename>
 ```
 under `settings.MEDIA_ROOT`.
+
+**Which kind is this row?** Derived, not stored: `is_file()` is
+`bool(uploaded_file)`, `is_url()` is "no file but a `document_url`". The
+upload view clears the unused field on save, so the two stay exclusive; old
+rows classify correctly too. Templates branch **per row** (`d.is_file`), not
+on the slot, so a mixed `'any'` slot renders download links and link buttons
+side by side. `OldUploadedDocument` has the same two helpers.
 
 **Helpers:** `is_pdf()` (used to choose PDF embed vs. image preview in the
 staff viewer); `encrypted_backup_filename()` →
@@ -136,7 +147,11 @@ Views in `appl/views/upload.py`; URLs in `appl/urls.py`.
   `prepare_uploaded_document_forms()` attaches a blank `UploadedDocumentForm`
   and the applicant's existing files to each slot. Rendered by
   `appl/templates/appl/include/document_upload_form.html` (a Bootstrap
-  accordion card per slot).
+  accordion card per slot). An `'any'` slot renders a
+  อัพโหลดไฟล์ / ระบุลิงก์ radio pair over a file block and a URL block; the
+  handler in `document_upload_js.html` (delegated, since the card is replaced
+  wholesale after each upload) swaps the blocks, clears the hidden one, and
+  toggles `required` on the file input.
 
 - **Upload** — `POST appl:upload` (`/appl/upload/<document_id>/`), AJAX.
   `upload()`:
@@ -144,14 +159,19 @@ Views in `appl/views/upload.py`; URLs in `appl/urls.py`.
      `accepted_application`); 404/error if none.
   2. if `project_round.is_deadline_passed()` **and** the slot is not an
      interview document → `HttpResponseForbidden`.
-  3. validates via `UploadedDocumentForm` + `upload_check` (file: size &
-     extension & optional detail) or `url_check` (URL slots).
+  3. picks the submission kind with `get_upload_kind()` — the slot's
+     `document_type`, or for `'any'` slots whichever of `request.FILES`
+     /`document_url` the applicant actually filled in (neither → `NO_INPUT`) —
+     then validates via `UploadedDocumentForm` + `upload_check` (file: size &
+     extension & optional detail, then `validate_uploaded_file()`, the seam
+     for future content checks such as PDF signatures) or `url_check`.
+     A required `detail` applies to both kinds.
   4. if the slot is single-file, deletes the previous file+row first.
   5. saves the `UploadedDocument` (applicant, slot, `rank=0`), logs a
      `LogItem`, and returns JSON `{result:'OK', html:<re-rendered card>}`.
   - Error codes returned to the JS: `FORM_ERROR`, `SIZE_ERROR`, `EXT_ERROR`,
-    `DETAIL_REQUIRE`, `URL_INVALID`, `DETAIL_ERROR`, `FILENAME_ERROR`,
-    `APPLICATION_ERROR`.
+    `DETAIL_REQUIRE`, `URL_INVALID`, `NO_INPUT`, `DETAIL_ERROR`,
+    `FILENAME_ERROR`, `APPLICATION_ERROR`.
 
 - **Download (applicant)** — `appl:document-download`
   (`/appl/doc/<applicant_id>/<project_uploaded_document_id>/<document_id>/`).

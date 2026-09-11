@@ -20,6 +20,24 @@
   };
   
   $(function() {
+    $(".all-document-upload-forms").on("change", ".upload-mode-radios", function() {
+      var form = $(this).parents('form')[0];
+      var isFileMode = ($(this).val() == 'file');
+      var fileBlock = $(form).find(".upload-mode-file-block");
+      var urlBlock = $(form).find(".upload-mode-url-block");
+
+      if (isFileMode) {
+        $(fileBlock).show();
+        $(urlBlock).hide();
+        $(urlBlock).find("input[name=document_url]").val('');
+      } else {
+        $(fileBlock).hide();
+        $(urlBlock).show();
+        $(fileBlock).find("input[name=uploaded_file]").val('');
+      }
+      $(fileBlock).find("input[name=uploaded_file]").prop('required', isFileMode);
+    });
+
     $(".all-document-upload-forms").on("click", ".upload-form-submit-buttons", function() {
       var div = $(this).parents('.project-document-upload-forms')[0];
       var form = $(this).parents('form')[0];
@@ -66,6 +84,8 @@
             $(uploadErrorDiv).show().html('<b>ไม่สามารถอัพโหลดได้ กรุณาตรวจสอบคำอธิบาย ให้ลบเครื่องหมายพิเศษออก</b>');
           } else if (data.result == 'URL_INVALID') {
             $(uploadErrorDiv).show().html('<b>URL ที่ระบุไม่ถูกต้อง</b>');
+          } else if (data.result == 'NO_INPUT') {
+            $(uploadErrorDiv).show().html('<b>กรุณาเลือกไฟล์หรือระบุลิงก์</b>');
           }
           $(progress).hide();
           refreshDocumentStatus();

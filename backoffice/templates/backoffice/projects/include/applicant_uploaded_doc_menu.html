@@ -6,7 +6,7 @@
         <span class="badge badge-secondary">{{ doc.applicant_uploaded_documents|length }}</span>
         <br />
         {% for app_doc in doc.applicant_uploaded_documents %}
-          {% if not doc.is_url_document %}
+          {% if app_doc.is_file %}
             <a class="app-document-links" href="{% url 'backoffice:projects-download-app-document' project.id admission_round.id major.number applicant.national_id doc.id app_doc.id %}" data-is-pdf="{{ app_doc.is_pdf }}">
               <i class="fa fa-angle-double-right"></i>
               {% if app_doc.detail %}{{ app_doc.detail }}{% else %}เอกสารที่ {{ forloop.counter }}{% endif %}
@@ -21,7 +21,7 @@
         {% endfor %}
       {% else %}
         {% for app_doc in doc.applicant_uploaded_documents %}
-          {% if not doc.is_url_document %}
+          {% if app_doc.is_file %}
             <a class="app-document-links" href="{% url 'backoffice:projects-download-app-document' project.id admission_round.id major.number applicant.national_id doc.id app_doc.id %}" data-is-pdf="{{ app_doc.is_pdf }}">
               <i class="fa fa-angle-right"></i>
               {{ doc.title }}

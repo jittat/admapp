@@ -46,11 +46,45 @@
                 {% endif %}
               </div>
 
-              {% if not doc.is_url_document %}
-  	        <input type="file" class="input-files" name="uploaded_file" required id="id_uploaded_file" />
+              {% if doc.is_file_document %}
+  	        <input type="file" class="input-files" name="uploaded_file" required id="id_uploaded_file_{{ doc.id }}" />
   	        <input type="submit" class="btn btn-success btn-sm upload-form-submit-buttons" value="{% trans 'อัพโหลด' %}" />
   	        <br />
   	        <small>{{ doc.specifications }}</small>
+  	        <br />
+              {% endif %}
+
+              {% if doc.is_any_document %}
+                <div class="form-group upload-mode-selectors">
+                  <div class="form-check form-check-inline">
+                    <input type="radio" class="form-check-input upload-mode-radios"
+                           name="upload_mode_{{ doc.id }}" value="file"
+                           id="upload-mode-file-{{ doc.id }}" checked />
+                    <label class="form-check-label" for="upload-mode-file-{{ doc.id }}">{% trans 'อัพโหลดไฟล์' %}</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input type="radio" class="form-check-input upload-mode-radios"
+                           name="upload_mode_{{ doc.id }}" value="url"
+                           id="upload-mode-url-{{ doc.id }}" />
+                    <label class="form-check-label" for="upload-mode-url-{{ doc.id }}">{% trans 'ระบุลิงก์' %}</label>
+                  </div>
+                </div>
+
+                <div class="upload-mode-file-block">
+  	          <input type="file" class="input-files" name="uploaded_file" required id="id_uploaded_file_{{ doc.id }}" />
+  	          <br />
+  	          <small>{{ doc.specifications }}</small>
+  	          <br />
+                </div>
+
+                <div class="upload-mode-url-block" style="display: none;">
+  	          <small><b>{{ doc.specifications }}</b></small>
+  	          <br />
+                  <input type="text" class="form-control col-md-8 d-inline" name="document_url" value="" />
+                  <br />
+                </div>
+
+  	        <input type="submit" class="btn btn-success btn-sm upload-form-submit-buttons" value="{% trans 'จัดเก็บ' %}" />
   	        <br />
               {% endif %}
             {% endif %}
@@ -59,7 +93,7 @@
   	      <ul>
   		{% for d in doc.applicant_uploaded_documents %}
   		  <li>
-                    {% if not doc.is_url_document %}
+                    {% if d.is_file %}
   		      <a href="{% url 'appl:document-download' applicant.id doc.id d.id %}" target="_blank" rel="noopener noreferrer">
   		        {{ d|uploadeddocument_name }}
   		      </a>

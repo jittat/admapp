@@ -497,6 +497,16 @@ class Major(models.Model):
 
 
 class ProjectUploadedDocument(models.Model):
+    DOCUMENT_TYPE_FILE = 'file'
+    DOCUMENT_TYPE_URL = 'url'
+    DOCUMENT_TYPE_ANY = 'any'
+
+    DOCUMENT_TYPE_CHOICES = [
+        (DOCUMENT_TYPE_FILE, 'ไฟล์'),
+        (DOCUMENT_TYPE_URL, 'ลิงก์'),
+        (DOCUMENT_TYPE_ANY, 'ไฟล์หรือลิงก์'),
+    ]
+
     admission_projects = models.ManyToManyField(AdmissionProject,
                                                 blank=True)
     rank = models.IntegerField()
@@ -512,7 +522,10 @@ class ProjectUploadedDocument(models.Model):
                                    blank=True)
     size_limit = models.IntegerField(default=2000000)
 
-    is_url_document = models.BooleanField(default=False)
+    document_type = models.CharField(max_length=10,
+                                     default=DOCUMENT_TYPE_FILE,
+                                     choices=DOCUMENT_TYPE_CHOICES,
+                                     verbose_name='ชนิดเอกสาร')
 
     is_required = models.BooleanField(default=True)
     is_detail_required = models.BooleanField(default=False)
@@ -538,6 +551,18 @@ class ProjectUploadedDocument(models.Model):
             return self.title
         else:
             return '{0} ({1})'.format(self.title, self.notes)
+
+    @property
+    def is_url_document(self):
+        return self.document_type == ProjectUploadedDocument.DOCUMENT_TYPE_URL
+
+    @property
+    def is_file_document(self):
+        return self.document_type == ProjectUploadedDocument.DOCUMENT_TYPE_FILE
+
+    @property
+    def is_any_document(self):
+        return self.document_type == ProjectUploadedDocument.DOCUMENT_TYPE_ANY
 
     @staticmethod
     def get_common_documents():
@@ -575,6 +600,12 @@ class UploadedDocument(models.Model):
         return '%s (%s)' % (self.project_uploaded_document.title,
                             self.applicant)
 
+    def is_file(self):
+        return bool(self.uploaded_file)
+
+    def is_url(self):
+        return (not self.uploaded_file) and bool(self.document_url)
+
     def is_pdf(self):
         if self.uploaded_file:
             return self.uploaded_file.name.lower().endswith('pdf')
@@ -600,6 +631,12 @@ class OldUploadedDocument(models.Model):
                                          blank=True)
 
     document_url = models.URLField(blank=True)
+
+    def is_file(self):
+        return bool(self.uploaded_file)
+
+    def is_url(self):
+        return (not self.uploaded_file) and bool(self.document_url)
 
 
 class Province(models.Model):

@@ -22,7 +22,17 @@ class UploadedDocumentForm(ModelForm):
 def upload_form_for(project_uploaded_document):
     return UploadedDocumentForm()
 
-def upload_check(form, size_limit, allowed_extentions, is_detail_required):
+def validate_uploaded_file(project_uploaded_document, uploaded_file):
+    """Content-level checks on an uploaded file (e.g., pdf signatures).
+
+    Returns (is_valid, result_code). Extension/size checks are done in
+    upload_check; this is the place for per-document content validation.
+    """
+    return (True, 'OK')
+
+
+def upload_check(form, size_limit, allowed_extentions, is_detail_required,
+                 project_uploaded_document=None):
     if not form.is_valid():
         return (False, 'FORM_ERROR')
 
@@ -42,7 +52,7 @@ def upload_check(form, size_limit, allowed_extentions, is_detail_required):
         if len(form.cleaned_data['detail']) == 0:
             return (False, 'DETAIL_REQUIRE')
 
-    return (True, 'OK')
+    return validate_uploaded_file(project_uploaded_document, cleaned_data)
 
 
 def url_check(form, is_detail_required):
@@ -57,6 +67,22 @@ def url_check(form, is_detail_required):
             return (False, 'DETAIL_REQUIRE')
 
     return (True, 'OK')
+
+
+def get_upload_kind(request, project_uploaded_document):
+    """Which kind of submission this is: 'file', 'url', or None when the
+    applicant submitted neither (only possible for 'any' documents)."""
+
+    if project_uploaded_document.is_url_document:
+        return 'url'
+    if project_uploaded_document.is_file_document:
+        return 'file'
+
+    if request.FILES.get('uploaded_file', None):
+        return 'file'
+    if request.POST.get('document_url', '').strip() != '':
+        return 'url'
+    return None
 
 
 @appl_login_required
@@ -94,15 +120,20 @@ def upload(request, document_id):
     form = UploadedDocumentForm(request.POST, request.FILES)
 
     is_detail_required = project_uploaded_document.is_detail_required
-    
-    if project_uploaded_document.is_url_document:
+
+    upload_kind = get_upload_kind(request, project_uploaded_document)
+
+    if upload_kind == None:
+        is_valid, result_code = False, 'NO_INPUT'
+    elif upload_kind == 'url':
         is_valid, result_code = url_check(form, is_detail_required)
     else:
         size_limit = project_uploaded_document.size_limit
         allowed_extentions = [ext.upper() for ext in
                               project_uploaded_document.allowed_extentions.split(',')]
 
-        is_valid, result_code = upload_check(form, size_limit, allowed_extentions, is_detail_required)
+        is_valid, result_code = upload_check(form, size_limit, allowed_extentions, is_detail_required,
+                                             project_uploaded_document)
 
     if is_valid:
         if not project_uploaded_document.can_have_multiple_files:
@@ -116,7 +147,10 @@ def upload(request, document_id):
         uploaded_document.project_uploaded_document = project_uploaded_document
         uploaded_document.rank = 0
 
-        if not project_uploaded_document.is_url_document:
+        if upload_kind == 'url':
+            uploaded_document.uploaded_file = ''
+        else:
+            uploaded_document.document_url = ''
             uploaded_document.orginal_filename = uploaded_document.uploaded_file.name
 
         error = False
