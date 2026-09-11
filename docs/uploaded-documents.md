@@ -166,7 +166,17 @@ Views in `appl/views/upload.py`; URLs in `appl/urls.py`.
      extension & optional detail, then `validate_uploaded_file()`, the seam
      for future content checks such as PDF signatures) or `url_check`.
      A required `detail` applies to both kinds.
-  4. if the slot is single-file, deletes the previous file+row first.
+  4. if the slot is single-file, deletes the previous file+row first. This is
+     destructive, so the **client** asks first: on a single-document slot that
+     already holds an entry the card renders a hidden
+     `.upload-replace-confirms` panel and the form carries
+     `data-replace-confirm`; the submit handler slides the panel down and stops
+     instead of uploading, and only ยืนยันการแทนที่ calls `doUpload()`. It
+     applies to every `document_type` (a link replacing a file included), is
+     skipped when no file/URL was chosen (the server's own error is more
+     useful), and closes again when the applicant picks something else. The
+     server itself is unguarded — a POST straight to the endpoint still
+     replaces.
   5. saves the `UploadedDocument` (applicant, slot, `rank=0`), logs a
      `LogItem`, and returns JSON `{result:'OK', html:<re-rendered card>}`.
   - Error codes returned to the JS: `FORM_ERROR`, `SIZE_ERROR`, `EXT_ERROR`,

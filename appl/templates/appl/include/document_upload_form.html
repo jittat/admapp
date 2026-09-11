@@ -27,7 +27,7 @@
            role="tabpanel"
            aria-labelledby="accordian-upload-header">
         <div class="card-body p10">
-  	  <form class="upload-forms" action="{% url 'appl:upload' doc.id %}" method="post" data-detail-required="{% if doc.is_detail_required %}true{% endif %}" enctype="multipart/form-data">
+  	  <form class="upload-forms" action="{% url 'appl:upload' doc.id %}" method="post" data-detail-required="{% if doc.is_detail_required %}true{% endif %}" data-replace-confirm="{% if not doc.can_have_multiple_files and doc.applicant_uploaded_documents %}true{% endif %}" enctype="multipart/form-data">
   	    {% csrf_token %}
 
             {% if not is_deadline_passed or doc.is_interview_document %}
@@ -86,6 +86,21 @@
 
   	        <input type="submit" class="btn btn-success btn-sm upload-form-submit-buttons" value="{% trans 'จัดเก็บ' %}" />
   	        <br />
+              {% endif %}
+
+              {% if not doc.can_have_multiple_files and doc.applicant_uploaded_documents %}
+                {% with doc.applicant_uploaded_documents.0 as old_doc %}
+                  <div class="upload-replace-confirms alert alert-warning p10 mt5" style="display: none;">
+                    <small>
+                      {% trans 'เอกสารเดิม' %}
+                      (<b>{% if old_doc.is_file %}{{ old_doc|uploadeddocument_name }}{% elif old_doc.detail %}{{ old_doc.detail }}{% else %}{{ old_doc.document_url|truncatechars:60 }}{% endif %}</b>)
+                      {% trans 'จะถูกแทนที่ด้วยรายการใหม่ ต้องการดำเนินการต่อหรือไม่' %}
+                    </small>
+                    <br />
+                    <a href="#" class="btn btn-sm btn-warning upload-replace-confirm-buttons">{% trans 'ยืนยันการแทนที่' %}</a>
+                    <a href="#" class="btn btn-sm btn-secondary upload-replace-cancel-buttons">{% trans 'ยกเลิก' %}</a>
+                  </div>
+                {% endwith %}
               {% endif %}
             {% endif %}
             

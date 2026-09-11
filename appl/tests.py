@@ -313,10 +313,12 @@ class UploadFormTemplateTestCase(SimpleTestCase):
     """The applicant-side card: which inputs show per document_type, and the
     per-row (not per-slot) rendering of already-uploaded entries."""
 
-    def render(self, document_type, uploaded_documents=None):
+    def render(self, document_type, uploaded_documents=None,
+               can_have_multiple_files=False):
         doc = ProjectUploadedDocument(
             id=7, rank=1, title='เอกสาร', descriptions='', specifications='PDF',
-            allowed_extentions='PDF', document_type=document_type)
+            allowed_extentions='PDF', document_type=document_type,
+            can_have_multiple_files=can_have_multiple_files)
         doc.applicant_uploaded_documents = uploaded_documents or []
         return render_to_string('appl/include/document_upload_form.html',
                                 {'project_uploaded_document': doc,
@@ -357,3 +359,76 @@ class UploadFormTemplateTestCase(SimpleTestCase):
         self.assertIn(file_link, html)
         self.assertIn('href="http://example.com/portfolio"', html)
         self.assertNotIn(url_link, html)
+
+
+class ReplaceConfirmTemplateTestCase(SimpleTestCase):
+    """Uploading to a single-document slot deletes what is already there, so the
+    card carries an inline confirmation panel. It depends only on
+    can_have_multiple_files + existing entries, never on document_type."""
+
+    def render(self, document_type, uploaded_documents=None,
+               can_have_multiple_files=False):
+        return UploadFormTemplateTestCase().render(
+            document_type, uploaded_documents, can_have_multiple_files)
+
+    def file_entry(self, id=1, detail='', filename='a.pdf'):
+        return UploadedDocument(
+            id=id, detail=detail,
+            uploaded_file='documents/applicant_3/doc_7/' + filename)
+
+    def url_entry(self, id=2, detail='', url='http://example.com/portfolio'):
+        return UploadedDocument(id=id, detail=detail, document_url=url)
+
+    def assertHasConfirm(self, html):
+        self.assertIn('data-replace-confirm="true"', html)
+        self.assertIn('upload-replace-confirms', html)
+        self.assertIn('upload-replace-confirm-buttons', html)
+        self.assertIn('upload-replace-cancel-buttons', html)
+
+    def assertHasNoConfirm(self, html):
+        self.assertNotIn('data-replace-confirm="true"', html)
+        self.assertNotIn('upload-replace-confirms', html)
+
+    def test_no_confirmation_when_nothing_uploaded_yet(self):
+        for document_type in [FILE, URL, ANY]:
+            with self.subTest(document_type=document_type):
+                self.assertHasNoConfirm(self.render(document_type))
+
+    def test_no_confirmation_when_multiple_files_allowed(self):
+        # Nothing gets replaced, so there is nothing to confirm.
+        for document_type in [FILE, URL, ANY]:
+            with self.subTest(document_type=document_type):
+                html = self.render(document_type, [self.file_entry()],
+                                   can_have_multiple_files=True)
+                self.assertHasNoConfirm(html)
+
+    def test_confirmation_for_a_single_file_document(self):
+        html = self.render(FILE, [self.file_entry(filename='transcript.pdf')])
+
+        self.assertHasConfirm(html)
+        self.assertIn('transcript.pdf', html)
+
+    def test_confirmation_for_a_single_url_document(self):
+        html = self.render(URL, [self.url_entry(url='http://example.com/mylink')])
+
+        self.assertHasConfirm(html)
+        # No detail, so the link itself names the entry being replaced.
+        self.assertIn('http://example.com/mylink', html)
+
+    def test_confirmation_names_a_url_entry_by_its_detail(self):
+        html = self.render(URL, [self.url_entry(detail='แฟ้มสะสมผลงาน')])
+
+        self.assertHasConfirm(html)
+        self.assertIn('แฟ้มสะสมผลงาน', html)
+
+    def test_confirmation_for_an_any_document_holding_a_file(self):
+        html = self.render(ANY, [self.file_entry(filename='portfolio.pdf')])
+
+        self.assertHasConfirm(html)
+        self.assertIn('portfolio.pdf', html)
+
+    def test_confirmation_for_an_any_document_holding_a_url(self):
+        html = self.render(ANY, [self.url_entry(url='http://example.com/mylink')])
+
+        self.assertHasConfirm(html)
+        self.assertIn('http://example.com/mylink', html)

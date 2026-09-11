@@ -19,6 +19,69 @@
     {% endif %}
   };
   
+  var hideReplaceConfirm = function(form) {
+    $(form).find(".upload-replace-confirms").slideUp();
+  };
+
+  var hasUploadInput = function(form) {
+    var fileInput = $(form).find("input[name=uploaded_file]");
+    var urlInput = $(form).find("input[name=document_url]");
+    return (($(fileInput).length > 0 && $(fileInput).val() != '') ||
+            ($(urlInput).length > 0 && $.trim($(urlInput).val()) != ''));
+  };
+
+  var doUpload = function(form, div) {
+    var data = new FormData(form);
+    var progress = $(form).find(".progress-bars");
+    var uploadErrorDiv = $(form).find(".document-upload-errors");
+
+    $(progress).show().text("0%");
+
+    jQuery.ajax({
+      url: form.action,
+      data: data,
+      cache: false,
+      contentType: false,
+      processData: false,
+      type: 'POST',
+      success: function(data) {
+        if (data.result == 'OK') {
+          $(div).replaceWith(data.html);
+          checkAndShowInterviewDocument();
+        } else if (data.result == 'APPLICATION_ERROR') {
+          $(uploadErrorDiv).show().html('<b>ฟอร์มอัพโหลดมีปัญหา กรุณาเข้าระบบใหม่</b>');
+        } else if (data.result == 'FORM_ERROR') {
+          $(uploadErrorDiv).show().html('<b>ไม่ได้ระบุไฟล์ที่อัพโหลด</b>');
+        } else if (data.result == 'FILENAME_ERROR') {
+          $(uploadErrorDiv).show().html('<b>ไม่สามารถอัพโหลดได้ กรุณาตรวจสอบชื่อไฟล์ เพื่อป้องกันความผิดพลาดกรุณาปรับเป็นชื่อภาษาอังกฤษ</b>');
+        } else if (data.result == 'EXT_ERROR') {
+          $(uploadErrorDiv).show().html('<b>นามสกุลของไฟล์ไม่ถูกต้อง</b>');
+        } else if (data.result == 'SIZE_ERROR') {
+          $(uploadErrorDiv).show().html('<b>ขนาดของไฟล์ใหญ่กว่าที่กำหนด</b>');
+        } else if (data.result == 'DETAIL_REQUIRE') {
+          $(uploadErrorDiv).show().html('<b>โปรดระบุคำอธิบาย</b>');
+        } else if (data.result == 'DETAIL_ERROR') {
+          $(uploadErrorDiv).show().html('<b>ไม่สามารถอัพโหลดได้ กรุณาตรวจสอบคำอธิบาย ให้ลบเครื่องหมายพิเศษออก</b>');
+        } else if (data.result == 'URL_INVALID') {
+          $(uploadErrorDiv).show().html('<b>URL ที่ระบุไม่ถูกต้อง</b>');
+        } else if (data.result == 'NO_INPUT') {
+          $(uploadErrorDiv).show().html('<b>กรุณาเลือกไฟล์หรือระบุลิงก์</b>');
+        }
+        $(progress).hide();
+        refreshDocumentStatus();
+      },
+      statusCode: {
+        403: function() { 
+          $(uploadErrorDiv).show().html('<b>คุณได้ออกจากระบบแล้ว กรุณา refresh หน้าจอเพื่อเข้าระบบใหม่</b>');
+        }
+      }
+    }).uploadProgress(function(e) {
+      if (e.lengthComputable) {
+        $(progress).show().text(Math.round((e.loaded * 100) / e.total) + "%");
+      }
+    });
+  };
+
   $(function() {
     $(".all-document-upload-forms").on("change", ".upload-mode-radios", function() {
       var form = $(this).parents('form')[0];
@@ -36,72 +99,53 @@
         $(fileBlock).find("input[name=uploaded_file]").val('');
       }
       $(fileBlock).find("input[name=uploaded_file]").prop('required', isFileMode);
+      hideReplaceConfirm(form);
     });
 
     $(".all-document-upload-forms").on("click", ".upload-form-submit-buttons", function() {
       var div = $(this).parents('.project-document-upload-forms')[0];
       var form = $(this).parents('form')[0];
-      var data = new FormData(form);
-      var progress = $(form).find(".progress-bars");
       var uploadErrorDiv = $(form).find(".document-upload-errors");
       var isDetailRequired = $(form).attr('data-detail-required')
 
-      //$(uploadErrorDiv).hide();
-      $(progress).show().text("0%");
-
-      if(isDetailRequired && data.get('detail').length==0) {
+      if(isDetailRequired && $.trim($(form).find("input[name=detail]").val()).length==0) {
         $(uploadErrorDiv).show().html('โปรดระบุคำอธิบาย</b>');
-        $(progress).hide();
         return false;
       } else {
         $(uploadErrorDiv).hide();
       }
 
-      jQuery.ajax({
-        url: form.action,
-        data: data,
-        cache: false,
-        contentType: false,
-        processData: false,
-        type: 'POST',
-        success: function(data) {
-          if (data.result == 'OK') {
-            $(div).replaceWith(data.html);
-            checkAndShowInterviewDocument();
-          } else if (data.result == 'APPLICATION_ERROR') {
-            $(uploadErrorDiv).show().html('<b>ฟอร์มอัพโหลดมีปัญหา กรุณาเข้าระบบใหม่</b>');
-          } else if (data.result == 'FORM_ERROR') {
-            $(uploadErrorDiv).show().html('<b>ไม่ได้ระบุไฟล์ที่อัพโหลด</b>');
-          } else if (data.result == 'FILENAME_ERROR') {
-            $(uploadErrorDiv).show().html('<b>ไม่สามารถอัพโหลดได้ กรุณาตรวจสอบชื่อไฟล์ เพื่อป้องกันความผิดพลาดกรุณาปรับเป็นชื่อภาษาอังกฤษ</b>');
-          } else if (data.result == 'EXT_ERROR') {
-            $(uploadErrorDiv).show().html('<b>นามสกุลของไฟล์ไม่ถูกต้อง</b>');
-          } else if (data.result == 'SIZE_ERROR') {
-            $(uploadErrorDiv).show().html('<b>ขนาดของไฟล์ใหญ่กว่าที่กำหนด</b>');
-          } else if (data.result == 'DETAIL_REQUIRE') {
-            $(uploadErrorDiv).show().html('<b>โปรดระบุคำอธิบาย</b>');
-          } else if (data.result == 'DETAIL_ERROR') {
-            $(uploadErrorDiv).show().html('<b>ไม่สามารถอัพโหลดได้ กรุณาตรวจสอบคำอธิบาย ให้ลบเครื่องหมายพิเศษออก</b>');
-          } else if (data.result == 'URL_INVALID') {
-            $(uploadErrorDiv).show().html('<b>URL ที่ระบุไม่ถูกต้อง</b>');
-          } else if (data.result == 'NO_INPUT') {
-            $(uploadErrorDiv).show().html('<b>กรุณาเลือกไฟล์หรือระบุลิงก์</b>');
-          }
-          $(progress).hide();
-          refreshDocumentStatus();
-        },
-        statusCode: {
-          403: function() { 
-            $(uploadErrorDiv).show().html('<b>คุณได้ออกจากระบบแล้ว กรุณา refresh หน้าจอเพื่อเข้าระบบใหม่</b>');
-          }
-        }
-      }).uploadProgress(function(e) {
-        if (e.lengthComputable) {
-          $(progress).show().text(Math.round((e.loaded * 100) / e.total) + "%");
-        }
-      });
-      
+      // Uploading to a single-document slot replaces (and deletes) what is
+      // already there, so ask first.  When nothing was chosen there is nothing
+      // to replace: let the server answer with its usual error instead.
+      if($(form).attr('data-replace-confirm') && hasUploadInput(form)) {
+        $(form).find(".upload-replace-confirms").slideDown();
+        return false;
+      }
+
+      doUpload(form, div);
       return false;
+    });
+
+    $(".all-document-upload-forms").on("click", ".upload-replace-confirm-buttons", function() {
+      var div = $(this).parents('.project-document-upload-forms')[0];
+      var form = $(this).parents('form')[0];
+
+      hideReplaceConfirm(form);
+      doUpload(form, div);
+      return false;
+    });
+
+    $(".all-document-upload-forms").on("click", ".upload-replace-cancel-buttons", function() {
+      hideReplaceConfirm($(this).parents('form')[0]);
+      return false;
+    });
+
+    // An open confirmation goes stale once the applicant picks something else.
+    $(".all-document-upload-forms").on("change input",
+                                       ".input-files, input[name=document_url]",
+                                       function() {
+      hideReplaceConfirm($(this).parents('form')[0]);
     });
 
     $(".all-document-upload-forms").on("click", ".upload-form-delete-buttons", function() {
