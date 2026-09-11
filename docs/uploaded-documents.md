@@ -74,7 +74,7 @@ as a `StackedInline` on `AdmissionProject` (through the M2M). Bulk-loaded by
 | `document_type` | Char, default `'file'` | `'file'` (upload), `'url'` (submit a link, `url_check` path), or `'any'` (**the applicant picks per submission** — a file-or-link toggle in the upload form). Read via the `is_file_document` / `is_url_document` / `is_any_document` properties. |
 | `is_required` | Bool (T) | Applicant must provide it (see requiredness below). |
 | `is_detail_required` | Bool (F) | The free-text `detail` field must be filled. |
-| `can_have_multiple_files` | Bool (F) | Allow multiple `UploadedDocument`s; if false, a new upload **replaces** the previous one (old file + row deleted), regardless of kind. On an `'any'` slot with this on, the applicant can **mix** files and URLs in the same slot. |
+| `can_have_multiple_files` | Bool (F) | Allow multiple `UploadedDocument`s; if false, a new upload **replaces** the previous one (old file + row deleted), regardless of kind — the applicant is asked to confirm first (see the [upload flow](#applicant-upload-flow)). On an `'any'` slot with this on, the applicant can **mix** files and URLs in the same slot. |
 
 ### Workflow / keys
 
