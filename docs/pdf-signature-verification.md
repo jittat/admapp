@@ -222,8 +222,10 @@ Upkeep:
 6. (Later, batch) OCSP/CRL for the signer and intermediate.
 
 Library candidate: **pyHanko** (+ `pyhanko-certvalidator`) covers 1–4 and
-revocation; needs to be added to the pipenv environment (it is not installed;
-`asn1crypto`/`cryptography` are also not in the pipenv env).
+revocation; it is **not installed yet**. Its lower-level dependencies
+`cryptography` (50.0.1) and `asn1crypto` (1.5.1) are already pinned in
+`Pipfile` / `Pipfile.lock` / `requirements.txt`; adding pyHanko may require
+adjusting those pins.
 
 ## Results on the sample (2026-09-13)
 

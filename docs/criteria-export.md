@@ -209,7 +209,9 @@ exist** — every reader of it is behind the same predicate.
 (`project.short_title`), `program_id`, `major_id`, `add_limit`
 (`mc.add_limit_display()`), `type` (`get_project_type`), plus three
 non-CSV working keys — `criteria`, `curriculum_major`, `slots` — that the
-writers strip again. For grouped-row projects `add_limit` is forced to `0`.
+writers strip again. `add_limit` is forced to `0` for grouped-row projects
+(`uses_grouped_major_rows`) **and for portfolio projects**
+(`is_portfolio_project`), regardless of the export flags.
 
 ### The two export flags
 
@@ -228,7 +230,8 @@ the list of majors, no criteria" — it implies both predicates.
 the rest.
 
 **`is_cupt_export_zero_score_fields`** (default **False**) is the half-way
-case: rows stay per-criteria and `add_limit` is normal, but every score
+case: rows stay per-criteria and `add_limit` is normal (except for portfolio
+projects, see above), but every score
 exports as `0`. Portfolio projects still export their portfolio/interview
 split, because `preprocess_portfolio_admission_criteria` has already reduced
 their scoring criteria to exactly those two score types.
@@ -347,6 +350,10 @@ hardcoded list (`R11_LIST`) splits round-1 projects into sub-round 1 vs 2.
 
 For those projects:
 
+- `convert_to_base_row` forces `add_limit` to `0` (since commit `92efcfa`),
+  whatever the export flags. Tests that create projects in a fresh test
+  database get ids from this list, so `criteria.tests` pins explicit ids when
+  checking `add_limit`.
 - `extract_portfolio_information` writes `folio_q1..q3` and
   `folio_q1_type..q3_type` from the criteria's
   `additional_admission_form_fields_json` — at most **3** questions (extras
