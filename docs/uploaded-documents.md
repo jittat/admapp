@@ -164,7 +164,9 @@ Views in `appl/views/upload.py`; URLs in `appl/urls.py`.
      /`document_url` the applicant actually filled in (neither → `NO_INPUT`) —
      then validates via `UploadedDocumentForm` + `upload_check` (file: size &
      extension & optional detail, then `validate_uploaded_file()`, the seam
-     for future content checks such as PDF signatures) or `url_check`.
+     for future content checks such as PDF signatures — see
+     [pdf-signature-verification.md](pdf-signature-verification.md)) or
+     `url_check`.
      A required `detail` applies to both kinds.
   4. if the slot is single-file, deletes the previous file+row first. This is
      destructive, so the **client** asks first: on a single-document slot that

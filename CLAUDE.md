@@ -75,6 +75,11 @@ analyses):
   `MajorCuptCode`), the **copy-on-write versioning** of criteria in
   `upsert_admission_criteria`, in-place AJAX toggles, the criteria form UI
   and views/URLs (authoring side only).
+- `docs/pdf-signature-verification.md` — TCASFolio PDF signature
+  verification (per-slot, not all uploads): what the signed PDFs look like,
+  the certificate chain, how the Thailand NRCA root was authenticated, and
+  the current decisions (bundle roots, pin the ทปอ. signer, no revocation
+  check yet).
 - `docs/criteria-export.md` — the CUPT/ทปอ. export pipeline
   (`criteria/views/cuptexport.py`, `cuptexport_fields.py`, `export/*` URLs):
   the two CSVs and how their rows are built, the export config JSON
