@@ -150,7 +150,10 @@ Rejected alternatives:
 - **System store / `certifi`** — NRCA is not in it, and OS updates can change
   it.
 
-Planned layout:
+Layout (implemented — `appl/pdfsignatures/profiles.py` has `PROFILES`,
+`load_trust_roots(profile_name)` returning the roots' DER bytes, and raises
+`TrustRootError` on a fingerprint mismatch or unknown profile; tested by
+`appl.tests.TrustRootsTestCase`):
 
 ```
 appl/pdfsignatures/

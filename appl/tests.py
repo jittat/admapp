@@ -1,4 +1,5 @@
 import json
+import os
 import shutil
 import tempfile
 from datetime import datetime, timedelta
@@ -10,6 +11,7 @@ from django.urls import reverse
 
 from appl.models import (AdmissionProject, AdmissionProjectRound, AdmissionRound,
                          ProjectUploadedDocument, UploadedDocument)
+from appl.pdfsignatures import profiles
 from appl.views.upload import get_upload_kind
 from regis.models import Applicant
 
@@ -432,3 +434,60 @@ class ReplaceConfirmTemplateTestCase(SimpleTestCase):
 
         self.assertHasConfirm(html)
         self.assertIn('http://example.com/mylink', html)
+
+
+class TrustRootsTestCase(SimpleTestCase):
+    """Bundled root certificates must match the fingerprints pinned in
+    appl.pdfsignatures.profiles."""
+
+    def setUp(self):
+        self.tmpdir = tempfile.mkdtemp()
+
+    def tearDown(self):
+        shutil.rmtree(self.tmpdir)
+
+    def copy_roots(self):
+        for filename in os.listdir(profiles.TRUST_ROOTS_DIR):
+            shutil.copy(os.path.join(profiles.TRUST_ROOTS_DIR, filename), self.tmpdir)
+
+    def test_every_profile_loads(self):
+        for name, profile in profiles.PROFILES.items():
+            roots = profiles.load_trust_roots(name)
+            self.assertEqual(len(roots), len(profile['roots']))
+
+    def test_tcasfolio_bundles_nrca_g1_and_g3(self):
+        filenames = [filename for filename, _ in profiles.TCASFOLIO['roots']]
+        self.assertEqual(filenames, ['thailand-nrca-g1.pem', 'thailand-nrca-g3.pem'])
+        self.assertEqual(profiles.TCASFOLIO['signer']['organization_identifier'],
+                         'TIN-0993000086848')
+
+    def test_swapped_root_file_is_rejected(self):
+        self.copy_roots()
+        shutil.copy(os.path.join(self.tmpdir, 'thailand-nrca-g3.pem'),
+                    os.path.join(self.tmpdir, 'thailand-nrca-g1.pem'))
+
+        with self.assertRaises(profiles.TrustRootError):
+            profiles.load_trust_roots('tcasfolio', self.tmpdir)
+
+    def test_edited_root_file_is_rejected(self):
+        self.copy_roots()
+        path = os.path.join(self.tmpdir, 'thailand-nrca-g1.pem')
+        with open(path) as f:
+            lines = f.read().split('\n')
+        lines[5] = lines[5][:-4] + ('AAAA' if lines[5][-4:] != 'AAAA' else 'BBBB')
+        with open(path, 'w') as f:
+            f.write('\n'.join(lines))
+
+        with self.assertRaises(profiles.TrustRootError):
+            profiles.load_trust_roots('tcasfolio', self.tmpdir)
+
+    def test_file_with_two_certificates_is_rejected(self):
+        with open(os.path.join(profiles.TRUST_ROOTS_DIR, 'thailand-nrca-g1.pem'), 'rb') as f:
+            pem = f.read()
+
+        with self.assertRaises(profiles.TrustRootError):
+            profiles.pem_to_der(pem + pem)
+
+    def test_unknown_profile_is_rejected(self):
+        with self.assertRaises(profiles.TrustRootError):
+            profiles.load_trust_roots('no-such-profile')
