@@ -1455,8 +1455,15 @@ class ZeroScoreFieldsExportTestCase(TestCase):
         self.assertEqual(len(rows), 1)
         self.assertEqual(rows[0]['slots'], 20)
 
+    # is_portfolio_project() is a hardcoded list of project ids (1-10, 18, ...),
+    # and a fresh test database hands out exactly those ids, so the add_limit
+    # tests pin the id explicitly.
+    NON_PORTFOLIO_PROJECT_ID = 9001
+    PORTFOLIO_PROJECT_ID = 1
+
     def test_add_limit_is_not_forced_to_zero(self):
-        project = self._project(is_cupt_export_only_major_list=False,
+        project = self._project(id=self.NON_PORTFOLIO_PROJECT_ID,
+                                is_cupt_export_only_major_list=False,
                                 is_cupt_export_zero_score_fields=True)
         self._criteria(project)
 
@@ -1464,6 +1471,16 @@ class ZeroScoreFieldsExportTestCase(TestCase):
 
         self.assertEqual(row['add_limit'],
                          CurriculumMajorAdmissionCriteria.DEFAULT_ADD_LIMIT)
+
+    def test_add_limit_is_forced_to_zero_for_portfolio_projects(self):
+        project = self._project(id=self.PORTFOLIO_PROJECT_ID,
+                                is_cupt_export_only_major_list=False,
+                                is_cupt_export_zero_score_fields=True)
+        self._criteria(project)
+
+        row = self._condition_rows(project)[0]
+
+        self.assertEqual(row['add_limit'], 0)
 
     def test_folio_criteria_still_rendered(self):
         # Score extraction still runs, so the portfolio columns are available.
