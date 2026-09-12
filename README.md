@@ -34,8 +34,11 @@
 ถ้าใช้ pipenv ระบบจะไปอ่าน dependencies version จาก Pipfile/Pipfile.lock  
 requirements.txt จะไม่ถูกอ่าน ไม่มีผลเลย เวลาอัปเดต dependency ให้อัปใน Pipfile แล้วรันคำสั่งอัปเดต requirements.txt
 ```shell
-pipenv requirements > requirements.txt
+pipenv requirements | sed -E 's/;.*$//' > requirements.txt
 ```
+คำสั่ง `sed` ตัด environment markers (เช่น `; python_version >= '3.10'`) ออก
+ให้ requirements.txt เป็นแบบ `name==version` ตามเดิม (โปรเจกต์กำหนด Python 3.10
+ซึ่ง marker ทุกตัวใน lock เป็นจริงอยู่แล้ว จึงได้ package ชุดเดียวกัน)
 **ไม่ได้ใช้ pipenv**  
 file requirements.txt จะถูกใช้อยู่ ก็ใช้ตามปกติ แต่ถ้าจะอัปเดต dependency ตัวไหน แนะนำให้ใช้ pipenv แล้วทำตามด้านบนจะดีกว่า
 
