@@ -1,7 +1,9 @@
+import importlib
 import json
 import logging
 import os
 import shutil
+import sys
 import tempfile
 import unittest
 from datetime import datetime, timedelta, timezone
@@ -1045,3 +1047,96 @@ class TcasfolioValidatorTestCase(SimpleTestCase):
         self.assertEqual(verify.verify_with_profile(content, 'tcasfolio'), verify.OK)
         self.assertTrue(tcasfolio.validate(
             None, uploaded_file=SimpleUploadedFile('portfolio.pdf', content)).is_valid)
+
+
+def load_import_project_uploaded_documents_script():
+    scripts_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                               'scripts')
+    if scripts_dir not in sys.path:
+        sys.path.insert(0, scripts_dir)
+    return importlib.import_module('import_project_uploaded_documents')
+
+
+class ImportProjectUploadedDocumentsScriptTestCase(TestCase):
+
+    HEADER = ['projects', 'rank', 'title', 'key', 'descriptions', 'specifications', 'notes',
+              'extensions', 'prefix', 'size', 'type', 'required', 'detail', 'multiple',
+              'majors', 'late', 'validator']
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.script = load_import_project_uploaded_documents_script()
+
+    def setUp(self):
+        self.project = AdmissionProject.objects.create(title='Project A', short_title='A')
+        self.other_project = AdmissionProject.objects.create(title='Project B', short_title='B')
+
+    def row(self, key='portfolio', projects=None, required='1', majors=None, late=None,
+            validator=None):
+        items = [projects or str(self.project.id), '1', 'แฟ้มผลงาน', key, 'desc', 'PDF', '',
+                 'PDF', '', '2000000', 'any', required, '0', '1']
+        # old files have only the first 14 columns
+        if majors is not None or late is not None or validator is not None:
+            items += [majors or '', late or '', validator or '']
+        return items
+
+    def import_rows(self, *rows):
+        return self.script.import_rows([self.HEADER] + list(rows))
+
+    def test_new_columns_are_imported(self):
+        self.import_rows(self.row(majors='1, 3', late='1', validator='tcasfolio'))
+
+        doc = ProjectUploadedDocument.objects.get(document_key='portfolio')
+        self.assertEqual(doc.major_numbers, '1,3')
+        self.assertTrue(doc.is_late_upload_allowed)
+        self.assertEqual(doc.validator, 'tcasfolio')
+        self.assertTrue(doc.is_required)
+        self.assertEqual(doc.document_type, ProjectUploadedDocument.DOCUMENT_TYPE_ANY)
+        self.assertEqual(list(doc.admission_projects.all()), [self.project])
+
+    def test_old_fourteen_column_rows_get_defaults(self):
+        self.assertEqual(self.import_rows(self.row()), 1)
+
+        doc = ProjectUploadedDocument.objects.get(document_key='portfolio')
+        self.assertEqual(doc.major_numbers, '')
+        self.assertFalse(doc.is_late_upload_allowed)
+        self.assertEqual(doc.validator, '')
+
+    def test_plain_requirement_key_is_an_or_group(self):
+        self.import_rows(self.row(required='portfolio-or-clip'))
+
+        doc = ProjectUploadedDocument.objects.get(document_key='portfolio')
+        self.assertEqual(doc.requirement_key, 'portfolio-or-clip')
+        self.assertFalse(doc.is_required)
+
+    def test_rows_update_the_slot_with_the_same_document_key(self):
+        self.import_rows(self.row(majors='1'))
+        self.import_rows(self.row(majors='2'))
+
+        self.assertEqual(ProjectUploadedDocument.objects.filter(document_key='portfolio').count(), 1)
+        self.assertEqual(ProjectUploadedDocument.objects.get(document_key='portfolio').major_numbers, '2')
+
+    def assert_rejected(self, bad_row, message):
+        with self.assertRaisesRegex(self.script.RowError, message):
+            self.import_rows(self.row(key='good'), bad_row)
+        # the whole file is one transaction
+        self.assertFalse(ProjectUploadedDocument.objects.exists())
+
+    def test_conditional_if_key_is_rejected(self):
+        self.assert_rejected(self.row(key='bad', required='if-%d-1' % self.project.id),
+                             r'line 3: conditional requirement key')
+
+    def test_major_numbers_with_several_projects_is_rejected(self):
+        projects = '%d,%d' % (self.project.id, self.other_project.id)
+        self.assert_rejected(self.row(key='bad', projects=projects, majors='1'),
+                             'exactly one project')
+
+    def test_invalid_major_numbers_is_rejected(self):
+        self.assert_rejected(self.row(key='bad', majors='1-3'), 'invalid major_numbers')
+
+    def test_unknown_validator_is_rejected(self):
+        self.assert_rejected(self.row(key='bad', validator='tcasfolo'), 'unknown validator')
+
+    def test_unknown_project_is_rejected(self):
+        self.assert_rejected(self.row(key='bad', projects='999999'), 'unknown project id')

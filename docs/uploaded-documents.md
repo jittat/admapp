@@ -45,7 +45,14 @@ ProjectUploadedDocument (slot/definition)   1 ──< UploadedDocument (applican
 `appl/models.py:484`. The staff-defined document slot. `Meta.ordering =
 ['rank']`. Registered in the Django admin (`appl/admin.py`), and also editable
 as a `StackedInline` on `AdmissionProject` (through the M2M). Bulk-loaded by
-`scripts/import_project_uploaded_documents.py`.
+`scripts/import_project_uploaded_documents.py` from a CSV (rows matched by
+`document_key`; column list in the script's docstring). Column 11 is
+`is_required` (`0`/`1`) or else an OR-group `requirement_key`; the optional
+columns 14–16 set `major_numbers`, `is_late_upload_allowed` and `validator`
+(files with only the first 14 columns still load). The import is one
+transaction and stops on an invalid row: an old `if-…` conditional key,
+malformed `major_numbers`, `major_numbers` on a row listing several projects,
+an unknown validator key, or an unknown project id.
 
 ### Attachment & ordering
 
