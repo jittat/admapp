@@ -543,6 +543,12 @@ class ProjectUploadedDocument(models.Model):
                                        blank=True,
                                        default='')
 
+    # key in appl.document_validators.DOCUMENT_VALIDATORS; blank for none
+    validator = models.CharField(max_length=30,
+                                 blank=True,
+                                 default='',
+                                 verbose_name='การตรวจสอบเพิ่มเติม')
+
     class Meta:
         ordering = ['rank']
 

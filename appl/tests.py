@@ -1,18 +1,35 @@
 import json
+import logging
 import os
 import shutil
 import tempfile
-from datetime import datetime, timedelta
+import unittest
+from datetime import datetime, timedelta, timezone
+from io import BytesIO
+from unittest import mock
 
+from asn1crypto import keys as asn1_keys, x509 as asn1_x509
+from cryptography import x509
+from cryptography.hazmat.primitives import hashes, serialization
+from cryptography.hazmat.primitives.asymmetric import ec
+from cryptography.x509.oid import NameOID, ObjectIdentifier
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.template.loader import render_to_string
 from django.test import RequestFactory, SimpleTestCase, TestCase, override_settings
 from django.urls import reverse
+from pyhanko.pdf_utils import generic
+from pyhanko.pdf_utils.incremental_writer import IncrementalPdfFileWriter
+from pyhanko.pdf_utils.writer import PageObject, PdfFileWriter
+from pyhanko.sign import signers
+from pyhanko.sign.fields import SigSeedSubFilter
+from pyhanko_certvalidator.registry import SimpleCertificateStore
 
+from appl.document_validators import (DOCUMENT_VALIDATORS, MISCONFIGURED, VERIFICATION_ERROR,
+                                      ValidationResult, run_document_validator, tcasfolio)
 from appl.models import (AdmissionProject, AdmissionProjectRound, AdmissionRound,
                          ProjectUploadedDocument, UploadedDocument)
-from appl.pdfsignatures import profiles
-from appl.views.upload import get_upload_kind
+from appl.pdfsignatures import profiles, verify
+from appl.views.upload import get_upload_kind, render_validation_message
 from regis.models import Applicant
 
 FILE = ProjectUploadedDocument.DOCUMENT_TYPE_FILE
@@ -98,6 +115,20 @@ class GetUploadKindTestCase(SimpleTestCase):
         self.assertIsNone(get_upload_kind(self._request(document_url='   '), doc))
 
 
+def fake_validator(project_uploaded_document, uploaded_file=None, document_url=None):
+    """Rejects files containing b'bad' and urls containing 'bad'."""
+    if uploaded_file is not None:
+        if b'bad' in uploaded_file.read():
+            return ValidationResult.reject('bad_file')
+    elif 'bad' in document_url:
+        return ValidationResult.reject('bad_url')
+    return ValidationResult.accept()
+
+
+def raising_validator(project_uploaded_document, uploaded_file=None, document_url=None):
+    raise RuntimeError('validator bug')
+
+
 class UploadViewTestCase(TestCase):
     """End-to-end through the AJAX upload endpoint, which is where the
     file-vs-url dispatch and the clearing of the unused field happen."""
@@ -138,12 +169,13 @@ class UploadViewTestCase(TestCase):
         session.save()
 
     def make_document(self, document_type, can_have_multiple_files=False,
-                      is_detail_required=False):
+                      is_detail_required=False, validator=''):
         doc = ProjectUploadedDocument.objects.create(
             rank=1, title='เอกสาร', descriptions='', specifications='PDF',
             allowed_extentions='PDF', document_type=document_type,
             can_have_multiple_files=can_have_multiple_files,
-            is_detail_required=is_detail_required)
+            is_detail_required=is_detail_required,
+            validator=validator)
         doc.admission_projects.add(self.project)
         return doc
 
@@ -308,6 +340,70 @@ class UploadViewTestCase(TestCase):
         result = self.post_file(doc)
 
         self.assertEqual(result['result'], 'URL_INVALID')
+        self.assertEqual(self.uploaded_documents(doc), [])
+
+    # --- custom validators -------------------------------------------------
+
+    @mock.patch.dict(DOCUMENT_VALIDATORS, {'fake': fake_validator})
+    def test_validator_rejects_a_file_and_keeps_the_old_one(self):
+        doc = self.make_document(FILE, validator='fake')
+        self.assertEqual(self.post_file(doc, content=b'%PDF-1.4 good')['result'], 'OK')
+
+        result = self.post_file(doc, content=b'%PDF-1.4 bad')
+
+        self.assertEqual(result['result'], 'VALIDATION_ERROR')
+        self.assertIn('เอกสารไม่ผ่านการตรวจสอบ', result['message_html'])
+        uploaded = self.uploaded_documents(doc)
+        self.assertEqual(len(uploaded), 1)
+        self.assertEqual(uploaded[0].uploaded_file.read(), b'%PDF-1.4 good')
+
+    @mock.patch.dict(DOCUMENT_VALIDATORS, {'fake': fake_validator})
+    def test_validator_accepts_a_file_and_saves_all_of_it(self):
+        doc = self.make_document(FILE, validator='fake')
+
+        self.assertEqual(self.post_file(doc, content=b'%PDF-1.4 good')['result'], 'OK')
+
+        self.assertEqual(self.uploaded_documents(doc)[0].uploaded_file.read(), b'%PDF-1.4 good')
+
+    @mock.patch.dict(DOCUMENT_VALIDATORS, {'fake': fake_validator})
+    def test_validator_checks_urls(self):
+        doc = self.make_document(ANY, validator='fake')
+
+        result = self.post_upload(doc, document_url='http://example.com/bad')
+        self.assertEqual(result['result'], 'VALIDATION_ERROR')
+        self.assertIn('message_html', result)
+        self.assertEqual(self.uploaded_documents(doc), [])
+
+        self.assertEqual(self.post_upload(doc, document_url='http://example.com/good')['result'], 'OK')
+
+    def test_basic_checks_run_before_the_validator(self):
+        validator = mock.Mock(return_value=ValidationResult.reject('never'))
+        doc = self.make_document(FILE, validator='mocked')
+
+        with mock.patch.dict(DOCUMENT_VALIDATORS, {'mocked': validator}):
+            result = self.post_file(doc, filename='portfolio.exe')
+
+        self.assertEqual(result['result'], 'EXT_ERROR')
+        self.assertNotIn('message_html', result)
+        validator.assert_not_called()
+
+    def test_unknown_validator_rejects_uploads(self):
+        doc = self.make_document(FILE, validator='no-such-validator')
+
+        with self.assertLogs('appl.document_validators', level='ERROR'):
+            result = self.post_file(doc)
+
+        self.assertEqual(result['result'], 'VALIDATION_ERROR')
+        self.assertIn('ติดต่อเจ้าหน้าที่', result['message_html'])
+        self.assertEqual(self.uploaded_documents(doc), [])
+
+    def test_tcasfolio_rejects_an_unsigned_pdf(self):
+        doc = self.make_document(FILE, validator='tcasfolio')
+
+        result = self.post_file(doc, content=SignedPdfFixtures().unsigned_pdf)
+
+        self.assertEqual(result['result'], 'VALIDATION_ERROR')
+        self.assertIn('TCASFolio', result['message_html'])
         self.assertEqual(self.uploaded_documents(doc), [])
 
 
@@ -491,3 +587,251 @@ class TrustRootsTestCase(SimpleTestCase):
     def test_unknown_profile_is_rejected(self):
         with self.assertRaises(profiles.TrustRootError):
             profiles.load_trust_roots('no-such-profile')
+
+
+class DocumentValidatorRunnerTestCase(SimpleTestCase):
+
+    def make_document(self, validator):
+        return ProjectUploadedDocument(id=1, validator=validator)
+
+    def test_blank_validator_accepts(self):
+        result = run_document_validator(self.make_document(''),
+                                        uploaded_file=SimpleUploadedFile('a.pdf', b'bad'))
+        self.assertTrue(result.is_valid)
+
+    @mock.patch.dict(DOCUMENT_VALIDATORS, {'fake': fake_validator})
+    def test_dispatches_file_and_url(self):
+        doc = self.make_document('fake')
+
+        self.assertTrue(run_document_validator(
+            doc, uploaded_file=SimpleUploadedFile('a.pdf', b'good')).is_valid)
+        self.assertEqual(run_document_validator(
+            doc, uploaded_file=SimpleUploadedFile('a.pdf', b'bad')).code, 'bad_file')
+        self.assertTrue(run_document_validator(
+            doc, document_url='http://example.com/good').is_valid)
+        self.assertEqual(run_document_validator(
+            doc, document_url='http://example.com/bad').code, 'bad_url')
+
+    @mock.patch.dict(DOCUMENT_VALIDATORS, {'fake': fake_validator})
+    def test_file_is_rewound_after_validation(self):
+        uploaded_file = SimpleUploadedFile('a.pdf', b'good content')
+        uploaded_file.read(4)
+
+        run_document_validator(self.make_document('fake'), uploaded_file=uploaded_file)
+
+        self.assertEqual(uploaded_file.read(), b'good content')
+
+    def test_unknown_validator_fails_closed(self):
+        with self.assertLogs('appl.document_validators', level='ERROR'):
+            result = run_document_validator(self.make_document('no-such-validator'),
+                                            document_url='http://example.com/')
+
+        self.assertFalse(result.is_valid)
+        self.assertEqual(result.code, MISCONFIGURED)
+
+    @mock.patch.dict(DOCUMENT_VALIDATORS, {'raising': raising_validator})
+    def test_validator_exception_fails_closed(self):
+        with self.assertLogs('appl.document_validators', level='ERROR'):
+            result = run_document_validator(self.make_document('raising'),
+                                            document_url='http://example.com/')
+
+        self.assertFalse(result.is_valid)
+        self.assertEqual(result.code, VERIFICATION_ERROR)
+
+
+class ValidationMessageTemplateTestCase(SimpleTestCase):
+
+    def render(self, validator, code):
+        return render_validation_message(ProjectUploadedDocument(validator=validator),
+                                         ValidationResult.reject(code), None)
+
+    def test_every_tcasfolio_code_has_a_specific_message(self):
+        for code in [verify.NOT_PDF, verify.NOT_SIGNED, verify.MODIFIED_AFTER_SIGNING,
+                     verify.SIGNATURE_INVALID, verify.UNTRUSTED_SIGNER]:
+            self.assertIn('TCASFolio', self.render('tcasfolio', code), code)
+
+    def test_tcasfolio_falls_back_to_default_messages(self):
+        self.assertIn('ติดต่อเจ้าหน้าที่', self.render('tcasfolio', VERIFICATION_ERROR))
+
+    def test_validator_without_template_uses_default(self):
+        self.assertIn('เอกสารไม่ผ่านการตรวจสอบ', self.render('fake', 'bad_file'))
+        self.assertIn('ติดต่อเจ้าหน้าที่', self.render('no-such-validator', MISCONFIGURED))
+
+
+class SignedPdfFixtures:
+    """Builds a throwaway root -> intermediate -> signer chain and signs a
+    one-page PDF with it, shaped like a TCASFolio file."""
+
+    SIGNER_PIN = {
+        'organization_identifier': 'TIN-0000000000000',
+        'organization_name': 'Test Signing Organization',
+    }
+
+    def __init__(self):
+        now = datetime.now(timezone.utc)
+        self.now = now
+
+        self.root_key = self.new_key()
+        self.root = self.make_cert(self.name('Test Root'), self.root_key,
+                                   self.name('Test Root'), self.root_key, is_ca=True)
+        self.intermediate_key = self.new_key()
+        self.intermediate = self.make_cert(self.name('Test Intermediate'), self.intermediate_key,
+                                           self.root.subject, self.root_key, is_ca=True)
+
+        self.unsigned_pdf = self.make_blank_pdf()
+        self.signed_pdf = self.sign(self.make_signer_cert())
+
+    @staticmethod
+    def new_key():
+        return ec.generate_private_key(ec.SECP256R1())
+
+    @staticmethod
+    def der(cert):
+        return cert.public_bytes(serialization.Encoding.DER)
+
+    @staticmethod
+    def name(common_name, organization=None, organization_identifier=None):
+        attributes = [x509.NameAttribute(NameOID.COUNTRY_NAME, 'TH')]
+        if organization:
+            attributes.append(x509.NameAttribute(NameOID.ORGANIZATION_NAME, organization))
+        attributes.append(x509.NameAttribute(NameOID.COMMON_NAME, common_name))
+        if organization_identifier:
+            attributes.append(x509.NameAttribute(ObjectIdentifier('2.5.4.97'),
+                                                 organization_identifier))
+        return x509.Name(attributes)
+
+    def make_cert(self, subject, key, issuer, issuer_key, is_ca, not_valid_after=None):
+        builder = (x509.CertificateBuilder()
+                   .subject_name(subject)
+                   .issuer_name(issuer)
+                   .public_key(key.public_key())
+                   .serial_number(x509.random_serial_number())
+                   .not_valid_before(self.now - timedelta(days=2))
+                   .not_valid_after(not_valid_after or self.now + timedelta(days=365))
+                   .add_extension(x509.BasicConstraints(ca=is_ca, path_length=None),
+                                  critical=True))
+        if is_ca:
+            key_usage = x509.KeyUsage(False, False, False, False, False, True, True, False, False)
+        else:
+            key_usage = x509.KeyUsage(True, True, False, False, False, False, False, False, False)
+        return builder.add_extension(key_usage, critical=True).sign(issuer_key, hashes.SHA256())
+
+    def make_signer_cert(self, organization_identifier=None, not_valid_after=None):
+        self.signer_key = self.new_key()
+        subject = self.name('Test Signer',
+                            self.SIGNER_PIN['organization_name'],
+                            organization_identifier or self.SIGNER_PIN['organization_identifier'])
+        return self.make_cert(subject, self.signer_key,
+                              self.intermediate.subject, self.intermediate_key,
+                              is_ca=False, not_valid_after=not_valid_after)
+
+    def make_blank_pdf(self):
+        writer = PdfFileWriter()
+        writer.insert_page(PageObject(contents=[], media_box=generic.ArrayObject(
+            [generic.NumberObject(v) for v in (0, 0, 200, 200)])))
+        output = BytesIO()
+        writer.write(output)
+        return output.getvalue()
+
+    def sign(self, signer_cert):
+        signer = signers.SimpleSigner(
+            signing_cert=asn1_x509.Certificate.load(self.der(signer_cert)),
+            signing_key=asn1_keys.PrivateKeyInfo.load(self.signer_key.private_bytes(
+                serialization.Encoding.DER, serialization.PrivateFormat.PKCS8,
+                serialization.NoEncryption())),
+            cert_registry=SimpleCertificateStore.from_certs(
+                [asn1_x509.Certificate.load(self.der(self.intermediate))]))
+        metadata = signers.PdfSignatureMetadata(
+            field_name='Signature1', md_algorithm='sha256',
+            subfilter=SigSeedSubFilter.ADOBE_PKCS7_DETACHED)
+        output = signers.sign_pdf(IncrementalPdfFileWriter(BytesIO(self.unsigned_pdf)),
+                                  metadata, signer=signer)
+        return output.getvalue()
+
+
+class PdfSignatureVerifyTestCase(SimpleTestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        # pyHanko logs a traceback for each untrusted path it rejects
+        cls.pyhanko_logger = logging.getLogger('pyhanko')
+        cls.pyhanko_log_level = cls.pyhanko_logger.level
+        cls.pyhanko_logger.setLevel(logging.CRITICAL)
+        cls.fixtures = SignedPdfFixtures()
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.pyhanko_logger.setLevel(cls.pyhanko_log_level)
+        super().tearDownClass()
+
+    def check(self, pdf_bytes, roots=None, pin=None):
+        f = self.fixtures
+        return verify.verify_pdf_signature(pdf_bytes,
+                                           roots or [f.der(f.root)],
+                                           pin or f.SIGNER_PIN)
+
+    def test_valid_signature(self):
+        self.assertEqual(self.check(self.fixtures.signed_pdf), verify.OK)
+
+    def test_not_a_pdf(self):
+        self.assertEqual(self.check(b'hello, not a pdf').code, verify.NOT_PDF)
+
+    def test_unsigned_pdf(self):
+        self.assertEqual(self.check(self.fixtures.unsigned_pdf).code, verify.NOT_SIGNED)
+
+    def test_bytes_appended_after_signing(self):
+        self.assertEqual(self.check(self.fixtures.signed_pdf + b'\n%extra\n').code,
+                         verify.MODIFIED_AFTER_SIGNING)
+
+    def test_signed_content_changed(self):
+        pdf = self.fixtures.signed_pdf
+        # same-length change inside the signed revision's page dictionary
+        position = pdf.index(b'200', pdf.index(b'/MediaBox'))
+        tampered = pdf[:position] + b'201' + pdf[position + 3:]
+
+        self.assertEqual(self.check(tampered).code, verify.SIGNATURE_INVALID)
+
+    def test_signer_not_matching_pin(self):
+        pin = dict(self.fixtures.SIGNER_PIN, organization_identifier='TIN-9999999999999')
+        self.assertEqual(self.check(self.fixtures.signed_pdf, pin=pin).code,
+                         verify.UNTRUSTED_SIGNER)
+
+    def test_chain_to_an_unbundled_root(self):
+        f = self.fixtures
+        other_key = f.new_key()
+        other_root = f.make_cert(f.name('Other Root'), other_key,
+                                 f.name('Other Root'), other_key, is_ca=True)
+
+        self.assertEqual(self.check(f.signed_pdf, roots=[f.der(other_root)]).code,
+                         verify.UNTRUSTED_SIGNER)
+
+    def test_expired_signer_certificate(self):
+        f = SignedPdfFixtures()
+        expired_pdf = f.sign(f.make_signer_cert(not_valid_after=f.now - timedelta(days=1)))
+
+        self.assertEqual(verify.verify_pdf_signature(expired_pdf, [f.der(f.root)], f.SIGNER_PIN).code,
+                         verify.UNTRUSTED_SIGNER)
+
+
+class TcasfolioValidatorTestCase(SimpleTestCase):
+
+    def test_url_is_accepted_for_now(self):
+        self.assertTrue(tcasfolio.validate(None, document_url='http://example.com/any').is_valid)
+
+    def test_unsigned_file_is_rejected(self):
+        result = tcasfolio.validate(None, uploaded_file=SimpleUploadedFile(
+            'portfolio.pdf', SignedPdfFixtures().unsigned_pdf))
+
+        self.assertFalse(result.is_valid)
+        self.assertEqual(result.code, verify.NOT_SIGNED)
+
+    @unittest.skipUnless(os.environ.get('TCASFOLIO_SAMPLE_PDF'),
+                         'set TCASFOLIO_SAMPLE_PDF to a real TCASFolio pdf (not committed: personal data)')
+    def test_real_tcasfolio_sample_is_accepted(self):
+        with open(os.environ['TCASFOLIO_SAMPLE_PDF'], 'rb') as f:
+            content = f.read()
+
+        self.assertEqual(verify.verify_with_profile(content, 'tcasfolio'), verify.OK)
+        self.assertTrue(tcasfolio.validate(
+            None, uploaded_file=SimpleUploadedFile('portfolio.pdf', content)).is_valid)

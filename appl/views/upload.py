@@ -8,7 +8,9 @@ from django.db.utils import OperationalError
 from django.forms import ModelForm
 from django.http import HttpResponseForbidden, HttpResponse, HttpResponseNotFound
 from django.shortcuts import get_object_or_404
+from django.template.loader import select_template
 
+from appl.document_validators import run_document_validator
 from appl.models import ProjectUploadedDocument, UploadedDocument, AdmissionRound
 from regis.decorators import appl_login_required
 from regis.models import Applicant, LogItem
@@ -22,51 +24,73 @@ class UploadedDocumentForm(ModelForm):
 def upload_form_for(project_uploaded_document):
     return UploadedDocumentForm()
 
-def validate_uploaded_file(project_uploaded_document, uploaded_file):
-    """Content-level checks on an uploaded file (e.g., pdf signatures).
+def custom_validation_check(project_uploaded_document, uploaded_file=None, document_url=None):
+    """Runs the slot's custom validator (if any) after the basic checks.
 
-    Returns (is_valid, result_code). Extension/size checks are done in
-    upload_check; this is the place for per-document content validation.
+    Returns (is_valid, result_code, validation_result); validation_result is
+    None when no validator ran.
     """
-    return (True, 'OK')
+    if project_uploaded_document is None or not project_uploaded_document.validator:
+        return (True, 'OK', None)
+
+    validation_result = run_document_validator(project_uploaded_document,
+                                               uploaded_file=uploaded_file,
+                                               document_url=document_url)
+    if validation_result.is_valid:
+        return (True, 'OK', validation_result)
+    return (False, 'VALIDATION_ERROR', validation_result)
+
+
+def render_validation_message(project_uploaded_document, validation_result, request):
+    template = select_template([
+        'appl/include/document_validation_errors/%s.html' % project_uploaded_document.validator,
+        'appl/include/document_validation_errors/default.html',
+    ])
+    context = {
+        'code': validation_result.code,
+        'context': validation_result.context,
+        'project_uploaded_document': project_uploaded_document,
+    }
+    return template.render(context, request)
 
 
 def upload_check(form, size_limit, allowed_extentions, is_detail_required,
                  project_uploaded_document=None):
     if not form.is_valid():
-        return (False, 'FORM_ERROR')
+        return (False, 'FORM_ERROR', None)
 
     cleaned_data = form.cleaned_data['uploaded_file']
     if not cleaned_data:
-        return (False, 'FORM_ERROR')
-    
+        return (False, 'FORM_ERROR', None)
+
     if size_limit <= cleaned_data.size:
-        return (False, 'SIZE_ERROR')
+        return (False, 'SIZE_ERROR', None)
 
     name, extension = os.path.splitext(cleaned_data.name)
     extension = extension[1:]
     if not extension.upper() in allowed_extentions:
-        return (False, 'EXT_ERROR')
+        return (False, 'EXT_ERROR', None)
 
     if is_detail_required:
         if len(form.cleaned_data['detail']) == 0:
-            return (False, 'DETAIL_REQUIRE')
+            return (False, 'DETAIL_REQUIRE', None)
 
-    return validate_uploaded_file(project_uploaded_document, cleaned_data)
+    return custom_validation_check(project_uploaded_document, uploaded_file=cleaned_data)
 
 
-def url_check(form, is_detail_required):
+def url_check(form, is_detail_required, project_uploaded_document=None):
     if not form.is_valid():
-        return (False, 'URL_INVALID')
+        return (False, 'URL_INVALID', None)
 
     if form.cleaned_data['document_url'] == '':
-        return (False, 'URL_INVALID')
+        return (False, 'URL_INVALID', None)
 
     if is_detail_required:
         if len(form.cleaned_data['detail']) == 0:
-            return (False, 'DETAIL_REQUIRE')
+            return (False, 'DETAIL_REQUIRE', None)
 
-    return (True, 'OK')
+    return custom_validation_check(project_uploaded_document,
+                                   document_url=form.cleaned_data['document_url'])
 
 
 def get_upload_kind(request, project_uploaded_document):
@@ -124,16 +148,18 @@ def upload(request, document_id):
     upload_kind = get_upload_kind(request, project_uploaded_document)
 
     if upload_kind == None:
-        is_valid, result_code = False, 'NO_INPUT'
+        is_valid, result_code, validation_result = False, 'NO_INPUT', None
     elif upload_kind == 'url':
-        is_valid, result_code = url_check(form, is_detail_required)
+        is_valid, result_code, validation_result = url_check(form, is_detail_required,
+                                                             project_uploaded_document)
     else:
         size_limit = project_uploaded_document.size_limit
         allowed_extentions = [ext.upper() for ext in
                               project_uploaded_document.allowed_extentions.split(',')]
 
-        is_valid, result_code = upload_check(form, size_limit, allowed_extentions, is_detail_required,
-                                             project_uploaded_document)
+        is_valid, result_code, validation_result = upload_check(form, size_limit, allowed_extentions,
+                                                                is_detail_required,
+                                                                project_uploaded_document)
 
     if is_valid:
         if not project_uploaded_document.can_have_multiple_files:
@@ -186,6 +212,10 @@ def upload(request, document_id):
             result = {'result': result_code}
     else:
         result = {'result': result_code}
+        if validation_result is not None:
+            result['message_html'] = render_validation_message(project_uploaded_document,
+                                                               validation_result,
+                                                               request)
 
     return HttpResponse(json.dumps(result),
                         content_type='application/json')

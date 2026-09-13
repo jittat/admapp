@@ -3,10 +3,11 @@
 Investigation notes and decisions for verifying the digital signature on
 **TCASFolio** portfolio PDFs uploaded by applicants. This is **not** a general
 check for all uploads: it is meant to be switched on only for specific
-`ProjectUploadedDocument` slots (the ones that take TCASFolio PDFs), so it will
-need extra options on that model. How it plugs into the upload flow
-(`validate_uploaded_file()` in `appl/views/upload.py`, see
-[uploaded-documents.md](uploaded-documents.md)) is still to be discussed.
+`ProjectUploadedDocument` slots (the ones that take TCASFolio PDFs), by setting
+the slot's `validator` to `'tcasfolio'` (see
+[Custom validators](uploaded-documents.md#custom-validators)). The check itself
+is `appl/pdfsignatures/verify.py`; the validator is
+`appl/document_validators/tcasfolio.py`.
 
 The findings below come from one sample TCASFolio PDF (downloaded 2026-09),
 inspected on 2026-09-13 using only its signature/certificate structure (no
@@ -24,8 +25,21 @@ against more samples before relying on details that may vary.
    (ทปอ., `organizationIdentifier=TIN-0993000086848`, see below). A valid chain
    alone is not enough — any organization holding a certificate from a Thai
    CA would pass.
-3. **No revocation check (OCSP/CRL) for now.** Revocation can be done later as
-   a batch check over stored uploads.
+3. **No revocation check (OCSP/CRL) for now**, and no network access at all
+   during the check. Revocation can be done later as a batch check over
+   stored uploads.
+4. **Validate minimally, at the current time** (not the self-asserted signing
+   time — the file is signed at download anyway). See
+   [Verification steps](#verification-steps-what-the-check-does).
+5. **Upload-time accept/reject only.** A failing file is rejected with a
+   message; nothing is stored on `UploadedDocument`, there is no "record only"
+   mode, existing uploads are not re-checked, and staff see nothing extra.
+6. **Fail closed.** An unknown validator key or an exception during the check
+   rejects the upload (logged) with a "try again / contact staff" message.
+7. **Size limit** is the slot's ordinary `size_limit` (samples are ~4.7 MB, so
+   raise it on TCASFolio slots); the validator does not check size.
+8. **TCASFolio links** (for url/any slots) are accepted as-is until the URL
+   pattern is known (`validate_url()` in `appl/document_validators/tcasfolio.py`).
 
 ## What a TCASFolio PDF looks like
 
@@ -203,29 +217,34 @@ Upkeep:
 - A new TCASFolio signer organization or CA is a code change to the profile,
   on purpose.
 
-## Verification steps (what a check must do)
+## Verification steps (what the check does)
 
-1. Find the signature field(s); require exactly the expected signature
-   (`adbe.pkcs7.detached` / CMS) and that `/ByteRange` covers the whole file
-   (`[0, a, b, c]` with `b + c == file size`).
-2. Hash the ByteRange bytes; compare with the `message_digest` signed
-   attribute.
-3. Verify the CMS signature over the signed attributes with the signer
-   certificate's public key.
-4. Build the path signer → intermediate (from embedded certs) → **bundled
-   root**; check validity periods, `basicConstraints`/`pathlen`, key usage
-   (`digitalSignature` or `nonRepudiation` on the signer).
-   Check validity at the signing time and/or now (to decide — the signing time
-   is not a trusted timestamp).
-5. Check the signer subject matches the pin
-   (`organizationIdentifier=TIN-0993000086848`).
-6. (Later, batch) OCSP/CRL for the signer and intermediate.
+Implemented in `appl/pdfsignatures/verify.py` with **pyHanko** (0.37, +
+`pyhanko-certvalidator`; installed without changing the `cryptography` /
+`asn1crypto` pins). `verify_pdf_signature(pdf_bytes, trust_roots_der,
+signer_pin)` returns `SignatureCheck(ok, code)`; `verify_with_profile(pdf_bytes,
+'tcasfolio')` supplies the bundled roots and pin. In order:
 
-Library candidate: **pyHanko** (+ `pyhanko-certvalidator`) covers 1–4 and
-revocation; it is **not installed yet**. Its lower-level dependencies
-`cryptography` (50.0.1) and `asn1crypto` (1.5.1) are already pinned in
-`Pipfile` / `Pipfile.lock` / `requirements.txt`; adding pyHanko may require
-adjusting those pins.
+| # | Step | Failure code |
+|---|---|---|
+| 1 | Read the PDF (`PdfFileReader`, non-strict) | `not_pdf` |
+| 2 | Exactly one embedded signature | `not_signed` |
+| 3 | `validate_pdf_signature` → coverage is `ENTIRE_FILE` (ByteRange covers the whole file) | `modified_after_signing` |
+| 4 | … `intact` and `valid` (message digest + CMS signature) | `signature_invalid` |
+| 5 | … `trusted`: path signer → embedded intermediate → **bundled root**, validity at **now**, key usage `digital_signature` or `non_repudiation` | `untrusted_signer` |
+| 6 | Signer subject `organization_identifier` + `organization_name` match the pin | `untrusted_signer` |
+
+The `ValidationContext` has only the bundled roots as trust anchors,
+`allow_fetching=False`, and a `NO_CHECK` revocation policy for both the signer
+and intermediates. Diff analysis is skipped (step 3 already rejects any
+incremental update after the signature). Expired certificates also come out as
+`untrusted_signer`. Any unexpected exception propagates, and the validator
+runner turns it into `verification_error`.
+
+Tests (`appl.tests.PdfSignatureVerifyTestCase`) sign a blank PDF with a
+throwaway root → intermediate → signer chain generated at test time. The real
+sample is not committed (personal data); `TcasfolioValidatorTestCase` checks it
+only when `TCASFOLIO_SAMPLE_PDF=/path/to/file.pdf` is set.
 
 ## Results on the sample (2026-09-13)
 
@@ -243,11 +262,13 @@ adjusting those pins.
 Revocation was checked once during the investigation only; per the decisions
 above it is not part of the upload-time check.
 
-## Open (for the integration discussion)
+## Open (later)
 
-- New `ProjectUploadedDocument` options: e.g. verification mode
-  (off / record only / require), which pin/profile to apply ("TCASFolio").
-- Where results live (fields on `UploadedDocument`?) and how staff see them.
-- Upload-time vs. batch verification; backfill of existing uploads.
-- Size limit for TCASFolio slots.
+Settled for now by decisions 4–8 above; revisit if needed:
+
+- The TCASFolio URL pattern for link submissions.
+- Storing results on `UploadedDocument` / showing them to staff; a "record
+  only" mode.
+- Re-checking existing uploads.
 - Batch revocation checks.
+- Tying a signed PDF to the applicant who uploaded it.

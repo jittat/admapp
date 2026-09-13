@@ -83,6 +83,7 @@ as a `StackedInline` on `AdmissionProject` (through the M2M). Bulk-loaded by
 | `is_interview_document` | Bool (F) | "ใช้สำหรับสัมภาษณ์" — interview-stage document. Uploads/deletes of these are **still allowed after the application deadline** (all other slots are locked once `project_round.is_deadline_passed()`). |
 | `document_key` | Char (blank) | Optional stable key for identifying a slot across imports/scripts. |
 | `requirement_key` | Char (blank) | Groups slots into an **OR requirement** and/or a conditional requirement (see below). |
+| `validator` | Char(30, blank) | "การตรวจสอบเพิ่มเติม" — key of a [custom validator](#custom-validators) run on each submission after the basic checks (e.g. `'tcasfolio'`). Blank = none. Plain text, no choices; an unknown key rejects every upload to the slot. |
 
 ### Methods
 
@@ -163,11 +164,11 @@ Views in `appl/views/upload.py`; URLs in `appl/urls.py`.
      `document_type`, or for `'any'` slots whichever of `request.FILES`
      /`document_url` the applicant actually filled in (neither → `NO_INPUT`) —
      then validates via `UploadedDocumentForm` + `upload_check` (file: size &
-     extension & optional detail, then `validate_uploaded_file()`, the seam
-     for future content checks such as PDF signatures — see
-     [pdf-signature-verification.md](pdf-signature-verification.md)) or
-     `url_check`.
-     A required `detail` applies to both kinds.
+     extension & optional detail) or `url_check`. A required `detail` applies
+     to both kinds. Only when these basic checks pass, both then run the
+     slot's [custom validator](#custom-validators), if any
+     (`custom_validation_check()`); this happens **before** step 4, so a
+     rejected submission never deletes the previous one.
   4. if the slot is single-file, deletes the previous file+row first. This is
      destructive, so the **client** asks first: on a single-document slot that
      already holds an entry the card renders a hidden
@@ -183,7 +184,10 @@ Views in `appl/views/upload.py`; URLs in `appl/urls.py`.
      `LogItem`, and returns JSON `{result:'OK', html:<re-rendered card>}`.
   - Error codes returned to the JS: `FORM_ERROR`, `SIZE_ERROR`, `EXT_ERROR`,
     `DETAIL_REQUIRE`, `URL_INVALID`, `NO_INPUT`, `DETAIL_ERROR`,
-    `FILENAME_ERROR`, `APPLICATION_ERROR`.
+    `FILENAME_ERROR`, `APPLICATION_ERROR` (messages hard-coded in
+    `document_upload_js.html`), and `VALIDATION_ERROR` (custom validator
+    rejection; the JSON also carries a server-rendered `message_html`, shown
+    as-is).
 
 - **Download (applicant)** — `appl:document-download`
   (`/appl/doc/<applicant_id>/<project_uploaded_document_id>/<document_id>/`).
@@ -194,6 +198,41 @@ Views in `appl/views/upload.py`; URLs in `appl/urls.py`.
 - **Delete** — `POST appl:document-delete` (`.../delete/`). Same ownership
   check and the same deadline/interview-document guard as upload; deletes the
   row, logs, returns the re-rendered card.
+
+### Custom validators
+
+Per-slot content checks beyond size/extension/detail, switched on by setting
+`ProjectUploadedDocument.validator` to a registry key. Package
+`appl/document_validators/`:
+
+- `base.py` — `ValidationResult(is_valid, code, context)` with
+  `ValidationResult.accept()` / `ValidationResult.reject(code, **context)`.
+- `__init__.py` — `DOCUMENT_VALIDATORS = {'tcasfolio': tcasfolio.validate}`
+  and `run_document_validator(pud, uploaded_file=None, document_url=None)`.
+  Blank key → accept. Unknown key → `reject('misconfigured')`; a validator that
+  raises → `reject('verification_error')`; both are logged (fail closed). The
+  uploaded file is rewound before and after, so the saved file is complete.
+- A validator is `fn(project_uploaded_document, uploaded_file=None,
+  document_url=None) -> ValidationResult`, called with exactly one of the two
+  (whichever kind the applicant submitted).
+- `tcasfolio.py` — files: the PDF signature check of
+  [pdf-signature-verification.md](pdf-signature-verification.md); urls:
+  accepted for now (pattern not known yet).
+
+In `appl/views/upload.py`, `upload_check` / `url_check` call
+`custom_validation_check()` last and return `(is_valid, result_code,
+validation_result)`. On rejection `upload()` responds
+`{result: 'VALIDATION_ERROR', message_html}`, rendered by
+`render_validation_message()` from
+`appl/templates/appl/include/document_validation_errors/<key>.html` (falling back
+to `default.html`) with `code`, `context`, and `project_uploaded_document`.
+The JS puts `message_html` into the card's `.document-upload-errors`.
+
+**Adding a validator:** write the function (reject with short codes), add it to
+`DOCUMENT_VALIDATORS`, add `document_validation_errors/<key>.html` with an
+`{% if code == ... %}` branch per code (end with an include of `default.html`
+for `misconfigured`/`verification_error`), then set the key on the slot in the
+admin. Editing an applicant-facing message only means editing that template.
 
 ### Requiredness & OR groups
 

@@ -38,6 +38,7 @@ mistune = "==2.0.3"
 crispy-bootstrap4 = "*"
 cryptography = "==50.0.1"
 asn1crypto = "==1.5.1"
+pyhanko = "*"
 
 [requires]
 python_version = "3.10"

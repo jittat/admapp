@@ -66,6 +66,8 @@
           $(uploadErrorDiv).show().html('<b>URL ที่ระบุไม่ถูกต้อง</b>');
         } else if (data.result == 'NO_INPUT') {
           $(uploadErrorDiv).show().html('<b>กรุณาเลือกไฟล์หรือระบุลิงก์</b>');
+        } else if (data.result == 'VALIDATION_ERROR') {
+          $(uploadErrorDiv).show().html(data.message_html);
         }
         $(progress).hide();
         refreshDocumentStatus();
