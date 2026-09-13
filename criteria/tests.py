@@ -1,5 +1,8 @@
 import datetime
+import importlib
+import json
 from decimal import Decimal
+from unittest import mock
 
 from django.contrib.auth.models import User
 from django.http import Http404
@@ -7,9 +10,11 @@ from django.template.loader import render_to_string
 from django.test import SimpleTestCase, TestCase
 from django.urls import reverse
 
-from appl.models import AdmissionProject, AdmissionRound, Campus, Faculty
+from appl.models import (AdmissionProject, AdmissionRound, Campus, Faculty, Major,
+                         ProjectUploadedDocument, UploadedDocument)
 from criteria.models import (AdmissionCriteria, ScoreCriteria, CurriculumMajor,
                              CurriculumMajorAdmissionCriteria, MajorCuptCode)
+from regis.models import Applicant
 
 
 class AdmissionCriteriaVersioningTestCase(TestCase):
@@ -339,9 +344,32 @@ class ExtractAdditionalFieldsTestCase(TestCase):
         }
         rows = json.loads(
             extract_additional_admission_upload_fields_as_json(self.project, post))
+        key = rows[0].pop('key')
+        self.assertRegex(key, r'^[0-9a-f]{12}$')
         self.assertEqual(rows, [{'title': 'doc', 'descriptions': 'desc',
                                  'is_required': True,
                                  'is_late_upload_allowed': False}])
+
+    def test_upload_fields_keep_valid_keys_and_replace_bad_or_repeated_ones(self):
+        from criteria.views import extract_additional_admission_upload_fields_as_json
+        import json
+
+        self.project.is_additional_admission_upload_allowed = True
+        post = {
+            'additional_admission_upload_fields-1-title': 'kept',
+            'additional_admission_upload_fields-1-key': 'abcdef012345',
+            'additional_admission_upload_fields-2-title': 'repeated',
+            'additional_admission_upload_fields-2-key': 'abcdef012345',
+            'additional_admission_upload_fields-3-title': 'bad',
+            'additional_admission_upload_fields-3-key': '<script>',
+        }
+        rows = {r['title']: r['key'] for r in json.loads(
+            extract_additional_admission_upload_fields_as_json(self.project, post))}
+
+        self.assertEqual(rows['kept'], 'abcdef012345')
+        self.assertRegex(rows['repeated'], r'^[0-9a-f]{12}$')
+        self.assertRegex(rows['bad'], r'^[0-9a-f]{12}$')
+        self.assertEqual(len(set(rows.values())), 3)
 
     def test_upload_fields_late_upload_checkbox_requires_project_flag(self):
         from criteria.views import extract_additional_admission_upload_fields_as_json
@@ -364,6 +392,306 @@ class ExtractAdditionalFieldsTestCase(TestCase):
         rows = json.loads(
             extract_additional_admission_upload_fields_as_json(self.project, post))
         self.assertTrue(rows[0]['is_late_upload_allowed'])
+
+
+class UploadFieldKeyBackfillMigrationTestCase(SimpleTestCase):
+
+    def setUp(self):
+        self.migration = importlib.import_module(
+            'criteria.migrations.0039_backfill_upload_field_keys')
+
+    def test_rows_without_valid_unique_keys_get_one(self):
+        rows = [{'title': 'a'},
+                {'title': 'b', 'key': 'abcdef012345'},
+                {'title': 'c', 'key': 'abcdef012345'},
+                {'title': 'd', 'key': 'bad'}]
+
+        self.assertTrue(self.migration.add_upload_field_keys(rows))
+
+        self.assertEqual(rows[1]['key'], 'abcdef012345')
+        keys = [row['key'] for row in rows]
+        self.assertEqual(len(set(keys)), 4)
+        for key in keys:
+            self.assertRegex(key, r'^[0-9a-f]{12}$')
+
+    def test_rows_with_keys_are_unchanged(self):
+        rows = [{'title': 'a', 'key': 'abcdef012345'}]
+        self.assertFalse(self.migration.add_upload_field_keys(rows))
+
+
+class SyncCriteriaUploadDocumentsTestCase(TestCase):
+    """criteria.upload_documents turns live criteria upload fields into
+    ProjectUploadedDocument slots, matched across versions by field key."""
+
+    def setUp(self):
+        campus = Campus.objects.create(title='Bang Khen', short_title='BK')
+        self.faculty = Faculty.objects.create(title='Engineering', campus=campus)
+        self.project = AdmissionProject.objects.create(
+            title='Test Project', short_title='Test',
+            is_additional_admission_upload_allowed=True)
+        self.code_counter = 0
+
+        self.major1, self.cm1 = self._major(1, 'วิศวกรรมคอมพิวเตอร์')
+        self.major2, self.cm2 = self._major(2, 'วิศวกรรมไฟฟ้า')
+        self.major3, self.cm3 = self._major(3, 'วิศวกรรมเครื่องกล')
+
+    def _major(self, number, title):
+        self.code_counter += 1
+        program_code = '100201042123%03d' % self.code_counter
+        cupt_code = MajorCuptCode.objects.create(
+            program_code=program_code, program_type='ภาษาไทย ปกติ',
+            program_type_code='1', faculty=self.faculty, title=title)
+        major = Major.objects.create(
+            number=number, title=title, faculty=self.faculty,
+            admission_project=self.project, slots=10, detail_items_csv='',
+            cupt_full_code=program_code)
+        curriculum_major = CurriculumMajor.objects.create(
+            admission_project=self.project, cupt_code=cupt_code, faculty=self.faculty)
+        return major, curriculum_major
+
+    def _criteria(self, curriculum_majors, upload_fields):
+        admission_criteria = AdmissionCriteria.objects.create(
+            admission_project=self.project, faculty=self.faculty, version=1,
+            additional_admission_upload_fields_json=json.dumps(upload_fields))
+        for curriculum_major in curriculum_majors:
+            CurriculumMajorAdmissionCriteria.objects.create(
+                curriculum_major=curriculum_major,
+                admission_criteria=admission_criteria, slots=1)
+        return admission_criteria
+
+    def _field(self, key, title='แฟ้มผลงาน', is_required=True, is_late_upload_allowed=False):
+        return {'key': key, 'title': title, 'descriptions': 'รายละเอียด',
+                'is_required': is_required, 'is_late_upload_allowed': is_late_upload_allowed}
+
+    def _slots(self):
+        return list(ProjectUploadedDocument.objects
+                    .filter(admission_projects=self.project).order_by('rank'))
+
+    def _sync(self):
+        from criteria.upload_documents import sync_criteria_upload_documents
+        return sync_criteria_upload_documents(self.project)
+
+    def _upload_for(self, slot):
+        applicant = Applicant.objects.create(
+            national_id='1234567890121', prefix='นาย',
+            first_name='ทดสอบ', last_name='มาก', email='test@test.com')
+        return UploadedDocument.objects.create(
+            applicant=applicant, project_uploaded_document=slot, rank=0,
+            document_url='http://example.com/portfolio')
+
+    def test_creates_one_slot_per_field_covering_the_criteria_majors(self):
+        from criteria import upload_documents
+
+        self._criteria([self.cm2, self.cm1],
+                       [self._field('aaaaaaaaaaaa', is_late_upload_allowed=True),
+                        self._field('bbbbbbbbbbbb', title='คลิป', is_required=False)])
+
+        summary = self._sync()
+
+        self.assertEqual(summary.created, 2)
+        portfolio, clip = self._slots()
+        self.assertEqual(portfolio.title, 'แฟ้มผลงาน (วิศวกรรมคอมพิวเตอร์, วิศวกรรมไฟฟ้า)')
+        self.assertEqual(portfolio.major_numbers, '1,2')
+        self.assertEqual(portfolio.criteria_upload_key, 'aaaaaaaaaaaa')
+        self.assertEqual(portfolio.descriptions, 'รายละเอียด')
+        self.assertTrue(portfolio.is_required)
+        self.assertTrue(portfolio.is_late_upload_allowed)
+        self.assertEqual(portfolio.document_type, ProjectUploadedDocument.DOCUMENT_TYPE_ANY)
+        self.assertTrue(portfolio.can_have_multiple_files)
+        self.assertEqual(portfolio.allowed_extentions, upload_documents.DEFAULT_ALLOWED_EXTENSIONS)
+        self.assertEqual(portfolio.size_limit, upload_documents.DEFAULT_SIZE_LIMIT)
+        self.assertEqual(portfolio.specifications, upload_documents.DEFAULT_SPECIFICATIONS)
+        self.assertEqual(portfolio.rank, upload_documents.RANK_BASE)
+        self.assertEqual(clip.title, 'คลิป (วิศวกรรมคอมพิวเตอร์, วิศวกรรมไฟฟ้า)')
+        self.assertFalse(clip.is_required)
+
+    def test_resync_without_changes_changes_nothing(self):
+        self._criteria([self.cm1], [self._field('aaaaaaaaaaaa')])
+        self._sync()
+
+        summary = self._sync()
+
+        self.assertEqual((summary.created, summary.updated, summary.deleted, summary.unlinked),
+                         (0, 0, 0, 0))
+        self.assertEqual(len(self._slots()), 1)
+
+    def test_new_criteria_version_updates_the_same_slot(self):
+        old = self._criteria([self.cm1], [self._field('aaaaaaaaaaaa')])
+        self._sync()
+        slot_id = self._slots()[0].id
+
+        old.is_deleted = True
+        old.save()
+        self._criteria([self.cm1, self.cm3],
+                       [self._field('aaaaaaaaaaaa', title='ผลงาน', is_required=False)])
+        summary = self._sync()
+
+        self.assertEqual((summary.created, summary.updated), (0, 1))
+        slot = self._slots()[0]
+        self.assertEqual(slot.id, slot_id)
+        self.assertEqual(slot.title, 'ผลงาน (วิศวกรรมคอมพิวเตอร์, วิศวกรรมเครื่องกล)')
+        self.assertEqual(slot.major_numbers, '1,3')
+        self.assertFalse(slot.is_required)
+
+    def test_changed_default_constant_is_applied_on_resync(self):
+        self._criteria([self.cm1], [self._field('aaaaaaaaaaaa')])
+        self._sync()
+
+        with mock.patch('criteria.upload_documents.DEFAULT_SIZE_LIMIT', 12345):
+            summary = self._sync()
+
+        self.assertEqual(summary.updated, 1)
+        self.assertEqual(self._slots()[0].size_limit, 12345)
+
+    def test_removed_field_without_uploads_is_deleted(self):
+        criteria = self._criteria([self.cm1], [self._field('aaaaaaaaaaaa'),
+                                               self._field('bbbbbbbbbbbb', title='คลิป')])
+        self._sync()
+
+        criteria.additional_admission_upload_fields_json = json.dumps([self._field('aaaaaaaaaaaa')])
+        criteria.save()
+        summary = self._sync()
+
+        self.assertEqual(summary.deleted, 1)
+        self.assertEqual([s.criteria_upload_key for s in self._slots()], ['aaaaaaaaaaaa'])
+        self.assertFalse(ProjectUploadedDocument.objects.filter(criteria_upload_key='bbbbbbbbbbbb').exists())
+
+    def test_removed_field_with_uploads_is_unlinked_and_comes_back(self):
+        criteria = self._criteria([self.cm1], [self._field('aaaaaaaaaaaa')])
+        self._sync()
+        slot = self._slots()[0]
+        upload = self._upload_for(slot)
+
+        criteria.is_deleted = True
+        criteria.save()
+        summary = self._sync()
+
+        self.assertEqual(summary.unlinked, 1)
+        self.assertEqual(self._slots(), [])
+        slot.refresh_from_db()
+        self.assertEqual(slot.major_numbers, '')
+        self.assertTrue(UploadedDocument.objects.filter(pk=upload.pk).exists())
+
+        self._criteria([self.cm1], [self._field('aaaaaaaaaaaa')])
+        summary = self._sync()
+
+        self.assertEqual((summary.created, summary.updated), (0, 1))
+        self.assertEqual([s.id for s in self._slots()], [slot.id])
+        self.assertEqual(self._slots()[0].major_numbers, '1')
+
+    def test_project_flag_off_removes_generated_slots(self):
+        self._criteria([self.cm1], [self._field('aaaaaaaaaaaa')])
+        self._sync()
+
+        self.project.is_additional_admission_upload_allowed = False
+        self.project.save()
+        summary = self._sync()
+
+        self.assertEqual(summary.deleted, 1)
+        self.assertEqual(self._slots(), [])
+
+    def test_hand_made_slots_are_left_alone(self):
+        hand_made = ProjectUploadedDocument.objects.create(
+            rank=1, title='ใบรับรอง', descriptions='', specifications='PDF',
+            allowed_extentions='PDF')
+        hand_made.admission_projects.add(self.project)
+
+        summary = self._sync()
+
+        self.assertEqual(summary.deleted, 0)
+        self.assertEqual(self._slots(), [hand_made])
+
+    def test_duplicate_key_is_skipped(self):
+        self._criteria([self.cm1], [self._field('aaaaaaaaaaaa')])
+        self._criteria([self.cm2], [self._field('aaaaaaaaaaaa', title='ซ้ำ')])
+
+        with self.assertLogs('criteria.upload_documents', level='ERROR'):
+            summary = self._sync()
+
+        self.assertEqual(summary.created, 1)
+        self.assertEqual(summary.duplicate_keys, ['aaaaaaaaaaaa'])
+        self.assertIn('aaaaaaaaaaaa', summary.as_notice())
+
+    def test_field_of_criteria_without_project_majors_is_reported_not_created(self):
+        # a CurriculumMajor whose CUPT code matches no Major of the project
+        cupt_code = MajorCuptCode.objects.create(
+            program_code='100201042199999', program_type='ภาษาไทย ปกติ',
+            program_type_code='1', faculty=self.faculty, title='ไม่มีสาขา')
+        orphan = CurriculumMajor.objects.create(
+            admission_project=self.project, cupt_code=cupt_code, faculty=self.faculty)
+        self._criteria([orphan], [self._field('aaaaaaaaaaaa')])
+
+        summary = self._sync()
+
+        self.assertEqual(summary.created, 0)
+        self.assertEqual(summary.fields_without_majors, ['แฟ้มผลงาน'])
+        self.assertEqual(self._slots(), [])
+
+    def test_long_titles_are_cut_to_the_field_length(self):
+        from criteria.upload_documents import TITLE_MAX_LENGTH, make_title
+
+        majors = [Major(number=i, title='สาขาวิชาที่มีชื่อยาวมาก %d' % i) for i in range(20)]
+        title = make_title('แฟ้มผลงาน', majors)
+
+        self.assertLessEqual(len(title), TITLE_MAX_LENGTH)
+        self.assertTrue(title.startswith('แฟ้มผลงาน (สาขาวิชา'))
+        self.assertTrue(title.endswith('…)'))
+
+
+class SyncUploadDocumentsViewTestCase(TestCase):
+
+    def setUp(self):
+        campus = Campus.objects.create(title='Bang Khen', short_title='BK')
+        self.faculty = Faculty.objects.create(title='Engineering', campus=campus)
+        self.project = AdmissionProject.objects.create(
+            title='Test Project', short_title='Test',
+            is_additional_admission_upload_allowed=True)
+        self.admission_round = AdmissionRound.objects.create(
+            number=1, rank=1, acceptance_result_date=datetime.date(2026, 1, 1))
+        self.url = reverse('backoffice:criteria:sync-upload-documents',
+                           args=[self.project.id, self.admission_round.id])
+
+    def _user(self, username, is_admission_admin=False):
+        user = User.objects.create_user(username=username, password='x')
+        user.profile.faculty = self.faculty
+        user.profile.is_admission_admin = is_admission_admin
+        user.profile.save()
+        user.profile.admission_projects.add(self.project)
+        return user
+
+    def test_admission_admin_can_sync(self):
+        self.client.force_login(self._user('admin01', is_admission_admin=True))
+
+        with mock.patch('criteria.upload_documents.sync_criteria_upload_documents',
+                        wraps=__import__('criteria.upload_documents', fromlist=['x'])
+                        .sync_criteria_upload_documents) as sync:
+            response = self.client.post(self.url, {'faculty_id': str(self.faculty.id)})
+
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(response.url.endswith('?faculty_id=%d' % self.faculty.id))
+        sync.assert_called_once_with(self.project)
+        self.assertIn('ปรับช่องอัพโหลดเอกสาร', self.client.session['notice'])
+
+    def test_faculty_staff_cannot_sync(self):
+        self.client.force_login(self._user('faculty01'))
+
+        with mock.patch('criteria.upload_documents.sync_criteria_upload_documents') as sync:
+            response = self.client.post(self.url)
+
+        self.assertEqual(response.status_code, 403)
+        sync.assert_not_called()
+
+    def test_get_is_forbidden(self):
+        self.client.force_login(self._user('admin01', is_admission_admin=True))
+
+        self.assertEqual(self.client.get(self.url).status_code, 403)
+
+    def test_forbidden_when_project_does_not_allow_upload_fields(self):
+        self.project.is_additional_admission_upload_allowed = False
+        self.project.save()
+        self.client.force_login(self._user('admin01', is_admission_admin=True))
+
+        self.assertEqual(self.client.post(self.url).status_code, 403)
 
 
 ADDITIONAL_FORM_FIELDS_COL_TEMPLATE = (

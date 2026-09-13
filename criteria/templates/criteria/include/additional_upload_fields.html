@@ -38,6 +38,7 @@
             <tr>
               <td>{{ forloop.counter }}</td>
               <td>
+                <input class="additional-upload-fields-key" type="hidden" name="additional_admission_upload_fields-{{ forloop.counter }}-key" value="{{ f.key }}" />
                 <input class="form-control additional-upload-fields-title" style="border-width: 1px;" type="text" name="additional_admission_upload_fields-{{ forloop.counter }}-title" value="{{ f.title }}" />
               </td>
               <td>
@@ -59,6 +60,7 @@
             <tr>
               <td>1</td>
               <td>
+                <input class="additional-upload-fields-key" type="hidden" name="additional_admission_upload_fields-1-key" value="" />
                 <input class="form-control additional-upload-fields-title" style="border-width: 1px;" type="text" name="additional_admission_upload_fields-1-title" value="" />
               </td>
               <td>
@@ -107,6 +109,7 @@
       $('.additional-upload-fields-form table tbody tr').each(function(index, tr) {
         if (index < $('.additional-upload-fields-form table tbody tr').length - 1) {
           $(tr).find('td:first').text(index + 1);
+          $(tr).find('.additional-upload-fields-key').attr('name', 'additional_admission_upload_fields-' + (index + 1) + '-key');
           $(tr).find('.additional-upload-fields-title').attr('name', 'additional_admission_upload_fields-' + (index + 1) + '-title');
           $(tr).find('.additional-upload-fields-descriptions').attr('name', 'additional_admission_upload_fields-' + (index + 1) + '-descriptions');
           $(tr).find('.additional-upload-fields-is-required').attr('name', 'additional_admission_upload_fields-' + (index + 1) + '-is_required');
@@ -119,6 +122,7 @@
       var formRowTemplate = `<tr class="additional-upload-fields-form-rows">
                 <td class="additional-upload-fields-form-index">2</td>
                 <td>
+                  <input class="additional-upload-fields-key" type="hidden" name="additional_admission_upload_fields-2-key" value="" />
                   <input class="form-control additional-upload-fields-title" style="border-width: 1px;" type="text" name="additional_admission_upload_fields-2-title" value="" />
                 </td>
                 <td>

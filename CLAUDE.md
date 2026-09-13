@@ -67,9 +67,10 @@ analyses):
 - `docs/uploaded-documents.md` — applicant document uploads: the
   definition→instance model pair (`ProjectUploadedDocument` /
   `UploadedDocument`), applicant upload flow, staff review flow, file
-  serving/storage + encrypted S3 backup, and a section on the per-criteria
-  `additional_admission_upload_fields` (authoring implemented; runtime phases
-  still to do).
+  serving/storage + encrypted S3 backup, major-specific (`major_numbers`) and
+  late-upload slots, custom validators, and the per-criteria
+  `additional_admission_upload_fields` → slots sync
+  (`criteria/upload_documents.py`).
 - `docs/criteria.md` — the `criteria` app: data model
   (`AdmissionCriteria`, `ScoreCriteria`, `CurriculumMajor(AdmissionCriteria)`,
   `MajorCuptCode`), the **copy-on-write versioning** of criteria in

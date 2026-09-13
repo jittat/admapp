@@ -30,6 +30,16 @@
                 <a class="btn btn-sm btn-secondary"
                 href="{% url 'backoffice:criteria:list-curriculum-majors' %}{{ faculty_url_query }}">แสดงรายการสาขาวิชาที่เลือกเปิด</a>
           </div>
+          {% if can_sync_upload_documents %}
+            <form class="mt-2" method="post"
+                  action="{% url 'backoffice:criteria:sync-upload-documents' project.id admission_round.id %}"
+                  onsubmit="return confirm('ปรับช่องอัพโหลดเอกสารของผู้สมัครตามเอกสารเพิ่มเติมในเกณฑ์ของทุกคณะในโครงการนี้?');">
+              {% csrf_token %}
+              <input type="hidden" name="faculty_id" value="{{ faculty.id }}" />
+              ปรับช่องอัพโหลดเอกสารของผู้สมัครตามเอกสารเพิ่มเติมในเกณฑ์ (ทุกคณะ)
+              <button type="submit" class="btn btn-sm btn-warning">ซิงค์ช่องอัพโหลดเอกสาร</button>
+            </form>
+          {% endif %}
           {% if project.is_custom_interview_date_allowed %}
             {% include "criteria/include/faculty_interview_date_form.html" %}
             

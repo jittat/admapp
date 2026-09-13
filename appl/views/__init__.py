@@ -18,17 +18,18 @@ from appl.models import MajorInterviewDescriptionCache
 from appl.models import MajorAdditionalNotice
 from appl.models import MajorAdditionalAdmissionFormField, ApplicantAdditionalAdmissionFormValue
 from appl.qrpayment import generate_ku_qr, generate_empty_img
-from appl.views.upload import upload_form_for
+from appl.views.upload import upload_form_for, prepare_deadline_flags
 from regis.decorators import appl_login_required
 from regis.models import CuptConfirmation, CuptRequestQueueItem
 from regis.models import LogItem
 from supplements.models import load_supplement_configs_with_instance
 from backoffice.models import InterviewDescription
 
-def prepare_uploaded_document_forms(applicant, project_uploaded_documents):
+def prepare_uploaded_document_forms(applicant, project_uploaded_documents, admission_project=None):
     for d in project_uploaded_documents:
         d.form = upload_form_for(d)
         d.applicant_uploaded_documents = d.get_uploaded_documents_for_applicant(applicant)
+        prepare_deadline_flags(d, admission_project)
 
 def prepare_old_uploaded_documents(applicant, project_uploaded_documents):
     if not hasattr(applicant, 'olduploadeddocument_cache'):
@@ -65,19 +66,11 @@ def load_supplement_blocks(request, applicant, admission_project, admission_roun
                                                              config))
     return supplement_blocks    
 
-def check_project_document_condition(applicant,
-                                     admission_project,
-                                     major_selection,
-                                     conditions):
-    if not major_selection:
-        return False
-    for cond in conditions.split(","):
-        items = cond.strip().split("-")
-        project_id, major_number = items[1],items[2]
-        if int(project_id) == admission_project.id:
-            if major_selection.contains_major_number(major_number):
-                return True
-    return False
+def get_visible_project_uploaded_documents(admission_project, major_selection):
+    """The project's document slots shown to (and required from) an applicant
+    with this major selection; see ProjectUploadedDocument.major_numbers."""
+    return ProjectUploadedDocument.filter_visible(
+        admission_project.projectuploadeddocument_set.all(), major_selection)
 
 
 def check_project_documents(applicant,
@@ -85,6 +78,9 @@ def check_project_documents(applicant,
                             supplement_configs,
                             project_uploaded_documents,
                             major_selection=None):
+    # project_uploaded_documents must already be limited to the slots visible
+    # for the major selection (get_visible_project_uploaded_documents), so
+    # major-specific requirements need no special handling here.
     status = True
     errors = []
 
@@ -195,17 +191,18 @@ def index_with_active_application(request, active_application, admission_round=N
     payment_deadline = project_round.payment_deadline
     payment_deadline_passed = is_payment_deadline_passed(payment_deadline)
     
+    major_selection = active_application.get_major_selection()
+
     common_uploaded_documents = ProjectUploadedDocument.get_common_documents()
-    project_uploaded_documents = admission_project.projectuploadeddocument_set.all()
-    
-    prepare_uploaded_document_forms(applicant, common_uploaded_documents)
-    prepare_uploaded_document_forms(applicant, project_uploaded_documents)
+    project_uploaded_documents = get_visible_project_uploaded_documents(admission_project,
+                                                                        major_selection)
+
+    prepare_uploaded_document_forms(applicant, common_uploaded_documents, admission_project)
+    prepare_uploaded_document_forms(applicant, project_uploaded_documents, admission_project)
 
     # messages for broken uploads
     prepare_old_uploaded_documents(applicant, common_uploaded_documents)
     prepare_old_uploaded_documents(applicant, project_uploaded_documents)
-
-    major_selection = active_application.get_major_selection()
 
     supplement_configs = load_supplement_configs_with_instance(applicant,
                                                                admission_project)
@@ -764,13 +761,14 @@ def check_application_documents(request):
     
     admission_project = active_application.admission_project
     
-    common_uploaded_documents = ProjectUploadedDocument.get_common_documents()
-    project_uploaded_documents = admission_project.projectuploadeddocument_set.all()
-    
-    prepare_uploaded_document_forms(applicant, common_uploaded_documents)
-    prepare_uploaded_document_forms(applicant, project_uploaded_documents)
-
     major_selection = active_application.get_major_selection()
+
+    common_uploaded_documents = ProjectUploadedDocument.get_common_documents()
+    project_uploaded_documents = get_visible_project_uploaded_documents(admission_project,
+                                                                        major_selection)
+
+    prepare_uploaded_document_forms(applicant, common_uploaded_documents, admission_project)
+    prepare_uploaded_document_forms(applicant, project_uploaded_documents, admission_project)
 
     supplement_configs = load_supplement_configs_with_instance(applicant,
                                                                admission_project)

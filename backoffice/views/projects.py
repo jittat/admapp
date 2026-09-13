@@ -812,7 +812,8 @@ def show_applicant(request, project_id, round_id, major_number, rank):
         return redirect(reverse('backoffice:index'))
 
     uploaded_documents = (list(ProjectUploadedDocument.get_common_documents()) +
-                          list(project.projectuploadeddocument_set.all()))
+                          ProjectUploadedDocument.filter_visible(project.projectuploadeddocument_set.all(),
+                                                                 application.get_major_selection()))
 
     for doc in uploaded_documents:
         doc.applicant_uploaded_documents = doc.get_uploaded_documents_for_applicant(applicant)

@@ -383,7 +383,14 @@ twins differing only in prefix and columns:
   `renumberAdditionalUploadFields()` all branch on it; ticking it raises a
   `confirm()` asking whether the late upload is really needed — unticking does
   not), prefix
-  `additional_admission_upload_fields-{n}-`.
+  `additional_admission_upload_fields-{n}-`. Each row also carries a hidden
+  `…-{n}-key`: the field's stable key (12 hex chars), which links it to its
+  generated `ProjectUploadedDocument` across copy-on-write versions.
+  `extract_additional_admission_upload_fields_as_json` keeps a valid posted
+  key and gives a new one to rows with none, an invalid one, or a repeated one
+  (`assign_upload_field_keys`); migration `criteria/0039` backfilled keys on
+  existing rows. See
+  [uploaded-documents.md](uploaded-documents.md#criteria-generated-slots).
 
 Both use a **1-indexed, dash-separated** naming scheme
 (`prefix-{n}-attr`) — note this is *not* the underscore scheme the React
@@ -618,6 +625,19 @@ reports' own `is_admission_admin` gate.
 children, groups majors per criteria, computes free (uncovered) majors,
 attaches faculty interview dates, and (for reports) `combine_criteria_rows`
 merges majors that end up with a single non-zero-slot criteria.
+
+### Syncing upload fields into document slots
+
+`sync-upload-documents` (`<project>/<round>/sync-upload-documents/`, POST
+only) runs `criteria.upload_documents.sync_criteria_upload_documents(project)`
+and redirects back to the project index with the summary as the `notice`.
+The button on `criteria/index.html` and the view share
+`can_user_sync_upload_documents`: the project must allow upload fields, the user
+must see the project, and — because the sync covers **every faculty's**
+criteria, not just the selected faculty — be an admission admin or super admin.
+The same sync runs per round from `scripts/sync_criteria_upload_documents.py`.
+Saving criteria does **not** sync automatically. Details:
+[uploaded-documents.md](uploaded-documents.md#criteria-generated-slots).
 
 ## CUPT export/import pipeline
 

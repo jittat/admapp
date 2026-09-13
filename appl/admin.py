@@ -77,7 +77,8 @@ class AdmissionProjectAdmin(admin.ModelAdmin):
     inlines = (ProjectUploadedDocumentInline,)
 
 class ProjectUploadedDocumentAdmin(admin.ModelAdmin):
-    list_display = ['title', 'notes', 'file_prefix', 'document_type', 'is_required', 'requirement_key', 'validator']
+    list_display = ['title', 'notes', 'file_prefix', 'document_type', 'is_required', 'requirement_key', 'validator',
+                    'major_numbers', 'criteria_upload_key', 'is_late_upload_allowed']
 
 class AdmissionProjectRoundAdmin(admin.ModelAdmin):
     list_display = ['admission_project',

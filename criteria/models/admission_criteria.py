@@ -1,6 +1,19 @@
+import re
+import uuid
+
 from django.db import models
 
 from appl.models import AdmissionProject, Faculty
+
+UPLOAD_FIELD_KEY_RE = re.compile(r'^[0-9a-f]{12}$')
+
+
+def new_upload_field_key():
+    return uuid.uuid4().hex[:12]
+
+
+def is_valid_upload_field_key(key):
+    return bool(UPLOAD_FIELD_KEY_RE.match(key or ''))
 
 
 def criteria_as_str(criteria, numbered=False, hide_percent=False, indent_chars='  - ',
@@ -261,6 +274,7 @@ class AdmissionCriteria(models.Model):
                 additional_upload_fields = json.loads(self.additional_admission_upload_fields_json)
             additional_upload_fields = [
                 {
+                    'key': f.get('key', ''),
                     'title': f['title'].strip(),
                     'descriptions': f.get('descriptions', '').strip(),
                     'is_required': bool(f.get('is_required', False)),

@@ -83,6 +83,9 @@ as a `StackedInline` on `AdmissionProject` (through the M2M). Bulk-loaded by
 | `is_interview_document` | Bool (F) | "ใช้สำหรับสัมภาษณ์" — interview-stage document. Uploads/deletes of these are **still allowed after the application deadline** (all other slots are locked once `project_round.is_deadline_passed()`). |
 | `document_key` | Char (blank) | Optional stable key for identifying a slot across imports/scripts. |
 | `requirement_key` | Char (blank) | Groups slots into an **OR requirement** and/or a conditional requirement (see below). |
+| `major_numbers` | Char(200, blank) | "เฉพาะสาขา" — comma-separated `Major.number`s of the applicant's project. Blank = every applicant of the project; otherwise the slot is **shown, required, and uploadable** only for applicants whose major selection contains one of them (`is_visible_for`). Numbers are project-relative, so do not use it on common or multi-project slots. |
+| `criteria_upload_key` | Char(20, blank) | Key of the criteria upload field this slot was [generated from](#criteria-generated-slots); blank for hand-made slots. |
+| `is_late_upload_allowed` | Bool (F) | "อัพโหลดหลังหมดเขตได้" — upload/delete stay open after the application deadline up to and including `admission_project.late_upload_date`; no date set = no late upload. |
 | `validator` | Char(30, blank) | "การตรวจสอบเพิ่มเติม" — key of a [custom validator](#custom-validators) run on each submission after the basic checks (e.g. `'tcasfolio'`). Blank = none. Plain text, no choices; an unknown key rejects every upload to the slot. |
 
 ### Methods
@@ -239,10 +242,62 @@ admin. Editing an applicant-facing message only means editing that template.
 `check_project_documents()` (`appl/views/__init__.py`) computes completion:
 - Every `is_required` slot with zero uploads → error.
 - Slots sharing a non-empty `requirement_key` form an **OR group**: at least
-  one must be uploaded. If the key starts with `if`, the group is only
-  required when `check_project_document_condition()` matches the applicant's
-  major selection (conditional-by-major requirement).
+  one must be uploaded. The key is only a group name; the old `if-<project>-<major>`
+  conditional keys are gone.
 - (Also folds in supplement blocks and per-major additional form fields.)
+
+**Major-specific slots.** Conditional-by-major requirements are expressed with
+`major_numbers` instead: callers pass `check_project_documents()` only the
+slots visible for the applicant's major selection
+(`get_visible_project_uploaded_documents()` →
+`ProjectUploadedDocument.filter_visible()`), so a slot for majors the applicant
+did not pick is neither shown nor required. The same filter is applied on the
+applicant page (`index_with_active_application`, `check_application_documents`)
+and on the staff applicant page (`backoffice` `show_applicant`). `upload()` and
+`document_delete()` return 403 unless `is_available_for_application()` holds —
+a common slot, or a slot linked to the application's project and visible for
+its selection (previously any slot id was accepted). If an applicant changes
+majors, uploads to now-hidden slots are kept but not shown.
+
+**Deadline.** After `project_round.is_deadline_passed()`, upload/delete is
+allowed only when `is_uploadable_after_deadline(project)`:
+`is_interview_document`, or `is_late_upload_allowed` with
+`today <= project.late_upload_date`. The card template reads the same rule from
+attributes set by `prepare_deadline_flags()` (`uploadable_after_deadline`,
+`late_upload_until` — the cut-off shown in the card header).
+
+### Criteria-generated slots
+
+`AdmissionCriteria.additional_admission_upload_fields_json` rows become slots
+via `criteria/upload_documents.py` → `sync_criteria_upload_documents(project)`
+(one transaction, safe to re-run):
+
+- For each live criteria (`is_deleted=False`) of a project with
+  `is_additional_admission_upload_allowed`, the covered majors are the
+  project's `Major`s whose CUPT code matches a `CurriculumMajor` of the
+  criteria (`CurriculumMajor.major` is not populated).
+- **One slot per upload field** (keyed by the field's stable `key`, stored in
+  `criteria_upload_key`), even when the applicant picks several covered majors.
+  Values: title + ` (major titles)` (cut to 200 chars), the field's
+  `descriptions` / `is_required` / `is_late_upload_allowed`,
+  `major_numbers`, `document_type='any'`, `can_have_multiple_files=True`,
+  rank `RANK_BASE + criteria index * 100 + field index`, and the module
+  constants `DEFAULT_ALLOWED_EXTENSIONS`, `DEFAULT_SIZE_LIMIT`,
+  `DEFAULT_SPECIFICATIONS`. These are **overwritten on every sync** — change a
+  constant and re-sync; admin edits to generated slots do not survive.
+- A generated slot whose field/criteria is gone (or whose project turned the
+  flag off) is **deleted** if it has no uploads (`UploadedDocument` /
+  `OldUploadedDocument` cascade on delete), otherwise **unlinked** from the
+  project with `major_numbers` cleared; if the field comes back, the unlinked
+  slot is re-linked.
+- Fields whose criteria covers no project major, and repeated keys, are skipped
+  and reported in the summary. Hand-made slots (blank `criteria_upload_key`)
+  are never touched.
+
+Run it with `scripts/sync_criteria_upload_documents.py <round_id>` (every
+project of the round) or the ซิงค์ช่องอัพโหลดเอกสาร button on the criteria
+project index (`backoffice:criteria:sync-upload-documents`, POST; admission
+admins and super admins only, since it covers every faculty's criteria).
 
 ---
 
@@ -292,8 +347,9 @@ criteria*, analogous to its existing `additional_admission_form_fields_json`
 `ProjectUploadedDocument`" — file validation, storage, single/multi, the
 deadline & interview-document rules, and S3-backed serving described above.
 
-This is being built in phases. Only the **authoring** side is implemented so
-far; the runtime (applicant upload, staff review) is not yet wired up.
+Authoring is in the `criteria` app; at runtime the fields are turned into
+ordinary `ProjectUploadedDocument` slots by a sync (see
+[Criteria-generated slots](#criteria-generated-slots)).
 
 ### Implemented (authoring, in the `criteria` app)
 
@@ -336,16 +392,15 @@ Definitions currently carry `title`, `descriptions`, `is_required`, and
 `is_late_upload_allowed`. Multiple files / URL links are intended to always be
 allowed (not per-field options).
 
+### Runtime (implemented)
+
+The fields are materialized as ordinary `ProjectUploadedDocument` slots by the
+sync described in [Criteria-generated slots](#criteria-generated-slots), so the
+applicant upload flow, storage, staff review/download, and completion checks
+are the regular ones above, limited per applicant by `major_numbers` and with
+the late-upload rule enforced against `late_upload_date`.
+
 ### Not yet done (later phases)
 
-- **Materialization** — turning the per-criteria definitions into concrete
-  per-major upload *slots*.
-- **Applicant upload flow** — letting applicants actually upload files/URLs
-  against these fields, with the same storage, deadline/interview-document
-  rules, and multi-file handling as `UploadedDocument`.
-- **Staff review** — surfacing these uploads on the applicant detail page /
-  download paths.
-- **Completion checks** — whether required upload fields participate in
-  application-completeness validation.
 - **Export** — including these fields in the CUPT export pipeline (a separate
   mechanism will be used; see [criteria.md](criteria.md)).

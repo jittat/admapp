@@ -14,6 +14,7 @@ from backoffice.decorators import user_login_required
 from backoffice.permissions import can_user_view_project
 from criteria.models import AdmissionCriteria, ScoreCriteria, CurriculumMajorAdmissionCriteria, \
     MajorCuptCode, CurriculumMajor, AdmissionProjectFacultyInterviewDate
+from criteria.models.admission_criteria import is_valid_upload_field_key, new_upload_field_key
 
 
 def is_number(string):
@@ -236,6 +237,7 @@ def project_index(request, project_id, round_id):
                    'free_curriculum_majors': free_curriculum_majors,
 
                    'is_criteria_edit_allowed': is_criteria_edit_allowed,
+                   'can_sync_upload_documents': can_user_sync_upload_documents(user, project),
 
                    'notice': notice,
                    })
@@ -653,11 +655,26 @@ def extract_additional_admission_upload_fields_as_json(project, post_request):
         is_late_upload_allowed = lambda v: v != ""
     else:
         is_late_upload_allowed = lambda v: False
-    return extract_indexed_rows_as_json(
+    rows = json.loads(extract_indexed_rows_as_json(
         post_request, "additional_admission_upload_fields",
         {"descriptions": lambda v: v.strip(),
          "is_required": lambda v: v != "",
-         "is_late_upload_allowed": is_late_upload_allowed})
+         "is_late_upload_allowed": is_late_upload_allowed,
+         "key": lambda v: v.strip()}))
+    assign_upload_field_keys(rows)
+    return json.dumps(rows)
+
+def assign_upload_field_keys(rows):
+    """Keeps each row's stable key (it links the row to its generated
+    ProjectUploadedDocument across criteria versions); rows without a valid
+    key, or repeating one, get a new key."""
+    seen = set()
+    for row in rows:
+        key = row.get('key', '')
+        if (not is_valid_upload_field_key(key)) or (key in seen):
+            key = new_upload_field_key()
+        row['key'] = key
+        seen.add(key)
 
 def extract_additional_notice(project, post_request):
     if not project.is_additional_notice_allowed:
@@ -1145,6 +1162,35 @@ def delete(request, project_id, round_id, criteria_id):
 
     faculty_url_query = '' if faculty_choices == [] else '?faculty_id=' + str(faculty.id)
 
+    return redirect(reverse('backoffice:criteria:project-index', args=[project_id, round_id]) + faculty_url_query)
+
+
+def can_user_sync_upload_documents(user, project):
+    # The sync covers every faculty's criteria in the project, so it is limited
+    # to admission admins (all faculties) and super admins.
+    return (project.is_additional_admission_upload_allowed and
+            can_user_view_project(user, project) and
+            (user.is_super_admin or user.profile.is_admission_admin))
+
+
+@user_login_required
+def sync_upload_documents(request, project_id, round_id):
+    from criteria.upload_documents import sync_criteria_upload_documents
+
+    user = request.user
+    project = get_object_or_404(AdmissionProject, pk=project_id)
+    get_object_or_404(AdmissionRound, pk=round_id)
+
+    if request.method != 'POST':
+        return HttpResponseForbidden()
+    if not can_user_sync_upload_documents(user, project):
+        return HttpResponseForbidden()
+
+    summary = sync_criteria_upload_documents(project)
+    request.session['notice'] = summary.as_notice()
+
+    faculty_id = request.POST.get('faculty_id', '')
+    faculty_url_query = '?faculty_id=' + faculty_id if faculty_id.isdigit() else ''
     return redirect(reverse('backoffice:criteria:project-index', args=[project_id, round_id]) + faculty_url_query)
 
 

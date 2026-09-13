@@ -11,6 +11,9 @@
 	<b>{{ doc.title }}{% if doc.is_required %}*{% endif %}</b>
         {% if doc.applicant_uploaded_documents|length > 0 %}<span class="badge badge-secondary">{{ doc.applicant_uploaded_documents|length }} {% trans 'ไฟล์' context 'upload form' %}</span>{% endif %}
         <small>{{ doc.descriptions|linebreaksbr }}</small>
+        {% if doc.late_upload_until %}
+          <small class="text-muted">({% trans 'อัพโหลดได้ถึงวันที่' %} {{ doc.late_upload_until|thaidate }})</small>
+        {% endif %}
         <a class="btn btn-xsm btn-outline-primary"
            data-toggle="collapse"
            href="#accordian-upload-form-{{ doc.id }}"
@@ -30,7 +33,7 @@
   	  <form class="upload-forms" action="{% url 'appl:upload' doc.id %}" method="post" data-detail-required="{% if doc.is_detail_required %}true{% endif %}" data-replace-confirm="{% if not doc.can_have_multiple_files and doc.applicant_uploaded_documents %}true{% endif %}" enctype="multipart/form-data">
   	    {% csrf_token %}
 
-            {% if not is_deadline_passed or doc.is_interview_document %}
+            {% if not is_deadline_passed or doc.uploadable_after_deadline %}
               <div class="form-group">
                 {% if doc.is_detail_required %}
                   <small><b>{% trans 'ชื่อหรือคำอธิบายเอกสาร' %}*</b></small>
@@ -118,7 +121,7 @@
                       <a href="{{ d.document_url }}" class="btn btn-sm btn-info" target="_blank" rel="noopener noreferrer">{% trans 'ดูลิงก์' %}</a>
                     {% endif %}
                     &nbsp;
-                    {% if not is_deadline_passed or doc.is_interview_document %}
+                    {% if not is_deadline_passed or doc.uploadable_after_deadline %}
   		      <a data-delete-url="{% url 'appl:document-delete' applicant.id doc.id d.id %}" href="#" class="upload-form-delete-buttons btn btn-sm btn-secondary"><i class="fa fa-trash"></i> {% trans 'ลบ' %}</a>
                     {% endif %}
   		  </li>

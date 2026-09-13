@@ -18,6 +18,9 @@ urlpatterns = [
     path('<int:project_id>/<int:round_id>/<int:criteria_id>/formsfields/',
          views.edit_additional_admission_form_fields, name='edit-form-fields'),
 
+    path('<int:project_id>/<int:round_id>/sync-upload-documents/',
+         views.sync_upload_documents, name='sync-upload-documents'),
+
     path('<int:project_id>/<int:round_id>/import-search/',
          views.search_last_year_admission_criteria, name='import-search'),
 

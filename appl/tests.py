@@ -27,9 +27,10 @@ from pyhanko_certvalidator.registry import SimpleCertificateStore
 from appl.document_validators import (DOCUMENT_VALIDATORS, MISCONFIGURED, VERIFICATION_ERROR,
                                       ValidationResult, run_document_validator, tcasfolio)
 from appl.models import (AdmissionProject, AdmissionProjectRound, AdmissionRound,
-                         ProjectUploadedDocument, UploadedDocument)
+                         MajorSelection, ProjectUploadedDocument, UploadedDocument)
 from appl.pdfsignatures import profiles, verify
-from appl.views.upload import get_upload_kind, render_validation_message
+from appl.views import check_project_documents
+from appl.views.upload import get_upload_kind, prepare_deadline_flags, render_validation_message
 from regis.models import Applicant
 
 FILE = ProjectUploadedDocument.DOCUMENT_TYPE_FILE
@@ -405,6 +406,215 @@ class UploadViewTestCase(TestCase):
         self.assertEqual(result['result'], 'VALIDATION_ERROR')
         self.assertIn('TCASFolio', result['message_html'])
         self.assertEqual(self.uploaded_documents(doc), [])
+
+    # --- major-specific and late-upload slots ------------------------------
+
+    def select_majors(self, major_list):
+        application = self.applicant.get_active_application(self.admission_round)
+        MajorSelection.objects.create(
+            applicant=self.applicant, project_application=application,
+            admission_project=self.project, admission_round=self.admission_round,
+            major_list=major_list, num_selected=len(major_list.split(',')))
+
+    def close_applications(self):
+        AdmissionProjectRound.objects.filter(admission_project=self.project).update(
+            applying_deadline=datetime.now() - timedelta(days=1))
+
+    def post_url_status(self, doc):
+        response = self.client.post(reverse('appl:upload', args=[doc.id]),
+                                    {'document_url': 'http://example.com/portfolio'})
+        return response.status_code
+
+    def test_slot_for_a_selected_major_accepts_uploads(self):
+        self.select_majors('1,2')
+        doc = self.make_document(URL)
+        doc.major_numbers = '2,5'
+        doc.save()
+
+        result = self.post_upload(doc, document_url='http://example.com/portfolio')
+
+        self.assertEqual(result['result'], 'OK')
+
+    def test_slot_for_other_majors_is_forbidden(self):
+        self.select_majors('1')
+        doc = self.make_document(URL)
+        doc.major_numbers = '2'
+        doc.save()
+
+        self.assertEqual(self.post_url_status(doc), 403)
+        self.assertEqual(self.uploaded_documents(doc), [])
+
+    def test_major_specific_slot_is_forbidden_without_a_major_selection(self):
+        doc = self.make_document(URL)
+        doc.major_numbers = '1'
+        doc.save()
+
+        self.assertEqual(self.post_url_status(doc), 403)
+
+    def test_slot_of_another_project_is_forbidden(self):
+        doc = self.make_document(URL)
+        doc.admission_projects.clear()
+
+        self.assertEqual(self.post_url_status(doc), 403)
+
+    def test_common_document_needs_no_project_link(self):
+        doc = self.make_document(URL)
+        doc.admission_projects.clear()
+        doc.is_common_document = True
+        doc.save()
+
+        self.assertEqual(self.post_upload(doc, document_url='http://example.com/x')['result'], 'OK')
+
+    def test_ordinary_slot_is_closed_after_the_deadline(self):
+        self.close_applications()
+        doc = self.make_document(URL)
+
+        self.assertEqual(self.post_url_status(doc), 403)
+
+    def test_late_upload_slot_stays_open_until_the_late_upload_date(self):
+        self.close_applications()
+        doc = self.make_document(URL)
+        doc.is_late_upload_allowed = True
+        doc.save()
+
+        # no late_upload_date: no late upload at all
+        self.assertEqual(self.post_url_status(doc), 403)
+
+        self.project.late_upload_date = (datetime.now() + timedelta(days=1)).date()
+        self.project.save()
+        self.assertEqual(self.post_upload(doc, document_url='http://example.com/x')['result'], 'OK')
+
+        self.project.late_upload_date = (datetime.now() - timedelta(days=1)).date()
+        self.project.save()
+        self.assertEqual(self.post_url_status(doc), 403)
+
+    def test_delete_from_a_hidden_slot_is_forbidden(self):
+        self.select_majors('1')
+        doc = self.make_document(URL)
+        doc.major_numbers = '1'
+        doc.save()
+        self.post_upload(doc, document_url='http://example.com/portfolio')
+        uploaded = self.uploaded_documents(doc)[0]
+
+        doc.major_numbers = '2'
+        doc.save()
+        response = self.client.post(reverse('appl:document-delete',
+                                            args=[self.applicant.id, doc.id, uploaded.id]))
+
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(self.uploaded_documents(doc), [uploaded])
+
+
+class MajorSpecificDocumentTestCase(SimpleTestCase):
+    """ProjectUploadedDocument.major_numbers limits a slot (and its
+    requiredness) to applicants who selected one of those majors."""
+
+    def make_document(self, major_numbers='', **kwargs):
+        return ProjectUploadedDocument(title='เอกสาร', major_numbers=major_numbers, **kwargs)
+
+    def selection(self, major_list):
+        return MajorSelection(major_list=major_list)
+
+    def test_major_numbers_are_parsed_leniently(self):
+        self.assertEqual(self.make_document(' 1, 3,,x ,12').get_major_numbers(), [1, 3, 12])
+        self.assertEqual(self.make_document('').get_major_numbers(), [])
+
+    def test_blank_major_numbers_are_visible_to_everyone(self):
+        doc = self.make_document('')
+        self.assertTrue(doc.is_visible_for(None))
+        self.assertTrue(doc.is_visible_for(self.selection('4')))
+
+    def test_major_numbers_are_visible_only_for_selected_majors(self):
+        doc = self.make_document('2,3')
+        self.assertTrue(doc.is_visible_for(self.selection('1,3')))
+        self.assertFalse(doc.is_visible_for(self.selection('1,4')))
+        self.assertFalse(doc.is_visible_for(None))
+
+    def test_filter_visible(self):
+        everyone = self.make_document('')
+        major1 = self.make_document('1')
+        major2 = self.make_document('2')
+
+        self.assertEqual(ProjectUploadedDocument.filter_visible([everyone, major1, major2],
+                                                               self.selection('2')),
+                         [everyone, major2])
+
+    def test_late_upload_needs_the_flag_and_a_future_date(self):
+        tomorrow = (datetime.now() + timedelta(days=1)).date()
+        yesterday = (datetime.now() - timedelta(days=1)).date()
+        late = self.make_document(is_late_upload_allowed=True)
+
+        self.assertTrue(late.is_late_upload_open(AdmissionProject(late_upload_date=tomorrow)))
+        self.assertTrue(late.is_late_upload_open(AdmissionProject(late_upload_date=datetime.now().date())))
+        self.assertFalse(late.is_late_upload_open(AdmissionProject(late_upload_date=yesterday)))
+        self.assertFalse(late.is_late_upload_open(AdmissionProject(late_upload_date=None)))
+        self.assertFalse(late.is_late_upload_open(None))
+        self.assertFalse(self.make_document().is_late_upload_open(
+            AdmissionProject(late_upload_date=tomorrow)))
+
+    def test_interview_documents_stay_uploadable_after_the_deadline(self):
+        doc = self.make_document(is_interview_document=True)
+        self.assertTrue(doc.is_uploadable_after_deadline(AdmissionProject()))
+        self.assertFalse(self.make_document().is_uploadable_after_deadline(AdmissionProject()))
+
+    def test_check_project_documents_counts_only_visible_slots(self):
+        def slot(title, major_numbers, is_required, requirement_key=''):
+            doc = ProjectUploadedDocument(title=title, major_numbers=major_numbers,
+                                          is_required=is_required,
+                                          requirement_key=requirement_key)
+            doc.applicant_uploaded_documents = []
+            return doc
+
+        hidden_required = slot('hidden', '2', True)
+        visible_required = slot('visible', '1', True)
+        or_a = slot('or-a', '', False, 'portfolio')
+        or_b = slot('or-b', '1', False, 'portfolio')
+        or_b.applicant_uploaded_documents = [UploadedDocument()]
+
+        docs = ProjectUploadedDocument.filter_visible(
+            [hidden_required, visible_required, or_a, or_b], self.selection('1'))
+        status = check_project_documents(None, AdmissionProject(id=1), [], docs)
+
+        self.assertFalse(status['status'])
+        self.assertEqual(status['errors'], ['ยังไม่ได้อัพโหลดvisible'])
+
+        visible_required.applicant_uploaded_documents = [UploadedDocument()]
+        self.assertTrue(check_project_documents(None, AdmissionProject(id=1), [], docs)['status'])
+
+
+class LateUploadCardTemplateTestCase(SimpleTestCase):
+
+    def render(self, doc, admission_project):
+        doc.applicant_uploaded_documents = []
+        prepare_deadline_flags(doc, admission_project)
+        return render_to_string('appl/include/document_upload_form.html',
+                                {'project_uploaded_document': doc,
+                                 'applicant': Applicant(id=3),
+                                 'is_deadline_passed': True,
+                                 'toggle': 'show'})
+
+    def make_document(self, **kwargs):
+        return ProjectUploadedDocument(id=7, rank=1, title='เอกสาร', descriptions='',
+                                       specifications='ลิงก์', allowed_extentions='PDF',
+                                       document_type=URL, **kwargs)
+
+    def test_open_late_upload_slot_keeps_its_form_and_shows_the_cut_off(self):
+        tomorrow = (datetime.now() + timedelta(days=1)).date()
+
+        html = self.render(self.make_document(is_late_upload_allowed=True),
+                           AdmissionProject(late_upload_date=tomorrow))
+
+        self.assertIn('name="document_url"', html)
+        self.assertIn('อัพโหลดได้ถึงวันที่', html)
+
+    def test_ordinary_slot_has_no_form_after_the_deadline(self):
+        tomorrow = (datetime.now() + timedelta(days=1)).date()
+
+        html = self.render(self.make_document(),
+                           AdmissionProject(late_upload_date=tomorrow))
+
+        self.assertNotIn('name="document_url"', html)
+        self.assertNotIn('อัพโหลดได้ถึงวันที่', html)
 
 
 class UploadFormTemplateTestCase(SimpleTestCase):

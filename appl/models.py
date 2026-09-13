@@ -549,6 +549,23 @@ class ProjectUploadedDocument(models.Model):
                                  default='',
                                  verbose_name='การตรวจสอบเพิ่มเติม')
 
+    # comma-separated Major.number values of the applicant's project; the slot
+    # is shown (and required) only for applicants who selected one of them.
+    # Blank = every applicant of the project.
+    major_numbers = models.CharField(max_length=200,
+                                     blank=True,
+                                     default='',
+                                     verbose_name='เฉพาะสาขา (หมายเลขสาขา)')
+
+    # key of the AdmissionCriteria upload field this slot was generated from
+    # (criteria.upload_documents); blank for hand-made slots
+    criteria_upload_key = models.CharField(max_length=20,
+                                           blank=True,
+                                           default='')
+
+    is_late_upload_allowed = models.BooleanField(default=False,
+                                                 verbose_name='อัพโหลดหลังหมดเขตได้')
+
     class Meta:
         ordering = ['rank']
 
@@ -576,6 +593,44 @@ class ProjectUploadedDocument(models.Model):
 
     def get_uploaded_documents_for_applicant(self, applicant):
         return self.uploaded_document_set.filter(applicant=applicant).all()
+
+    def get_major_numbers(self):
+        return [int(item.strip()) for item in self.major_numbers.split(',')
+                if item.strip().isdigit()]
+
+    def is_visible_for(self, major_selection):
+        major_numbers = self.get_major_numbers()
+        if not major_numbers:
+            return True
+        if not major_selection:
+            return False
+        selected_numbers = set(major_selection.get_major_numbers())
+        return any(number in selected_numbers for number in major_numbers)
+
+    @staticmethod
+    def filter_visible(project_uploaded_documents, major_selection):
+        return [d for d in project_uploaded_documents
+                if d.is_visible_for(major_selection)]
+
+    def is_available_for_application(self, application):
+        """Whether the applicant of this application may upload to (or delete
+        from) this slot: a common slot, or one of the application's project
+        that is visible for its major selection."""
+        if self.is_common_document:
+            return True
+        if not self.admission_projects.filter(pk=application.admission_project_id).exists():
+            return False
+        return self.is_visible_for(application.get_major_selection())
+
+    def is_late_upload_open(self, admission_project):
+        if (not self.is_late_upload_allowed) or (admission_project is None):
+            return False
+        if not admission_project.late_upload_date:
+            return False
+        return datetime.now().date() <= admission_project.late_upload_date
+
+    def is_uploadable_after_deadline(self, admission_project):
+        return self.is_interview_document or self.is_late_upload_open(admission_project)
 
 
 def applicant_document_path(instance, filename):

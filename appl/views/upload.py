@@ -24,6 +24,17 @@ class UploadedDocumentForm(ModelForm):
 def upload_form_for(project_uploaded_document):
     return UploadedDocumentForm()
 
+def prepare_deadline_flags(project_uploaded_document, admission_project):
+    """Attributes read by document_upload_form.html: whether the slot stays
+    open after the application deadline, and the late-upload cut-off shown to
+    the applicant."""
+    doc = project_uploaded_document
+    doc.uploadable_after_deadline = doc.is_uploadable_after_deadline(admission_project)
+    if doc.is_late_upload_open(admission_project):
+        doc.late_upload_until = admission_project.late_upload_date
+    else:
+        doc.late_upload_until = None
+
 def custom_validation_check(project_uploaded_document, uploaded_file=None, document_url=None):
     """Runs the slot's custom validator (if any) after the basic checks.
 
@@ -138,7 +149,10 @@ def upload(request, document_id):
     project_uploaded_document = get_object_or_404(ProjectUploadedDocument,
                                                   pk=document_id)
 
-    if is_deadline_passed and (not project_uploaded_document.is_interview_document):
+    if not project_uploaded_document.is_available_for_application(active_application):
+        return HttpResponseForbidden()
+
+    if is_deadline_passed and (not project_uploaded_document.is_uploadable_after_deadline(admission_project)):
         return HttpResponseForbidden()
             
     form = UploadedDocumentForm(request.POST, request.FILES)
@@ -199,6 +213,7 @@ def upload(request, document_id):
 
             project_uploaded_document.form = upload_form_for(project_uploaded_document)
             project_uploaded_document.applicant_uploaded_documents = project_uploaded_document.get_uploaded_documents_for_applicant(applicant)
+            prepare_deadline_flags(project_uploaded_document, admission_project)
             context = {
                 'applicant': applicant,
                 'project_uploaded_document': project_uploaded_document,
@@ -360,7 +375,10 @@ def document_delete(request, applicant_id=0, project_uploaded_document_id=0, doc
 
             project_uploaded_document = get_object_or_404(ProjectUploadedDocument,pk=project_uploaded_document_id)
 
-            if is_deadline_passed and (not project_uploaded_document.is_interview_document):
+            if not project_uploaded_document.is_available_for_application(active_application):
+                return HttpResponseForbidden()
+
+            if is_deadline_passed and (not project_uploaded_document.is_uploadable_after_deadline(admission_project)):
                 return HttpResponseForbidden()
             
             doc_id = uploaded_document.id
@@ -373,6 +391,7 @@ def document_delete(request, applicant_id=0, project_uploaded_document_id=0, doc
             template = loader.get_template('appl/include/document_upload_form.html')
             project_uploaded_document.form = upload_form_for(project_uploaded_document)
             project_uploaded_document.applicant_uploaded_documents = project_uploaded_document.get_uploaded_documents_for_applicant(applicant_id)
+            prepare_deadline_flags(project_uploaded_document, admission_project)
 
             context = {
                 'applicant': request.applicant,
