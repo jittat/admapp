@@ -6,6 +6,22 @@ import csv
 import io
 
 from appl.models import Faculty, AdmissionProject, Major
+from criteria.models import MajorCuptCode
+
+def get_cupt_full_code(details_items):
+    if len(details_items) < 2:
+        return ''
+    program_code = details_items[-2].strip()
+    major_code = details_items[-1].strip()
+
+    if len(major_code) > 5:  # major code column missing
+        program_code = major_code
+        major_code = ''
+
+    if major_code != '':
+        return program_code + '0' + major_code
+    else:
+        return program_code
 
 def validate_titles(lines):
     titles = set()
@@ -98,14 +114,21 @@ def main():
             csv_output = io.StringIO()
             writer = csv.writer(csv_output)
             writer.writerow(details_items)
-            
+
+            cupt_full_code = get_cupt_full_code(details_items)
+            if len(cupt_full_code) < 15:
+                print('WARNING: invalid cupt code', number, title, repr(cupt_full_code))
+            elif not MajorCuptCode.get_from_full_code(cupt_full_code):
+                print('WARNING: MajorCuptCode not found', number, title, cupt_full_code)
+
             major = Major(number=number,
                           title=title,
                           faculty=faculty,
                           admission_project=project,
                           slots=slots,
                           slots_comments=slots_comments,
-                          detail_items_csv=csv_output.getvalue())
+                          detail_items_csv=csv_output.getvalue(),
+                          cupt_full_code=cupt_full_code)
 
             major.save()
 

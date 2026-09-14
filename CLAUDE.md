@@ -87,3 +87,7 @@ analyses):
   (`CuptExportConfig` / custom projects / project rules), custom-project
   re-mapping, portfolio handling, slot adjustment, the validation page,
   CSV/config import, and the field-list constants.
+- `docs/major-cupt-code.md` — how `Major` links to `MajorCuptCode` via the
+  `cupt_full_code` string, a usage survey of `cupt_full_code` /
+  `get_full_major_cupt_code()` (divergent parsers, `detail_items_csv[-2:]`
+  bypasses, legacy fallback), and a suggested unification plan.
