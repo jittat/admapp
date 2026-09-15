@@ -1,0 +1,8 @@
+{% if major.notices %}
+  <div class="alert alert-info">
+    <span class="badge badge-info">ประกาศ</span>
+    {% for notice in major.notices %}
+      {{ notice|linebreaksbr }}{% if not forloop.last %}<br />{% endif %}
+    {% endfor %}
+  </div>
+{% endif %}

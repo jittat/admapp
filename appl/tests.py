@@ -1140,3 +1140,142 @@ class ImportProjectUploadedDocumentsScriptTestCase(TestCase):
 
     def test_unknown_project_is_rejected(self):
         self.assert_rejected(self.row(key='bad', projects='999999'), 'unknown project id')
+
+
+class MajorNoticesTestCase(TestCase):
+    """Applicants see AdmissionCriteria.additional_notice for each selected
+    major, read live from the criteria (no sync step). Multi-major projects
+    show it in the major list; single-major projects in the details section."""
+
+    def setUp(self):
+        from appl.models import Campus, Faculty
+        campus = Campus.objects.create(title='Bang Khen', short_title='BK')
+        self.faculty = Faculty.objects.create(title='Engineering', campus=campus)
+        self.project = AdmissionProject.objects.create(
+            title='Test Project', short_title='Test',
+            is_additional_notice_allowed=True, max_num_selections=2)
+        self.code_counter = 0
+        self.major1, self.cm1 = self._major(1, 'วิศวกรรมคอมพิวเตอร์')
+        self.major2, self.cm2 = self._major(2, 'วิศวกรรมไฟฟ้า')
+
+    def _major(self, number, title):
+        from appl.models import Major
+        from criteria.models import CurriculumMajor, MajorCuptCode
+        self.code_counter += 1
+        program_code = '100201042123%03d' % self.code_counter
+        cupt_code = MajorCuptCode.objects.create(
+            program_code=program_code, program_type='ภาษาไทย ปกติ',
+            program_type_code='1', faculty=self.faculty, title=title)
+        major = Major.objects.create(
+            number=number, title=title, faculty=self.faculty,
+            admission_project=self.project, slots=10, detail_items_csv='',
+            cupt_full_code=program_code)
+        curriculum_major = CurriculumMajor.objects.create(
+            admission_project=self.project, cupt_code=cupt_code, faculty=self.faculty)
+        return major, curriculum_major
+
+    def _criteria(self, curriculum_major, additional_notice, is_deleted=False):
+        from criteria.models import AdmissionCriteria, CurriculumMajorAdmissionCriteria
+        admission_criteria = AdmissionCriteria.objects.create(
+            admission_project=self.project, faculty=self.faculty, version=1,
+            additional_notice=additional_notice, is_deleted=is_deleted)
+        CurriculumMajorAdmissionCriteria.objects.create(
+            curriculum_major=curriculum_major,
+            admission_criteria=admission_criteria, slots=1)
+        return admission_criteria
+
+    def _selection(self, *majors):
+        selection = MajorSelection(admission_project=self.project)
+        selection.majors = list(majors)
+        return selection
+
+    def _load(self, selection):
+        from appl.views import load_major_notices
+        load_major_notices(self.project, selection)
+
+    def test_collects_non_blank_notices_from_live_criteria(self):
+        self._criteria(self.cm1, '  ประกาศแรก\n')
+        self._criteria(self.cm1, '   ')
+        self._criteria(self.cm1, 'ประกาศที่สอง')
+        self._criteria(self.cm1, 'เกณฑ์เก่า', is_deleted=True)
+        selection = self._selection(self.major1, self.major2)
+
+        self._load(selection)
+
+        self.assertEqual(self.major1.notices, ['ประกาศแรก', 'ประกาศที่สอง'])
+        self.assertEqual(self.major2.notices, [])
+
+    def test_reflects_criteria_edits_without_sync(self):
+        criteria = self._criteria(self.cm1, 'ก่อนแก้')
+        criteria.additional_notice = 'หลังแก้'
+        criteria.save()
+        selection = self._selection(self.major1)
+
+        self._load(selection)
+
+        self.assertEqual(self.major1.notices, ['หลังแก้'])
+
+    def test_major_without_cupt_code_has_no_notices(self):
+        self.major1.cupt_full_code = ''
+        self.major1.save()
+        selection = self._selection(self.major1)
+
+        self._load(selection)
+
+        self.assertEqual(self.major1.notices, [])
+
+    def test_not_loaded_when_project_flag_is_off(self):
+        self.project.is_additional_notice_allowed = False
+        self._criteria(self.cm1, 'ประกาศ')
+        selection = self._selection(self.major1)
+
+        self._load(selection)
+
+        self.assertFalse(hasattr(self.major1, 'notices'))
+
+    def _render(self, template, selection):
+        from appl.models import ProjectApplication
+        from appl.models import Major
+        active_application = ProjectApplication(admission_project=self.project)
+        # the major detail list needs a real detail_items_csv + project template,
+        # which is unrelated to notices
+        with mock.patch.object(Major, 'get_detail_items_as_list_display', return_value=''):
+            return render_to_string(template,
+                                    {'major_selection': selection,
+                                     'active_application': active_application,
+                                     'admission_round': AdmissionRound(id=1),
+                                     'is_deadline_passed': True})
+
+    def test_multi_major_list_shows_notice_next_to_each_major(self):
+        self._criteria(self.cm1, 'บรรทัดแรก\nบรรทัดที่สอง')
+        self._criteria(self.cm2, 'ประกาศสาขาสอง')
+        selection = self._selection(self.major1, self.major2)
+        self._load(selection)
+
+        html = self._render('appl/include/major_selection_item.html', selection)
+
+        self.assertIn('บรรทัดแรก<br>บรรทัดที่สอง', html)
+        self.assertIn('ประกาศสาขาสอง', html)
+        self.assertEqual(html.count('alert-info'), 2)
+
+    def test_single_major_list_does_not_show_notice(self):
+        self.project.max_num_selections = 1
+        self._criteria(self.cm1, 'ประกาศ')
+        selection = self._selection(self.major1)
+        self._load(selection)
+
+        html = self._render('appl/include/major_selection_item.html', selection)
+
+        self.assertNotIn('ประกาศ</', html)
+        self.assertNotIn('alert-info', html)
+
+    def test_single_major_details_shows_notice(self):
+        self.project.max_num_selections = 1
+        self._criteria(self.cm1, 'ประกาศ')
+        selection = self._selection(self.major1)
+        self._load(selection)
+
+        html = self._render('appl/include/selected_major_details.html', selection)
+
+        self.assertIn('alert-info', html)
+        self.assertIn('ประกาศ', html)

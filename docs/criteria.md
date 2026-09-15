@@ -30,6 +30,18 @@ app (`appl/models.py`, `backoffice/views/projects.py`, and various
 `curriculum_major.admission_criterias.filter(is_deleted=False)`. So think of
 this app as the **authoring + publishing** side.
 
+One such live read is `additional_notice`: `appl.views.load_major_notices()`
+(when the project sets `is_additional_notice_allowed`) collects the non-blank
+notices of each selected major's live criteria via `get_admission_criterias()`
+(first matching `CurriculumMajor` only) into `major.notices`, rendered by
+`appl/include/major_notices.html` — next to each major in
+`major_selection_item.html` for multi-major projects, and in
+`selected_major_details.html` for single-major ones. Staff edits show up
+immediately; there is no sync step. The older copy table
+`appl.models.MajorAdditionalNotice` (filled by the notice half of
+`scripts/update_major_additional_notice_and_form.py`) is no longer read by the
+applicant page, but is kept for now.
+
 ## Data model
 
 Models live in `criteria/models/` (re-exported from

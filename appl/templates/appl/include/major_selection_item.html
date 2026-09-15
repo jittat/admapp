@@ -23,6 +23,7 @@
           <div id="major_info_{{ m.number }}_id" style="display: none;" class="bg-light border rounded mt5">
             {{ m.get_detail_items_as_list_display|safe }}
           </div>
+          {% include "appl/include/major_notices.html" with major=m %}
         {% endif %}
       </div>
     {% endfor %}

@@ -15,7 +15,6 @@ from appl.models import Payment
 from appl.models import ProjectApplication
 from appl.models import ProjectUploadedDocument
 from appl.models import MajorInterviewDescriptionCache
-from appl.models import MajorAdditionalNotice
 from appl.models import MajorAdditionalAdmissionFormField, ApplicantAdditionalAdmissionFormValue
 from appl.qrpayment import generate_ku_qr, generate_empty_img
 from appl.views.upload import upload_form_for, prepare_deadline_flags
@@ -153,7 +152,14 @@ def load_major_notices(project, major_selection):
     if not major_selection:
         return
     for major in major_selection.get_majors():
-        major.notice = MajorAdditionalNotice.get_notice_for_major(major)
+        major.notices = get_major_notices(major)
+
+def get_major_notices(major):
+    admission_criterias = major.get_admission_criterias()
+    if not admission_criterias:
+        return []
+    return [c.additional_notice.strip() for c in admission_criterias
+            if c.additional_notice.strip() != '']
 
 def load_major_additional_form_fields(applicant, project, major_selection):
     if not major_selection:
