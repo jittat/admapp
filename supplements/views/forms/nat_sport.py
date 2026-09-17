@@ -55,8 +55,7 @@ class SportTypeForm(forms.Form):
                                    choices=zip(SPORT_CHOICES,SPORT_CHOICES))
     sport_level = forms.ChoiceField(label='กรุณาระบุระดับผลงาน',
                                     choices=[('ตัวแทนทีมชาติไทย','ตัวแทนทีมชาติไทย'),
-                                             ('เยาวชนทีมชาติไทย','เยาวชนทีมชาติไทย'),
-                                             ('แข่งขันกีฬาแห่งชาติ (ระดับประเทศ ได้อันดับที่ 1-3)','แข่งขันกีฬาแห่งชาติ (ระดับประเทศ ได้อันดับที่ 1-3)')])
+                                             ('เยาวชนทีมชาติไทย','เยาวชนทีมชาติไทย')])
 
 def init_sport_type_form(request,
                          applicant,
