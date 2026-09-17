@@ -17,11 +17,11 @@ logger = logging.getLogger(__name__)
 
 # Applied to every criteria-generated slot on each sync: change here and re-sync.
 DEFAULT_ALLOWED_EXTENSIONS = 'PDF,JPG,JPEG,PNG'
-DEFAULT_SIZE_LIMIT = 10_000_000
-DEFAULT_SPECIFICATIONS = 'ไฟล์ pdf หรือรูปภาพ (jpg, png) ขนาดไม่เกิน 10MB หรือระบุลิงก์'
+DEFAULT_SIZE_LIMIT = 20_000_000
+DEFAULT_SPECIFICATIONS = 'ไฟล์ pdf หรือรูปภาพ (jpg, png) ขนาดไม่เกิน 20MB หรือระบุลิงก์'
 
 # generated slots are ranked after the hand-made ones
-RANK_BASE = 100
+RANK_BASE = 10000
 
 TITLE_MAX_LENGTH = ProjectUploadedDocument._meta.get_field('title').max_length
 
@@ -125,7 +125,7 @@ def collect_wanted_slots(admission_project, summary):
                 summary.fields_without_majors.append(upload_field['title'])
                 continue
             wanted[key] = slot_values(upload_field, majors,
-                                      RANK_BASE + criteria_index * 100 + field_index)
+                                      RANK_BASE + criteria_index * 10 + field_index)
     return wanted
 
 
