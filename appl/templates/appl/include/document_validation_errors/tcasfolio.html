@@ -1,1 +1,18 @@
-{% load i18n %}<b>{% if code == 'not_pdf' %}{% trans 'ไฟล์ไม่ใช่ไฟล์ PDF ที่ถูกต้อง กรุณาดาวน์โหลดไฟล์ PDF จากระบบ TCASFolio แล้วอัพโหลดใหม่' %}{% elif code == 'not_signed' %}{% trans 'ไฟล์นี้ไม่มีลายมือชื่ออิเล็กทรอนิกส์ของ TCASFolio กรุณาดาวน์โหลดไฟล์ PDF จากระบบ TCASFolio แล้วอัพโหลดใหม่' %}{% elif code == 'modified_after_signing' or code == 'signature_invalid' %}{% trans 'ไฟล์ถูกแก้ไขหลังจากดาวน์โหลดจากระบบ TCASFolio กรุณาดาวน์โหลดใหม่และอัพโหลดโดยไม่แก้ไขไฟล์' %}{% elif code == 'untrusted_signer' %}{% trans 'ลายมือชื่ออิเล็กทรอนิกส์ในไฟล์ไม่ใช่ของระบบ TCASFolio กรุณาดาวน์โหลดไฟล์ PDF จากระบบ TCASFolio แล้วอัพโหลดใหม่' %}{% else %}{% include 'appl/include/document_validation_errors/default.html' %}{% endif %}</b>
+{% load i18n %}
+<b>
+  {% if code == 'not_pdf' %}
+    {% trans 'ไฟล์ไม่ใช่ไฟล์ PDF ที่ถูกต้อง กรุณาดาวน์โหลดไฟล์ PDF จากระบบ TCASFolio แล้วอัพโหลดใหม่' %}
+  {% elif code == 'not_signed' %}
+    {% trans 'ไฟล์นี้ไม่มีลายมือชื่ออิเล็กทรอนิกส์ของ TCASFolio กรุณาดาวน์โหลดไฟล์ PDF จากระบบ TCASFolio แล้วอัพโหลดใหม่' %}
+  {% elif code == 'modified_after_signing' or code == 'signature_invalid' %}
+    {% trans 'ไฟล์ถูกแก้ไขหลังจากดาวน์โหลดจากระบบ TCASFolio กรุณาดาวน์โหลดใหม่และอัพโหลดโดยไม่แก้ไขไฟล์' %}
+  {% elif code == 'untrusted_signer' %}
+    {% trans 'ลายมือชื่ออิเล็กทรอนิกส์ในไฟล์ไม่ใช่ของระบบ TCASFolio กรุณาดาวน์โหลดไฟล์ PDF จากระบบ TCASFolio แล้วอัพโหลดใหม่' %}
+  {% elif code == 'invalid_url' %}
+    {% trans 'ลิงก์แฟ้มสะสมผลงานไม่ใช่ของระบบ TCASFolio กรุณาใช้ลิงก์จากระบบ TCASFolio' %}
+  {% elif code == 'no_document' %}
+    {% trans 'ไม่มีเอกสารแฟ้มสะสมผลงาน' %}
+  {% else %}
+    {% include 'appl/include/document_validation_errors/default.html' %}
+  {% endif %}
+</b>

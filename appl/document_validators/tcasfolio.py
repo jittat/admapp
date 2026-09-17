@@ -14,5 +14,8 @@ def validate(project_uploaded_document, uploaded_file=None, document_url=None):
 
 
 def validate_url(document_url):
-    # TODO: check against the TCASFolio url pattern once it is known.
-    return ValidationResult.accept()
+    if document_url is not None:
+        if document_url.startswith('https://student.mytcas.com/view-folio/'):
+            return ValidationResult.accept()
+        return ValidationResult.reject('invalid_url')
+    return ValidationResult.reject('no_document')
