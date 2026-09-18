@@ -4,7 +4,24 @@
     jQuery.get(url,
                function(html) {
                  $('#project_status_div_id').html(html);
+                 updateApplicationCompleteNotice();
                });
+  };
+
+  // the notice sits outside the refreshed status box; the box carries the flag
+  var updateApplicationCompleteNotice = function() {
+    var isComplete = $('#project_status_div_id [data-application-complete]')
+        .attr('data-application-complete') == '1';
+    var notice = $('#application_complete_notice_div_id');
+    if (isComplete) {
+      if (!notice.is(':visible')) {
+        notice.slideDown();
+      }
+    } else {
+      if (notice.is(':visible')) {
+        notice.slideUp();
+      }
+    }
   };
 
   var checkAndShowInterviewDocument = function() {

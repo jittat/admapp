@@ -59,6 +59,10 @@
       {% endif %}
     {% endcomment %}
     
+    <div id="application_complete_notice_div_id" {% if not application_complete %}style="display: none;"{% endif %}>
+      {% include 'appl/include/application_complete_notice.html' %}
+    </div>
+
     {% if supplement_blocks %}
       {% include 'appl/include/supplement_blocks.html' %}
     {% endif %}

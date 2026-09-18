@@ -133,6 +133,21 @@ def check_project_documents(applicant,
     return { 'status': status,
              'errors': errors }
 
+def is_application_complete(major_selection, documents_complete_status, additional_payment):
+    return (bool(major_selection) and
+            documents_complete_status['status'] and
+            additional_payment == 0)
+
+def is_application_complete_notice_shown(project_round, major_selection,
+                                         documents_complete_status, additional_payment):
+    # once results are out, the notice is replaced by the result sections
+    if (project_round.accepted_for_interview_result_shown or
+            project_round.accepted_result_shown):
+        return False
+    return is_application_complete(major_selection,
+                                   documents_complete_status,
+                                   additional_payment)
+
 def load_applications_in_other_round(applicant, current_admission_round):
     admission_rounds = AdmissionRound.objects.filter(is_application_available=True).all()
     results = []
@@ -318,6 +333,9 @@ def index_with_active_application(request, active_application, admission_round=N
                     'major_selection': major_selection,
 
                     'documents_complete_status': documents_complete_status,
+                    'application_complete': is_application_complete_notice_shown(
+                        project_round, major_selection,
+                        documents_complete_status, additional_payment),
                     
                     'payments': payments,
                     'paid_amount': paid_amount,
@@ -764,6 +782,7 @@ def check_application_documents(request):
     admission_project = active_application.admission_project
     project_round = admission_project.get_project_round_for(admission_round)
     payment_deadline = project_round.payment_deadline
+    payment_deadline_passed = is_payment_deadline_passed(payment_deadline)
     
     admission_project = active_application.admission_project
     
@@ -798,6 +817,9 @@ def check_application_documents(request):
     return render(request,
                   'appl/include/application_document_status.html',
                   { 'documents_complete_status': documents_complete_status,
+                    'application_complete': is_application_complete_notice_shown(
+                        project_round, major_selection,
+                        documents_complete_status, additional_payment),
                     'active_application': active_application,
                     'major_selection': major_selection,
                     
@@ -805,6 +827,7 @@ def check_application_documents(request):
                     'paid_amount': paid_amount,
                     'additional_payment': additional_payment,
                     'payment_deadline': payment_deadline,
+                    'payment_deadline_passed': payment_deadline_passed,
                     })
 
 

@@ -1,5 +1,5 @@
 {% load i18n %}
-<div class="project-appl-sections">
+<div class="project-appl-sections" data-application-complete="{% if application_complete %}1{% else %}0{% endif %}">
   {% if active_application.admission_fee != 0 %}
     <h4>{%  trans 'สถานะการสมัครและค่าสมัคร' context 'appl status' %}</h4>
   {% else %}

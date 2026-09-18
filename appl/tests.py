@@ -1293,3 +1293,222 @@ class MajorNoticesTestCase(TestCase):
 
         self.assertIn('alert-info', html)
         self.assertIn('ประกาศ', html)
+
+
+class ApplicationCompleteTestCase(TestCase):
+    """The "ใบสมัครของคุณสมบูรณ์แล้ว" notice: shown when a major is selected,
+    documents (incl. imported per-major questions) are complete and nothing is
+    left to pay; hidden once results are shown. It lives in the status box that
+    the upload JS refreshes through appl:check-project-documents."""
+
+    NOTICE = 'ใบสมัครของคุณสมบูรณ์แล้ว'
+    HIDDEN_NOTICE_DIV = 'id="application_complete_notice_div_id" style="display: none;"'
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.media_root = tempfile.mkdtemp()
+        cls.media_override = override_settings(MEDIA_ROOT=cls.media_root)
+        cls.media_override.enable()
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.media_override.disable()
+        shutil.rmtree(cls.media_root, ignore_errors=True)
+        super().tearDownClass()
+
+    def setUp(self):
+        from appl.models import Campus, Faculty, Major
+        self.admission_round = AdmissionRound.objects.create(
+            number=2, rank=1, is_available=True,
+            acceptance_result_date=datetime.now().date())
+        self.project = AdmissionProject.objects.create(
+            title='Test Project', short_title='Test', base_fee=400,
+            max_num_selections=1)
+        self.project_round = AdmissionProjectRound.objects.create(
+            admission_project=self.project,
+            admission_round=self.admission_round,
+            is_started=True,
+            applying_deadline=datetime.now() + timedelta(days=7),
+            payment_deadline=(datetime.now() + timedelta(days=10)).date())
+        campus = Campus.objects.create(title='Bang Khen', short_title='BK')
+        faculty = Faculty.objects.create(title='Engineering', campus=campus)
+        self.major = Major.objects.create(
+            number=1, title='วิศวกรรมคอมพิวเตอร์', faculty=faculty,
+            admission_project=self.project, slots=10, detail_items_csv='')
+
+        self.applicant = Applicant.objects.create(
+            national_id='1234567890121', prefix='นาย',
+            first_name='ทดสอบ', last_name='มาก', email='test@test.com')
+        self.application = self.applicant.apply_to_project(self.project,
+                                                           self.admission_round)
+
+        session = self.client.session
+        session['applicant_id'] = self.applicant.id
+        session.save()
+
+    def select_major(self):
+        MajorSelection.objects.create(
+            applicant=self.applicant, project_application=self.application,
+            admission_project=self.project, admission_round=self.admission_round,
+            major_list=str(self.major.number), num_selected=1)
+
+    def pay(self, amount=400):
+        from appl.models import Payment
+        Payment.objects.create(
+            applicant=self.applicant, admission_round=self.admission_round,
+            national_id=self.applicant.national_id, verification_number='x',
+            amount=amount, paid_at=datetime.now())
+
+    def make_required_document(self):
+        doc = ProjectUploadedDocument.objects.create(
+            rank=1, title='ใบรับรอง', descriptions='', specifications='PDF',
+            allowed_extentions='PDF', document_type=FILE, is_required=True)
+        doc.admission_projects.add(self.project)
+        return doc
+
+    def upload(self, doc):
+        response = self.client.post(
+            reverse('appl:upload', args=[doc.id]),
+            {'uploaded_file': SimpleUploadedFile('a.pdf', b'%PDF-1.4 hello')})
+        self.assertEqual(json.loads(response.content)['result'], 'OK')
+
+    def add_question(self):
+        from appl.models import MajorAdditionalAdmissionFormField
+        self.project.is_additional_admission_form_allowed = True
+        self.project.save()
+        return MajorAdditionalAdmissionFormField.objects.create(
+            major=self.major, admission_project=self.project,
+            title='ทำไมถึงเลือกสาขานี้', size='short', rank=1)
+
+    def status_html(self):
+        response = self.client.get(reverse('appl:check-project-documents'))
+        self.assertEqual(response.status_code, 200)
+        return response.content.decode('utf-8')
+
+    def assert_status_flag(self, flag):
+        # the notice itself is outside the status box; the refresh JS shows or
+        # hides it from this flag
+        html = self.status_html()
+        self.assertIn('data-application-complete="%s"' % flag, html)
+        self.assertNotIn(self.NOTICE, html)
+
+    def index_html(self):
+        # index redirects to the profile forms without profiles, and the major
+        # details need a real detail_items_csv; both are unrelated to the notice
+        from appl.models import Major
+        with mock.patch.object(Applicant, 'get_personal_profile', return_value=object()), \
+             mock.patch.object(Applicant, 'get_educational_profile', return_value=object()), \
+             mock.patch.object(Major, 'get_detail_items_as_list_display', return_value=''):
+            response = self.client.get(reverse('appl:index'))
+        self.assertEqual(response.status_code, 200)
+        return response.content.decode('utf-8')
+
+    # --- the rule ------------------------------------------------------------
+
+    def test_is_application_complete(self):
+        from appl.views import is_application_complete
+        done = {'status': True, 'errors': []}
+        missing = {'status': False, 'errors': ['x']}
+        selection = object()
+
+        self.assertTrue(is_application_complete(selection, done, 0))
+        self.assertFalse(is_application_complete(None, done, 0))
+        self.assertFalse(is_application_complete(selection, missing, 0))
+        self.assertFalse(is_application_complete(selection, done, 100))
+
+    # --- status box (AJAX refresh) -------------------------------------------
+
+    def test_complete_application_shows_notice(self):
+        self.select_major()
+        self.pay()
+
+        self.assert_status_flag('1')
+
+    def test_free_project_needs_no_payment(self):
+        self.project.base_fee = 0
+        self.project.save()
+        self.select_major()
+
+        self.assert_status_flag('1')
+
+    def test_no_notice_without_major(self):
+        self.pay()
+
+        self.assert_status_flag('0')
+
+    def test_no_notice_when_fee_is_not_fully_paid(self):
+        self.select_major()
+        self.pay(amount=200)
+
+        self.assert_status_flag('0')
+
+    def test_last_upload_after_payment_completes_application(self):
+        doc = self.make_required_document()
+        self.select_major()
+        self.pay()
+        self.assert_status_flag('0')
+
+        self.upload(doc)
+
+        self.assert_status_flag('1')
+
+    def test_unanswered_imported_question_keeps_application_incomplete(self):
+        from appl.models import ApplicantAdditionalAdmissionFormValue
+        field = self.add_question()
+        self.select_major()
+        self.pay()
+        self.assert_status_flag('0')
+
+        ApplicantAdditionalAdmissionFormValue.objects.create(
+            applicant=self.applicant, major=self.major, field=field, value='ชอบ')
+
+        self.assert_status_flag('1')
+
+    def test_no_notice_once_results_are_shown(self):
+        self.select_major()
+        self.pay()
+
+        for flag in ['accepted_for_interview_result_shown', 'accepted_result_shown']:
+            with self.subTest(flag=flag):
+                flags = {'accepted_for_interview_result_shown': False,
+                         'accepted_result_shown': False}
+                flags[flag] = True
+                AdmissionProjectRound.objects.filter(pk=self.project_round.pk).update(**flags)
+
+                self.assert_status_flag('0')
+
+    def test_status_refresh_hides_payment_buttons_after_payment_deadline(self):
+        self.select_major()
+        AdmissionProjectRound.objects.filter(pk=self.project_round.pk).update(
+            payment_deadline=(datetime.now() - timedelta(days=3)).date())
+
+        html = self.status_html()
+
+        self.assertIn('หมดเขตชำระค่าสมัครแล้ว', html)
+        self.assertNotIn(reverse('appl:payment-qr', args=[self.application.id]), html)
+
+    # --- main page -----------------------------------------------------------
+
+    def test_index_shows_notice_when_complete(self):
+        self.select_major()
+        html = self.index_html()
+        # rendered hidden so the refresh JS can slide it down later
+        self.assertIn(self.NOTICE, html)
+        self.assertIn(self.HIDDEN_NOTICE_DIV, html)
+
+        self.pay()
+
+        html = self.index_html()
+        self.assertIn(self.NOTICE, html)
+        self.assertIn('id="application_complete_notice_div_id"', html)
+        self.assertNotIn(self.HIDDEN_NOTICE_DIV, html)
+
+    def test_index_shows_notice_above_the_status_box(self):
+        self.select_major()
+        self.pay()
+
+        html = self.index_html()
+
+        self.assertLess(html.index('id="application_complete_notice_div_id"'),
+                        html.index('id="project_status_div_id"'))

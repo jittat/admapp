@@ -268,6 +268,26 @@ a common slot, or a slot linked to the application's project and visible for
 its selection (previously any slot id was accepted). If an applicant changes
 majors, uploads to now-hidden slots are kept but not shown.
 
+**Status box & "application complete" notice.** On the applicant page the
+result is shown in `appl/include/application_document_status.html` inside
+`#project_status_div_id`. The upload JS (`refreshDocumentStatus()` after an
+upload/delete, and after answering a per-major question) re-renders that box
+from `check_application_documents` (`appl:check-project-documents`,
+`/appl/status/`), so both views must pass the same context.
+`application_complete` is true when `is_application_complete()` holds — a
+major is selected, `documents_complete_status['status']`, and
+`additional_payment == 0` (so free projects need no payment) — and results are
+not shown yet (`is_application_complete_notice_shown()` checks
+`accepted_for_interview_result_shown` / `accepted_result_shown`). The notice
+(`application_complete_notice.html`, "ใบสมัครของคุณสมบูรณ์แล้ว") is rendered
+**outside** the status box, above the supplement blocks in
+`active_application.html`, in `#application_complete_notice_div_id` (hidden
+with `display: none` when incomplete). The status box only carries the flag as
+`data-application-complete="1|0"`; after each refresh,
+`updateApplicationCompleteNotice()` in `document_upload_js.html` slides the
+notice down or up to match. Display only; nothing is stored. A payment shows up
+on the next page load, since only uploads and answers trigger the refresh.
+
 **Deadline.** After `project_round.is_deadline_passed()`, upload/delete is
 allowed only when `is_uploadable_after_deadline(project)`:
 `is_interview_document`, or `is_late_upload_allowed` with
