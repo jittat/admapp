@@ -1028,8 +1028,22 @@ class PdfSignatureVerifyTestCase(SimpleTestCase):
 
 class TcasfolioValidatorTestCase(SimpleTestCase):
 
-    def test_url_is_accepted_for_now(self):
-        self.assertTrue(tcasfolio.validate(None, document_url='http://example.com/any').is_valid)
+    def test_tcasfolio_url_is_accepted(self):
+        url = 'https://student.mytcas.com/view-folio/abc123'
+        self.assertTrue(tcasfolio.validate(None, document_url=url).is_valid)
+        self.assertTrue(tcasfolio.validate(None, document_url='  ' + url + '  ').is_valid)
+
+    def test_other_url_is_rejected(self):
+        result = tcasfolio.validate(None, document_url='http://example.com/any')
+
+        self.assertFalse(result.is_valid)
+        self.assertEqual(result.code, 'invalid_url')
+
+    def test_missing_url_is_rejected(self):
+        result = tcasfolio.validate(None)
+
+        self.assertFalse(result.is_valid)
+        self.assertEqual(result.code, 'no_document')
 
     def test_unsigned_file_is_rejected(self):
         result = tcasfolio.validate(None, uploaded_file=SimpleUploadedFile(
