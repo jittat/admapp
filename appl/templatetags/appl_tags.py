@@ -27,7 +27,12 @@ def translated_url(context, lang_code):
     request = context.get('request')
     if request is None:
         return ''
-    return translate_url(request.get_full_path(), lang_code)
+    # translate_url resolves the path, so use path_info (without the
+    # deployment's script prefix); reverse() adds the prefix back.
+    url = request.path_info
+    if request.META.get('QUERY_STRING'):
+        url += '?' + request.META['QUERY_STRING']
+    return translate_url(url, lang_code)
 
 @register.filter
 def thaidate(date):

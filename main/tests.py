@@ -4,6 +4,7 @@ import re
 from django.conf import settings
 from django.template.loader import render_to_string
 from django.test import RequestFactory, SimpleTestCase
+from django.urls import set_script_prefix
 from django.utils import translation
 
 
@@ -45,6 +46,18 @@ class LanguageSwitcherTestCase(SimpleTestCase):
                             'href="/en/regis/register/"')
         self.assertContains(self.client.get('/en/regis/register/'),
                             'href="/regis/register/"')
+
+    def test_switcher_works_under_script_prefix(self):
+        # production is deployed under /kuadm/; the test client
+        # doesn't set the script prefix like the WSGI handler does
+        set_script_prefix('/kuadm/')
+        try:
+            response = self.client.get('/regis/register/', SCRIPT_NAME='/kuadm')
+            self.assertContains(response, 'href="/kuadm/en/regis/register/"')
+            response = self.client.get('/en/regis/register/', SCRIPT_NAME='/kuadm')
+            self.assertContains(response, 'href="/kuadm/regis/register/"')
+        finally:
+            set_script_prefix('/')
 
     def test_switcher_keeps_query_string(self):
         response = self.client.get('/en/?error=invalid')
