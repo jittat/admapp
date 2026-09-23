@@ -11,7 +11,7 @@ The i18n plumbing still works: from the repo root, `/en/` renders with
 What the user sees as "English doesn't work" is mostly **coverage**: most
 applicant-facing text was added after 2018 as hardcoded Thai and never went
 through `{% trans %}`, and the catalog hasn't been maintained since Feb 2018.
-Findings, in order of impact:
+Findings, in order of impact (the agreed implementation plan is at the end):
 
 1. **Hardcoded Thai throughout applicant templates** (main issue).
 2. **Stale catalog**: new strings untranslated or marked fuzzy.
@@ -181,16 +181,82 @@ translations of deadlines, fees, and eligibility rules. Machine
 translation may still be useful offline, to draft `.po` entries for human
 review.
 
-## Open questions for the implementation plan
+## Implementation plan
 
-1. Scope: which applicant pages must be English (registration, application
-   forms, major selection, uploads, payment, supplements, printouts)? This
-   decides how much of the ~760 hardcoded Thai lines to wrap.
-2. Seasonal content (deadline announcements, schedules): catalog entries,
-   or per-language template includes/blocks?
-3. `.mo` handling: add `compilemessages` to the deploy steps, or commit
-   `.mo` files (remove them from `.gitignore`)?
-4. Who reviews the English text for the fuzzy/new entries, and should the
-   switcher stay "go to index" or keep the current page?
-5. Production working directory: check it, or fix `LOCALE_PATHS`
-   defensively without checking?
+Work happens on the `i18n-english` branch. Status: agreed, not started.
+
+### Scope
+
+Every page applicants use gets an English version:
+
+- `main/`: landing page.
+- `regis/`: register, login, forgotten password.
+- `appl/`: dashboard, personal/education forms, apply/cancel, major
+  selection, uploads, payment, per-major additional forms, application
+  status.
+- `supplements/`: applicant forms (`ap`, `cultural`, `gen_sport`,
+  `nat_sport`, `med`, `tcas5`).
+
+Out of scope: `backoffice/*` and `supplements/templates/supplements/backoffice/*`
+(staff), `qrconfirmations/` (payment-gateway callbacks, no pages), `api/`,
+`admin/`.
+
+### Decisions
+
+- **Printouts (`appl/print/*`) stay Thai** for now; they already use
+  `lang="th"`. Labels of links to them on English pages are translated.
+- **Seasonal announcements** (e.g. `appl/include/deadline_announcement_hook.html`,
+  schedules) use separate Thai and English blocks in the template, chosen
+  by `{% get_current_language %}`, not catalog entries. Staff edit both
+  blocks each season.
+- **English text:** machine-translated first drafts, reviewed by the
+  project owner before merging.
+- **Long free text stored in the DB** (project/interview descriptions,
+  uploaded-document titles and details, per-major additional form
+  questions, major details) is deferred until everything else is done.
+  It shows in Thai on English pages until then.
+- `.mo` files are committed (done in `b0e50fe`): after editing
+  `django.po`, run `compilemessages` and commit the `.mo`.
+
+### Phases
+
+Each phase is one or more commits on the branch.
+
+0. **Language switcher.** Keep the current page when switching (Django's
+   `translate_url`) instead of always going to the index, and show it on
+   every applicant page, including logged-out `appl` pages. Done first so
+   every later phase can be checked under `/en/`.
+1. **Template text.** Wrap hardcoded Thai in `{% trans %}` /
+   `{% blocktrans %}`, app by app: `main` + `regis`, then `appl`, then
+   `supplements`. Includes Thai inside inline JavaScript (`alert()` /
+   `confirm()` in 5 templates) via `{% trans ... as x %}{{ x|escapejs }}`.
+   Seasonal announcements get Thai/English blocks (see Decisions).
+2. **Python strings shown to applicants.** Form labels and errors in
+   `regis/views.py` and `appl/views/general_forms.py`, the supplement forms
+   in `supplements/views/forms/*.py`, validator messages in
+   `appl/models.py` (e.g. phone number), and applicant-visible text from
+   `appl/templatetags/appl_tags.py` and `criteria/criteria_options.py`
+   (check which parts applicants actually see). Staff-only `verbose_name`s
+   are skipped. Make the `thaidate` filter language-aware (English month
+   names, Gregorian year).
+3. **Titles from the DB.** Use `title_trans` wherever applicants see
+   major/faculty/campus/project/round titles, including
+   `major_multiple_selection.html` and `project_accepted_result.html`, and
+   cover `{{ major.faculty }}`-style `__str__` output. Keep
+   `appl/db_messages/model_messages.py` in sync with the DB values so
+   `makemessages` picks them up.
+4. **Catalog.** Regenerate `django.po`, fill new and fuzzy entries with
+   machine-translated drafts, review, `compilemessages`, commit the `.mo`.
+   Runs alongside phases 1–3, one app at a time. Also fix the backwards
+   `"Thai"`/`"English"` language-name entries.
+5. **Long DB text** (deferred): decide the approach (e.g. optional
+   `*_en` fields with Thai fallback, which needs migrations and staff UI)
+   after phases 0–4.
+
+### Testing
+
+- Extend `main/tests.py`-style checks: key applicant pages render under
+  `/en/` without Thai in translated areas, and the switcher links to the
+  same page in the other language.
+- Manual review of each app under `/en/` by the project owner before the
+  phase is committed.
