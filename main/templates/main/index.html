@@ -27,7 +27,7 @@
       {% endif %}
       <div class="mb10"></div>
       {% if error_message %}
-	<div class="alert alert-danger">
+        <div class="alert alert-danger">
           {% if error_message == 'no-login' %}
             {% trans 'กรุณา login เข้าใช้ระบบก่อนใช้งาน' %}
           {% endif %}
@@ -37,27 +37,27 @@
           {% if error_message == 'invalide' %}
             {% trans 'ขออภัย ไม่สามารถเข้าใช้ระบบได้ เนื่องจากฟอร์มผิดพลาด' %}
           {% endif %}
-	</div>
+	      </div>
       {% endif %}
       <form action="{% url 'regis:login' %}" method="post">
-	{% csrf_token %}
-	{{ login_form|crispy }}
-	<input class="btn btn-primary btn-lg" type="submit" value="{% trans 'เข้าใช้ระบบ' %}" />
+        {% csrf_token %}
+        {{ login_form|crispy }}
+        <input class="btn btn-primary btn-lg" type="submit" value="{% trans 'เข้าใช้ระบบ' %}" />
       </form>
       {% if registration_enabled %}
-	{% trans 'หรือลงทะเบียนสำหรับผู้ใช้ใหม่' %}<br />
-	<a class="btn btn-success btn-lg" href="{% url 'regis:register' %}">{% trans 'ลงทะเบียน' %}</a><br />
+        {% trans 'หรือลงทะเบียนสำหรับผู้ใช้ใหม่' %}<br />
+        <a class="btn btn-success btn-lg" href="{% url 'regis:register' %}">{% trans 'ลงทะเบียน' %}</a><br />
       {% endif %}
       {% trans 'ถ้าลืมรหัสผ่าน' %} <a class="btn" href="{% url 'regis:forget' %}">{% trans 'สามารถขอรหัสผ่านใหม่ได้' %}</a>
     {% else %}
       <div class="alert alert-info">
-      {% if LANGUAGE_CODE == 'en' %}
-	Sorry, registration is not open yet. Please check back on 15 October 2025.<br>
-	For admission details, please see <a href="https://admission.ku.ac.th">admission.ku.ac.th</a>
-      {% else %}
-	ขออภัย ขณะนี้ระบบรับสมัครยังไม่เปิดให้ลงทะเบียน กรุณากลับมาตรวจสอบอีกครั้งในวันที่ 15 ต.ค. 2568<br>
-	สำหรับรายละเอียดเกี่ยวกับการรับสมัครสามารถติดตามได้ที่ <a href="https://admission.ku.ac.th">admission.ku.ac.th</a>
-      {% endif %}
+        {% if LANGUAGE_CODE == 'en' %}
+          Sorry, registration is not open yet. Please check back later.<br>
+          For admission details, please see <a href="https://admission.ku.ac.th">admission.ku.ac.th</a>
+        {% else %}
+          ขออภัย ขณะนี้ระบบรับสมัครยังไม่เปิดให้ลงทะเบียน กรุณากลับมาตรวจสอบอีกครั้ง<br>
+          สำหรับรายละเอียดเกี่ยวกับการรับสมัครสามารถติดตามได้ที่ <a href="https://admission.ku.ac.th">admission.ku.ac.th</a>
+        {% endif %}
       </div>
     {% endif %}
   </div>
