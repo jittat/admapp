@@ -1,6 +1,7 @@
 from django import template
 
 from django.conf import settings
+from django.urls import translate_url
 
 register = template.Library()
 
@@ -19,6 +20,11 @@ def web_branding():
 @register.simple_tag
 def web_title():
     return settings.WEB_TITLE
+
+@register.simple_tag(takes_context=True)
+def translated_url(context, lang_code):
+    """The current page's URL (with query string) in another language."""
+    return translate_url(context['request'].get_full_path(), lang_code)
 
 @register.filter
 def thaidate(date):

@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% load i18n %}
 {% load crispy_forms_tags %}
+{% load appl_tags %}
 {% block content %}
 {% get_current_language as LANGUAGE_CODE %}
 <div class="row">
@@ -14,19 +15,15 @@
     {% if login_enabled %}
       {% trans 'เข้าใช้ระบบรับสมัคร' %}
       {% if LANGUAGE_CODE == 'th' %}
-	{% language 'en' %}
-  	  <div class="btn-group">
-            <a class="btn btn-xsm btn-primary" href="{% url 'main-index' %}">EN</a>
-            <a class="btn btn-xsm btn-outline-primary" href="{% url 'main-index' %}">Apply in English</a>
-	  </div>
-        {% endlanguage %}
+        <div class="btn-group">
+          <a class="btn btn-xsm btn-primary" href="{% translated_url 'en' %}">EN</a>
+          <a class="btn btn-xsm btn-outline-primary" href="{% translated_url 'en' %}">Apply in English</a>
+        </div>
       {% else %}
-	{% language 'th' %}
-	  <div class="btn-group">
-            <a class="btn btn-xsm btn-primary" href="{% url 'main-index' %}">TH</a>
-            <a class="btn btn-xsm btn-outline-primary" href="{% url 'main-index' %}">ใช้ระบบรับสมัครเป็นภาษาไทย</a>
-	  </div>
-        {% endlanguage %}
+        <div class="btn-group">
+          <a class="btn btn-xsm btn-primary" href="{% translated_url 'th' %}">TH</a>
+          <a class="btn btn-xsm btn-outline-primary" href="{% translated_url 'th' %}">ใช้ระบบรับสมัครเป็นภาษาไทย</a>
+        </div>
       {% endif %}
       <div class="mb10"></div>
       {% if error_message %}

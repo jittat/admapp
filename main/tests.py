@@ -32,3 +32,18 @@ class TranslationTestCase(SimpleTestCase):
     def test_html_lang_follows_active_language(self):
         self.assertContains(self.client.get('/'), '<html lang="th">')
         self.assertContains(self.client.get('/en/'), '<html lang="en">')
+
+
+class LanguageSwitcherTestCase(SimpleTestCase):
+
+    def test_switcher_links_to_same_page_in_other_language(self):
+        self.assertContains(self.client.get('/'), 'href="/en/"')
+        self.assertContains(self.client.get('/en/'), 'href="/"')
+        self.assertContains(self.client.get('/regis/register/'),
+                            'href="/en/regis/register/"')
+        self.assertContains(self.client.get('/en/regis/register/'),
+                            'href="/regis/register/"')
+
+    def test_switcher_keeps_query_string(self):
+        response = self.client.get('/en/?error=invalid')
+        self.assertContains(response, 'href="/?error=invalid"')

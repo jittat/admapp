@@ -1,0 +1,12 @@
+{% load i18n %}
+{% load appl_tags %}
+{% get_current_language as LANGUAGE_CODE %}
+<div class="btn-group mr10">
+  {% if LANGUAGE_CODE == 'th' %}
+    <span class="btn btn-sm btn-secondary">TH</span>
+    <a class="btn btn-sm btn-outline-secondary" href="{% translated_url 'en' %}">EN</a>
+  {% else %}
+    <a class="btn btn-sm btn-outline-secondary" href="{% translated_url 'th' %}">TH</a>
+    <span class="btn btn-sm btn-secondary">EN</span>
+  {% endif %}
+</div>
