@@ -8,7 +8,7 @@ from django.forms import ValidationError
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseServerError
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext, gettext_lazy as _
 
 from admapp.emails import send_registration_email, send_forget_password_email
 from .decorators import appl_login_required
@@ -324,7 +324,7 @@ def forget(request):
             if (not applicant) or (applicant.email.upper() != email.strip().upper()):
                 error_message = _('ไม่พบข้อมูลผู้สมัครที่ระบุหรืออีเมลที่ระบุไม่ถูกต้อง')
             elif not check_recent_forget_logitem(applicant):
-                error_message = 'ผู้สมัครได้ขอรหัสผ่านใหม่ไปแล้ว กรุณารออย่างน้อย 5 นาที ก่อนจะขอรหัสผ่านใหม่อีกครั้ง อีเมลรหัสผ่านอาจจะถูกส่งเข้าไปที่กล่องขยะ กรุณาอย่าลืมตรวจสอบ'
+                error_message = _('ผู้สมัครได้ขอรหัสผ่านใหม่ไปแล้ว กรุณารออย่างน้อย 5 นาที ก่อนจะขอรหัสผ่านใหม่อีกครั้ง อีเมลรหัสผ่านอาจจะถูกส่งเข้าไปที่กล่องขยะ กรุณาอย่าลืมตรวจสอบ')
             else:
                 new_password = applicant.random_password()
                 applicant.save()
@@ -409,7 +409,7 @@ def reset_cupt_confirmation(request):
         if confirmation.updated_at < wait_start_time:
             confirmation.delete()
         else:
-            request.session['notice'] = 'ยังไม่สามารถตรวจสอบการลงทะเบียนหรือสิทธิ์การสมัครใหม่ได้ กรุณารอ 10 นาที'
+            request.session['notice'] = gettext('ยังไม่สามารถตรวจสอบการลงทะเบียนหรือสิทธิ์การสมัครใหม่ได้ กรุณารอ 10 นาที')
             
     return redirect('appl:index')
 

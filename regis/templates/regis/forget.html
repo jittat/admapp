@@ -1,38 +1,43 @@
 {% extends 'regis/base.html' %}
+{% load i18n %}
 {% load crispy_forms_tags %}
 {% load static %}
 {% block content %}
   <div class="row">
     <div class="col-md-12">
-      <h2>ขอรหัสผ่านบัญชีผู้สมัครเข้าศึกษาใหม่</h2>
+      <h2>{% trans 'ขอรหัสผ่านบัญชีผู้สมัครเข้าศึกษาใหม่' %}</h2>
       {% if error_message %}
         <div class="alert alert-danger">
-          <strong>ไม่สามารถขอรหัสผ่านใหม่ได้</strong>
-          เนื่องจาก{{ error_message }}
+          <strong>{% trans 'ไม่สามารถขอรหัสผ่านใหม่ได้' %}</strong>
+          {% blocktrans %}เนื่องจาก{{ error_message }}{% endblocktrans %}
         </div>
       {% endif %}
       {% if form %}
         <form action="{% url 'regis:forget' %}" method="post">
           {% csrf_token %}
           {{ form|crispy }}
-          <input type="submit" class="btn btn-lg btn-primary" value="ขอรหัสผ่านใหม่" />
+          <input type="submit" class="btn btn-lg btn-primary" value="{% trans 'ขอรหัสผ่านใหม่' %}" />
         </form>
       {% endif %}
       {% if update_success %}
         <div class="alert alert-success">
-          <h4>กำหนดรหัสผ่านใหม่ให้กับผู้สมัครแล้ว</h4>
+          <h4>{% trans 'กำหนดรหัสผ่านใหม่ให้กับผู้สมัครแล้ว' %}</h4>
 
           <p>
-            รหัสผ่านใหม่จะถูกส่งให้กับผู้สมัครทางอีเมล {{ email }} 
+            {% blocktrans trimmed %}
+            รหัสผ่านใหม่จะถูกส่งให้กับผู้สมัครทางอีเมล {{ email }}
             ผู้สมัครน่าจะได้รับอีเมลภายในเวลาประมาณ 5 นาที หลังจากนั้นจะสามารถเข้าใช้งานระบบด้วยรหัสผ่านใหม่ได้
+            {% endblocktrans %}
           </p>
 
 	  <p>
-	    บางครั้งอีเมลที่ส่งรหัสผ่านจะเข้าไปที่กล่องจดหมายขยะ (junk mail) กรุณาอย่าลืมตรวจสอบ &nbsp;&nbsp; ตัวอย่างของการเลือกดูรายการอีเมลในกล่องจดหมายขยะแสดงดังรูปด้านล่าง บางครั้งอาจจะต้องรายการกล่องจดหมายต่าง ๆ ทางด้านซ้ายและอาจกดขยายรายการที่ถูกซ่อนไว้ก่อน (เช่น กด More)<br>
+	    {% blocktrans trimmed %}
+	    บางครั้งอีเมลที่ส่งรหัสผ่านจะเข้าไปที่กล่องจดหมายขยะ (junk mail) กรุณาอย่าลืมตรวจสอบ &nbsp;&nbsp; ตัวอย่างของการเลือกดูรายการอีเมลในกล่องจดหมายขยะแสดงดังรูปด้านล่าง บางครั้งอาจจะต้องรายการกล่องจดหมายต่าง ๆ ทางด้านซ้ายและอาจกดขยายรายการที่ถูกซ่อนไว้ก่อน (เช่น กด More)
+	    {% endblocktrans %}<br>
 	    <img src="{% static 'regis/images/gmail-spam.png' %}">
 	  </p>
           
-          <a class="btn btn-success btn-lg" href="{% url 'main-index' %}">กลับไปหน้าแรกเพื่อเข้าใช้ระบบ</a>
+          <a class="btn btn-success btn-lg" href="{% url 'main-index' %}">{% trans 'กลับไปหน้าแรกเพื่อเข้าใช้ระบบ' %}</a>
         </div>
       {% endif %}
     </div>

@@ -1,21 +1,26 @@
 {% extends 'regis/base.html' %}
+{% load i18n %}
 {% block content %}
   <div class="row">
     <div class="col-md-12">
-      <h2>ผู้สมัครเข้าศึกษาใหม่</h2>
+      <h2>{% trans 'ผู้สมัครเข้าศึกษาใหม่' %}</h2>
         <div class="alert alert-success">
-          <h4>การสมัครเสร็จสมบูรณ์</h4>
+          <h4>{% trans 'การสมัครเสร็จสมบูรณ์' %}</h4>
 
           <p>
-          	ผู้สมัครจะได้รับการตอบรับทางอีเมล {{ email }}
+            {% blocktrans trimmed %}
+            ผู้สมัครจะได้รับการตอบรับทางอีเมล {{ email }}
             ผู้สมัครน่าจะได้รับอีเมลภายในเวลาประมาณ 5 นาที หลังจากนั้นจะสามารถเข้าใช้งานระบบได้
+            {% endblocktrans %}
           </p> 
           <p>
-          	หากไม่พบอีเมลในกล่องจดหมาย (Inbox) ให้เข้าไปเช็คในจดหมายขยะ​ (Junk)
-          	หากไม่ได้รับอีเมลให้ติดต่อ โทร. 0 2942 8200 ต่อ 8046 - 8051 หรือ E-mail: admission@ku.ac.th
+            {% blocktrans trimmed %}
+            หากไม่พบอีเมลในกล่องจดหมาย (Inbox) ให้เข้าไปเช็คในจดหมายขยะ (Junk)
+            หากไม่ได้รับอีเมลให้ติดต่อ โทร. 02 118 0100 ต่อ 8046-8051 หรือ E-mail: admission@ku.ac.th
+            {% endblocktrans %}
           </p>
           
-          <a class="btn btn-success btn-lg" href="{% url 'main-index' %}">กลับไปหน้าแรกเพื่อเข้าใช้ระบบ</a>
+          <a class="btn btn-success btn-lg" href="{% url 'main-index' %}">{% trans 'กลับไปหน้าแรกเพื่อเข้าใช้ระบบ' %}</a>
         </div>
     </div>
   </div>

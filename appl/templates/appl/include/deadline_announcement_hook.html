@@ -1,3 +1,17 @@
+{% load i18n %}
+{% get_current_language as LANGUAGE_CODE %}
+{% if LANGUAGE_CODE == 'en' %}
+<div class="d-none alert alert-success">
+  <span class="badge badge-success">Round 1.2 schedule change</span>
+  Due to flooding and emergencies in many areas, Kasetsart University, Bangkhen Campus, has changed the Round 1.2 schedule.
+  Applications are open until 14 February 2026 (extended from 15 January 2026). The list of applicants eligible for interviews will be announced on 20 February 2026,
+  interviews will be held on 25-26 February 2026, and the interview results will be announced on 28 February 2026.
+</div>
+<div class="d-none alert alert-warning">
+  <span class="badge badge-warning">Application schedule</span>
+  For Round 1.1, the system closes for applications at 16:00 on 13 November 2025. Applicants can pay the application fee until 13 November 2025 (please pay before 22:00, as online banking payment may close before 23:59). For QR code payments, the payment time recorded by the bank is used.
+</div>
+{% else %}
 <div class="d-none alert alert-success">
   <span class="badge badge-success">การปรับกำหนดการรับสมัครรอบ 1.2</span>
   เนื่องจากน้ำท่วมและสถานการณ์ฉุกเฉินในหลายพื้นที่ มหาวิทยาลัยเกษตรศาสตร์ วิทยาเขตบางเขน จึงมีการปรับกำหนดการรับสมัครรอบ 1.2 
@@ -8,3 +22,4 @@
   <span class="badge badge-warning">กำหนดการรับสมัคร</span>
   สำหรับการรับในรอบที่ 1.1 ระบบจะปิดการรับสมัครในเวลา 16:00 น. ของวันที่ 13 พฤศจิกายน 2568  ผู้สมัครสามารถชำระเงินค่าสมัครได้ถึงวันที่ 13 พฤศจิกายน 2568 (ควรชำระก่อนเวลา 22.00 น. เนื่องจากระบบชำระเงินทางธนาคารออนไลน์อาจจะปิดก่อนเวลา 23:59 น.) สำหรับการชำระด้วย QR code ระบบจะถือเวลาการชำระเงินจากข้อมูลที่ได้จากทางธนาคารเป็นหลัก
 </div>
+{% endif %}

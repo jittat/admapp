@@ -24,7 +24,10 @@ def web_title():
 @register.simple_tag(takes_context=True)
 def translated_url(context, lang_code):
     """The current page's URL (with query string) in another language."""
-    return translate_url(context['request'].get_full_path(), lang_code)
+    request = context.get('request')
+    if request is None:
+        return ''
+    return translate_url(request.get_full_path(), lang_code)
 
 @register.filter
 def thaidate(date):

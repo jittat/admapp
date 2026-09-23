@@ -1,7 +1,9 @@
 import os
+import re
 
 from django.conf import settings
-from django.test import SimpleTestCase
+from django.template.loader import render_to_string
+from django.test import RequestFactory, SimpleTestCase
 from django.utils import translation
 
 
@@ -47,3 +49,44 @@ class LanguageSwitcherTestCase(SimpleTestCase):
     def test_switcher_keeps_query_string(self):
         response = self.client.get('/en/?error=invalid')
         self.assertContains(response, 'href="/?error=invalid"')
+
+
+class EnglishPagesTestCase(SimpleTestCase):
+    """Applicant pages under /en/ should show no Thai text."""
+
+    # Thai text that is meant to stay on English pages
+    ALLOWED_THAI = [
+        'ใช้ระบบรับสมัครเป็นภาษาไทย',   # link to the Thai version
+    ]
+
+    def assertNoThaiText(self, html):
+        body = html.split('<body>', 1)[-1]
+        text = re.sub(r'<[^>]*>', ' ', body)   # ignore tags and attribute values
+        for allowed in self.ALLOWED_THAI:
+            text = text.replace(allowed, '')
+        self.assertEqual(re.findall(r'[฀-๿][^<>\n]*', text), [])
+
+    def render_en(self, template_name, context):
+        request = RequestFactory().get('/en/')
+        with translation.override('en'):
+            return render_to_string(template_name, context, request=request)
+
+    def test_pages(self):
+        for url in ['/en/', '/en/regis/register/', '/en/regis/forget/']:
+            with self.subTest(url=url):
+                self.assertNoThaiText(self.client.get(url).content.decode())
+
+    def test_regis_result_pages(self):
+        pages = [
+            ('regis/regis_result.html', {'email': 'a@example.com'}),
+            ('regis/registration_error.html',
+             {'national_id': '1234567890123', 'first_name': 'A'}),
+            ('regis/registration_error.html',
+             {'national_id': '', 'passport_number': 'X1', 'first_name': 'A'}),
+            ('regis/forget.html',
+             {'update_success': True, 'email': 'a@example.com'}),
+            ('regis/forget.html', {'error_message': 'x'}),
+        ]
+        for template_name, context in pages:
+            with self.subTest(template=template_name, context=context):
+                self.assertNoThaiText(self.render_en(template_name, context))

@@ -221,6 +221,7 @@ Out of scope: `backoffice/*` and `supplements/templates/supplements/backoffice/*
   uploaded-document titles and details, per-major additional form
   questions, major details) is deferred until everything else is done.
   It shows in Thai on English pages until then.
+- **Emails** stay Thai for now (phase 5).
 - `.mo` files are committed (done in `b0e50fe`): after editing
   `django.po`, run `compilemessages` and commit the `.mo`.
 
@@ -234,37 +235,66 @@ Each phase is one or more commits on the branch.
    navbar, which also covers the supplement forms, plus the landing-page
    buttons) and was added to the `regis` pages. Showing it on every page
    was tried and dropped because it moved the navbar layout too much.
-1. **Template text.** Wrap hardcoded Thai in `{% trans %}` /
-   `{% blocktrans %}`, app by app: `main` + `regis`, then `appl`, then
-   `supplements`. Includes Thai inside inline JavaScript (`alert()` /
-   `confirm()` in 5 templates) via `{% trans ... as x %}{{ x|escapejs }}`.
-   Seasonal announcements get Thai/English blocks (see Decisions).
-2. **Python strings shown to applicants.** Form labels and errors in
-   `regis/views.py` and `appl/views/general_forms.py`, the supplement forms
-   in `supplements/views/forms/*.py`, validator messages in
-   `appl/models.py` (e.g. phone number), and applicant-visible text from
-   `appl/templatetags/appl_tags.py` and `criteria/criteria_options.py`
-   (check which parts applicants actually see). Staff-only `verbose_name`s
-   are skipped. Make the `thaidate` filter language-aware (English month
-   names, Gregorian year).
-3. **Titles from the DB.** Use `title_trans` wherever applicants see
-   major/faculty/campus/project/round titles, including
-   `major_multiple_selection.html` and `project_accepted_result.html`, and
-   cover `{{ major.faculty }}`-style `__str__` output. Keep
-   `appl/db_messages/model_messages.py` in sync with the DB values so
-   `makemessages` picks them up.
-4. **Catalog.** Regenerate `django.po`, fill new and fuzzy entries with
-   machine-translated drafts, review, `compilemessages`, commit the `.mo`.
-   Runs alongside phases 1–3, one app at a time. Also fix the backwards
-   `"Thai"`/`"English"` language-name entries.
-5. **Long DB text** (deferred): decide the approach (e.g. optional
+
+Phases 1–3 go app by app. Each app is finished completely before the next,
+so it can be checked under `/en/` as a whole. For each app:
+
+- **Templates:** wrap hardcoded Thai in `{% trans %}` / `{% blocktrans %}`
+  (`blocktrans trimmed` for multi-line text and text with variables).
+  Thai inside inline JavaScript (`alert()` / `confirm()`) uses
+  `{% trans ... as x %}{{ x|escapejs }}`. Seasonal announcements get
+  Thai/English blocks (see Decisions).
+- **Python strings shown to applicants:** form labels, choices, errors,
+  validator and session-notice messages. Staff-only `verbose_name`s are
+  skipped. Session notices use `gettext` (not the lazy version), since
+  lazy strings can't be stored in the session.
+- **Titles from the DB:** use `title_trans` wherever applicants see
+  major/faculty/campus/project/round titles, and cover
+  `{{ major.faculty }}`-style `__str__` output. Keep
+  `appl/db_messages/model_messages.py` in sync with the DB values so
+  `makemessages` picks them up.
+- **Catalog:** `makemessages -l en`, fill the app's new and fuzzy entries
+  with machine-translated drafts (the fuzzy guesses are usually unrelated
+  strings), review, `compilemessages`, commit the `.mo`.
+- **Tests:** add the app's pages to `EnglishPagesTestCase` in
+  `main/tests.py`.
+
+1. **`main` + `regis`.** Landing page, register, login, forgotten
+   password, registration result/error pages, the deadline announcement
+   (Thai/English blocks), and two unwrapped strings in `regis/views.py`.
+   Also updated the old phone number in `regis_result.html` to match the
+   footer.
+2. **`appl`.** Dashboard, personal/education forms
+   (`appl/views/general_forms.py`), apply/cancel, major selection
+   (including `major_multiple_selection.html`), uploads (including the
+   document validation messages), payment, per-major additional forms,
+   application status, and `project_accepted_result.html`. Also: validator
+   messages in `appl/models.py` (e.g. phone number), applicant-visible text
+   from `appl/templatetags/appl_tags.py` and `criteria/criteria_options.py`
+   (check which parts applicants actually see), and a language-aware
+   `thaidate` filter (English month names, Gregorian year). Fix the
+   backwards `"Thai"`/`"English"` language-name entries here too.
+   **DB titles:** the goal is to eliminate the `model_messages.py` /
+   `_(self.title)` catalog approach (exact-match lookups that break silently
+   when titles change, and a 2017 dump covering only ~16 majors). The
+   replacement approach is decided when phase 2 is planned.
+3. **`supplements`.** Applicant supplement forms (templates and
+   `supplements/views/forms/*.py`); not `supplements/backoffice/*`.
+4. **Long DB text** (deferred): decide the approach (e.g. optional
    `*_en` fields with Thai fallback, which needs migrations and staff UI)
-   after phases 0–4.
+   after phases 0–3.
+5. **Emails** (deferred): every email in `admapp/emails.py` is built in
+   Thai in Python. Registration and new-password emails are sent during
+   the request and could follow the page language; payment, clearing-house
+   and major-confirmation emails are sent outside the applicant's request
+   and would need a stored language preference (new field + migration).
 
 ### Testing
 
-- Extend `main/tests.py`-style checks: key applicant pages render under
-  `/en/` without Thai in translated areas, and the switcher links to the
-  same page in the other language.
+- `main/tests.py`: `LanguageSwitcherTestCase` (switcher links to the same
+  page in the other language) and `EnglishPagesTestCase` (pages rendered
+  under `/en/` contain no Thai text outside tags, except an allow-list such
+  as the "switch to Thai" link). Pages that only appear after a form
+  submission are rendered directly with `render_to_string`.
 - Manual review of each app under `/en/` by the project owner before the
   phase is committed.

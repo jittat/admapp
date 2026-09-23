@@ -1,12 +1,13 @@
 {% extends 'regis/base.html' %}
+{% load i18n %}
 {% block content %}
 <div class="alert alert-danger">
   {% if national_id == '' %}
-  	<h2>เลขที่หนังสือเดินทางมีการลงทะเบียนแล้ว</h2>
-  	ขออภัยด้วย {{ first_name }} เลขที่หนังสือเดินทาง {{ passport_number }} มีการลงทะเบียนแล้ว
+  	<h2>{% trans 'เลขที่หนังสือเดินทางมีการลงทะเบียนแล้ว' %}</h2>
+  	{% blocktrans %}ขออภัยด้วย {{ first_name }} เลขที่หนังสือเดินทาง {{ passport_number }} มีการลงทะเบียนแล้ว{% endblocktrans %}
   {% else %}
-  	<h2>รหัสประชาชนมีการลงทะเบียนแล้ว</h2>
-  	ขออภัยด้วย {{ first_name }} รหัสประชาชน {{ national_id }} มีการลงทะเบียนแล้ว
+  	<h2>{% trans 'รหัสประชาชนมีการลงทะเบียนแล้ว' %}</h2>
+  	{% blocktrans %}ขออภัยด้วย {{ first_name }} รหัสประชาชน {{ national_id }} มีการลงทะเบียนแล้ว{% endblocktrans %}
   {% endif %}
 </div>
 {% endblock %}

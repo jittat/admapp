@@ -22,7 +22,7 @@
       {% else %}
         <div class="btn-group">
           <a class="btn btn-xsm btn-primary" href="{% translated_url 'th' %}">TH</a>
-          <a class="btn btn-xsm btn-outline-primary" href="{% translated_url 'th' %}">ใช้ระบบรับสมัครเป็นภาษาไทย</a>
+          <a class="btn btn-xsm btn-outline-primary" href="{% translated_url 'th' %}" lang="th">ใช้ระบบรับสมัครเป็นภาษาไทย</a>
         </div>
       {% endif %}
       <div class="mb10"></div>
@@ -51,8 +51,13 @@
       {% trans 'ถ้าลืมรหัสผ่าน' %} <a class="btn" href="{% url 'regis:forget' %}">{% trans 'สามารถขอรหัสผ่านใหม่ได้' %}</a>
     {% else %}
       <div class="alert alert-info">
+      {% if LANGUAGE_CODE == 'en' %}
+	Sorry, registration is not open yet. Please check back on 15 October 2025.<br>
+	For admission details, please see <a href="https://admission.ku.ac.th">admission.ku.ac.th</a>
+      {% else %}
 	ขออภัย ขณะนี้ระบบรับสมัครยังไม่เปิดให้ลงทะเบียน กรุณากลับมาตรวจสอบอีกครั้งในวันที่ 15 ต.ค. 2568<br>
 	สำหรับรายละเอียดเกี่ยวกับการรับสมัครสามารถติดตามได้ที่ <a href="https://admission.ku.ac.th">admission.ku.ac.th</a>
+      {% endif %}
       </div>
     {% endif %}
   </div>

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-02-05 23:33+0700\n"
+"POT-Creation-Date: 2026-09-24 04:48+0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,15 +17,15 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: admapp/settings.py:128
+#: admapp/settings.py:217
 msgid "Thai"
 msgstr "ไทย"
 
-#: admapp/settings.py:129
+#: admapp/settings.py:218
 msgid "English"
 msgstr "อังกฤษ"
 
-#: appl/db_messages/model_messages.py:3
+#: appl/db_messages/model_messages.py:3 main/tests.py:26
 msgid "วิทยาเขตบางเขน"
 msgstr "Bangkhen Campus"
 
@@ -251,149 +251,168 @@ msgstr "TCAS Round 4"
 msgid "รอบที่ 5"
 msgstr "TCAS Round 5"
 
-#: appl/models.py:390
+#: appl/models.py:723
 msgid "กำลังศึกษาชั้นมัธยมศึกษาปีที่ 6 หรือเทียบเท่า"
 msgstr "Currently in Grade 12 (Mathayom 6) or equivalent"
 
-#: appl/models.py:391
+#: appl/models.py:724
 msgid "จบการศึกษาชั้นมัธยมศึกษาปีที่ 6 หรือเทียบเท่า"
 msgstr "Graduated from Grade 12 (Mathayom 6) or equivalent"
 
-#: appl/models.py:394
+#: appl/models.py:727
 msgid "วิทย์-คณิต"
 msgstr "Science-Math"
 
-#: appl/models.py:395
+#: appl/models.py:728
 msgid "ศิลป์-คำนวณ"
 msgstr "Art-Math"
 
-#: appl/models.py:396
+#: appl/models.py:729
 msgid "ศิลป์-ภาษา"
 msgstr "Art-Language"
 
-#: appl/models.py:397
+#: appl/models.py:730
 #, fuzzy
 #| msgid "ศิลป์-คำนวณ"
 msgid "ศิลป์-สังคม"
 msgstr "Art-Math"
 
-#: appl/models.py:398
+#: appl/models.py:731
 msgid "อาชีวศึกษา"
 msgstr "Vocational Education"
 
-#: appl/models.py:399
+#: appl/models.py:732
 msgid "ไม่ระบุ"
 msgstr "Not specified"
 
-#: appl/models.py:404
+#: appl/models.py:738
 msgid "ระดับการศึกษา"
 msgstr "Educational level"
 
-#: appl/models.py:406
+#: appl/models.py:740
 msgid "แผนการศึกษา"
 msgstr "Study plan"
 
-#: appl/models.py:410
+#: appl/models.py:742
+#, fuzzy
+#| msgid "โครงการจัดตั้งวิทยาเขตสุพรรณบุรี"
+msgid "หน่วยกิตกลุ่มสาระวิทยาศาสตร์และเทคโนโลยี"
+msgstr "Suphan Buri Campus"
+
+#: appl/models.py:744
+#, fuzzy
+#| msgid "คณะศึกษาศาสตร์และพัฒนศาสตร์"
+msgid "หน่วยกิตกลุ่มสาระคณิตศาสตร์"
+msgstr "Faculty of Education and Development Sciences"
+
+#: appl/models.py:746
+#, fuzzy
+#| msgid "หลักสูตรนานาชาติ/ภาคภาษาอังกฤษ"
+msgid "หน่วยกิตกลุ่มสาระภาษาต่างประเทศ"
+msgstr "International Programs/English Programs"
+
+#: appl/models.py:752
 #, fuzzy
 #| msgid ""
-#| "ในกรณีที่สมัครโครงการช้างเผือก สามารถเลือกให้แสดงเฉพาะโรงเรียนที่เข้าโครงการได้ "
-#| "โดยกดปุ่มตอนท้าย"
+#| "ในกรณีที่สมัครโครงการช้างเผือก "
+#| "สามารถเลือกให้แสดงเฉพาะโรงเรียนที่เข้าโครงการได้ โดยกดปุ่มตอนท้าย"
 msgid ""
-"ในกรณีที่กำลังศึกษาชั้นม.6 ให้กรอกเกรดเฉลี่ย 5 ภาคการศึกษา ถ้าจบการศึกษาแล้วให้กรอกเกรดเฉลี่ย "
-"6 ภาคการศึกษา"
+"ในกรณีที่กำลังศึกษาชั้นม.6 ให้กรอกเกรดเฉลี่ย 5 ภาคการศึกษา "
+"แต่ถ้าคะแนนภาคต้นยังไม่เรียบร้อย สามารถกรอกแค่ 4 ภาคการศึกษาได้ "
+"ถ้าจบการศึกษาแล้วให้กรอกเกรดเฉลี่ย 6 ภาคการศึกษา"
 msgstr ""
 "If you are applying to the KU Talent program, you can filter only eligible "
 "schools below."
 
-#: appl/models.py:412 appl/models.py:482
+#: appl/models.py:755 appl/models.py:827
 msgid "จังหวัด"
 msgstr "Province"
 
-#: appl/models.py:414 appl/templates/appl/index.html:38
+#: appl/models.py:758 appl/templates/appl/index.html:38
 msgid "โรงเรียน"
 msgstr "School"
 
-#: appl/models.py:441
+#: appl/models.py:786
 msgid "คำนำหน้า (อังกฤษ)"
 msgstr "Prefix (English)"
 
-#: appl/models.py:444
+#: appl/models.py:789
 msgid "ชื่อ (อังกฤษ)"
 msgstr "Name (English)"
 
-#: appl/models.py:446
+#: appl/models.py:791
 msgid "ชื่อกลาง (อังกฤษ, ถ้ามี)"
 msgstr "Middle name (English, if any)"
 
-#: appl/models.py:449
+#: appl/models.py:794
 msgid "นามสกุล (อังกฤษ)"
 msgstr "Last name (English)"
 
-#: appl/models.py:451
+#: appl/models.py:796
 msgid "หมายเลข Passport (ถ้ามี)"
 msgstr "Passport number (if any)"
 
-#: appl/models.py:453
+#: appl/models.py:798
 msgid "วันเดือนปีเกิด"
 msgstr "Date of birth"
 
-#: appl/models.py:455
+#: appl/models.py:800
 msgid "คำนำหน้าชื่อบิดา"
 msgstr "Prefix of father's name"
 
-#: appl/models.py:457
+#: appl/models.py:802
 msgid "ชื่อบิดา"
 msgstr "Father's first name"
 
-#: appl/models.py:459
+#: appl/models.py:804
 msgid "นามสกุลบิดา"
 msgstr "Father's last name"
 
-#: appl/models.py:461
+#: appl/models.py:806
 msgid "คำนำหน้าชื่อมารดา"
 msgstr "Prefix of mother's name"
 
-#: appl/models.py:463
+#: appl/models.py:808
 msgid "ชื่อมารดา"
 msgstr "Mother's first name"
 
-#: appl/models.py:465
+#: appl/models.py:810
 msgid "นามสกุลมารดา"
 msgstr "Mother's last name"
 
-#: appl/models.py:467
+#: appl/models.py:812
 msgid "บ้านเลขที่"
 msgstr "House number"
 
-#: appl/models.py:469
+#: appl/models.py:814
 msgid "หมู่"
 msgstr "Village"
 
-#: appl/models.py:472
+#: appl/models.py:817
 msgid "ซอย"
 msgstr "Avenue"
 
-#: appl/models.py:475
+#: appl/models.py:820
 msgid "ถนน"
 msgstr "Road"
 
-#: appl/models.py:478
+#: appl/models.py:823
 msgid "ตำบล/แขวง"
 msgstr "Sub-district (Tumbon)"
 
-#: appl/models.py:480
+#: appl/models.py:825
 msgid "อำเภอ/เขต"
 msgstr "District (Ampher)"
 
-#: appl/models.py:484
+#: appl/models.py:829
 msgid "รหัสไปรษณีย์"
 msgstr "Postal code"
 
-#: appl/models.py:487
+#: appl/models.py:832
 msgid "เบอร์โทรศัพท์ที่ติดต่อได้"
 msgstr "Contact phone"
 
-#: appl/models.py:491
+#: appl/models.py:836
 msgid "เบอร์โทรศัพท์มือถือ"
 msgstr "Mobile phone"
 
@@ -401,11 +420,11 @@ msgstr "Mobile phone"
 msgid "หน้าหลัก"
 msgstr "Main application"
 
-#: appl/templates/appl/base.html:34
+#: appl/templates/appl/base.html:20
 msgid "ออกจากระบบ"
 msgstr "Log out"
 
-#: appl/templates/appl/forms/education.html:12
+#: appl/templates/appl/forms/education.html:16
 msgctxt "form title"
 msgid "กรอกข้อมูลการศึกษา"
 msgstr "Educational information"
@@ -415,9 +434,27 @@ msgctxt "form title"
 msgid "กรอกข้อมูลส่วนตัว"
 msgstr "Personal information"
 
-#: appl/templates/appl/include/active_application.html:64
+#: appl/templates/appl/include/active_application.html:92
 msgid "อัพโหลดเอกสาร"
 msgstr "Upload documents"
+
+#: appl/templates/appl/include/application_complete_notice.html:3
+#, fuzzy
+#| msgid "พิมพ์ใบสมัครเพื่อสัมภาษณ์"
+msgid "ใบสมัครของคุณสมบูรณ์แล้ว"
+msgstr "Application form for the interview"
+
+#: appl/templates/appl/include/application_complete_notice.html:5
+#, fuzzy
+#| msgid ""
+#| "ถ้าจบจากโรงเรียนนานาชาติหรือต่างประเทศและไม่มี GPA สามารถกรอกเป็น 0 ได้ "
+#| "และสามารถเลือกแผนการเรียนเป็นไม่ระบุได้"
+msgid ""
+"อย่างไรก็ตาม อาจจะมีเอกสารเพิ่มเติมที่สาขาต้องการที่คุณสามารถอัพโหลดเพิ่มได้"
+" นอกจากนี้ถ้าคุณลบเอกสารอัพโหลดบางชิ้น อาจทำให้ใบสมัครคุณไม่สมบูรณ์ได้"
+msgstr ""
+"Fill 0 for the GPA if your school did not determine your GPA. Select 'Not "
+"specified' for the studyplan if your school did not determined the plan."
 
 #: appl/templates/appl/include/application_document_status.html:4
 msgctxt "appl status"
@@ -425,7 +462,7 @@ msgid "สถานะการสมัครและค่าสมัคร"
 msgstr "Application and payment statuses"
 
 #: appl/templates/appl/include/application_document_status.html:6
-#: appl/templates/appl/include/documents_incomplete.html:2
+#: appl/templates/appl/include/documents_incomplete.html:5
 msgctxt "appl status"
 msgid "สถานะการสมัคร"
 msgstr "Application status"
@@ -440,62 +477,165 @@ msgctxt "appl status"
 msgid "ยังไม่ได้เลือกสาขา"
 msgstr "No major chosen."
 
-#: appl/templates/appl/include/document_upload_form.html:10
+#: appl/templates/appl/include/document_upload_form.html:12
 msgctxt "upload form"
 msgid "ไฟล์"
 msgstr "file(s)"
 
-#: appl/templates/appl/include/document_upload_form.html:13
+#: appl/templates/appl/include/document_upload_form.html:15
+#, fuzzy
+#| msgid "ชำระได้ถึงวันที่"
+msgid "อัพโหลดได้ถึงวันที่"
+msgstr "Payment last date:"
+
+#: appl/templates/appl/include/document_upload_form.html:24
 msgctxt "upload form link"
 msgid "รายละเอียด"
 msgstr "See details"
 
-#: appl/templates/appl/include/document_upload_form.html:25
+#: appl/templates/appl/include/document_upload_form.html:39
 msgid "ชื่อหรือคำอธิบายเอกสาร"
 msgstr "Document title or description"
 
-#: appl/templates/appl/include/document_upload_form.html:27
+#: appl/templates/appl/include/document_upload_form.html:41
 msgid "ชื่อหรือคำอธิบายเอกสาร (สามารถละไว้ได้)"
 msgstr "Document title or description (optional)"
 
-#: appl/templates/appl/include/document_upload_form.html:34
-#: appl/templates/appl/major_selection.html:62 appl/views/general_forms.py:67
-#: appl/views/general_forms.py:175
+#: appl/templates/appl/include/document_upload_form.html:48
+#: appl/templates/appl/include/document_upload_form.html:90
+#: appl/templates/appl/major_selection.html:62 appl/views/general_forms.py:74
+#: appl/views/general_forms.py:182
 msgid "จัดเก็บ"
 msgstr "Save"
 
-#: appl/templates/appl/include/document_upload_form.html:40
+#: appl/templates/appl/include/document_upload_form.html:54
 msgid "อัพโหลด"
 msgstr "Upload"
 
-#: appl/templates/appl/include/document_upload_form.html:58
+#: appl/templates/appl/include/document_upload_form.html:66
+#, fuzzy
+#| msgid "อัพโหลดเอกสาร"
+msgid "อัพโหลดไฟล์"
+msgstr "Upload documents"
+
+#: appl/templates/appl/include/document_upload_form.html:72
+#, fuzzy
+#| msgid "ดูลิงก์"
+msgid "ระบุลิงก์"
+msgstr "See link"
+
+#: appl/templates/appl/include/document_upload_form.html:98
+#, fuzzy
+#| msgctxt "major selection"
+#| msgid "เลือกสาขานี้"
+msgid "เอกสารเดิม"
+msgstr "Apply"
+
+#: appl/templates/appl/include/document_upload_form.html:100
+#, fuzzy
+#| msgid "กรุณาพิจารณาเกณฑ์และรายการเอกสารเพิ่มเติมที่ต้องอัพโหลด"
+msgid "จะถูกแทนที่ด้วยรายการใหม่ ต้องการดำเนินการต่อหรือไม่"
+msgstr ""
+"You should consider the following criteria and conditions. Please make sure "
+"that you have uploaded all required and optional documents."
+
+#: appl/templates/appl/include/document_upload_form.html:103
+#, fuzzy
+#| msgid "ยืนยันการสมัคร"
+msgid "ยืนยันการแทนที่"
+msgstr "I confirm my application"
+
+#: appl/templates/appl/include/document_upload_form.html:104
+#: appl/templates/appl/include/project_list.html:51
+#: appl/templates/appl/major_selection.html:63
+msgid "ยกเลิก"
+msgstr "Cancel"
+
+#: appl/templates/appl/include/document_upload_form.html:121
 msgid "ดูลิงก์"
 msgstr "See link"
 
-#: appl/templates/appl/include/document_upload_form.html:62
+#: appl/templates/appl/include/document_upload_form.html:125
 msgid "ลบ"
 msgstr "Delete"
 
-#: appl/templates/appl/include/documents_incomplete.html:2
+#: appl/templates/appl/include/document_validation_errors/default.html:1
+#, fuzzy
+#| msgid ""
+#| "ขออภัย ไม่สามารถเข้าใช้ระบบได้ "
+#| "เนื่องจากรหัสผ่านหรือรหัสประจำตัวประชาชนผิดพลาด"
+msgid ""
+"ระบบไม่สามารถตรวจสอบเอกสารได้ในขณะนี้ กรุณาลองใหม่อีกครั้ง "
+"หากยังพบปัญหากรุณาติดต่อเจ้าหน้าที่"
+msgstr ""
+"Sorry,  you cannot login because you entered a wrong national ID or an "
+"incorrect password."
+
+#: appl/templates/appl/include/document_validation_errors/default.html:1
+#, fuzzy
+#| msgctxt "appl status"
+#| msgid "เอกสารไม่เรียบร้อย"
+msgid "เอกสารไม่ผ่านการตรวจสอบ"
+msgstr "Incomplete application"
+
+#: appl/templates/appl/include/document_validation_errors/tcasfolio.html:4
+msgid ""
+"ไฟล์ไม่ใช่ไฟล์ PDF ที่ถูกต้อง กรุณาดาวน์โหลดไฟล์ PDF จากระบบ TCASFolio "
+"แล้วอัพโหลดใหม่"
+msgstr ""
+
+#: appl/templates/appl/include/document_validation_errors/tcasfolio.html:6
+msgid ""
+"ไฟล์นี้ไม่มีลายมือชื่ออิเล็กทรอนิกส์ของ TCASFolio กรุณาดาวน์โหลดไฟล์ PDF "
+"จากระบบ TCASFolio แล้วอัพโหลดใหม่"
+msgstr ""
+
+#: appl/templates/appl/include/document_validation_errors/tcasfolio.html:8
+msgid ""
+"ไฟล์ถูกแก้ไขหลังจากดาวน์โหลดจากระบบ TCASFolio "
+"กรุณาดาวน์โหลดใหม่และอัพโหลดโดยไม่แก้ไขไฟล์"
+msgstr ""
+
+#: appl/templates/appl/include/document_validation_errors/tcasfolio.html:10
+msgid ""
+"ลายมือชื่ออิเล็กทรอนิกส์ในไฟล์ไม่ใช่ของระบบ TCASFolio กรุณาดาวน์โหลดไฟล์ PDF"
+" จากระบบ TCASFolio แล้วอัพโหลดใหม่"
+msgstr ""
+
+#: appl/templates/appl/include/document_validation_errors/tcasfolio.html:12
+msgid ""
+"ลิงก์แฟ้มสะสมผลงานไม่ใช่ของระบบ TCASFolio กรุณาใช้ลิงก์จากระบบ TCASFolio"
+msgstr ""
+
+#: appl/templates/appl/include/document_validation_errors/tcasfolio.html:14
+#, fuzzy
+#| msgctxt "appl status"
+#| msgid "เอกสารไม่เรียบร้อย"
+msgid "ไม่มีเอกสารแฟ้มสะสมผลงาน"
+msgstr "Incomplete application"
+
+#: appl/templates/appl/include/documents_incomplete.html:5
 msgctxt "appl status"
 msgid "เอกสารไม่เรียบร้อย"
 msgstr "Incomplete application"
 
-#: appl/templates/appl/include/documents_incomplete.html:3
+#: appl/templates/appl/include/documents_incomplete.html:6
 msgctxt "appl status"
 msgid "เนื่องจาก"
 msgstr "Reason(s)"
 
-#: appl/templates/appl/include/interview_application_print_hook.html:3
+#: appl/templates/appl/include/interview_application_print_hook.html:36
 msgid "พิมพ์ใบสมัครเพื่อสัมภาษณ์"
 msgstr "Application form for the interview"
 
-#: appl/templates/appl/include/interview_application_print_hook.html:4
+#: appl/templates/appl/include/interview_application_print_hook.html:37
 msgid "พิมพ์ใบสมัคร"
 msgstr "Print your application"
 
-#: appl/templates/appl/include/interview_application_print_hook.html:5
-msgid "เพื่อนำมาประกอบการสัมภาษณ์ในวันที่ 13 ก.พ. 2561"
+#: appl/templates/appl/include/interview_application_print_hook.html:38
+#, fuzzy
+#| msgid "เพื่อนำมาประกอบการสัมภาษณ์ในวันที่ 13 ก.พ. 2561"
+msgid "เพื่อนำมาประกอบการสัมภาษณ์ในวันที่ 18 ม.ค. 2563"
 msgstr "for an interview on February 13th, 2018."
 
 #: appl/templates/appl/include/major_selection_item.html:3
@@ -521,19 +661,19 @@ msgstr[1] ""
 "      You can choose %(counter)s majors. Your choices are:<br />\n"
 "    "
 
-#: appl/templates/appl/include/major_selection_item.html:31
+#: appl/templates/appl/include/major_selection_item.html:32
 msgctxt "major link"
 msgid "แก้ไขสาขาที่เลือก"
 msgstr "Edit major choice(s)"
 
-#: appl/templates/appl/include/major_selection_item.html:34
-#: appl/templates/appl/include/major_selection_item.html:47
+#: appl/templates/appl/include/major_selection_item.html:35
+#: appl/templates/appl/include/major_selection_item.html:48
 msgid "หมดเขตการรับสมัครแล้ว ขณะนี้ไม่สามารถแก้ไขอันดับที่เลือกได้"
 msgstr ""
 "The application deadline has been passed.  You cannot change your "
 "selection(s)."
 
-#: appl/templates/appl/include/major_selection_item.html:39
+#: appl/templates/appl/include/major_selection_item.html:40
 #, python-format
 msgid ""
 "\n"
@@ -545,16 +685,14 @@ msgid_plural ""
 "    "
 msgstr[0] ""
 "\n"
-"      You have not made any major selection. (You can choose %(counter)s "
-"major.)<br />\n"
+"      You have not made any major selection. (You can choose %(counter)s major.)<br />\n"
 "    "
 msgstr[1] ""
 "\n"
-"      You have not made any major selection. (You can choose %(counter)s "
-"majors.)<br />\n"
+"      You have not made any major selection. (You can choose %(counter)s majors.)<br />\n"
 "    "
 
-#: appl/templates/appl/include/major_selection_item.html:45
+#: appl/templates/appl/include/major_selection_item.html:46
 msgctxt "major link"
 msgid "เลือกสาขา"
 msgstr "Choose majors to apply"
@@ -585,15 +723,16 @@ msgstr ""
 "    Additional payment: %(additional_payment)s Baht.<br />\n"
 "  "
 
-#: appl/templates/appl/include/payment_item.html:15
+#: appl/templates/appl/include/payment_item.html:48
 msgid "พิมพ์ใบชำระเงิน"
 msgstr "Print payment form"
 
-#: appl/templates/appl/include/payment_item.html:16
+#: appl/templates/appl/include/payment_item.html:58
+#: appl/templates/appl/include/payment_item.html:60
 msgid "ชำระได้ถึงวันที่"
 msgstr "Payment last date:"
 
-#: appl/templates/appl/include/payment_item.html:18
+#: appl/templates/appl/include/payment_item.html:67
 msgid "ไม่ต้องชำระเพิ่ม"
 msgstr "No additional fee."
 
@@ -602,35 +741,33 @@ msgid "ขอแสดงความยินดีด้วย"
 msgstr "Congratulations"
 
 #: appl/templates/appl/include/project_accepted_for_interview_result.html:8
+#: main/tests.py:29
 msgid "คุณผ่านการคัดเลือกมีสิทธิ์เข้าสอบสัมภาษณ์ ในสาขาต่อไปนี้"
 msgstr "You have been accepted for an interview for the following major(s)"
 
-#: appl/templates/appl/include/project_accepted_for_interview_result.html:15
-msgid "สัมภาษณ์ลำดับที่"
-msgstr "Interview number"
+#: appl/templates/appl/include/project_accepted_for_interview_result.html:16
+#, fuzzy
+#| msgid "รอบที่ 2"
+msgid "ลำดับที่"
+msgstr "TCAS Round 2"
 
-#: appl/templates/appl/include/project_accepted_for_interview_result.html:23
-msgid "สถานที่และเวลา:"
-msgstr "Time and location:"
-
-#: appl/templates/appl/include/project_accepted_for_interview_result.html:28
+#: appl/templates/appl/include/project_accepted_for_interview_result.html:44
 msgid "ขอแสดงความเสียใจด้วย"
 msgstr "We are sorry"
 
-#: appl/templates/appl/include/project_accepted_for_interview_result.html:29
+#: appl/templates/appl/include/project_accepted_for_interview_result.html:45
+#, fuzzy
+#| msgid ""
+#| "\n"
+#| "          คุณไม่ผ่านการพิจารณาคัดเลือกให้เข้าสอบสัมภาษณ์ มหาวิทยาลัยเกษตรศาสตร์ขอขอบคุณผู้สมัครที่สนใจเข้าศึกษาต่อที่มหาวิทยาลัยเกษตรศาสตร์ นอกจากโครงการนี้แล้วยังมีโครงการรับสมัครในรอบการคัดเลือกอื่น ๆ อีก สามารถติดตามข้อมูลได้จากเว็บไซต์ admission.ku.ac.th\n"
+#| "        "
 msgid ""
 "\n"
-"          คุณไม่ผ่านการพิจารณาคัดเลือกให้เข้าสอบสัมภาษณ์ "
-"มหาวิทยาลัยเกษตรศาสตร์ขอขอบคุณผู้สมัครที่สนใจเข้าศึกษาต่อที่มหาวิทยาลัยเกษตรศาสตร์ "
-"นอกจากโครงการนี้แล้วยังมีโครงการรับสมัครในรอบการคัดเลือกอื่น ๆ อีก "
-"สามารถติดตามข้อมูลได้จากเว็บไซต์ admission.ku.ac.th\n"
-"        "
+"            คุณไม่ผ่านการพิจารณาคัดเลือกให้เข้าสอบสัมภาษณ์ มหาวิทยาลัยเกษตรศาสตร์ขอขอบคุณผู้สมัครที่สนใจเข้าศึกษาต่อที่มหาวิทยาลัยเกษตรศาสตร์ นอกจากโครงการนี้แล้วยังมีโครงการรับสมัครในรอบการคัดเลือกอื่น ๆ อีก สามารถติดตามข้อมูลได้จากเว็บไซต์ admission.ku.ac.th\n"
+"          "
 msgstr ""
 "\n"
-"          You have not been selected for an interview. "
-"Kasetsart University would like to thank you for your interest in applying "
-"to KU. "
-"You can find more applying information for other rounds of TCAS and other opportunities at admission.ku.ac.th.\n"
+"          You have not been selected for an interview. Kasetsart University would like to thank you for your interest in applying to KU. You can find more applying information for other rounds of TCAS and other opportunities at admission.ku.ac.th.\n"
 "        "
 
 #: appl/templates/appl/include/project_cancel_div.html:3
@@ -653,43 +790,38 @@ msgstr "Cancel application"
 msgid "รายการโครงการรับสมัคร"
 msgstr "Admission projects for "
 
-#: appl/templates/appl/include/project_list.html:15
+#: appl/templates/appl/include/project_list.html:32
 msgid "หมดเวลารับสมัคร"
 msgstr "Deadline passed"
 
-#: appl/templates/appl/include/project_list.html:18
+#: appl/templates/appl/include/project_list.html:35
 msgid "เปิดรับสมัครวันที่"
 msgstr "Applying period:"
 
-#: appl/templates/appl/include/project_list.html:21
+#: appl/templates/appl/include/project_list.html:38
 msgid "สมัครโครงการนี้"
 msgstr "Apply"
 
-#: appl/templates/appl/include/project_list.html:26
+#: appl/templates/appl/include/project_list.html:46
 msgid "กรุณายืนยันการสมัครโครงการนี้"
 msgstr "Please confirm your application"
 
-#: appl/templates/appl/include/project_list.html:30
+#: appl/templates/appl/include/project_list.html:50
 msgid "ยืนยันการสมัคร"
 msgstr "I confirm my application"
-
-#: appl/templates/appl/include/project_list.html:31
-#: appl/templates/appl/major_selection.html:63
-msgid "ยกเลิก"
-msgstr "Cancel"
 
 #: appl/templates/appl/include/selected_major_details.html:5
 msgctxt "single major details"
 msgid "รายละเอียดสาขาที่สมัคร"
 msgstr "Application information for your selected major"
 
-#: appl/templates/appl/include/selected_major_details.html:6
+#: appl/templates/appl/include/selected_major_details.html:7
 msgid "กรุณาพิจารณาเกณฑ์และรายการเอกสารเพิ่มเติมที่ต้องอัพโหลด"
 msgstr ""
 "You should consider the following criteria and conditions. Please make sure "
 "that you have uploaded all required and optional documents."
 
-#: appl/templates/appl/include/selected_major_details.html:7
+#: appl/templates/appl/include/selected_major_details.html:9
 msgctxt "single major details"
 msgid "สาขาที่สมัคร"
 msgstr "Applied major or program"
@@ -715,11 +847,11 @@ msgstr "Enter personal information"
 msgid "แผนการเรียน"
 msgstr "Study plan"
 
-#: appl/templates/appl/index.html:40
+#: appl/templates/appl/index.html:43
 msgid "แก้ไขข้อมูลการศึกษา"
 msgstr "Edit educational information"
 
-#: appl/templates/appl/index.html:44
+#: appl/templates/appl/index.html:47
 msgctxt "form link"
 msgid "กรอกข้อมูลการศึกษา"
 msgstr "Enter educational information"
@@ -729,6 +861,7 @@ msgid "เลือกสาขาโครงการ"
 msgstr "Major selection: "
 
 #: appl/templates/appl/major_selection.html:15
+#: appl/templates/appl/payments/payment_qr.html:7
 msgid "ผู้สมัคร"
 msgstr "Applicant"
 
@@ -761,7 +894,13 @@ msgctxt "major selection"
 msgid "เลือกสาขานี้"
 msgstr "Apply"
 
-#: appl/views/general_forms.py:35
+#: appl/templates/appl/payments/payment_qr.html:6
+#, fuzzy
+#| msgid "พิมพ์ใบสมัครเพื่อสัมภาษณ์"
+msgid "ชำระค่าสมัครสำหรับรอบที่"
+msgstr "Application form for the interview"
+
+#: appl/views/general_forms.py:31
 msgid ""
 "ถ้าจบจากโรงเรียนนานาชาติหรือต่างประเทศและไม่มี GPA สามารถกรอกเป็น 0 ได้ "
 "และสามารถเลือกแผนการเรียนเป็นไม่ระบุได้"
@@ -769,78 +908,84 @@ msgstr ""
 "Fill 0 for the GPA if your school did not determine your GPA. Select 'Not "
 "specified' for the studyplan if your school did not determined the plan."
 
-#: appl/views/general_forms.py:45
+#: appl/views/general_forms.py:52
 msgid "ข้อมูลโรงเรียน"
 msgstr "School information"
 
-#: appl/views/general_forms.py:51
+#: appl/views/general_forms.py:58
 msgid ""
-"ในกรณีที่สมัครโครงการช้างเผือก สามารถเลือกให้แสดงเฉพาะโรงเรียนที่เข้าโครงการได้ "
-"โดยกดปุ่มตอนท้าย"
+"ในกรณีที่สมัครโครงการช้างเผือก "
+"สามารถเลือกให้แสดงเฉพาะโรงเรียนที่เข้าโครงการได้ โดยกดปุ่มตอนท้าย"
 msgstr ""
 "If you are applying to the KU Talent program, you can filter only eligible "
 "schools below."
 
-#: appl/views/general_forms.py:62
+#: appl/views/general_forms.py:69
 msgid "แสดงรายการเฉพาะโรงเรียนในโครงการช้างเผือก"
 msgstr "Show only schools eligible to KU Talent program"
 
-#: appl/views/general_forms.py:95 appl/views/general_forms.py:99
-#: appl/views/general_forms.py:102 regis/views.py:79
+#: appl/views/general_forms.py:102 appl/views/general_forms.py:106
+#: appl/views/general_forms.py:109 regis/views.py:73
 msgid "คำนำหน้า"
 msgstr "Prefix"
 
-#: appl/views/general_forms.py:96 appl/views/general_forms.py:100
-#: appl/views/general_forms.py:103
+#: appl/views/general_forms.py:103 appl/views/general_forms.py:107
+#: appl/views/general_forms.py:110
 msgid "ชื่อต้น"
 msgstr "First name"
 
-#: appl/views/general_forms.py:97
+#: appl/views/general_forms.py:104
 msgid "ชื่อกลาง (ถ้ามี)"
 msgstr "Middle name (optional)"
 
-#: appl/views/general_forms.py:98 appl/views/general_forms.py:101
-#: appl/views/general_forms.py:104 regis/views.py:85
+#: appl/views/general_forms.py:105 appl/views/general_forms.py:108
+#: appl/views/general_forms.py:111 regis/views.py:79
 msgid "นามสกุล"
 msgstr "Last name"
 
-#: appl/views/general_forms.py:121
+#: appl/views/general_forms.py:128
 msgid "ข้อมูลผู้สมัครภาษาอังกฤษ"
 msgstr "Applicant information (in English)"
 
-#: appl/views/general_forms.py:130
+#: appl/views/general_forms.py:137
 msgid "ข้อมูลส่วนตัว"
 msgstr "Personal information"
 
-#: appl/views/general_forms.py:138
+#: appl/views/general_forms.py:145
 msgid "ข้อมูลบิดา (ภาษาไทย)"
 msgstr "Father information"
 
-#: appl/views/general_forms.py:146
+#: appl/views/general_forms.py:153
 msgid "ข้อมูลมารดา (ภาษาไทย)"
 msgstr "Mother information"
 
-#: appl/views/general_forms.py:154
+#: appl/views/general_forms.py:161
 msgid "ข้อมูลที่อยู่"
 msgstr "Address"
 
-#: main/templates/base.html:67
-msgid "ฝ่ายรับเข้าศึกษา สำนักทะเบียนและประมวลผล มหาวิทยาลัยเกษตรศาสตร์"
-msgstr "Admission Department, Office of the Registrar, Kasetsart University"
+#: main/templates/base.html:75
+#| msgid ""
+#| "ฝ่ายรับเข้าศึกษา สำนักทะเบียนและประมวลผล มหาวิทยาลัยเกษตรศาสตร์"
+msgid ""
+"ฝ่ายรับสมัครและพัฒนาการรับเข้าศึกษา สำนักบริหารการศึกษา "
+"มหาวิทยาลัยเกษตรศาสตร์"
+msgstr "Admission Division, Office of the Registrar, Kasetsart University"
 
-#: main/templates/base.html:68
-msgid "โทร. 0 2942 8200 ต่อ 8046 - 8051    E-mail: admission@ku.ac.th"
-msgstr "Tel. 0 2942 8200 ext. 8046 - 8051   E-mail: admission@ku.ac.th"
+#: main/templates/base.html:76
+#| msgid ""
+#| "โทร. 0 2942 8200 ต่อ 8046 - 8051    E-mail: admission@ku.ac.th"
+msgid "โทร. 02 118 0100 ต่อ 8046-8051    E-mail: admission@ku.ac.th"
+msgstr "Tel. 02 118 0100 ext. 8046-8051    E-mail: admission@ku.ac.th"
 
-#: main/templates/base.html:69
+#: main/templates/base.html:77
 msgid "เครดิตรูปภาพ: KU-Photo และภาพจากเว็บไซต์วิทยาเขต"
 msgstr "Photo credit: KU-Photo and campus websites"
 
-#: main/templates/main/index.html:9
+#: main/templates/main/index.html:10
 msgid "ยินดีต้อนรับสู่รั้วนนทรี"
 msgstr "Welcome to Kasetsart"
 
-#: main/templates/main/index.html:12
+#: main/templates/main/index.html:16
 msgid "เข้าใช้ระบบรับสมัคร"
 msgstr "Start using the admission system"
 
@@ -849,7 +994,9 @@ msgid "กรุณา login เข้าใช้ระบบก่อนใช
 msgstr "Please login to start using the admission system."
 
 #: main/templates/main/index.html:35
-msgid "ขออภัย ไม่สามารถเข้าใช้ระบบได้ เนื่องจากรหัสผ่านหรือรหัสประจำตัวประชาชนผิดพลาด"
+msgid ""
+"ขออภัย ไม่สามารถเข้าใช้ระบบได้ "
+"เนื่องจากรหัสผ่านหรือรหัสประจำตัวประชาชนผิดพลาด"
 msgstr ""
 "Sorry,  you cannot login because you entered a wrong national ID or an "
 "incorrect password."
@@ -862,133 +1009,260 @@ msgstr "Sorry, you cannot login due to an incorrect login form."
 msgid "เข้าใช้ระบบ"
 msgstr "Log in"
 
-#: main/templates/main/index.html:47
+#: main/templates/main/index.html:48
 msgid "หรือลงทะเบียนสำหรับผู้ใช้ใหม่"
 msgstr "For a new user, you have to register."
 
-#: main/templates/main/index.html:48 regis/views.py:129
+#: main/templates/main/index.html:49 regis/views.py:123
 msgid "ลงทะเบียน"
 msgstr "Register"
 
-#: main/templates/main/index.html:49
+#: main/templates/main/index.html:51
 msgid "ถ้าลืมรหัสผ่าน"
 msgstr "If you forget your password,"
 
-#: main/templates/main/index.html:49
+#: main/templates/main/index.html:51
 msgid "สามารถขอรหัสผ่านใหม่ได้"
 msgstr "request a new password here."
+
+#: regis/templates/regis/forget.html:8
+#| msgid "ลงทะเบียนบัญชีผู้สมัครเข้าศึกษา"
+msgid "ขอรหัสผ่านบัญชีผู้สมัครเข้าศึกษาใหม่"
+msgstr "Request a new password for your applicant account"
+
+#: regis/templates/regis/forget.html:11
+#| msgid "สามารถขอรหัสผ่านใหม่ได้"
+msgid "ไม่สามารถขอรหัสผ่านใหม่ได้"
+msgstr "Unable to request a new password"
+
+#: regis/templates/regis/forget.html:12
+#, python-format
+#| msgctxt "appl status"
+#| msgid "เนื่องจาก"
+msgid "เนื่องจาก%(error_message)s"
+msgstr "%(error_message)s"
+
+#: regis/templates/regis/forget.html:19
+#| msgid "สามารถขอรหัสผ่านใหม่ได้"
+msgid "ขอรหัสผ่านใหม่"
+msgstr "Request a new password"
+
+#: regis/templates/regis/forget.html:24
+#| msgid "รหัสผ่านเป็นรหัสผ่านที่ใช้บ่อยมากเกินไป"
+msgid "กำหนดรหัสผ่านใหม่ให้กับผู้สมัครแล้ว"
+msgstr "A new password has been set"
+
+#: regis/templates/regis/forget.html:27
+#, python-format
+msgid ""
+"รหัสผ่านใหม่จะถูกส่งให้กับผู้สมัครทางอีเมล %(email)s "
+"ผู้สมัครน่าจะได้รับอีเมลภายในเวลาประมาณ 5 นาที "
+"หลังจากนั้นจะสามารถเข้าใช้งานระบบด้วยรหัสผ่านใหม่ได้"
+msgstr ""
+"The new password will be sent to %(email)s. You should receive the email "
+"within about 5 minutes, after which you can log in with the new password."
+
+#: regis/templates/regis/forget.html:34
+#| msgid ""
+#| "\n"
+#| "          คุณไม่ผ่านการพิจารณาคัดเลือกให้เข้าสอบสัมภาษณ์ มหาวิทยาลัยเกษตรศาสตร์ขอขอบคุณผู้สมัครที่สนใจเข้าศึกษาต่อที่มหาวิทยาลัยเกษตรศาสตร์ นอกจากโครงการนี้แล้วยังมีโครงการรับสมัครในรอบการคัดเลือกอื่น ๆ อีก สามารถติดตามข้อมูลได้จากเว็บไซต์ admission.ku.ac.th\n"
+#| "        "
+msgid ""
+"บางครั้งอีเมลที่ส่งรหัสผ่านจะเข้าไปที่กล่องจดหมายขยะ (junk mail) "
+"กรุณาอย่าลืมตรวจสอบ &nbsp;&nbsp; "
+"ตัวอย่างของการเลือกดูรายการอีเมลในกล่องจดหมายขยะแสดงดังรูปด้านล่าง "
+"บางครั้งอาจจะต้องรายการกล่องจดหมายต่าง ๆ "
+"ทางด้านซ้ายและอาจกดขยายรายการที่ถูกซ่อนไว้ก่อน (เช่น กด More)"
+msgstr ""
+"The password email sometimes ends up in the junk mail folder, so please "
+"check there too. &nbsp;&nbsp; The picture below shows how to open the junk "
+"mail folder. You may need to look through the folder list on the left, and "
+"expand hidden folders first (e.g. click More)."
+
+#: regis/templates/regis/forget.html:40
+#: regis/templates/regis/regis_result.html:23
+#| msgid "ข้อมูลสำหรับการเข้าสู่ระบบ"
+msgid "กลับไปหน้าแรกเพื่อเข้าใช้ระบบ"
+msgstr "Back to the home page to log in"
+
+#: regis/templates/regis/regis_result.html:6
+#| msgid "พิมพ์ใบสมัครเพื่อสัมภาษณ์"
+msgid "ผู้สมัครเข้าศึกษาใหม่"
+msgstr "New applicant"
+
+#: regis/templates/regis/regis_result.html:8
+#| msgid "พิมพ์ใบสมัครเพื่อสัมภาษณ์"
+msgid "การสมัครเสร็จสมบูรณ์"
+msgstr "Registration complete"
+
+#: regis/templates/regis/regis_result.html:11
+#, python-format
+#| msgid ""
+#| "ถ้าจบจากโรงเรียนนานาชาติหรือต่างประเทศและไม่มี GPA สามารถกรอกเป็น 0 ได้ "
+#| "และสามารถเลือกแผนการเรียนเป็นไม่ระบุได้"
+msgid ""
+"ผู้สมัครจะได้รับการตอบรับทางอีเมล %(email)s "
+"ผู้สมัครน่าจะได้รับอีเมลภายในเวลาประมาณ 5 นาที "
+"หลังจากนั้นจะสามารถเข้าใช้งานระบบได้"
+msgstr ""
+"A confirmation will be sent to %(email)s. You should receive the email "
+"within about 5 minutes, after which you can log in."
+
+#: regis/templates/regis/regis_result.html:17
+msgid ""
+"หากไม่พบอีเมลในกล่องจดหมาย (Inbox) ให้เข้าไปเช็คในจดหมายขยะ (Junk) "
+"หากไม่ได้รับอีเมลให้ติดต่อ โทร. 02 118 0100 ต่อ 8046-8051 หรือ E-mail: "
+"admission@ku.ac.th"
+msgstr ""
+"If the email is not in your Inbox, please check your Junk folder. If you do "
+"not receive the email, please contact us at Tel. 02 118 0100 ext. 8046-8051 "
+"or E-mail: admission@ku.ac.th"
 
 #: regis/templates/regis/register.html:7
 msgid "ลงทะเบียนบัญชีผู้สมัครเข้าศึกษา"
 msgstr "Register an account"
 
-#: regis/views.py:27 regis/views.py:35
+#: regis/templates/regis/registration_error.html:6
+#| msgid "เลขที่หนังสือเดินทางที่ยืนยันไม่ตรงกัน"
+msgid "เลขที่หนังสือเดินทางมีการลงทะเบียนแล้ว"
+msgstr "This passport number is already registered"
+
+#: regis/templates/regis/registration_error.html:7
+#, python-format
+#| msgid "เลขที่หนังสือเดินทางที่ยืนยันไม่ตรงกัน"
+msgid ""
+"ขออภัยด้วย %(first_name)s เลขที่หนังสือเดินทาง %(passport_number)s "
+"มีการลงทะเบียนแล้ว"
+msgstr ""
+"Sorry, %(first_name)s. Passport number %(passport_number)s is already "
+"registered."
+
+#: regis/templates/regis/registration_error.html:9
+#| msgid "รหัสประจำตัวประชาชนผิดรูปแบบ"
+msgid "รหัสประชาชนมีการลงทะเบียนแล้ว"
+msgstr "This national ID is already registered"
+
+#: regis/templates/regis/registration_error.html:10
+#, python-format
+#| msgid "รหัสประจำตัวประชาชนที่ยืนยันไม่ตรงกัน"
+msgid ""
+"ขออภัยด้วย %(first_name)s รหัสประชาชน %(national_id)s มีการลงทะเบียนแล้ว"
+msgstr ""
+"Sorry, %(first_name)s. National ID %(national_id)s is already registered."
+
+#: regis/views.py:21 regis/views.py:29
 msgid "รหัสประจำตัวประชาชนหรือหมายเลขพาสปอร์ต"
 msgstr "National ID or passport number"
 
-#: regis/views.py:29 regis/views.py:88
+#: regis/views.py:23 regis/views.py:82
 msgid "รหัสผ่าน"
 msgstr "Password"
 
-#: regis/views.py:37
+#: regis/views.py:31
 msgid "อีเมลที่ลงทะเบียน"
 msgstr "Registered email"
 
-#: regis/views.py:43
+#: regis/views.py:37
 msgid "รหัสผ่านมีแต่ตัวเลข"
 msgstr "This password is entirely numeric."
 
-#: regis/views.py:44
+#: regis/views.py:38
 msgid "รหัสผ่านสั้นเกินไป"
 msgstr "This password is too short."
 
-#: regis/views.py:45
+#: regis/views.py:39
 msgid "รหัสผ่านเป็นรหัสผ่านที่ใช้บ่อยมากเกินไป"
 msgstr "This password is too common."
 
-#: regis/views.py:49
+#: regis/views.py:43
 msgid "มีรหัสประจำตัวประชาชน"
 msgstr "You have Thai national ID"
 
-#: regis/views.py:50
+#: regis/views.py:44
 msgid "ไม่มีรหัสประจำตัวประชาชน (ใช้เลขที่หนังสือเดินทางในการสมัคร)"
-msgstr "You do not have Thai national ID. (You must use your passport number.)"
+msgstr ""
+"You do not have Thai national ID. (You must use your passport number.)"
 
-#: regis/views.py:55
-msgid "ผู้สมัครที่มีรหัสประจำตัวประชาชน ต้องสมัครด้วยรหัสประจำตัวประชาชนเท่านั้น"
+#: regis/views.py:49
+msgid ""
+"ผู้สมัครที่มีรหัสประจำตัวประชาชน ต้องสมัครด้วยรหัสประจำตัวประชาชนเท่านั้น"
 msgstr "If you are a Thai citizen, you must register with Thai national ID."
 
-#: regis/views.py:56
+#: regis/views.py:50
 msgid "หากเคยสมัครแล้วแต่ไม่สามารถเข้าสู่ระบบได้ กรุณากดขอรหัสผ่านใหม่"
 msgstr ""
-"If you have registered but you cannot remember the password, you can request "
-"for a new password."
+"If you have registered but you cannot remember the password, you can request"
+" for a new password."
 
-#: regis/views.py:61
+#: regis/views.py:55
 msgid "รหัสประจำตัวประชาชน"
 msgstr "National ID"
 
-#: regis/views.py:64
+#: regis/views.py:58
 msgid "ยืนยันรหัสประจำตัวประชาชน"
 msgstr "National ID (confirmation)"
 
-#: regis/views.py:68
+#: regis/views.py:62
 msgid "เลขที่หนังสือเดินทาง (Passport No.)"
 msgstr "Passport number"
 
-#: regis/views.py:71
+#: regis/views.py:65
 msgid "ยืนยันเลขที่หนังสือเดินทาง (Passport No.)"
 msgstr "Passport number (confirmation)"
 
-#: regis/views.py:75
+#: regis/views.py:69
 msgid "อีเมล"
 msgstr "Email"
 
-#: regis/views.py:76
-msgid "กรุณากรอกอีเมลที่ใช้งานได้ เพื่อรับข้อมูลสำคัญเกี่ยวกับการสมัครเข้าศึกษาจากเรา"
+#: regis/views.py:70
+msgid ""
+"กรุณากรอกอีเมลที่ใช้งานได้ "
+"เพื่อรับข้อมูลสำคัญเกี่ยวกับการสมัครเข้าศึกษาจากเรา"
 msgstr ""
 "Please use working email so that you can receive your admission information "
 "from us."
 
-#: regis/views.py:77
+#: regis/views.py:71
 msgid "ยืนยันอีเมล"
 msgstr "Email (confirmation)"
 
-#: regis/views.py:80
+#: regis/views.py:74
 msgid "นาย"
 msgstr "Mr."
 
-#: regis/views.py:81
+#: regis/views.py:75
 msgid "นางสาว"
 msgstr "Miss"
 
-#: regis/views.py:82
+#: regis/views.py:76
 msgid "นาง"
 msgstr "Mrs."
 
-#: regis/views.py:83
+#: regis/views.py:77
 msgid "ชื่อ"
 msgstr "First name"
 
-#: regis/views.py:90
-msgid "ต้องมีความยาวไม่น้อยกว่า 8 ตัวอักษร ไม่สามารถประกอบขึ้นจากตัวเลขเพียงอย่างเดียวได้"
+#: regis/views.py:84
+msgid ""
+"ต้องมีความยาวไม่น้อยกว่า 8 ตัวอักษร "
+"ไม่สามารถประกอบขึ้นจากตัวเลขเพียงอย่างเดียวได้"
 msgstr ""
 "A password should contain at least 8 characters. It cannot be entirely "
 "numeric.numbers."
 
-#: regis/views.py:92
+#: regis/views.py:86
 msgid "ยืนยันรหัสผ่าน"
 msgstr "Password (confirmation)"
 
-#: regis/views.py:101
+#: regis/views.py:95
 msgid "ข้อมูลสำหรับการเข้าสู่ระบบ"
 msgstr "Identification information"
 
-#: regis/views.py:117
+#: regis/views.py:111
 msgid "ข้อมูลพื้นฐานของผู้สมัคร"
 msgstr "Basic information"
 
-#: regis/views.py:150 regis/views.py:160
+#: regis/views.py:147 regis/views.py:160
 msgid "รหัสประจำตัวประชาชนผิดรูปแบบ"
 msgstr "Incorrect national ID"
 
@@ -996,23 +1270,49 @@ msgstr "Incorrect national ID"
 msgid "รหัสประจำตัวประชาชนที่ยืนยันไม่ตรงกัน"
 msgstr "National ID does not match the confirmation"
 
-#: regis/views.py:172 regis/views.py:181
+#: regis/views.py:175 regis/views.py:187
 msgid "เลขที่หนังสือเดินทางผิดรูปแบบ"
 msgstr "Incorrect passport number"
 
-#: regis/views.py:184
+#: regis/views.py:190
 msgid "เลขที่หนังสือเดินทางที่ยืนยันไม่ตรงกัน"
 msgstr "Passport number does not match the confirmation"
 
-#: regis/views.py:189
+#: regis/views.py:195
 msgid "อีเมลที่ยืนยันไม่ตรงกัน"
 msgstr "Email does not match the confirmation"
 
-#: regis/views.py:204
+#: regis/views.py:210
 msgid "รหัสผ่านที่ยืนยันไม่ตรงกัน"
 msgstr "Password does not match the confirmation"
 
-#: regis/views.py:270
+#: regis/views.py:325
 msgid "ไม่พบข้อมูลผู้สมัครที่ระบุหรืออีเมลที่ระบุไม่ถูกต้อง"
 msgstr ""
 "Account information is not found, or you've entered an incorrect email."
+
+#: regis/views.py:327
+msgid ""
+"ผู้สมัครได้ขอรหัสผ่านใหม่ไปแล้ว กรุณารออย่างน้อย 5 นาที "
+"ก่อนจะขอรหัสผ่านใหม่อีกครั้ง อีเมลรหัสผ่านอาจจะถูกส่งเข้าไปที่กล่องขยะ "
+"กรุณาอย่าลืมตรวจสอบ"
+msgstr ""
+"A new password has already been requested. Please wait at least 5 minutes "
+"before requesting again. The password email may have gone to your junk mail "
+"folder, so please check there."
+
+#: regis/views.py:412
+#| msgid ""
+#| "ขออภัย ไม่สามารถเข้าใช้ระบบได้ "
+#| "เนื่องจากรหัสผ่านหรือรหัสประจำตัวประชาชนผิดพลาด"
+msgid ""
+"ยังไม่สามารถตรวจสอบการลงทะเบียนหรือสิทธิ์การสมัครใหม่ได้ กรุณารอ 10 นาที"
+msgstr ""
+"Your registration or application eligibility cannot be checked again yet. "
+"Please wait 10 minutes."
+
+#~ msgid "สัมภาษณ์ลำดับที่"
+#~ msgstr "Interview number"
+
+#~ msgid "สถานที่และเวลา:"
+#~ msgstr "Time and location:"
