@@ -17,9 +17,8 @@ Findings, in order of impact:
 2. **Stale catalog**: new strings untranslated or marked fuzzy.
 3. **`title_trans` not used** on live pages that show DB titles.
 4. **Deploy robustness**: relative `LOCALE_PATHS`, and nothing builds the
-   `.mo` file.
-5. **`<html lang>` hardcoded to `en`** on every page (small; good first
-   step).
+   `.mo` file (fixed).
+5. **`<html lang>` hardcoded to `en`** on every page (fixed).
 
 ## How it's wired
 
@@ -40,8 +39,7 @@ Findings, in order of impact:
   It always links to the index page in the other language, not to the
   current page. In `appl/base.html` it's inside `{% if applicant %}`, so
   logged-out `appl` pages have no switcher. Backoffice has none (expected;
-  staff UI is Thai-only). `main/templates/base.html` hardcodes
-  `<html lang="en">` whatever the active language.
+  staff UI is Thai-only).
 - Translatable strings: templates use `{% load i18n %}` + `{% trans %}` /
   `{% blocktrans %}`. These tags still work under Django 5.2 (registered
   aliases of `translate`/`blocktranslate`).
@@ -122,7 +120,12 @@ catalog holds:
 `{{ major.faculty }}` goes through `__str__`, which returns the raw title,
 so it isn't translated either.
 
-## 4. Deploy robustness: relative `LOCALE_PATHS`
+## 4. Deploy robustness: relative `LOCALE_PATHS` (fixed)
+
+Fixed in `b0e50fe`: `LOCALE_PATHS` now uses `BASE_DIR`, `locale/**/*.mo` is
+committed (exception in `.gitignore`), and `main/tests.py` checks both.
+After editing `django.po`, run `compilemessages` and commit the `.mo`.
+The original finding follows.
 
 ```python
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -145,7 +148,10 @@ production process's working directory, so it's not established that this
 breaks production. It's a latent bug worth fixing either way
 (`os.path.join(BASE_DIR, 'locale')`).
 
-## 5. `<html lang>` hardcoded to `en`
+## 5. `<html lang>` hardcoded to `en` (fixed)
+
+Fixed: the two base templates now use the active language, and the
+Thai-only printouts use `lang="th"`. The original finding follows.
 
 Every standalone page template declares `<html lang="en">` whatever
 language it's rendered in:

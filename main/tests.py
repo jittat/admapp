@@ -28,3 +28,7 @@ class TranslationTestCase(SimpleTestCase):
             self.assertEqual(
                 translation.gettext('คุณผ่านการคัดเลือกมีสิทธิ์เข้าสอบสัมภาษณ์ ในสาขาต่อไปนี้'),
                 'You have been accepted for an interview for the following major(s)')
+
+    def test_html_lang_follows_active_language(self):
+        self.assertContains(self.client.get('/'), '<html lang="th">')
+        self.assertContains(self.client.get('/en/'), '<html lang="en">')
