@@ -33,13 +33,19 @@ Findings, in order of impact (the agreed implementation plan is at the end):
 - URLs are wrapped in `i18n_patterns(...)` in `admapp/urls.py` with
   `prefix_default_language=False`: Thai (default) URLs have no prefix,
   English URLs live under `/en/...`.
-- Language switcher: `appl/templates/appl/base.html` and
-  `main/templates/main/index.html` render a TH/EN button pair using
-  `{% get_current_language %}` + `{% language 'en' %}{% url ... %}{% endlanguage %}`.
-  It always links to the index page in the other language, not to the
-  current page. In `appl/base.html` it's inside `{% if applicant %}`, so
-  logged-out `appl` pages have no switcher. Backoffice has none (expected;
-  staff UI is Thai-only).
+- Language switcher (updated in phase 0, `3eaa4e4`): a TH/EN button pair in
+  `main/templates/main/include/language_switcher.html`, linking to the
+  current page (with query string) in the other language via the
+  `{% translated_url 'en' %}` tag in `appl/templatetags/appl_tags.py`
+  (wraps Django's `translate_url`). It's included in the navbar of
+  `appl/templates/appl/base.html` (only when an applicant is logged in, so
+  also on the supplement forms, which extend it) and of
+  `regis/templates/regis/base.html` (all `regis` pages). The landing page
+  (`main/templates/main/index.html`) keeps its own larger "Apply in
+  English" button pair, using the same tag. Pages extending
+  `main/templates/base.html` directly have no switcher. Backoffice has none
+  (expected; staff UI is Thai-only). Before phase 0 the switcher always
+  linked to the index page and didn't exist on `regis` pages.
 - Translatable strings: templates use `{% load i18n %}` + `{% trans %}` /
   `{% blocktrans %}`. These tags still work under Django 5.2 (registered
   aliases of `translate`/`blocktranslate`).
@@ -222,10 +228,12 @@ Out of scope: `backoffice/*` and `supplements/templates/supplements/backoffice/*
 
 Each phase is one or more commits on the branch.
 
-0. **Language switcher.** Keep the current page when switching (Django's
-   `translate_url`) instead of always going to the index, and show it on
-   every applicant page, including logged-out `appl` pages. Done first so
-   every later phase can be checked under `/en/`.
+0. **Language switcher** (done, `3eaa4e4`). The switcher keeps the
+   current page when switching (Django's `translate_url`) instead of
+   always going to the index. It stays where it was (logged-in `appl`
+   navbar, which also covers the supplement forms, plus the landing-page
+   buttons) and was added to the `regis` pages. Showing it on every page
+   was tried and dropped because it moved the navbar layout too much.
 1. **Template text.** Wrap hardcoded Thai in `{% trans %}` /
    `{% blocktrans %}`, app by app: `main` + `regis`, then `appl`, then
    `supplements`. Includes Thai inside inline JavaScript (`alert()` /
