@@ -11,6 +11,7 @@ db.sqlite3
 
 ENV
 *.mo
+!/locale/**/*.mo
 main/static/react/node_modules/*
 
 /scripts/private*
