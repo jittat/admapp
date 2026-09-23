@@ -1165,10 +1165,17 @@ def delete(request, project_id, round_id, criteria_id):
     return redirect(reverse('backoffice:criteria:project-index', args=[project_id, round_id]) + faculty_url_query)
 
 
+# Set to True to show the sync button on the criteria index page.  It is off by
+# default to prevent accidental syncs from the web admin; use
+# scripts/sync_criteria_upload_documents.py instead.
+SHOW_SYNC_UPLOAD_DOCUMENTS_BUTTON = False
+
+
 def can_user_sync_upload_documents(user, project):
     # The sync covers every faculty's criteria in the project, so it is limited
     # to admission admins (all faculties) and super admins.
-    return (project.is_additional_admission_upload_allowed and
+    return (SHOW_SYNC_UPLOAD_DOCUMENTS_BUTTON and
+            project.is_additional_admission_upload_allowed and
             can_user_view_project(user, project) and
             (user.is_super_admin or user.profile.is_admission_admin))
 

@@ -659,6 +659,7 @@ class SyncUploadDocumentsViewTestCase(TestCase):
         user.profile.admission_projects.add(self.project)
         return user
 
+    @mock.patch('criteria.views.SHOW_SYNC_UPLOAD_DOCUMENTS_BUTTON', True)
     def test_admission_admin_can_sync(self):
         self.client.force_login(self._user('admin01', is_admission_admin=True))
 
@@ -681,6 +682,16 @@ class SyncUploadDocumentsViewTestCase(TestCase):
         self.assertEqual(response.status_code, 403)
         sync.assert_not_called()
 
+    def test_forbidden_when_button_is_disabled(self):
+        self.client.force_login(self._user('admin01', is_admission_admin=True))
+
+        with mock.patch('criteria.upload_documents.sync_criteria_upload_documents') as sync:
+            response = self.client.post(self.url)
+
+        self.assertEqual(response.status_code, 403)
+        sync.assert_not_called()
+
+    @mock.patch('criteria.views.SHOW_SYNC_UPLOAD_DOCUMENTS_BUTTON', True)
     def test_get_is_forbidden(self):
         self.client.force_login(self._user('admin01', is_admission_admin=True))
 
