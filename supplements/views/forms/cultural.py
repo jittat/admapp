@@ -1,4 +1,5 @@
 from django import forms
+from django.utils.translation import gettext_lazy as _
 
 """
 --- ***** not used currently ***** ---
@@ -101,7 +102,7 @@ class CulturalTypeForm(forms.Form):
 """
 
 class CulturalExamForm(forms.Form):
-    cultural_exam = forms.ChoiceField(label='กรุณาระบุชมรมและสาขาที่ต้องการทดสอบ',
+    cultural_exam = forms.ChoiceField(label=_('กรุณาระบุชมรมและสาขาที่ต้องการทดสอบ'),
                                       choices=zip(EXAM_CHOICES, EXAM_CHOICES))
 
 """

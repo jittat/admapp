@@ -72,8 +72,11 @@ class NoThaiTextMixin:
         "[{title: 'กรุงเทพ'}]",         # placeholder data in education.html JS
     ]
 
-    def assertNoThaiText(self, html):
+    def assertNoThaiText(self, html, ignore_options=False):
         body = html.split('<body>', 1)[-1]
+        if ignore_options:
+            # choice lists that are meant to stay Thai (supplement forms)
+            body = re.sub(r'<option[^>]*>.*?</option>', ' ', body, flags=re.DOTALL)
         text = re.sub(r'<[^>]*>', ' ', body)   # ignore tags and attribute values
         for allowed in self.ALLOWED_THAI:
             text = text.replace(allowed, '')
@@ -483,6 +486,65 @@ class EnglishResultPagesTestCase(ApplicantFixturesMixin, NoThaiTextMixin, TestCa
                      'cupt_confirmation_wait']:
             with self.subTest(template=name):
                 self.assertNoThaiText(self.render_en('appl/include/%s.html' % name, {}))
+
+
+@WITHOUT_HOOKS
+class EnglishSupplementPagesTestCase(ApplicantFixturesMixin, NoThaiTextMixin, TestCase):
+    """Supplement forms and dashboard blocks under /en/. The choice lists in
+    supplements/views/forms/*.py stay Thai, so <option> text is ignored."""
+
+    SUPPLEMENT_PROJECTS = ['รับนักกีฬาดีเด่น', 'โควตานักกีฬา',
+                           'โควตาศิลปวัฒนธรรมและซอฟต์พาวเวอร์',
+                           'ส่งเสริมโอกาสศึกษาต่อในกลุ่มวิทยาศาสตร์สุขภาพ']
+    BLOCK_PROJECTS = ['เรียนล่วงหน้า', 'รับตรงอิสระ']
+
+    def apply_to(self, short_title):
+        self.project.short_title = short_title
+        self.project.save()
+        self.apply_with_majors(1)
+
+    def supplement_url(self):
+        return '/en/supp/projects/%d/%d/' % (self.project.id, self.admission_round.id)
+
+    def assert_page_has_no_thai(self, url, ignore_options=False):
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertNoThaiText(response.content.decode(), ignore_options=ignore_options)
+        return response
+
+    def test_supplement_pages(self):
+        from supplements.models import PROJECT_SUPPLEMENTS
+        for short_title in self.SUPPLEMENT_PROJECTS:
+            with self.subTest(project=short_title):
+                self.assertIn(short_title, PROJECT_SUPPLEMENTS)
+                self.apply_to(short_title)
+                response = self.assert_page_has_no_thai(self.supplement_url(),
+                                                        ignore_options=True)
+                self.assertContains(response, 'Project information: Test Project')
+                # the dashboard lists the supplement form titles
+                response = self.assert_page_has_no_thai('/en/appl/')
+                self.assertContains(response, 'Fill in additional information')
+                self.applicant.get_active_application(self.admission_round).delete()
+
+    def test_supplement_page_after_deadline(self):
+        self.apply_to('รับนักกีฬาดีเด่น')
+        project_round = self.project.get_project_round_for(self.admission_round)
+        project_round.applying_deadline = datetime.now() - timedelta(days=1)
+        project_round.save()
+        response = self.assert_page_has_no_thai(self.supplement_url(), ignore_options=True)
+        self.assertContains(response, 'Back to the main page without saving')
+
+    def test_dashboard_blocks(self):
+        from supplements.models import PROJECT_ADDITIONAL_BLOCKS
+        for short_title in self.BLOCK_PROJECTS:
+            with self.subTest(project=short_title):
+                self.assertIn(short_title, PROJECT_ADDITIONAL_BLOCKS)
+                self.apply_to(short_title)
+                response = self.assert_page_has_no_thai('/en/appl/')
+                self.assertContains(response, {
+                    'เรียนล่วงหน้า': 'Course results are being imported.',
+                    'รับตรงอิสระ': 'Please check your GPAX:'}[short_title])
+                self.applicant.get_active_application(self.admission_round).delete()
 
 
 class TitleTransTestCase(SimpleTestCase):

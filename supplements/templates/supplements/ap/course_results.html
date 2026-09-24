@@ -1,11 +1,12 @@
+{% load i18n %}
 <div class="project-appl-sections bborder-superlight">
   <h4>{{ block_config.title }}</h4>
   <table class="table table-striped table-sm">
     <thead>
       <tr>
-        <th>รหัสวิชา</th>
-        <th>วิชา</th>
-        <th>ผลการเรียน</th>
+        <th>{% trans 'รหัสวิชา' %}</th>
+        <th>{% trans 'วิชา' %}</th>
+        <th>{% trans 'ผลการเรียน' %}</th>
       </tr>
     </thead>
     {% for course in block_context.courses %}
@@ -18,9 +19,9 @@
       {% endif %}
     {% empty %}
       <tr>
-        <td colspan="3">ผลการเรียนอยู่ระหว่างการนำเข้า</td>
+        <td colspan="3">{% trans 'ผลการเรียนอยู่ระหว่างการนำเข้า' %}</td>
       </tr>
     {% endfor %}
   </table>
-  <small class="d-none text-muted">ผลการเรียนจะแสดงที่นี่ภายหลังเกรดของรุ่น 20/3 เสร็จเรียบร้อยแล้ว หลังวันที่ 20 ต.ค. 69</small>
+  <small class="d-none text-muted">{% trans 'ผลการเรียนจะแสดงที่นี่ภายหลังเกรดของรุ่น 20/3 เสร็จเรียบร้อยแล้ว หลังวันที่ 20 ต.ค. 69' %}</small>
 </div>

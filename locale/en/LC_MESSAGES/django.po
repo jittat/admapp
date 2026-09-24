@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-25 00:16+0700\n"
+"POT-Creation-Date: 2026-09-25 00:35+0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -27,8 +27,8 @@ msgstr ""
 
 #: appl/models.py:16
 msgid ""
-"เบอร์โทรศัพท์สามารถประกอบด้วยตัวเลข 0-9 สามารถใช้เครื่องหมาย - เพื่อแบ่งกลุ่มตัวเลข "
-"และอาจเริ่มต้นด้วยเครื่องหมาย +"
+"เบอร์โทรศัพท์สามารถประกอบด้วยตัวเลข 0-9 สามารถใช้เครื่องหมาย - "
+"เพื่อแบ่งกลุ่มตัวเลข และอาจเริ่มต้นด้วยเครื่องหมาย +"
 msgstr ""
 "A phone number may contain the digits 0-9, use - to group digits, and may "
 "start with +."
@@ -96,8 +96,9 @@ msgstr "Foreign language credits"
 
 #: appl/models.py:776 appl/templates/appl/forms/education.html:112
 msgid ""
-"ในกรณีที่กำลังศึกษาชั้นม.6 ให้กรอกเกรดเฉลี่ย 5 ภาคการศึกษา แต่ถ้าคะแนนภาคต้นยังไม่เรียบร้อย "
-"สามารถกรอกแค่ 4 ภาคการศึกษาได้ ถ้าจบการศึกษาแล้วให้กรอกเกรดเฉลี่ย 6 ภาคการศึกษา"
+"ในกรณีที่กำลังศึกษาชั้นม.6 ให้กรอกเกรดเฉลี่ย 5 ภาคการศึกษา "
+"แต่ถ้าคะแนนภาคต้นยังไม่เรียบร้อย สามารถกรอกแค่ 4 ภาคการศึกษาได้ "
+"ถ้าจบการศึกษาแล้วให้กรอกเกรดเฉลี่ย 6 ภาคการศึกษา"
 msgstr ""
 "If you are currently in Grade 12 (Mathayom 6), enter your GPAX over 5 "
 "semesters; if your first-semester grades are not final yet, you may enter it "
@@ -201,15 +202,16 @@ msgid "เบอร์โทรศัพท์มือถือ"
 msgstr "Mobile phone"
 
 #: appl/models.py:1320
-msgid "โครงการนี้ผู้สมัครต้องอยู่ในโรงเรียนที่เข้าข่าย กรุณากรอกข้อมูลการศึกษาก่อน"
+msgid ""
+"โครงการนี้ผู้สมัครต้องอยู่ในโรงเรียนที่เข้าข่าย กรุณากรอกข้อมูลการศึกษาก่อน"
 msgstr ""
 "Applicants to this project must be from an eligible school. Please fill in "
 "your educational information first."
 
 #: appl/models.py:1342
 msgid ""
-"โครงการนี้ผู้สมัครต้องผ่านการเข้าร่วมโครงการเรียนล่วงหน้าของม.เกษตรศาสตร์ รุ่นที่ 15-21 "
-"ปีการศึกษา 2563-2569"
+"โครงการนี้ผู้สมัครต้องผ่านการเข้าร่วมโครงการเรียนล่วงหน้าของม.เกษตรศาสตร์ "
+"รุ่นที่ 15-21 ปีการศึกษา 2563-2569"
 msgstr ""
 "Applicants to this project must have completed Kasetsart University's "
 "Advanced Placement program, cohorts 15-21 (academic years 2020-2026)."
@@ -233,7 +235,9 @@ msgid "คำเตือน"
 msgstr "Warning"
 
 #: appl/templates/appl/forms/education.html:92
-msgid "การไม่ระบุแผนการเรียน อาจทำให้ไม่ผ่านเกณฑ์ขั้นพื้นฐานในการสมัครบางสาขา กรุณาตรวจสอบ"
+msgid ""
+"การไม่ระบุแผนการเรียน อาจทำให้ไม่ผ่านเกณฑ์ขั้นพื้นฐานในการสมัครบางสาขา "
+"กรุณาตรวจสอบ"
 msgstr ""
 "Not specifying a study program may make you ineligible for some majors. "
 "Please check."
@@ -258,9 +262,9 @@ msgstr "Personal information"
 
 #: appl/templates/appl/include/active_application.html:29
 msgid ""
-"ผู้สมัครที่ใช้ระบบ TCASFolio (จากระบบ mytcas ของทปอ.) ในการสร้างแฟ้มสะสมผลงาน "
-"(portfolio) สามารถส่งได้โดย (1) อัพโหลดแฟ้มสะสมผลงานแบบ pdf ที่ดาวน์โหลดจากระบบ "
-"TCASFolio หรือ (2) ส่งลิงก์ที่ได้จากระบบ TCASFolio ก็ได้"
+"ผู้สมัครที่ใช้ระบบ TCASFolio (จากระบบ mytcas ของทปอ.) ในการสร้างแฟ้มสะสมผลงาน"
+" (portfolio) สามารถส่งได้โดย (1) อัพโหลดแฟ้มสะสมผลงานแบบ pdf "
+"ที่ดาวน์โหลดจากระบบ TCASFolio หรือ (2) ส่งลิงก์ที่ได้จากระบบ TCASFolio ก็ได้"
 msgstr ""
 "Applicants who created their portfolio with TCASFolio (in CUPT's mytcas "
 "system) can submit it either by (1) uploading the portfolio PDF downloaded "
@@ -272,11 +276,12 @@ msgstr "Caution"
 
 #: appl/templates/appl/include/active_application.html:30
 msgid ""
-"ถ้าส่งแฟ้มสะสมผลงานแบบด้วยไฟล์ pdf จากระบบ ถ้ามีการแก้ไข จะต้องนำมาส่งใหม่อีกครั้ง "
-"เพื่อให้ข้อมูลเป็นตามแฟ้มล่าสุดที่แก้ไขในระบบ TCASFolio"
+"ถ้าส่งแฟ้มสะสมผลงานแบบด้วยไฟล์ pdf จากระบบ ถ้ามีการแก้ไข "
+"จะต้องนำมาส่งใหม่อีกครั้ง เพื่อให้ข้อมูลเป็นตามแฟ้มล่าสุดที่แก้ไขในระบบ "
+"TCASFolio"
 msgstr ""
-"If you submit your portfolio as a PDF file and later edit it, you must "
-"upload it again so that it matches your latest portfolio in TCASFolio."
+"If you submit your portfolio as a PDF file and later edit it, you must upload"
+" it again so that it matches your latest portfolio in TCASFolio."
 
 #: appl/templates/appl/include/active_application.html:41
 msgid "การสมัครยังไม่สมบูรณ์"
@@ -291,7 +296,8 @@ msgid ""
 "เอกสารที่อัพโหลดยังไม่ครบถ้วน --- "
 "ทางทีมงานระบบรับสมัครต้องขออภัยถ้าผู้สมัครนำเข้าข้อมูลครบถ้วนแล้ว "
 "แต่เนื่องจากปัญหาระบบบันทึกข้อมูลของระบบเสียหายในวันที่ 20 ธ.ค. 64 "
-"ทางทีมงานต้องขอรบกวนให้ผู้สมัครอัพโหลดเอกสารอีกครั้ง ทีมงานต้องขออภัยอย่างที่สุดอีกครั้ง"
+"ทางทีมงานต้องขอรบกวนให้ผู้สมัครอัพโหลดเอกสารอีกครั้ง "
+"ทีมงานต้องขออภัยอย่างที่สุดอีกครั้ง"
 msgstr ""
 "Some uploaded documents are missing --- We apologize if you have already "
 "uploaded everything. Because of a storage failure on 20 December 2021, we "
@@ -342,8 +348,8 @@ msgstr "Cannot apply"
 
 #: appl/templates/appl/include/cupt_confirmation_not_free.html:3
 msgid ""
-"เนื่องจากคุณได้ยืนยันสิทธิ์ผ่านระบบเคลียริงเฮาส์ของทปอ.ในรอบก่อน อย่างไรก็ตาม "
-"ถ้าคุณได้สละสิทธิ์แล้ว สามารถระบุให้ระบบตรวจสอบสิทธิ์ใหม่ได้ "
+"เนื่องจากคุณได้ยืนยันสิทธิ์ผ่านระบบเคลียริงเฮาส์ของทปอ.ในรอบก่อน อย่างไรก็ตาม"
+" ถ้าคุณได้สละสิทธิ์แล้ว สามารถระบุให้ระบบตรวจสอบสิทธิ์ใหม่ได้ "
 "(สามารถสั่งได้ไม่เกินหนึ่งครั้งต่อสองชั่วโมง)"
 msgstr ""
 "because you confirmed your admission through CUPT's clearing house in an "
@@ -366,11 +372,13 @@ msgid ""
 "เนื่องจากคุณยังไม่ได้ลงทะเบียนกับระบบ <a href=\"https://www.mytcas.com/\" "
 "target=\"_blank\">mytcas</a> ของทปอ. กรุณาลงทะเบียนให้เรียบร้อยก่อน"
 msgstr ""
-"because you have not registered in CUPT's <a href=\"https://www.mytcas.com/"
-"\" target=\"_blank\">mytcas</a> system. Please register first."
+"because you have not registered in CUPT's <a href=\"https://www.mytcas.com/\""
+" target=\"_blank\">mytcas</a> system. Please register first."
 
 #: appl/templates/appl/include/cupt_confirmation_not_registered.html:8
-msgid "สามารถระบุให้ระบบตรวจสอบสิทธิ์ใหม่ได้ (สามารถสั่งได้ไม่เกินหนึ่งครั้งต่อสิบนาที)"
+msgid ""
+"สามารถระบุให้ระบบตรวจสอบสิทธิ์ใหม่ได้ "
+"(สามารถสั่งได้ไม่เกินหนึ่งครั้งต่อสิบนาที)"
 msgstr ""
 "You can then ask the system to check your eligibility again (at most once "
 "every ten minutes)."
@@ -407,6 +415,7 @@ msgstr "Document title or description (optional)"
 #: appl/templates/appl/major_multiple_selection.html:100
 #: appl/templates/appl/major_selection.html:62 appl/views/general_forms.py:75
 #: appl/views/general_forms.py:185
+#: supplements/templates/supplements/index.html:27
 msgid "จัดเก็บ"
 msgstr "Save"
 
@@ -447,6 +456,9 @@ msgid "ดูลิงก์"
 msgstr "See link"
 
 #: appl/templates/appl/include/document_upload_form.html:125
+#: supplements/templates/supplements/cultural/cultural_history.html:27
+#: supplements/templates/supplements/gen_sport/sport_history.html:27
+#: supplements/templates/supplements/nat_sport/sport_history.html:27
 msgid "ลบ"
 msgstr "Delete"
 
@@ -460,7 +472,8 @@ msgstr "No file was selected."
 
 #: appl/templates/appl/include/document_upload_js.html:74
 msgid ""
-"ไม่สามารถอัพโหลดได้ กรุณาตรวจสอบชื่อไฟล์ เพื่อป้องกันความผิดพลาดกรุณาปรับเป็นชื่อภาษาอังกฤษ"
+"ไม่สามารถอัพโหลดได้ กรุณาตรวจสอบชื่อไฟล์ "
+"เพื่อป้องกันความผิดพลาดกรุณาปรับเป็นชื่อภาษาอังกฤษ"
 msgstr ""
 "Upload failed. Please check the file name; to avoid errors, rename the file "
 "using English characters."
@@ -500,7 +513,8 @@ msgstr "Do you want to delete this document?"
 
 #: appl/templates/appl/include/document_validation_errors/default.html:1
 msgid ""
-"ระบบไม่สามารถตรวจสอบเอกสารได้ในขณะนี้ กรุณาลองใหม่อีกครั้ง หากยังพบปัญหากรุณาติดต่อเจ้าหน้าที่"
+"ระบบไม่สามารถตรวจสอบเอกสารได้ในขณะนี้ กรุณาลองใหม่อีกครั้ง "
+"หากยังพบปัญหากรุณาติดต่อเจ้าหน้าที่"
 msgstr ""
 "The document cannot be checked right now. Please try again. If the problem "
 "continues, please contact the staff."
@@ -511,36 +525,39 @@ msgstr "The document did not pass the check."
 
 #: appl/templates/appl/include/document_validation_errors/tcasfolio.html:4
 msgid ""
-"ไฟล์ไม่ใช่ไฟล์ PDF ที่ถูกต้อง กรุณาดาวน์โหลดไฟล์ PDF จากระบบ TCASFolio แล้วอัพโหลดใหม่"
+"ไฟล์ไม่ใช่ไฟล์ PDF ที่ถูกต้อง กรุณาดาวน์โหลดไฟล์ PDF จากระบบ TCASFolio "
+"แล้วอัพโหลดใหม่"
 msgstr ""
 "This is not a valid PDF file. Please download the PDF from TCASFolio and "
 "upload it again."
 
 #: appl/templates/appl/include/document_validation_errors/tcasfolio.html:6
 msgid ""
-"ไฟล์นี้ไม่มีลายมือชื่ออิเล็กทรอนิกส์ของ TCASFolio กรุณาดาวน์โหลดไฟล์ PDF จากระบบ TCASFolio "
-"แล้วอัพโหลดใหม่"
+"ไฟล์นี้ไม่มีลายมือชื่ออิเล็กทรอนิกส์ของ TCASFolio กรุณาดาวน์โหลดไฟล์ PDF "
+"จากระบบ TCASFolio แล้วอัพโหลดใหม่"
 msgstr ""
-"This file has no TCASFolio electronic signature. Please download the PDF "
-"from TCASFolio and upload it again."
+"This file has no TCASFolio electronic signature. Please download the PDF from"
+" TCASFolio and upload it again."
 
 #: appl/templates/appl/include/document_validation_errors/tcasfolio.html:8
 msgid ""
-"ไฟล์ถูกแก้ไขหลังจากดาวน์โหลดจากระบบ TCASFolio กรุณาดาวน์โหลดใหม่และอัพโหลดโดยไม่แก้ไขไฟล์"
+"ไฟล์ถูกแก้ไขหลังจากดาวน์โหลดจากระบบ TCASFolio "
+"กรุณาดาวน์โหลดใหม่และอัพโหลดโดยไม่แก้ไขไฟล์"
 msgstr ""
-"The file was modified after it was downloaded from TCASFolio. Please "
-"download it again and upload it without changes."
+"The file was modified after it was downloaded from TCASFolio. Please download"
+" it again and upload it without changes."
 
 #: appl/templates/appl/include/document_validation_errors/tcasfolio.html:10
 msgid ""
-"ลายมือชื่ออิเล็กทรอนิกส์ในไฟล์ไม่ใช่ของระบบ TCASFolio กรุณาดาวน์โหลดไฟล์ PDF จากระบบ "
-"TCASFolio แล้วอัพโหลดใหม่"
+"ลายมือชื่ออิเล็กทรอนิกส์ในไฟล์ไม่ใช่ของระบบ TCASFolio กรุณาดาวน์โหลดไฟล์ PDF "
+"จากระบบ TCASFolio แล้วอัพโหลดใหม่"
 msgstr ""
 "The electronic signature in this file is not from TCASFolio. Please download "
 "the PDF from TCASFolio and upload it again."
 
 #: appl/templates/appl/include/document_validation_errors/tcasfolio.html:12
-msgid "ลิงก์แฟ้มสะสมผลงานไม่ใช่ของระบบ TCASFolio กรุณาใช้ลิงก์จากระบบ TCASFolio"
+msgid ""
+"ลิงก์แฟ้มสะสมผลงานไม่ใช่ของระบบ TCASFolio กรุณาใช้ลิงก์จากระบบ TCASFolio"
 msgstr ""
 "This portfolio link is not from TCASFolio. Please use the link from "
 "TCASFolio."
@@ -646,12 +663,13 @@ msgstr "at %(time)s"
 #: appl/templates/appl/include/interview_description.html:46
 #, python-format
 msgid ""
-"ผู้สมัครจะได้รับการประกาศรายชื่อเป็นผู้ผ่านการสอบสัมภาษณ์ในวันที่ %(result_date)s (เวลา "
-"13:00 น.) พร้อมแจ้งกำหนดการยืนยันสิทธิ์ในวันที่ %(clearing_house_dates)s"
+"ผู้สมัครจะได้รับการประกาศรายชื่อเป็นผู้ผ่านการสอบสัมภาษณ์ในวันที่ "
+"%(result_date)s (เวลา 13:00 น.) พร้อมแจ้งกำหนดการยืนยันสิทธิ์ในวันที่ "
+"%(clearing_house_dates)s"
 msgstr ""
 "The list of applicants who pass the interview will be announced on "
-"%(result_date)s (at 13:00), together with the admission confirmation "
-"schedule (%(clearing_house_dates)s)."
+"%(result_date)s (at 13:00), together with the admission confirmation schedule"
+" (%(clearing_house_dates)s)."
 
 #: appl/templates/appl/include/interview_description.html:55
 msgid "กรรมการจะพิจารณาเอกสารที่ส่งเพิ่มเติมในการตัดสินผลการสอบสัมภาษณ์"
@@ -826,13 +844,11 @@ msgid_plural ""
 "    "
 msgstr[0] ""
 "\n"
-"      You have not made any major selection. (You can choose %(counter)s "
-"major.)<br />\n"
+"      You have not made any major selection. (You can choose %(counter)s major.)<br />\n"
 "    "
 msgstr[1] ""
 "\n"
-"      You have not made any major selection. (You can choose %(counter)s "
-"majors.)<br />\n"
+"      You have not made any major selection. (You can choose %(counter)s majors.)<br />\n"
 "    "
 
 #: appl/templates/appl/include/major_selection_item.html:46
@@ -854,13 +870,13 @@ msgstr "We sincerely apologize"
 
 #: appl/templates/appl/include/old_document_upload_list.html:3
 msgid ""
-"เนื่องจากระบบบันทึกข้อมูลของระบบรับสมัครมีปัญหาในช่วงเช้ามืดวันที่ 20 ธ.ค. 2564 "
-"ทำให้เอกสารที่คุณได้อัพโหลดไว้สูญหายหรือเกิดความผิดพลาด "
+"เนื่องจากระบบบันทึกข้อมูลของระบบรับสมัครมีปัญหาในช่วงเช้ามืดวันที่ 20 ธ.ค. "
+"2564 ทำให้เอกสารที่คุณได้อัพโหลดไว้สูญหายหรือเกิดความผิดพลาด "
 "ทางทีมงานต้องขออภัยที่จะต้องรบกวนให้ผู้สมัครอัพโหลดเอกสารอีกครั้ง"
 msgstr ""
 "Because of a storage failure in the early morning of 20 December 2021, "
-"documents you uploaded may have been lost or damaged. We are sorry to ask "
-"you to upload your documents again."
+"documents you uploaded may have been lost or damaged. We are sorry to ask you"
+" to upload your documents again."
 
 #: appl/templates/appl/include/other_application_rounds.html:3
 #, python-format
@@ -899,13 +915,13 @@ msgstr ""
 
 #: appl/templates/appl/include/payment_item.html:17
 msgid ""
-"สามารถชำระได้ 2 ช่องทาง <b>ให้ผู้สมัครเลือกชำระทางใดทางหนึ่งเท่านั้น</b>  เมื่อชำระเงินแล้ว "
-"ถ้าชำระด้วย QR Code ข้อมูลจะแสดงทันที ถ้าชำระทางอื่น "
+"สามารถชำระได้ 2 ช่องทาง <b>ให้ผู้สมัครเลือกชำระทางใดทางหนึ่งเท่านั้น</b>  "
+"เมื่อชำระเงินแล้ว ถ้าชำระด้วย QR Code ข้อมูลจะแสดงทันที ถ้าชำระทางอื่น "
 "ข้อมูลการชำระเงินจะปรากฏในระบบในวันทำการถัดไป ก่อนเวลา 13:00"
 msgstr ""
-"There are 2 ways to pay. <b>Please use only one of them.</b> QR code "
-"payments show up immediately; other payments show up in the system by 13:00 "
-"on the next business day."
+"There are 2 ways to pay. <b>Please use only one of them.</b> QR code payments"
+" show up immediately; other payments show up in the system by 13:00 on the "
+"next business day."
 
 #: appl/templates/appl/include/payment_item.html:24
 msgid "ช่องทางที่ 1"
@@ -913,7 +929,8 @@ msgstr "Option 1"
 
 #: appl/templates/appl/include/payment_item.html:26
 msgid ""
-"ชำระด้วย QR Code ผ่านทาง Mobile Banking App ของธนาคารใดก็ได้ ไม่เสียค่าธรรมเนียม"
+"ชำระด้วย QR Code ผ่านทาง Mobile Banking App ของธนาคารใดก็ได้ "
+"ไม่เสียค่าธรรมเนียม"
 msgstr "Pay by QR code with any bank's mobile banking app. No fee."
 
 #: appl/templates/appl/include/payment_item.html:30
@@ -982,8 +999,8 @@ msgstr "We are sorry"
 #: appl/templates/appl/include/project_accepted_result.html:63
 msgid ""
 "คุณไม่ผ่านการพิจารณาคัดเลือกให้เข้าสอบสัมภาษณ์ "
-"มหาวิทยาลัยเกษตรศาสตร์ขอขอบคุณผู้สมัครที่สนใจเข้าศึกษาต่อที่มหาวิทยาลัยเกษตรศาสตร์ "
-"นอกจากโครงการนี้แล้วยังมีโครงการรับสมัครในรอบการคัดเลือกอื่น ๆ อีก "
+"มหาวิทยาลัยเกษตรศาสตร์ขอขอบคุณผู้สมัครที่สนใจเข้าศึกษาต่อที่มหาวิทยาลัยเกษตรศาสตร์"
+" นอกจากโครงการนี้แล้วยังมีโครงการรับสมัครในรอบการคัดเลือกอื่น ๆ อีก "
 "สามารถติดตามข้อมูลได้จากเว็บไซต์ admission.ku.ac.th"
 msgstr ""
 "You were not selected for an interview. Kasetsart University thanks you for "
@@ -997,8 +1014,8 @@ msgstr ""
 
 #: appl/templates/appl/include/project_accepted_for_interview_result.html:54
 msgid ""
-"มหาวิทยาลัยเกษตรศาสตร์ขอขอบคุณผู้สมัครที่สนใจเข้าศึกษาต่อที่มหาวิทยาลัยเกษตรศาสตร์ "
-"นอกจากโครงการนี้แล้วยังมีโครงการรับสมัครในรอบการคัดเลือกอื่น ๆ อีก "
+"มหาวิทยาลัยเกษตรศาสตร์ขอขอบคุณผู้สมัครที่สนใจเข้าศึกษาต่อที่มหาวิทยาลัยเกษตรศาสตร์"
+" นอกจากโครงการนี้แล้วยังมีโครงการรับสมัครในรอบการคัดเลือกอื่น ๆ อีก "
 "สามารถติดตามข้อมูลได้จากเว็บไซต์ admission.ku.ac.th"
 msgstr ""
 "Kasetsart University thanks you for your interest. There are other projects "
@@ -1012,12 +1029,12 @@ msgstr "Admission confirmed"
 #, python-format
 msgid ""
 "ยินดีต้อนรับสู่มหาวิทยาลัยเกษตรศาสตร์ ในปีการศึกษา %(year)s "
-"สำหรับกำหนดการและการดำเนินการอื่น ๆ สามารถให้ติดตามได้ที่เว็บ <a href=\"http://"
-"admission.ku.ac.th\">http://admission.ku.ac.th</a>"
+"สำหรับกำหนดการและการดำเนินการอื่น ๆ สามารถให้ติดตามได้ที่เว็บ <a "
+"href=\"http://admission.ku.ac.th\">http://admission.ku.ac.th</a>"
 msgstr ""
-"Welcome to Kasetsart University for the %(year)s academic year. Please "
-"follow the schedule and next steps at <a href=\"http://"
-"admission.ku.ac.th\">http://admission.ku.ac.th</a>."
+"Welcome to Kasetsart University for the %(year)s academic year. Please follow"
+" the schedule and next steps at <a "
+"href=\"http://admission.ku.ac.th\">http://admission.ku.ac.th</a>."
 
 #: appl/templates/appl/include/project_accepted_result.html:22
 msgid "คุณผ่านการสอบสัมภาษณ์และมีสิทธิ์เข้าศึกษาต่อในสาขา:"
@@ -1026,8 +1043,8 @@ msgstr "You passed the interview and are admitted to:"
 #: appl/templates/appl/include/project_accepted_result.html:35
 msgid ""
 "คุณไม่ผ่านการสอบสัมภาษณ์ อย่างไรก็ตาม "
-"คุณยังมีโอกาสเข้าศึกษาต่อที่มหาวิทยาลัยเกษตรศาสตร์ผ่านทางโครงการอื่น ๆ ในรอบถัด ๆ ไป "
-"กรุณาติดตามข่าวสารได้จากเว็บไซต์ admission.ku.ac.th"
+"คุณยังมีโอกาสเข้าศึกษาต่อที่มหาวิทยาลัยเกษตรศาสตร์ผ่านทางโครงการอื่น ๆ "
+"ในรอบถัด ๆ ไป กรุณาติดตามข่าวสารได้จากเว็บไซต์ admission.ku.ac.th"
 msgstr ""
 "You did not pass the interview. You can still apply to Kasetsart University "
 "through other projects in later rounds; please follow the news at "
@@ -1041,8 +1058,8 @@ msgstr "Majors you were interviewed for:"
 #, python-format
 msgid ""
 "ฝ่ายรับสมัครและพัฒนาการรับเข้าศึกษา "
-"ใคร่ขอรบกวนเวลาผู้สมัครช่วยทำแบบประเมินความพึงพอใจที่มีต่อการรับบุคคลเข้าศึกษา โดย<a "
-"href=\"%(url)s\" target=\"_blank\" rel=\"noopener "
+"ใคร่ขอรบกวนเวลาผู้สมัครช่วยทำแบบประเมินความพึงพอใจที่มีต่อการรับบุคคลเข้าศึกษา"
+" โดย<a href=\"%(url)s\" target=\"_blank\" rel=\"noopener "
 "noreferrer\">กรอกแบบสอบถามนี้ %(url)s</a>  ทีมงานขอขอบคุณทุกท่าน"
 msgstr ""
 "The Admission Division would appreciate it if you could take a moment to <a "
@@ -1076,35 +1093,39 @@ msgstr "Admission projects for "
 #: appl/templates/appl/include/project_list.html:10
 #, python-format
 msgid ""
-"สำหรับการสมัครเข้าศึกษาต่อปีการศึกษา %(year)s นี้ ผู้สมัครจะต้องลงทะเบียนในระบบ <a "
-"href=\"https://www.mytcas.com/\" target=\"_blank\">mytcas</a> ของทปอ. "
-"ให้เรียบร้อยก่อนจึงจะสามารถสมัครได้"
+"สำหรับการสมัครเข้าศึกษาต่อปีการศึกษา %(year)s นี้ "
+"ผู้สมัครจะต้องลงทะเบียนในระบบ <a href=\"https://www.mytcas.com/\" "
+"target=\"_blank\">mytcas</a> ของทปอ. ให้เรียบร้อยก่อนจึงจะสามารถสมัครได้"
 msgstr ""
 "To apply for admission for the %(year)s academic year, you must first "
 "register in CUPT's <a href=\"https://www.mytcas.com/\" "
 "target=\"_blank\">mytcas</a> system."
 
 #: appl/templates/appl/include/project_list.html:15
-msgid "นอกจากนี้ก่อนการสมัครแต่ละรอบ ระบบจะมีการตรวจสอบสิทธิ์การสมัครจากระบบ mytcas ด้วย"
+msgid ""
+"นอกจากนี้ก่อนการสมัครแต่ละรอบ ระบบจะมีการตรวจสอบสิทธิ์การสมัครจากระบบ mytcas "
+"ด้วย"
 msgstr ""
 "Before each round, your application eligibility is also checked with mytcas."
 
 #: appl/templates/appl/include/project_list.html:18
 #, python-format
 msgid ""
-"สำหรับการสมัครเข้าศึกษาต่อปีการศึกษา %(year)s %(round_title)s นี้ มีเปิดรับสมัคร "
-"%(counter)s โครงการ เมื่อมีการเปิดระบบรับสมัครแต่ละโครงการจะมีปุ่มให้กดสมัครได้"
+"สำหรับการสมัครเข้าศึกษาต่อปีการศึกษา %(year)s %(round_title)s นี้ "
+"มีเปิดรับสมัคร %(counter)s โครงการ "
+"เมื่อมีการเปิดระบบรับสมัครแต่ละโครงการจะมีปุ่มให้กดสมัครได้"
 msgid_plural ""
-"สำหรับการสมัครเข้าศึกษาต่อปีการศึกษา %(year)s %(round_title)s นี้ มีเปิดรับสมัคร "
-"%(counter)s โครงการ เมื่อมีการเปิดระบบรับสมัครแต่ละโครงการจะมีปุ่มให้กดสมัครได้"
+"สำหรับการสมัครเข้าศึกษาต่อปีการศึกษา %(year)s %(round_title)s นี้ "
+"มีเปิดรับสมัคร %(counter)s โครงการ "
+"เมื่อมีการเปิดระบบรับสมัครแต่ละโครงการจะมีปุ่มให้กดสมัครได้"
 msgstr[0] ""
 "For the %(year)s academic year, %(round_title)s has %(counter)s project open "
 "for applications. Each project shows an apply button once its application "
 "period opens."
 msgstr[1] ""
-"For the %(year)s academic year, %(round_title)s has %(counter)s projects "
-"open for applications. Each project shows an apply button once its "
-"application period opens."
+"For the %(year)s academic year, %(round_title)s has %(counter)s projects open"
+" for applications. Each project shows an apply button once its application "
+"period opens."
 
 #: appl/templates/appl/include/project_list.html:41
 msgid "หมดเวลารับสมัคร"
@@ -1145,8 +1166,8 @@ msgstr "already confirmed admission in another round"
 
 #: appl/templates/appl/include/project_list.html:87
 msgid ""
-"ขณะนี้ยังไม่ถึงรอบการรับสมัครใดเลย รอบการรับสมัครครั้งถัดไปคือรอบ xxxx จะเริ่มรับสมัครวันที่ "
-"yyyy สามารถอ่านรายละเอียดได้ที่ zzzz"
+"ขณะนี้ยังไม่ถึงรอบการรับสมัครใดเลย รอบการรับสมัครครั้งถัดไปคือรอบ xxxx "
+"จะเริ่มรับสมัครวันที่ yyyy สามารถอ่านรายละเอียดได้ที่ zzzz"
 msgstr ""
 "No admission round is open at the moment. The next round is xxxx, opening on "
 "yyyy. See zzzz for details."
@@ -1199,19 +1220,21 @@ msgstr "Study plan"
 
 #: appl/templates/appl/index.html:39
 #, python-format
-msgid "หน่วยกิตกลุ่มสาระ - วิทย์ %(sci)s, คณิต %(math)s, ภาษาต่างประเทศ %(lang)s"
+msgid ""
+"หน่วยกิตกลุ่มสาระ - วิทย์ %(sci)s, คณิต %(math)s, ภาษาต่างประเทศ %(lang)s"
 msgstr ""
 "credits - science %(sci)s, mathematics %(math)s, foreign languages %(lang)s"
 
 #: appl/templates/appl/index.html:41
 msgid ""
-"ถ้าเคยกรอกข้อมูลไว้ในการสมัครรอบก่อน <b>อย่าลืมปรับเกรดเฉลี่ย (GPAX) เป็นเกรดเฉลี่ย 6 "
-"ภาคการศึกษา</b>"
+"ถ้าเคยกรอกข้อมูลไว้ในการสมัครรอบก่อน <b>อย่าลืมปรับเกรดเฉลี่ย (GPAX) "
+"เป็นเกรดเฉลี่ย 6 ภาคการศึกษา</b>"
 msgstr ""
 "If you filled in this information in an earlier round, <b>don't forget to "
 "update your GPAX to the 6-semester GPAX</b>."
 
 #: appl/templates/appl/index.html:43
+#: supplements/templates/supplements/tcas5/info.html:9
 msgid "แก้ไขข้อมูลการศึกษา"
 msgstr "Edit educational information"
 
@@ -1339,7 +1362,9 @@ msgstr ""
 "specified' for the studyplan if your school did not determined the plan."
 
 #: appl/views/general_forms.py:47
-msgid "กรอกหน่วยกิตกลุ่มสาระต่าง ๆ ให้ระบุหน่วยกิตรวม 6 ภาคการศึกษา (ตลอดหลักสูตร ม.ปลาย)"
+msgid ""
+"กรอกหน่วยกิตกลุ่มสาระต่าง ๆ ให้ระบุหน่วยกิตรวม 6 ภาคการศึกษา (ตลอดหลักสูตร "
+"ม.ปลาย)"
 msgstr ""
 "Enter the total credits for each subject group over 6 semesters (the whole "
 "upper-secondary program)."
@@ -1350,8 +1375,8 @@ msgstr "School information"
 
 #: appl/views/general_forms.py:59
 msgid ""
-"ในกรณีที่สมัครโครงการช้างเผือก สามารถเลือกให้แสดงเฉพาะโรงเรียนที่เข้าโครงการได้ "
-"โดยกดปุ่มตอนท้าย"
+"ในกรณีที่สมัครโครงการช้างเผือก "
+"สามารถเลือกให้แสดงเฉพาะโรงเรียนที่เข้าโครงการได้ โดยกดปุ่มตอนท้าย"
 msgstr ""
 "If you are applying to the KU Talent program, you can filter only eligible "
 "schools below."
@@ -1428,19 +1453,23 @@ msgid "ไม่มีเอกสารต้องอัพโหลดเพ�
 msgstr "No additional documents to upload"
 
 #: backoffice/models.py:457
-msgid "ต้องอัพโหลดเอกสารเพิ่มเติม โดยอัพโหลดในระบบ อ่านรายละเอียดในส่วนการเตรียมตัว"
+msgid ""
+"ต้องอัพโหลดเอกสารเพิ่มเติม โดยอัพโหลดในระบบ อ่านรายละเอียดในส่วนการเตรียมตัว"
 msgstr ""
 "Additional documents must be uploaded in this system; see the preparation "
 "section for details."
 
 #: backoffice/models.py:458
-msgid "ต้องส่งเอกสารเพิ่มเติม โดยส่งทางช่องทางที่ระบุในรายละเอียดส่วนการเตรียมตัว"
+msgid ""
+"ต้องส่งเอกสารเพิ่มเติม โดยส่งทางช่องทางที่ระบุในรายละเอียดส่วนการเตรียมตัว"
 msgstr ""
 "Additional documents must be sent through the channel given in the "
 "preparation section."
 
 #: main/templates/base.html:75
-msgid "ฝ่ายรับสมัครและพัฒนาการรับเข้าศึกษา สำนักบริหารการศึกษา มหาวิทยาลัยเกษตรศาสตร์"
+msgid ""
+"ฝ่ายรับสมัครและพัฒนาการรับเข้าศึกษา สำนักบริหารการศึกษา "
+"มหาวิทยาลัยเกษตรศาสตร์"
 msgstr "Admission Division, Office of the Registrar, Kasetsart University"
 
 #: main/templates/base.html:76
@@ -1464,7 +1493,9 @@ msgid "กรุณา login เข้าใช้ระบบก่อนใช
 msgstr "Please login to start using the admission system."
 
 #: main/templates/main/index.html:35
-msgid "ขออภัย ไม่สามารถเข้าใช้ระบบได้ เนื่องจากรหัสผ่านหรือรหัสประจำตัวประชาชนผิดพลาด"
+msgid ""
+"ขออภัย ไม่สามารถเข้าใช้ระบบได้ "
+"เนื่องจากรหัสผ่านหรือรหัสประจำตัวประชาชนผิดพลาด"
 msgstr ""
 "Sorry,  you cannot login because you entered a wrong national ID or an "
 "incorrect password."
@@ -1517,23 +1548,25 @@ msgstr "A new password has been set"
 #: regis/templates/regis/forget.html:27
 #, python-format
 msgid ""
-"รหัสผ่านใหม่จะถูกส่งให้กับผู้สมัครทางอีเมล %(email)s ผู้สมัครน่าจะได้รับอีเมลภายในเวลาประมาณ 5 "
-"นาที หลังจากนั้นจะสามารถเข้าใช้งานระบบด้วยรหัสผ่านใหม่ได้"
+"รหัสผ่านใหม่จะถูกส่งให้กับผู้สมัครทางอีเมล %(email)s "
+"ผู้สมัครน่าจะได้รับอีเมลภายในเวลาประมาณ 5 นาที "
+"หลังจากนั้นจะสามารถเข้าใช้งานระบบด้วยรหัสผ่านใหม่ได้"
 msgstr ""
 "The new password will be sent to %(email)s. You should receive the email "
 "within about 5 minutes, after which you can log in with the new password."
 
 #: regis/templates/regis/forget.html:34
 msgid ""
-"บางครั้งอีเมลที่ส่งรหัสผ่านจะเข้าไปที่กล่องจดหมายขยะ (junk mail) กรุณาอย่าลืมตรวจสอบ "
-"&nbsp;&nbsp; ตัวอย่างของการเลือกดูรายการอีเมลในกล่องจดหมายขยะแสดงดังรูปด้านล่าง "
-"บางครั้งอาจจะต้องรายการกล่องจดหมายต่าง ๆ ทางด้านซ้ายและอาจกดขยายรายการที่ถูกซ่อนไว้ก่อน "
-"(เช่น กด More)"
+"บางครั้งอีเมลที่ส่งรหัสผ่านจะเข้าไปที่กล่องจดหมายขยะ (junk mail) "
+"กรุณาอย่าลืมตรวจสอบ &nbsp;&nbsp; "
+"ตัวอย่างของการเลือกดูรายการอีเมลในกล่องจดหมายขยะแสดงดังรูปด้านล่าง "
+"บางครั้งอาจจะต้องรายการกล่องจดหมายต่าง ๆ "
+"ทางด้านซ้ายและอาจกดขยายรายการที่ถูกซ่อนไว้ก่อน (เช่น กด More)"
 msgstr ""
-"The password email sometimes ends up in the junk mail folder, so please "
-"check there too. &nbsp;&nbsp; The picture below shows how to open the junk "
-"mail folder. You may need to look through the folder list on the left, and "
-"expand hidden folders first (e.g. click More)."
+"The password email sometimes ends up in the junk mail folder, so please check"
+" there too. &nbsp;&nbsp; The picture below shows how to open the junk mail "
+"folder. You may need to look through the folder list on the left, and expand "
+"hidden folders first (e.g. click More)."
 
 #: regis/templates/regis/forget.html:40
 #: regis/templates/regis/regis_result.html:23
@@ -1551,11 +1584,12 @@ msgstr "Registration complete"
 #: regis/templates/regis/regis_result.html:11
 #, python-format
 msgid ""
-"ผู้สมัครจะได้รับการตอบรับทางอีเมล %(email)s ผู้สมัครน่าจะได้รับอีเมลภายในเวลาประมาณ 5 นาที "
+"ผู้สมัครจะได้รับการตอบรับทางอีเมล %(email)s "
+"ผู้สมัครน่าจะได้รับอีเมลภายในเวลาประมาณ 5 นาที "
 "หลังจากนั้นจะสามารถเข้าใช้งานระบบได้"
 msgstr ""
-"A confirmation will be sent to %(email)s. You should receive the email "
-"within about 5 minutes, after which you can log in."
+"A confirmation will be sent to %(email)s. You should receive the email within"
+" about 5 minutes, after which you can log in."
 
 #: regis/templates/regis/regis_result.html:17
 msgid ""
@@ -1578,7 +1612,8 @@ msgstr "This passport number is already registered"
 #: regis/templates/regis/registration_error.html:7
 #, python-format
 msgid ""
-"ขออภัยด้วย %(first_name)s เลขที่หนังสือเดินทาง %(passport_number)s มีการลงทะเบียนแล้ว"
+"ขออภัยด้วย %(first_name)s เลขที่หนังสือเดินทาง %(passport_number)s "
+"มีการลงทะเบียนแล้ว"
 msgstr ""
 "Sorry, %(first_name)s. Passport number %(passport_number)s is already "
 "registered."
@@ -1589,7 +1624,8 @@ msgstr "This national ID is already registered"
 
 #: regis/templates/regis/registration_error.html:10
 #, python-format
-msgid "ขออภัยด้วย %(first_name)s รหัสประชาชน %(national_id)s มีการลงทะเบียนแล้ว"
+msgid ""
+"ขออภัยด้วย %(first_name)s รหัสประชาชน %(national_id)s มีการลงทะเบียนแล้ว"
 msgstr ""
 "Sorry, %(first_name)s. National ID %(national_id)s is already registered."
 
@@ -1626,7 +1662,8 @@ msgid "ไม่มีรหัสประจำตัวประชาชน 
 msgstr "You do not have Thai national ID. (You must use your passport number.)"
 
 #: regis/views.py:49
-msgid "ผู้สมัครที่มีรหัสประจำตัวประชาชน ต้องสมัครด้วยรหัสประจำตัวประชาชนเท่านั้น"
+msgid ""
+"ผู้สมัครที่มีรหัสประจำตัวประชาชน ต้องสมัครด้วยรหัสประจำตัวประชาชนเท่านั้น"
 msgstr "If you are a Thai citizen, you must register with Thai national ID."
 
 #: regis/views.py:50
@@ -1656,7 +1693,9 @@ msgid "อีเมล"
 msgstr "Email"
 
 #: regis/views.py:70
-msgid "กรุณากรอกอีเมลที่ใช้งานได้ เพื่อรับข้อมูลสำคัญเกี่ยวกับการสมัครเข้าศึกษาจากเรา"
+msgid ""
+"กรุณากรอกอีเมลที่ใช้งานได้ "
+"เพื่อรับข้อมูลสำคัญเกี่ยวกับการสมัครเข้าศึกษาจากเรา"
 msgstr ""
 "Please use working email so that you can receive your admission information "
 "from us."
@@ -1682,7 +1721,9 @@ msgid "ชื่อ"
 msgstr "First name"
 
 #: regis/views.py:84
-msgid "ต้องมีความยาวไม่น้อยกว่า 8 ตัวอักษร ไม่สามารถประกอบขึ้นจากตัวเลขเพียงอย่างเดียวได้"
+msgid ""
+"ต้องมีความยาวไม่น้อยกว่า 8 ตัวอักษร "
+"ไม่สามารถประกอบขึ้นจากตัวเลขเพียงอย่างเดียวได้"
 msgstr ""
 "A password should contain at least 8 characters. It cannot be entirely "
 "numeric.numbers."
@@ -1730,15 +1771,231 @@ msgstr ""
 
 #: regis/views.py:327
 msgid ""
-"ผู้สมัครได้ขอรหัสผ่านใหม่ไปแล้ว กรุณารออย่างน้อย 5 นาที ก่อนจะขอรหัสผ่านใหม่อีกครั้ง "
-"อีเมลรหัสผ่านอาจจะถูกส่งเข้าไปที่กล่องขยะ กรุณาอย่าลืมตรวจสอบ"
+"ผู้สมัครได้ขอรหัสผ่านใหม่ไปแล้ว กรุณารออย่างน้อย 5 นาที "
+"ก่อนจะขอรหัสผ่านใหม่อีกครั้ง อีเมลรหัสผ่านอาจจะถูกส่งเข้าไปที่กล่องขยะ "
+"กรุณาอย่าลืมตรวจสอบ"
 msgstr ""
 "A new password has already been requested. Please wait at least 5 minutes "
 "before requesting again. The password email may have gone to your junk mail "
 "folder, so please check there."
 
 #: regis/views.py:412
-msgid "ยังไม่สามารถตรวจสอบการลงทะเบียนหรือสิทธิ์การสมัครใหม่ได้ กรุณารอ 10 นาที"
+msgid ""
+"ยังไม่สามารถตรวจสอบการลงทะเบียนหรือสิทธิ์การสมัครใหม่ได้ กรุณารอ 10 นาที"
 msgstr ""
 "Your registration or application eligibility cannot be checked again yet. "
 "Please wait 10 minutes."
+
+#: supplements/models.py:178 supplements/models.py:196
+msgid "ประเภทกีฬาและระดับ"
+msgstr "Sport and level"
+
+#: supplements/models.py:186 supplements/models.py:204
+#: supplements/templates/supplements/gen_sport/sport_history.html:10
+#: supplements/templates/supplements/nat_sport/sport_history.html:10
+msgid "ผลการแข่งขัน"
+msgstr "Competition results"
+
+#: supplements/models.py:222
+msgid "ประวัติการแข่งขัน/การแสดง"
+msgstr "Competition/performance history"
+
+#: supplements/models.py:230
+msgid "การสมัครทดสอบความสามารถ"
+msgstr "Audition application"
+
+#: supplements/models.py:240
+msgid "เลขรหัสประจำบ้านของผู้สมัครและบิดาหรือมารดาหรือผู้ปกครอง"
+msgstr "House registration codes of the applicant and a parent or guardian"
+
+#: supplements/models.py:264
+msgid "ผลการเรียนจากโครงการเรียนล่วงหน้า"
+msgstr "Advanced Placement course results"
+
+#: supplements/models.py:270
+msgid "ข้อมูลเพิ่มเติมสำหรับการสมัคร"
+msgstr "Additional application information"
+
+#: supplements/templates/supplements/ap/course_results.html:7
+msgid "รหัสวิชา"
+msgstr "Course code"
+
+#: supplements/templates/supplements/ap/course_results.html:8
+msgid "วิชา"
+msgstr "Course"
+
+#: supplements/templates/supplements/ap/course_results.html:9
+msgid "ผลการเรียน"
+msgstr "Grade"
+
+#: supplements/templates/supplements/ap/course_results.html:22
+msgid "ผลการเรียนอยู่ระหว่างการนำเข้า"
+msgstr "Course results are being imported."
+
+#: supplements/templates/supplements/ap/course_results.html:26
+msgid ""
+"ผลการเรียนจะแสดงที่นี่ภายหลังเกรดของรุ่น 20/3 เสร็จเรียบร้อยแล้ว หลังวันที่ "
+"20 ต.ค. 69"
+msgstr ""
+"Course results will be shown here after the grades of cohort 20/3 are "
+"finalized, after 20 October 2026."
+
+#: supplements/templates/supplements/cultural/cultural_exam.html:3
+msgid "การทดสอบความสามารถด้านศิลปวัฒนธรรม"
+msgstr "Arts and culture audition"
+
+#: supplements/templates/supplements/cultural/cultural_history.html:2
+msgid "ประวัติการแข่งขันและการแสดง"
+msgstr "Competition and performance history"
+
+#: supplements/templates/supplements/cultural/cultural_history.html:7
+msgid "ชื่อการแข่งขัน/การแสดง"
+msgstr "Competition/performance"
+
+#: supplements/templates/supplements/cultural/cultural_history.html:8
+msgid "วันที่แข่งขัน/แสดง"
+msgstr "Date"
+
+#: supplements/templates/supplements/cultural/cultural_history.html:9
+msgid "สถานที่/จังหวัด/ประเทศ"
+msgstr "Venue/province/country"
+
+#: supplements/templates/supplements/cultural/cultural_history.html:10
+msgid "ผลการแข่งขัน(ถ้ามี)"
+msgstr "Result (if any)"
+
+#: supplements/templates/supplements/cultural/cultural_history.html:17
+#: supplements/templates/supplements/gen_sport/sport_history.html:17
+#: supplements/templates/supplements/nat_sport/sport_history.html:17
+msgid "เพิ่มข้อมูล"
+msgstr "Add row"
+
+#: supplements/templates/supplements/gen_sport/sport_history.html:2
+#: supplements/templates/supplements/nat_sport/sport_history.html:2
+msgid "ผลงานการแข่งขัน"
+msgstr "Competition results"
+
+#: supplements/templates/supplements/gen_sport/sport_history.html:7
+#: supplements/templates/supplements/nat_sport/sport_history.html:7
+msgid "ชื่อรายการแข่งขัน"
+msgstr "Competition"
+
+#: supplements/templates/supplements/gen_sport/sport_history.html:8
+#: supplements/templates/supplements/nat_sport/sport_history.html:8
+msgid "วันที่แข่งขัน"
+msgstr "Date"
+
+#: supplements/templates/supplements/gen_sport/sport_history.html:9
+#: supplements/templates/supplements/nat_sport/sport_history.html:9
+msgid "สถานที่/ประเทศ"
+msgstr "Venue/country"
+
+#: supplements/templates/supplements/gen_sport/sport_type.html:3
+#: supplements/templates/supplements/nat_sport/sport_type.html:3
+msgid "ประเภทกีฬาและระดับการแข่งขัน"
+msgstr "Sport and competition level"
+
+#: supplements/templates/supplements/index.html:6
+#, python-format
+msgid "ข้อมูลโครงการ %(project_title)s"
+msgstr "Project information: %(project_title)s"
+
+#: supplements/templates/supplements/index.html:7
+#, python-format
+msgid "สำหรับ %(applicant)s"
+msgstr "for %(applicant)s"
+
+#: supplements/templates/supplements/index.html:24
+msgid "กลับหน้าหลัก โดยไม่จัดเก็บ"
+msgstr "Back to the main page without saving"
+
+#: supplements/templates/supplements/index.html:25
+msgid "หมดเวลารับสมัครแล้ว"
+msgstr "The application period has ended."
+
+#: supplements/templates/supplements/med/house_codes_form.html:4
+msgid ""
+"เลขรหัสประจำบ้านของผู้สมัคร และ บิดาหรือมารดาหรือผู้ปกครอง "
+"(เฉพาะสาขาแพทยศาสตร์หรือเภสัชศาสตร์)"
+msgstr ""
+"House registration codes of the applicant and a parent or guardian (Medicine "
+"or Pharmacy only)"
+
+#: supplements/templates/supplements/med/house_codes_form.html:9
+msgid ""
+"ให้กรอกรายละเอียดเลขรหัสประจำบ้านของผู้สมัคร "
+"<b>และในกรณีที่สมัครสาขาแพทย์ศาสตร์หรือเภสัชศาสตร์ "
+"รหัสประจำบ้านของบิดาหรือมารดาหรือผู้ปกครอง</b>ให้ถูกต้อง "
+"เพราะเป็นข้อมูลที่ต้องใช้สำหรับตรวจสอบเงื่อนไขการสมัครในโครงการ"
+msgstr ""
+"Enter your house registration code <b>and, if you are applying to Medicine or"
+" Pharmacy, the house registration code of a parent or guardian</b> correctly,"
+" since they are used to check the project's eligibility conditions."
+
+#: supplements/templates/supplements/med/house_codes_form.html:9
+msgid ""
+"สามารถตรวจสอบเลขดังกล่าวได้จากสมุดทะเบียนบ้านของผู้สมัครและของบิดาหรือมารดาหรือผู้ปกครองได้ในทุกหน้า"
+msgstr ""
+"The codes are printed on every page of the house registration books of the "
+"applicant and of the parent or guardian."
+
+#: supplements/templates/supplements/med/house_codes_form.html:11
+msgid ""
+"ถ้าสมัครสาขาพยาบาลศาสตร์ไม่ต้องกรอกรหัสประจำบ้านของบิดามารดาหรือผู้ปกครอง"
+msgstr ""
+"If you are applying to Nursing, you do not need to enter the house "
+"registration code of a parent or guardian."
+
+#: supplements/templates/supplements/tcas5/info.html:3
+msgid "กรุณาตรวจสอบข้อมูล GPAX:"
+msgstr "Please check your GPAX:"
+
+#: supplements/templates/supplements/tcas5/info.html:4
+#, python-format
+msgid ""
+"คุณระบุว่าเท่ากับ %(gpa)s ต้องเป็นคะแนน GPAX 6 ภาคการศึกษา ถ้าไม่ใช่ กรุณา"
+msgstr ""
+"you entered %(gpa)s. It must be your 6-semester GPAX. If it is not, please"
+
+#: supplements/views/forms/cultural.py:105
+msgid "กรุณาระบุชมรมและสาขาที่ต้องการทดสอบ"
+msgstr "Choose the club and the skill you want to audition for"
+
+#: supplements/views/forms/gen_sport.py:59
+#: supplements/views/forms/nat_sport.py:55
+msgid "กรุณาระบุประเภทกีฬา"
+msgstr "Choose your sport"
+
+#: supplements/views/forms/gen_sport.py:61
+msgid "กรุณาระบุระดับการเป็นตัวแทน"
+msgstr "Choose the level you have represented"
+
+#: supplements/views/forms/med.py:5
+msgid "เลขรหัสประจำบ้านของผู้สมัคร"
+msgstr "Applicant's house registration code"
+
+#: supplements/views/forms/med.py:9
+msgid ""
+"กรอกเลขรหัสประจำบ้าน 11 หลัก ไม่ต้องใส่ขีด "
+"สามารถดูจากสมุดทะเบียนบ้านของผู้สมัครได้ในทุกหน้า"
+msgstr ""
+"Enter the 11-digit code without dashes. It is printed on every page of the "
+"applicant's house registration book."
+
+#: supplements/views/forms/med.py:10
+msgid "เลขรหัสประจำบ้านของบิดาหรือมารดาหรือผู้ปกครอง"
+msgstr "Parent's or guardian's house registration code"
+
+#: supplements/views/forms/med.py:15
+msgid ""
+"<b>สำหรับกรณีที่สมัครสาขาแพทย์ศาสตร์หรือเภสัชศาสตร์</b> กรอกเลขรหัสประจำบ้าน "
+"11 หลัก ไม่ต้องใส่ขีด สามารถดูจากสมุดทะเบียนบ้านของผู้สมัครได้ในทุกหน้า "
+"ถ้าสมัครสาขาพยาบาลศาสตร์ไม่ต้องกรอก"
+msgstr ""
+"<b>For Medicine or Pharmacy applicants.</b> Enter the 11-digit code without "
+"dashes. It is printed on every page of the house registration book. Not "
+"needed for Nursing."
+
+#: supplements/views/forms/nat_sport.py:57
+msgid "กรุณาระบุระดับผลงาน"
+msgstr "Choose the level of your achievement"

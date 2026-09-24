@@ -1,19 +1,20 @@
-<h2>ผลงานการแข่งขัน</h2>
+{% load i18n %}
+<h2>{% trans 'ผลงานการแข่งขัน' %}</h2>
 <table class="table table-striped sport-history-table">
   <thead>
     <tr>
       <th></th>
-      <th>ชื่อรายการแข่งขัน</th>
-      <th>วันที่แข่งขัน</th>
-      <th>สถานที่/ประเทศ</th>
-      <th>ผลการแข่งขัน</th>
+      <th>{% trans 'ชื่อรายการแข่งขัน' %}</th>
+      <th>{% trans 'วันที่แข่งขัน' %}</th>
+      <th>{% trans 'สถานที่/ประเทศ' %}</th>
+      <th>{% trans 'ผลการแข่งขัน' %}</th>
       <th></th>
     </tr>
   </thead>
   <tbody>
   </tbody>
 </table>
-<a class="btn btn-small btn-secondary sport-history-add-row-buttons" href="#">เพิ่มข้อมูล</a>
+<a class="btn btn-small btn-secondary sport-history-add-row-buttons" href="#">{% trans 'เพิ่มข้อมูล' %}</a>
 <script>
   var formPrefix = '{{ gen_sport_history.form_prefix }}';
   var emptyRow = ('<tr class="history-rows">' + 
@@ -23,7 +24,7 @@
                   '<td><textarea class="form-control {{ gen_sport_history.form_prefix }}history-location" name="{{ gen_sport_history.form_prefix }}location[]" required></textarea></td>' +
                   '<td><textarea class="form-control {{ gen_sport_history.form_prefix }}history-result" name="{{ gen_sport_history.form_prefix }}result[]" required></textarea></td>' +
                   '<td class="row-controls">' +
-                  '<a href="#" class="btn btn-danger row-delete-links btn-sm">ลบ</a>' +
+                  '<a href="#" class="btn btn-danger row-delete-links btn-sm">{% trans 'ลบ' as x %}{{ x|escapejs }}</a>' +
                   '</td>' +
                   '</tr>');
 

@@ -195,7 +195,8 @@ review.
 ## Implementation plan
 
 Work happens on the `i18n-english` branch. Status: phases 0 and 1 done
-(merged to master); phase 2 (`appl`) done; phase 3 (`supplements`) next.
+(merged to master); phases 2 (`appl`) and 3 (`supplements`) done; phases 4
+(long DB text) and 5 (emails) deferred.
 
 ### Scope
 
@@ -351,8 +352,19 @@ so it can be checked under `/en/` as a whole. For each app:
    include the untranslated hook templates, or that show DB titles, need
    test fixtures that leave hook content out and (after 2e) set
    `title_en`; before 2e, test titles go on the allow-list.
-3. **`supplements`.** Applicant supplement forms (templates and
-   `supplements/views/forms/*.py`); not `supplements/backoffice/*`.
+3. **`supplements`** (done). Applicant supplement forms and dashboard
+   blocks: `index.html`, the live `nat_sport`, `gen_sport`, `cultural`
+   (history, exam) and `med` form templates, the `ap/course_results.html`
+   and `tcas5/info.html` blocks, form field labels in
+   `supplements/views/forms/*.py`, and the supplement/block titles in
+   `supplements/models.py` (lazy, so staff pages stay Thai). Kept Thai on
+   purpose: all choice lists in `forms/*.py` (sports, levels, cultural
+   clubs/exams; their saved values are the Thai strings) and the
+   advanced-placement course names. Skipped: the dead `cultural_type`
+   form and `tcas5` GPA form, the staff-only `applicant_info*.html`
+   columns, and `supplements/backoffice/*`. Tests
+   (`EnglishSupplementPagesTestCase`) ignore `<option>` text for this
+   reason.
 4. **Long DB text** (deferred): decide the approach (e.g. optional
    `*_en` fields with Thai fallback, which needs migrations and staff UI)
    after phases 0–3.

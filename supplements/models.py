@@ -1,6 +1,7 @@
 import json
 
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 
 from appl.models import School, AdmissionProject
 from regis.models import Applicant
@@ -174,7 +175,7 @@ def is_tcas5_gpa_form_required(applicant,
 PROJECT_SUPPLEMENTS = {
     'รับนักกีฬาดีเด่น': [
         ProjectSupplementConfig('sport_type',
-                                'ประเภทกีฬาและระดับ',
+                                _('ประเภทกีฬาและระดับ'),
                                 True,
                                 'supplements/nat_sport/sport_type.html',
                                 'sport_type_',
@@ -182,7 +183,7 @@ PROJECT_SUPPLEMENTS = {
                                 'supplements.views.forms.nat_sport.process_sport_type_form',
                                 'supplements/backoffice/nat_sport/sport_type.html'),
         ProjectSupplementConfig('sport_history',
-                                'ผลการแข่งขัน',
+                                _('ผลการแข่งขัน'),
                                 True,
                                 'supplements/nat_sport/sport_history.html',
                                 'sport_history_',
@@ -192,7 +193,7 @@ PROJECT_SUPPLEMENTS = {
     ],
     'โควตานักกีฬา': [
         ProjectSupplementConfig('gen_sport_type',
-                                'ประเภทกีฬาและระดับ',
+                                _('ประเภทกีฬาและระดับ'),
                                 True,
                                 'supplements/gen_sport/sport_type.html',
                                 'gen_sport_type_',
@@ -200,7 +201,7 @@ PROJECT_SUPPLEMENTS = {
                                 'supplements.views.forms.gen_sport.process_sport_type_form',
                                 'supplements/backoffice/gen_sport/sport_type.html'),
         ProjectSupplementConfig('gen_sport_history',
-                                'ผลการแข่งขัน',
+                                _('ผลการแข่งขัน'),
                                 True,
                                 'supplements/gen_sport/sport_history.html',
                                 'gen_sport_history_',
@@ -218,7 +219,7 @@ PROJECT_SUPPLEMENTS = {
 #                                'supplements.views.forms.cultural.process_cultural_type_form',
 #                                'supplements/backoffice/cultural/cultural_type.html'),
         ProjectSupplementConfig('cultural_history',
-                                'ประวัติการแข่งขัน/การแสดง',
+                                _('ประวัติการแข่งขัน/การแสดง'),
                                 True,
                                 'supplements/cultural/cultural_history.html',
                                 'cultural_history_',
@@ -226,7 +227,7 @@ PROJECT_SUPPLEMENTS = {
                                 'supplements.views.forms.cultural.process_cultural_history_form',
                                 'supplements/backoffice/cultural/cultural_history.html'),
         ProjectSupplementConfig('cultural_exam',
-                                'การสมัครทดสอบความสามารถ',
+                                _('การสมัครทดสอบความสามารถ'),
                                 True,
                                 'supplements/cultural/cultural_exam.html',
                                 'cultural_exam_',
@@ -236,7 +237,7 @@ PROJECT_SUPPLEMENTS = {
     ],
     'ส่งเสริมโอกาสศึกษาต่อในกลุ่มวิทยาศาสตร์สุขภาพ': [
         ProjectSupplementConfig('med_house_codes',
-                                'เลขรหัสประจำบ้านของผู้สม้ครและบิดาหรือมารดาหรือผู้ปกครอง',
+                                _('เลขรหัสประจำบ้านของผู้สมัครและบิดาหรือมารดาหรือผู้ปกครอง'),
                                 True,
                                 'supplements/med/house_codes_form.html',
                                 'med_house_code_',
@@ -260,13 +261,13 @@ PROJECT_SUPPLEMENTS = {
 PROJECT_ADDITIONAL_BLOCKS = {
     'เรียนล่วงหน้า': [
         ProjectBlockConfig('ap_course_results',
-                           'ผลการเรียนจากโครงการเรียนล่วงหน้า',
+                           _('ผลการเรียนจากโครงการเรียนล่วงหน้า'),
                            'supplements/ap/course_results.html',
                            'supplements.views.blocks.load_ap_course_results'),
     ],
     'รับตรงอิสระ': [
         ProjectBlockConfig('tcas5_block',
-                           'ข้อมูลเพิ่มเติมสำหรับการสมัคร',
+                           _('ข้อมูลเพิ่มเติมสำหรับการสมัคร'),
                            'supplements/tcas5/info.html',
                            'supplements.views.blocks.load_tcas5_block'),
     ],

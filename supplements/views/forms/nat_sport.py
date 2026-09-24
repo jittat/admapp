@@ -1,4 +1,5 @@
 from django import forms
+from django.utils.translation import gettext_lazy as _
 
 SPORT_CHOICES = [
     "ว่ายน้ำ",
@@ -51,9 +52,9 @@ SPORT_CHOICES = [
 ]
 
 class SportTypeForm(forms.Form):
-    sport_type = forms.ChoiceField(label='กรุณาระบุประเภทกีฬา',
+    sport_type = forms.ChoiceField(label=_('กรุณาระบุประเภทกีฬา'),
                                    choices=zip(SPORT_CHOICES,SPORT_CHOICES))
-    sport_level = forms.ChoiceField(label='กรุณาระบุระดับผลงาน',
+    sport_level = forms.ChoiceField(label=_('กรุณาระบุระดับผลงาน'),
                                     choices=[('ตัวแทนทีมชาติไทย','ตัวแทนทีมชาติไทย'),
                                              ('เยาวชนทีมชาติไทย','เยาวชนทีมชาติไทย')])
 

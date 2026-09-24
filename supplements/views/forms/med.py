@@ -1,17 +1,18 @@
 from django import forms
+from django.utils.translation import gettext_lazy as _
 
 class MedHouseCodesForm(forms.Form):
-    applicant_house_code = forms.CharField(label='เลขรหัสประจำบ้านของผู้สมัคร',
+    applicant_house_code = forms.CharField(label=_('เลขรหัสประจำบ้านของผู้สมัคร'),
                                            max_length=11,
                                            min_length=11,
                                            strip=True,
-                                           help_text='กรอกเลขรหัสประจำบ้าน 11 หลัก ไม่ต้องใส่ขีด สามารถดูจากสมุดทะเบียนบ้านของผู้สมัครได้ในทุกหน้า')
-    parent_house_code = forms.CharField(label='เลขรหัสประจำบ้านของบิดาหรือมารดาหรือผู้ปกครอง',
+                                           help_text=_('กรอกเลขรหัสประจำบ้าน 11 หลัก ไม่ต้องใส่ขีด สามารถดูจากสมุดทะเบียนบ้านของผู้สมัครได้ในทุกหน้า'))
+    parent_house_code = forms.CharField(label=_('เลขรหัสประจำบ้านของบิดาหรือมารดาหรือผู้ปกครอง'),
                                         max_length=11,
                                         min_length=11,
                                         strip=True,
                                         required=False,
-                                        help_text='<b>สำหรับกรณีที่สมัครสาขาแพทย์ศาสตร์หรือเภสัชศาสตร์</b> กรอกเลขรหัสประจำบ้าน 11 หลัก ไม่ต้องใส่ขีด สามารถดูจากสมุดทะเบียนบ้านของผู้สมัครได้ในทุกหน้า ถ้าสมัครสาขาพยาบาลศาสตร์ไม่ต้องกรอก')
+                                        help_text=_('<b>สำหรับกรณีที่สมัครสาขาแพทย์ศาสตร์หรือเภสัชศาสตร์</b> กรอกเลขรหัสประจำบ้าน 11 หลัก ไม่ต้องใส่ขีด สามารถดูจากสมุดทะเบียนบ้านของผู้สมัครได้ในทุกหน้า ถ้าสมัครสาขาพยาบาลศาสตร์ไม่ต้องกรอก'))
 
 def init_house_codes_form(request,
                           applicant,

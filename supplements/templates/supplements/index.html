@@ -1,9 +1,10 @@
 {% extends 'appl/base.html' %}
+{% load i18n %}
 {% block content %}
 <div class="row">
   <div class="col-md-12">
-    <h1>ข้อมูลโครงการ {{ admission_project }}</h1>
-    สำหรับ {{ applicant }}<br />
+    <h1>{% blocktrans with project_title=admission_project.title_trans %}ข้อมูลโครงการ {{ project_title }}{% endblocktrans %}</h1>
+    {% blocktrans %}สำหรับ {{ applicant }}{% endblocktrans %}<br />
   </div>
 </div>
 
@@ -20,10 +21,10 @@
   <div class="row">
     <div class="col-md-12 mt5 pt5 tborder-a0">
       {% if is_deadline_passed %}
-        <input type="submit" name="cancel" class="btn btn-success" value="กลับหน้าหลัก โดยไม่จัดเก็บ"/>
-        <span class="text-muted">หมดเวลารับสมัครแล้ว</span>
+        <input type="submit" name="cancel" class="btn btn-success" value="{% trans 'กลับหน้าหลัก โดยไม่จัดเก็บ' %}"/>
+        <span class="text-muted">{% trans 'หมดเวลารับสมัครแล้ว' %}</span>
       {% else %}
-        <input type="submit" name="ok" class="btn btn-success" value="จัดเก็บ" />
+        <input type="submit" name="ok" class="btn btn-success" value="{% trans 'จัดเก็บ' %}" />
       {% endif %}
     </div>
   </div>

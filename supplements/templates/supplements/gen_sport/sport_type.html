@@ -1,3 +1,4 @@
 {% load crispy_forms_tags %}
-<h2>ประเภทกีฬาและระดับการแข่งขัน</h2>
+{% load i18n %}
+<h2>{% trans 'ประเภทกีฬาและระดับการแข่งขัน' %}</h2>
 {{ gen_sport_type.form|crispy }}

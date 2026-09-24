@@ -1,3 +1,4 @@
 {% load crispy_forms_tags %}
-<h2>การทดสอบความสามารถด้านศิลปวัฒนธรรม</h2>
+{% load i18n %}
+<h2>{% trans 'การทดสอบความสามารถด้านศิลปวัฒนธรรม' %}</h2>
 {{ cultural_exam.form|crispy }}
