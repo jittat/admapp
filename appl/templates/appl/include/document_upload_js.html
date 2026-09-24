@@ -1,3 +1,4 @@
+{% load i18n %}
 <script>
   var refreshDocumentStatus = function() {
     var url = "{% url 'appl:check-project-documents' %}";
@@ -66,23 +67,23 @@
           $(div).replaceWith(data.html);
           checkAndShowInterviewDocument();
         } else if (data.result == 'APPLICATION_ERROR') {
-          $(uploadErrorDiv).show().html('<b>ฟอร์มอัพโหลดมีปัญหา กรุณาเข้าระบบใหม่</b>');
+          $(uploadErrorDiv).show().html('<b>{% trans 'ฟอร์มอัพโหลดมีปัญหา กรุณาเข้าระบบใหม่' as x %}{{ x|escapejs }}</b>');
         } else if (data.result == 'FORM_ERROR') {
-          $(uploadErrorDiv).show().html('<b>ไม่ได้ระบุไฟล์ที่อัพโหลด</b>');
+          $(uploadErrorDiv).show().html('<b>{% trans 'ไม่ได้ระบุไฟล์ที่อัพโหลด' as x %}{{ x|escapejs }}</b>');
         } else if (data.result == 'FILENAME_ERROR') {
-          $(uploadErrorDiv).show().html('<b>ไม่สามารถอัพโหลดได้ กรุณาตรวจสอบชื่อไฟล์ เพื่อป้องกันความผิดพลาดกรุณาปรับเป็นชื่อภาษาอังกฤษ</b>');
+          $(uploadErrorDiv).show().html('<b>{% trans 'ไม่สามารถอัพโหลดได้ กรุณาตรวจสอบชื่อไฟล์ เพื่อป้องกันความผิดพลาดกรุณาปรับเป็นชื่อภาษาอังกฤษ' as x %}{{ x|escapejs }}</b>');
         } else if (data.result == 'EXT_ERROR') {
-          $(uploadErrorDiv).show().html('<b>นามสกุลของไฟล์ไม่ถูกต้อง</b>');
+          $(uploadErrorDiv).show().html('<b>{% trans 'นามสกุลของไฟล์ไม่ถูกต้อง' as x %}{{ x|escapejs }}</b>');
         } else if (data.result == 'SIZE_ERROR') {
-          $(uploadErrorDiv).show().html('<b>ขนาดของไฟล์ใหญ่กว่าที่กำหนด</b>');
+          $(uploadErrorDiv).show().html('<b>{% trans 'ขนาดของไฟล์ใหญ่กว่าที่กำหนด' as x %}{{ x|escapejs }}</b>');
         } else if (data.result == 'DETAIL_REQUIRE') {
-          $(uploadErrorDiv).show().html('<b>โปรดระบุคำอธิบาย</b>');
+          $(uploadErrorDiv).show().html('<b>{% trans 'โปรดระบุคำอธิบาย' as x %}{{ x|escapejs }}</b>');
         } else if (data.result == 'DETAIL_ERROR') {
-          $(uploadErrorDiv).show().html('<b>ไม่สามารถอัพโหลดได้ กรุณาตรวจสอบคำอธิบาย ให้ลบเครื่องหมายพิเศษออก</b>');
+          $(uploadErrorDiv).show().html('<b>{% trans 'ไม่สามารถอัพโหลดได้ กรุณาตรวจสอบคำอธิบาย ให้ลบเครื่องหมายพิเศษออก' as x %}{{ x|escapejs }}</b>');
         } else if (data.result == 'URL_INVALID') {
-          $(uploadErrorDiv).show().html('<b>URL ที่ระบุไม่ถูกต้อง</b>');
+          $(uploadErrorDiv).show().html('<b>{% trans 'URL ที่ระบุไม่ถูกต้อง' as x %}{{ x|escapejs }}</b>');
         } else if (data.result == 'NO_INPUT') {
-          $(uploadErrorDiv).show().html('<b>กรุณาเลือกไฟล์หรือระบุลิงก์</b>');
+          $(uploadErrorDiv).show().html('<b>{% trans 'กรุณาเลือกไฟล์หรือระบุลิงก์' as x %}{{ x|escapejs }}</b>');
         } else if (data.result == 'VALIDATION_ERROR') {
           $(uploadErrorDiv).show().html(data.message_html);
         }
@@ -91,7 +92,7 @@
       },
       statusCode: {
         403: function() { 
-          $(uploadErrorDiv).show().html('<b>คุณได้ออกจากระบบแล้ว กรุณา refresh หน้าจอเพื่อเข้าระบบใหม่</b>');
+          $(uploadErrorDiv).show().html('<b>{% trans 'คุณได้ออกจากระบบแล้ว กรุณา refresh หน้าจอเพื่อเข้าระบบใหม่' as x %}{{ x|escapejs }}</b>');
         }
       }
     }).uploadProgress(function(e) {
@@ -128,7 +129,7 @@
       var isDetailRequired = $(form).attr('data-detail-required')
 
       if(isDetailRequired && $.trim($(form).find("input[name=detail]").val()).length==0) {
-        $(uploadErrorDiv).show().html('โปรดระบุคำอธิบาย</b>');
+        $(uploadErrorDiv).show().html('<b>{% trans 'โปรดระบุคำอธิบาย' as x %}{{ x|escapejs }}</b>');
         return false;
       } else {
         $(uploadErrorDiv).hide();
@@ -170,7 +171,7 @@
     $(".all-document-upload-forms").on("click", ".upload-form-delete-buttons", function() {
       var url = $(this).attr('data-delete-url');
       var div = $(this).parents('.project-document-upload-forms')[0];
-      if (confirm("คุณต้องการจะลบเอกสารดังกล่าวใช่หรือไม่?")) {
+      if (confirm("{% trans 'คุณต้องการจะลบเอกสารดังกล่าวใช่หรือไม่?' as x %}{{ x|escapejs }}")) {
         jQuery.ajax({
           url: url,
           type: 'POST',

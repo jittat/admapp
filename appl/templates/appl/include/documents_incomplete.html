@@ -1,6 +1,6 @@
 {% load i18n %}
 {% if paid_amount > 0 %}
-  <span class="badge badge-success">การชำระเงิน</span> คุณได้ชำระเงินมาแล้ว {{ paid_amount }} บาท<br>
+  <span class="badge badge-success">{% trans 'การชำระเงิน' %}</span> {% blocktrans %}คุณได้ชำระเงินมาแล้ว {{ paid_amount }} บาท{% endblocktrans %}<br>
 {% endif %}
 {% trans 'สถานะการสมัคร' context 'appl status' %}: <span class="badge badge-danger">{% trans 'เอกสารไม่เรียบร้อย' context 'appl status' %}</span><br />
 {% trans 'เนื่องจาก' context 'appl status' %}:

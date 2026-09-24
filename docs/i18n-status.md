@@ -190,7 +190,7 @@ review.
 ## Implementation plan
 
 Work happens on the `i18n-english` branch. Status: phases 0 and 1 done
-(merged to master); phase 2 in progress (2a, 2b done).
+(merged to master); phase 2 in progress (2a–2c done).
 
 ### Scope
 
@@ -299,9 +299,7 @@ so it can be checked under `/en/` as a whole. For each app:
      `{% localized_admission_year %}` tag (BE on Thai pages, CE on
      English) so the year isn't baked into msgids. Printouts also use
      `thaidate`, so a printout opened from an English page shows an
-     English date. The dashboard test ignores `<script>` blocks until
-     2c translates `document_upload_js.html` (`TODO(2c)` in
-     `main/tests.py`).
+     English date.
    - **2b. Major selection** (done). `major_selection_item`,
      `major_multiple_selection.html` (Thai inside inline JS strings via
      `escapejs`), `major_additional_form`, `major_form_field_modal`,
@@ -310,9 +308,12 @@ so it can be checked under `/en/` as a whole. For each app:
      the "show details" link built by `Major.process_hidden_info`. Campus
      names in the selection page (`{{ f.campus }}`, the short title) are
      left for 2e.
-   - **2c. Uploads and application status.** `document_upload_js`,
+   - **2c. Uploads and application status** (done). `document_upload_js`,
      `documents_incomplete`, `old_document_upload_list`, `payment_item`,
-     and the TCASFolio/document validation messages.
+     and the TCASFolio/document validation messages. The payment buttons
+     in `payment_item` are translated, but the pages they open
+     (`payments/*`) stay Thai. Uploaded-document titles (DB text) stay
+     Thai until phase 4.
    - **2d. Results and confirmation.** `project_accepted_result`,
      `project_accepted_for_interview_result`, `interview_description`,
      `cupt_confirmation_*`, and applicant-visible messages in

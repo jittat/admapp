@@ -72,10 +72,8 @@ class NoThaiTextMixin:
         "[{title: 'กรุงเทพ'}]",         # placeholder data in education.html JS
     ]
 
-    def assertNoThaiText(self, html, ignore_scripts=False):
+    def assertNoThaiText(self, html):
         body = html.split('<body>', 1)[-1]
-        if ignore_scripts:
-            body = re.sub(r'<script>.*?</script>', ' ', body, flags=re.DOTALL)
         text = re.sub(r'<[^>]*>', ' ', body)   # ignore tags and attribute values
         for allowed in self.ALLOWED_THAI:
             text = text.replace(allowed, '')
@@ -159,9 +157,7 @@ class EnglishApplPagesTestCase(NoThaiTextMixin, TestCase):
             with self.subTest(url=url):
                 response = self.client.get(url)
                 self.assertEqual(response.status_code, 200)
-                # TODO(2c): the index includes document_upload_js.html
-                self.assertNoThaiText(response.content.decode(),
-                                      ignore_scripts=(url == '/en/appl/'))
+                self.assertNoThaiText(response.content.decode())
 
     def test_project_list_uses_ce_admission_year(self):
         response = self.client.get('/en/appl/')
@@ -303,6 +299,77 @@ class EnglishApplPagesTestCase(NoThaiTextMixin, TestCase):
         with translation.override('en'):
             html = major.process_hidden_info('a\n--info-start--\nb\n--info-end--')
         self.assertIn('>Show details</a>', html)
+
+    def test_upload_and_status_includes(self):
+        from appl.models import AdmissionProject, ProjectUploadedDocument, UploadedDocument
+        from appl.views.upload import prepare_deadline_flags
+        self.project.base_fee = 400
+        application, majors = self.apply_with_majors(1)
+        tomorrow = date.today() + timedelta(days=1)
+
+        def upload_slot(document_type, uploaded, **kwargs):
+            doc = ProjectUploadedDocument(
+                id=7, rank=1, title='Portfolio', descriptions='', specifications='PDF',
+                allowed_extentions='PDF', document_type=document_type, **kwargs)
+            doc.applicant_uploaded_documents = uploaded
+            prepare_deadline_flags(doc, AdmissionProject(late_upload_date=tomorrow))
+            return doc
+
+        uploaded = [UploadedDocument(id=1, detail='a.pdf',
+                                     uploaded_file='documents/applicant_3/doc_7/a.pdf'),
+                    UploadedDocument(id=2, detail='link',
+                                     document_url='http://example.com/portfolio')]
+        status = {'active_application': application,
+                  'payment_deadline': tomorrow, 'paid_amount': 0,
+                  'additional_payment': application.admission_fee()}
+        pages = [
+            ('appl/include/document_upload_js.html', {}),
+            ('appl/include/document_upload_form.html',
+             {'project_uploaded_document': upload_slot(
+                 ProjectUploadedDocument.DOCUMENT_TYPE_ANY, uploaded[:1]),
+              'applicant': self.applicant, 'toggle': 'show'}),
+            ('appl/include/document_upload_form.html',
+             {'project_uploaded_document': upload_slot(
+                 ProjectUploadedDocument.DOCUMENT_TYPE_ANY, uploaded,
+                 can_have_multiple_files=True, is_detail_required=True),
+              'applicant': self.applicant, 'toggle': 'show'}),
+            ('appl/include/document_upload_form.html',
+             {'project_uploaded_document': upload_slot(
+                 ProjectUploadedDocument.DOCUMENT_TYPE_URL, [], is_late_upload_allowed=True),
+              'applicant': self.applicant, 'toggle': 'show', 'is_deadline_passed': True}),
+            ('appl/include/old_document_upload_list.html', {}),
+            ('appl/include/application_complete_notice.html', {}),
+            ('appl/include/application_document_status.html',
+             dict(status, documents_complete_status={'status': False, 'errors': ['x']},
+                  paid_amount=100)),
+            ('appl/include/application_document_status.html',
+             dict(status, documents_complete_status={'status': True}, major_selection=None)),
+            ('appl/include/application_document_status.html',
+             dict(status, documents_complete_status={'status': True}, major_selection=True)),
+            ('appl/include/application_document_status.html',
+             dict(status, documents_complete_status={'status': True}, major_selection=True,
+                  payment_deadline_passed=True)),
+        ]
+        for template_name, context in pages:
+            with self.subTest(template=template_name, context=context):
+                self.assertNoThaiText(self.render_en(template_name, context))
+        # the payment options are rendered, not skipped
+        self.assertIn('Pay by QR code', self.render_en(*pages[-2]))
+        self.assertIn('payment deadline has passed', self.render_en(*pages[-1]))
+
+    def test_document_validation_messages(self):
+        from appl.document_validators import ValidationResult
+        from appl.models import ProjectUploadedDocument
+        from appl.views.upload import render_validation_message
+        codes = ['not_pdf', 'not_signed', 'modified_after_signing', 'untrusted_signer',
+                 'invalid_url', 'no_document', 'misconfigured', 'bad_file']
+        for validator in ('tcasfolio', 'default'):
+            for code in codes:
+                with self.subTest(validator=validator, code=code), translation.override('en'):
+                    html = render_validation_message(
+                        ProjectUploadedDocument(validator=validator),
+                        ValidationResult.reject(code), None)
+                    self.assertNoThaiText(html)
 
 
 class ThaiDateFilterTestCase(SimpleTestCase):

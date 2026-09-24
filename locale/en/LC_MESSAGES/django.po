@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-24 20:15+0700\n"
+"POT-Creation-Date: 2026-09-24 20:48+0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -529,22 +529,17 @@ msgid "อัพโหลดเอกสาร"
 msgstr "Upload documents"
 
 #: appl/templates/appl/include/application_complete_notice.html:3
-#, fuzzy
-#| msgid "พิมพ์ใบสมัครเพื่อสัมภาษณ์"
 msgid "ใบสมัครของคุณสมบูรณ์แล้ว"
-msgstr "Application form for the interview"
+msgstr "Your application is complete"
 
 #: appl/templates/appl/include/application_complete_notice.html:5
-#, fuzzy
-#| msgid ""
-#| "ถ้าจบจากโรงเรียนนานาชาติหรือต่างประเทศและไม่มี GPA สามารถกรอกเป็น 0 ได้ "
-#| "และสามารถเลือกแผนการเรียนเป็นไม่ระบุได้"
 msgid ""
 "อย่างไรก็ตาม อาจจะมีเอกสารเพิ่มเติมที่สาขาต้องการที่คุณสามารถอัพโหลดเพิ่มได้ "
 "นอกจากนี้ถ้าคุณลบเอกสารอัพโหลดบางชิ้น อาจทำให้ใบสมัครคุณไม่สมบูรณ์ได้"
 msgstr ""
-"Fill 0 for the GPA if your school did not determine your GPA. Select 'Not "
-"specified' for the studyplan if your school did not determined the plan."
+"However, the major may want additional documents that you can still upload. "
+"Also, if you delete some uploaded documents, your application may become "
+"incomplete."
 
 #: appl/templates/appl/include/application_document_status.html:4
 msgctxt "appl status"
@@ -573,10 +568,8 @@ msgid "ไฟล์"
 msgstr "file(s)"
 
 #: appl/templates/appl/include/document_upload_form.html:15
-#, fuzzy
-#| msgid "ชำระได้ถึงวันที่"
 msgid "อัพโหลดได้ถึงวันที่"
-msgstr "Payment last date:"
+msgstr "upload until"
 
 #: appl/templates/appl/include/document_upload_form.html:24
 msgctxt "upload form link"
@@ -604,37 +597,24 @@ msgid "อัพโหลด"
 msgstr "Upload"
 
 #: appl/templates/appl/include/document_upload_form.html:66
-#, fuzzy
-#| msgid "อัพโหลดเอกสาร"
 msgid "อัพโหลดไฟล์"
-msgstr "Upload documents"
+msgstr "Upload a file"
 
 #: appl/templates/appl/include/document_upload_form.html:72
-#, fuzzy
-#| msgid "ดูลิงก์"
 msgid "ระบุลิงก์"
-msgstr "See link"
+msgstr "Enter a link"
 
 #: appl/templates/appl/include/document_upload_form.html:98
-#, fuzzy
-#| msgctxt "major selection"
-#| msgid "เลือกสาขานี้"
 msgid "เอกสารเดิม"
-msgstr "Apply"
+msgstr "The current document"
 
 #: appl/templates/appl/include/document_upload_form.html:100
-#, fuzzy
-#| msgid "กรุณาพิจารณาเกณฑ์และรายการเอกสารเพิ่มเติมที่ต้องอัพโหลด"
 msgid "จะถูกแทนที่ด้วยรายการใหม่ ต้องการดำเนินการต่อหรือไม่"
-msgstr ""
-"You should consider the following criteria and conditions. Please make sure "
-"that you have uploaded all required and optional documents."
+msgstr "will be replaced by the new one. Do you want to continue?"
 
 #: appl/templates/appl/include/document_upload_form.html:103
-#, fuzzy
-#| msgid "ยืนยันการสมัคร"
 msgid "ยืนยันการแทนที่"
-msgstr "I confirm my application"
+msgstr "Confirm replacement"
 
 #: appl/templates/appl/include/document_upload_form.html:104
 #: appl/templates/appl/include/major_form_field_modal.html:34
@@ -652,60 +632,118 @@ msgstr "See link"
 msgid "ลบ"
 msgstr "Delete"
 
+#: appl/templates/appl/include/document_upload_js.html:70
+msgid "ฟอร์มอัพโหลดมีปัญหา กรุณาเข้าระบบใหม่"
+msgstr "There is a problem with the upload form. Please log in again."
+
+#: appl/templates/appl/include/document_upload_js.html:72
+msgid "ไม่ได้ระบุไฟล์ที่อัพโหลด"
+msgstr "No file was selected."
+
+#: appl/templates/appl/include/document_upload_js.html:74
+msgid ""
+"ไม่สามารถอัพโหลดได้ กรุณาตรวจสอบชื่อไฟล์ "
+"เพื่อป้องกันความผิดพลาดกรุณาปรับเป็นชื่อภาษาอังกฤษ"
+msgstr ""
+"Upload failed. Please check the file name; to avoid errors, rename the file "
+"using English characters."
+
+#: appl/templates/appl/include/document_upload_js.html:76
+msgid "นามสกุลของไฟล์ไม่ถูกต้อง"
+msgstr "Invalid file extension."
+
+#: appl/templates/appl/include/document_upload_js.html:78
+msgid "ขนาดของไฟล์ใหญ่กว่าที่กำหนด"
+msgstr "The file is larger than the size limit."
+
+#: appl/templates/appl/include/document_upload_js.html:80
+#: appl/templates/appl/include/document_upload_js.html:132
+msgid "โปรดระบุคำอธิบาย"
+msgstr "Please enter a description."
+
+#: appl/templates/appl/include/document_upload_js.html:82
+msgid "ไม่สามารถอัพโหลดได้ กรุณาตรวจสอบคำอธิบาย ให้ลบเครื่องหมายพิเศษออก"
+msgstr "Upload failed. Please remove special characters from the description."
+
+#: appl/templates/appl/include/document_upload_js.html:84
+msgid "URL ที่ระบุไม่ถูกต้อง"
+msgstr "Invalid URL."
+
+#: appl/templates/appl/include/document_upload_js.html:86
+msgid "กรุณาเลือกไฟล์หรือระบุลิงก์"
+msgstr "Please choose a file or enter a link."
+
+#: appl/templates/appl/include/document_upload_js.html:95
+msgid "คุณได้ออกจากระบบแล้ว กรุณา refresh หน้าจอเพื่อเข้าระบบใหม่"
+msgstr "You have been logged out. Please refresh the page to log in again."
+
+#: appl/templates/appl/include/document_upload_js.html:174
+msgid "คุณต้องการจะลบเอกสารดังกล่าวใช่หรือไม่?"
+msgstr "Do you want to delete this document?"
+
 #: appl/templates/appl/include/document_validation_errors/default.html:1
-#, fuzzy
-#| msgid ""
-#| "ขออภัย ไม่สามารถเข้าใช้ระบบได้ "
-#| "เนื่องจากรหัสผ่านหรือรหัสประจำตัวประชาชนผิดพลาด"
 msgid ""
 "ระบบไม่สามารถตรวจสอบเอกสารได้ในขณะนี้ กรุณาลองใหม่อีกครั้ง "
 "หากยังพบปัญหากรุณาติดต่อเจ้าหน้าที่"
 msgstr ""
-"Sorry,  you cannot login because you entered a wrong national ID or an "
-"incorrect password."
+"The document cannot be checked right now. Please try again. If the problem "
+"continues, please contact the staff."
 
 #: appl/templates/appl/include/document_validation_errors/default.html:1
-#, fuzzy
-#| msgctxt "appl status"
-#| msgid "เอกสารไม่เรียบร้อย"
 msgid "เอกสารไม่ผ่านการตรวจสอบ"
-msgstr "Incomplete application"
+msgstr "The document did not pass the check."
 
 #: appl/templates/appl/include/document_validation_errors/tcasfolio.html:4
 msgid ""
 "ไฟล์ไม่ใช่ไฟล์ PDF ที่ถูกต้อง กรุณาดาวน์โหลดไฟล์ PDF จากระบบ TCASFolio "
 "แล้วอัพโหลดใหม่"
 msgstr ""
+"This is not a valid PDF file. Please download the PDF from TCASFolio and "
+"upload it again."
 
 #: appl/templates/appl/include/document_validation_errors/tcasfolio.html:6
 msgid ""
 "ไฟล์นี้ไม่มีลายมือชื่ออิเล็กทรอนิกส์ของ TCASFolio กรุณาดาวน์โหลดไฟล์ PDF "
 "จากระบบ TCASFolio แล้วอัพโหลดใหม่"
 msgstr ""
+"This file has no TCASFolio electronic signature. Please download the PDF from"
+" TCASFolio and upload it again."
 
 #: appl/templates/appl/include/document_validation_errors/tcasfolio.html:8
 msgid ""
 "ไฟล์ถูกแก้ไขหลังจากดาวน์โหลดจากระบบ TCASFolio "
 "กรุณาดาวน์โหลดใหม่และอัพโหลดโดยไม่แก้ไขไฟล์"
 msgstr ""
+"The file was modified after it was downloaded from TCASFolio. Please download"
+" it again and upload it without changes."
 
 #: appl/templates/appl/include/document_validation_errors/tcasfolio.html:10
 msgid ""
 "ลายมือชื่ออิเล็กทรอนิกส์ในไฟล์ไม่ใช่ของระบบ TCASFolio กรุณาดาวน์โหลดไฟล์ PDF "
 "จากระบบ TCASFolio แล้วอัพโหลดใหม่"
 msgstr ""
+"The electronic signature in this file is not from TCASFolio. Please download "
+"the PDF from TCASFolio and upload it again."
 
 #: appl/templates/appl/include/document_validation_errors/tcasfolio.html:12
 msgid ""
 "ลิงก์แฟ้มสะสมผลงานไม่ใช่ของระบบ TCASFolio กรุณาใช้ลิงก์จากระบบ TCASFolio"
 msgstr ""
+"This portfolio link is not from TCASFolio. Please use the link from "
+"TCASFolio."
 
 #: appl/templates/appl/include/document_validation_errors/tcasfolio.html:14
-#, fuzzy
-#| msgctxt "appl status"
-#| msgid "เอกสารไม่เรียบร้อย"
 msgid "ไม่มีเอกสารแฟ้มสะสมผลงาน"
-msgstr "Incomplete application"
+msgstr "No portfolio document."
+
+#: appl/templates/appl/include/documents_incomplete.html:3
+msgid "การชำระเงิน"
+msgstr "Payment"
+
+#: appl/templates/appl/include/documents_incomplete.html:3
+#, python-format
+msgid "คุณได้ชำระเงินมาแล้ว %(paid_amount)s บาท"
+msgstr "You have paid %(paid_amount)s Baht."
 
 #: appl/templates/appl/include/documents_incomplete.html:5
 msgctxt "appl status"
@@ -883,6 +921,20 @@ msgctxt "major link"
 msgid "เลือกสาขา"
 msgstr "Choose majors to apply"
 
+#: appl/templates/appl/include/old_document_upload_list.html:3
+msgid "ทีมงานต้องขออภัยเป็นอย่างสูง"
+msgstr "We sincerely apologize"
+
+#: appl/templates/appl/include/old_document_upload_list.html:3
+msgid ""
+"เนื่องจากระบบบันทึกข้อมูลของระบบรับสมัครมีปัญหาในช่วงเช้ามืดวันที่ 20 ธ.ค. "
+"2564 ทำให้เอกสารที่คุณได้อัพโหลดไว้สูญหายหรือเกิดความผิดพลาด "
+"ทางทีมงานต้องขออภัยที่จะต้องรบกวนให้ผู้สมัครอัพโหลดเอกสารอีกครั้ง"
+msgstr ""
+"Because of a storage failure in the early morning of 20 December 2021, "
+"documents you uploaded may have been lost or damaged. We are sorry to ask you"
+" to upload your documents again."
+
 #: appl/templates/appl/include/other_application_rounds.html:3
 #, python-format
 msgid "นอกจาก%(round_title)s แล้วคุณยังมีใบสมัครในรอบอื่น ๆ อยู่ดังนี้:"
@@ -918,14 +970,58 @@ msgstr ""
 "    Additional payment: %(additional_payment)s Baht.<br />\n"
 "  "
 
+#: appl/templates/appl/include/payment_item.html:17
+msgid ""
+"สามารถชำระได้ 2 ช่องทาง <b>ให้ผู้สมัครเลือกชำระทางใดทางหนึ่งเท่านั้น</b>  "
+"เมื่อชำระเงินแล้ว ถ้าชำระด้วย QR Code ข้อมูลจะแสดงทันที ถ้าชำระทางอื่น "
+"ข้อมูลการชำระเงินจะปรากฏในระบบในวันทำการถัดไป ก่อนเวลา 13:00"
+msgstr ""
+"There are 2 ways to pay. <b>Please use only one of them.</b> QR code payments"
+" show up immediately; other payments show up in the system by 13:00 on the "
+"next business day."
+
+#: appl/templates/appl/include/payment_item.html:24
+msgid "ช่องทางที่ 1"
+msgstr "Option 1"
+
+#: appl/templates/appl/include/payment_item.html:26
+msgid ""
+"ชำระด้วย QR Code ผ่านทาง Mobile Banking App ของธนาคารใดก็ได้ "
+"ไม่เสียค่าธรรมเนียม"
+msgstr "Pay by QR code with any bank's mobile banking app. No fee."
+
+#: appl/templates/appl/include/payment_item.html:30
+msgid "ชำระด้วย QR Code"
+msgstr "Pay by QR code"
+
+#: appl/templates/appl/include/payment_item.html:42
+msgid "ช่องทางที่ 2"
+msgstr "Option 2"
+
+#: appl/templates/appl/include/payment_item.html:44
+msgid "ชำระผ่านทางบริการ Counter Service มีค่าธรรมเนียม 10 บาท"
+msgstr "Pay at Counter Service. A 10 Baht fee applies."
+
 #: appl/templates/appl/include/payment_item.html:48
 msgid "พิมพ์ใบชำระเงิน"
 msgstr "Print payment form"
 
+#: appl/templates/appl/include/payment_item.html:51
+msgid "ใบชำระเงิน"
+msgstr "Payment form"
+
 #: appl/templates/appl/include/payment_item.html:58
 #: appl/templates/appl/include/payment_item.html:60
 msgid "ชำระได้ถึงวันที่"
-msgstr "Payment last date:"
+msgstr "Pay by"
+
+#: appl/templates/appl/include/payment_item.html:63
+msgid "ขออภัย"
+msgstr "Sorry"
+
+#: appl/templates/appl/include/payment_item.html:63
+msgid "หมดเขตชำระค่าสมัครแล้ว"
+msgstr "The payment deadline has passed."
 
 #: appl/templates/appl/include/payment_item.html:67
 msgid "ไม่ต้องชำระเพิ่ม"
