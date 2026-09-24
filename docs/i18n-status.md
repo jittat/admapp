@@ -1,8 +1,12 @@
 # i18n status (English version)
 
 Point-in-time investigation (2026-09-23, Django 5.2) into why the English
-version, set up in late 2017/early 2018, no longer works. Read before working
-on this area, but verify against current code.
+version, set up in late 2017/early 2018, no longer works, followed by the
+implementation plan. **Update 2026-09-25:** phases 0–3 of the plan are done
+and merged to master, so the English version covers the applicant pages;
+sections 1–5 below describe the state *before* that work (each is marked
+fixed). See "Remaining work and maintenance" at the end for what is left.
+Read before working on this area, but verify against current code.
 
 ## Summary
 
@@ -11,11 +15,14 @@ The i18n plumbing still works: from the repo root, `/en/` renders with
 What the user sees as "English doesn't work" is mostly **coverage**: most
 applicant-facing text was added after 2018 as hardcoded Thai and never went
 through `{% trans %}`, and the catalog hasn't been maintained since Feb 2018.
-Findings, in order of impact (the agreed implementation plan is at the end):
+Findings, in order of impact (the implementation plan is at the end):
 
-1. **Hardcoded Thai throughout applicant templates** (main issue).
-2. **Stale catalog**: new strings untranslated or marked fuzzy.
-3. **`title_trans` not used** on live pages that show DB titles.
+1. **Hardcoded Thai throughout applicant templates** (main issue; fixed in
+   phases 1–3).
+2. **Stale catalog**: new strings untranslated or marked fuzzy (fixed; the
+   catalog is maintained with each change).
+3. **`title_trans` not used** on live pages that show DB titles (fixed in
+   phase 2; English titles come from `title_en`, phase 2e).
 4. **Deploy robustness**: relative `LOCALE_PATHS`, and nothing builds the
    `.mo` file (fixed).
 5. **`<html lang>` hardcoded to `en`** on every page (fixed).
@@ -63,7 +70,11 @@ Findings, in order of impact (the agreed implementation plan is at the end):
   for campuses and faculties are kept in `docs/old-catalog-title-en.json`
   as a starting point for filling `title_en`.
 
-## 1. Hardcoded Thai in templates (main issue)
+## 1. Hardcoded Thai in templates (main issue) (fixed)
+
+Fixed in phases 1–3 for `main`, `regis`, `appl` and `supplements`, with the
+exceptions listed under Decisions and "Remaining work and maintenance".
+The original finding follows.
 
 26 of 209 templates load `i18n`, all in applicant-facing apps (`appl`,
 `main`, `regis`), but even those are only partly wrapped. A rough count of
@@ -87,7 +98,13 @@ handled per-language than as catalog entries.
 i18n; that's consistent with staff UI staying Thai-only. `supplements` is
 applicant-facing, so it's a gap if English applicants use it.
 
-## 2. Stale catalog
+## 2. Stale catalog (fixed)
+
+Fixed: every applicant-facing entry has an English draft (reviewed by the
+project owner phase by phase), fuzzy entries were resolved, obsolete ones
+dropped, the `.mo` is committed (`b0e50fe`), and the backwards
+language-name entries were cleared (phase 2a). The original finding
+follows.
 
 - `locale/en/LC_MESSAGES/django.po` is git-tracked; last touched
   2018-02-06 (16 commits, all Nov 2017 – Feb 2018), about 8 years ago.
@@ -108,7 +125,12 @@ applicant-facing, so it's a gap if English applicants use it.
   (`"Thai"` → `"ไทย"`, `"English"` → `"อังกฤษ"`) in the `en` locale. It's
   harmless today because the switcher uses hardcoded TH/EN labels.
 
-## 3. `title_trans` not used on live pages
+## 3. `title_trans` not used on live pages (fixed)
+
+Fixed in phase 2: applicant pages use `title_trans` (and
+`Campus.short_title_trans`), backed by the `title_en` fields from phase 2e.
+Printouts still use raw titles (they stay Thai). The original finding
+follows.
 
 Only 6 templates use `.title_trans`: `major_selection.html`,
 `include/major_selection_item.html`, `include/selected_major_details.html`,
@@ -194,9 +216,9 @@ review.
 
 ## Implementation plan
 
-Work happens on the `i18n-english` branch. Status: phases 0 and 1 done
-(merged to master); phases 2 (`appl`) and 3 (`supplements`) done; phases 4
-(long DB text) and 5 (emails) deferred.
+Status: phases 0–3 done; the `i18n-english` branch was merged into master
+on 2026-09-25 (fast-forward, last commit `e1ce5bd`). Phases 4 (long DB
+text) and 5 (emails) are deferred.
 
 ### Scope
 
@@ -277,8 +299,8 @@ so it can be checked under `/en/` as a whole. For each app:
 - **Catalog:** `makemessages -l en`, fill the app's new and fuzzy entries
   with machine-translated drafts (the fuzzy guesses are usually unrelated
   strings), review, `compilemessages`, commit the `.mo`.
-- **Tests:** add the app's pages to `EnglishPagesTestCase` in
-  `main/tests.py`.
+- **Tests:** add the app's pages to the English page tests in
+  `main/tests.py` (see Testing).
 
 1. **`main` + `regis`.** Landing page, register, login, forgotten
    password, registration result/error pages, the deadline announcement
@@ -326,7 +348,9 @@ so it can be checked under `/en/` as a whole. For each app:
      round-2 announcement (copied three times) is now one include,
      `appl/include/next_round_announcement.html`, with Thai/English blocks.
      `appl/clearing_utils.py` (clearing-code reading guide) only reaches
-     applicants through emails, so it's left for phase 5. Result-page
+     applicants through emails, so it's left for phase 5. The welcome
+     message after confirming admission now takes its year from
+     `ADMISSION_YEAR` (it was hardcoded to 2569). Result-page
      tests render the hook templates empty (`WITHOUT_HOOKS` in
      `main/tests.py`).
    - **2e. DB titles** (done, migration `appl/0109_title_en`). Replaces the `model_messages.py` /
@@ -346,12 +370,14 @@ so it can be checked under `/en/` as a whole. For each app:
      added `Campus.short_title_trans` for the campus shown on the
      multiple-selection page. `title_en` is editable in Django admin for
      projects, faculties and majors (`Campus` isn't registered there).
+     Round titles on English pages changed from the old catalog's
+     "TCAS Round N" to "Round N".
 
    Each step includes catalog drafts for its strings, `compilemessages`
-   + committed `.mo`, and tests in `EnglishPagesTestCase`. Pages that
-   include the untranslated hook templates, or that show DB titles, need
-   test fixtures that leave hook content out and (after 2e) set
-   `title_en`; before 2e, test titles go on the allow-list.
+   + committed `.mo`, and English page tests. Pages that include the
+   untranslated hook templates render them empty in tests
+   (`WITHOUT_HOOKS`), and test fixtures use Thai titles with `title_en`
+   set.
 3. **`supplements`** (done). Applicant supplement forms and dashboard
    blocks: `index.html`, the live `nat_sport`, `gen_sport`, `cultural`
    (history, exam) and `med` form templates, the `ap/course_results.html`
@@ -376,10 +402,63 @@ so it can be checked under `/en/` as a whole. For each app:
 
 ### Testing
 
-- `main/tests.py`: `LanguageSwitcherTestCase` (switcher links to the same
-  page in the other language) and `EnglishPagesTestCase` (pages rendered
-  under `/en/` contain no Thai text outside tags, except an allow-list such
-  as the "switch to Thai" link). Pages that only appear after a form
-  submission are rendered directly with `render_to_string`.
+All in `main/tests.py`. The core check is `NoThaiTextMixin.assertNoThaiText`:
+the rendered page body under `/en/` contains no Thai text outside tags,
+except an allow-list (`ALLOWED_THAI`, e.g. the "switch to Thai" link) and,
+with `ignore_options=True`, `<option>` text. Scripts are checked too, so
+Thai in inline JS fails the test. Pages that only appear after a form
+submission, and includes, are rendered with `render_en`
+(`render_to_string` under the `en` locale).
+
+- `TranslationTestCase`: absolute `LOCALE_PATHS`, the compiled catalog is
+  loaded, `<html lang>` follows the language.
+- `LanguageSwitcherTestCase`: switcher links to the same page in the other
+  language, including under the `/kuadm/` script prefix.
+- `EnglishPagesTestCase`: `main` and `regis` pages.
+- `EnglishApplPagesTestCase`: the dashboard before applying, profile
+  forms, major selection, uploads and the status box, and their includes.
+- `EnglishResultPagesTestCase`: the dashboard after applying, in each
+  result state (no results, called / not called for interview, admitted /
+  not admitted), with the hook templates rendered empty (`WITHOUT_HOOKS`).
+- `EnglishSupplementPagesTestCase`: each live supplement page and the
+  supplement dashboard blocks (`ignore_options=True`).
+- `TitleTransTestCase` / `ThaiDateFilterTestCase`: `title_en` fallback,
+  round titles, and English dates.
+- Shared fixtures: `ApplicantFixturesMixin` (logged-in applicant with
+  profiles, an open project, Thai titles with `title_en` set).
 - Manual review of each app under `/en/` by the project owner before the
   phase is committed.
+
+## Remaining work and maintenance
+
+Still Thai on English pages, by decision:
+
+- **DB titles without `title_en`**: until the project owner imports the
+  English names (a starting point is `docs/old-catalog-title-en.json`),
+  campus/faculty/major/project titles show in Thai. Production needs
+  `migrate` for `appl/0109_title_en`.
+- **Hook templates** (`*_hook*.html` in `appl/templates/appl/include/`),
+  to be translated by the project owner when needed.
+- **Printouts** (`appl/print/*`) and **payment pages** (`payments/*`).
+  Printouts use `thaidate`, so a printout opened from an English page
+  shows the dates in English.
+- **Supplement choice lists** (`supplements/views/forms/*.py`) and
+  **advanced-placement course names**.
+- **Long DB text** (phase 4) and **emails** (phase 5).
+
+The only catalog entries left untranslated are intentional: the two
+language names (`"Thai"`, `"English"`, already English), one string in
+`interview_application_print_hook.html` and one in
+`payments/payment_qr.html`.
+
+When adding or changing applicant-facing text:
+
+1. Wrap it (`{% trans %}` / `{% blocktrans trimmed %}`, `escapejs` in JS,
+   `gettext_lazy` for form labels and module-level strings, `gettext` for
+   session notices). Seasonal text goes in Thai/English blocks instead.
+2. `python manage.py makemessages -l en`, fill the new and fuzzy entries
+   in `locale/en/LC_MESSAGES/django.po` (fuzzy guesses are usually wrong),
+   then `python manage.py compilemessages -l en`, and commit both the `.po`
+   and the `.mo`.
+3. Run `python manage.py test main`; the English page tests fail if new
+   Thai text shows up on a tested English page.

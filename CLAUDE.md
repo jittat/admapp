@@ -94,9 +94,11 @@ analyses):
 - `docs/i18n-status.md` — state of the English version (Thai is the
   source language; `en` catalog only): how i18n is wired (`i18n_patterns`
   `/en/` prefix, TH/EN switcher, `title_trans` + `title_en` fields for DB
-  titles), the phased implementation plan and its status, and why English
-  barely worked — hardcoded Thai in
-  applicant templates, a catalog unmaintained since 2018 (fuzzy/untranslated
-  entries, no `compilemessages` step, `*.mo` gitignored), missing
-  `title_trans` on live pages, relative `LOCALE_PATHS`, and `<html lang>`
-  hardcoded to `en`. Client-side translation was considered and rejected.
+  titles), the phased implementation plan (phases 0–3 done and merged;
+  long DB text and emails deferred), the English page tests, what is still
+  Thai on purpose, and the workflow for adding translatable text
+  (`makemessages` → fill `.po` → `compilemessages` → commit `.mo`). Also the
+  original findings on why English barely worked (hardcoded Thai, a catalog
+  unmaintained since 2018, missing `title_trans`, relative `LOCALE_PATHS`,
+  `<html lang>` hardcoded to `en`; all fixed). Client-side translation was
+  considered and rejected.
