@@ -189,7 +189,8 @@ review.
 
 ## Implementation plan
 
-Work happens on the `i18n-english` branch. Status: agreed, not started.
+Work happens on the `i18n-english` branch. Status: phases 0 and 1 done
+(merged to master); phase 2 planned.
 
 ### Scope
 
@@ -205,7 +206,13 @@ Every page applicants use gets an English version:
 
 Out of scope: `backoffice/*` and `supplements/templates/supplements/backoffice/*`
 (staff), `qrconfirmations/` (payment-gateway callbacks, no pages), `api/`,
-`admin/`.
+`admin/`. Also out of scope:
+
+- `appl/templates/appl/payments/*`: bank payment forms meant to be
+  printed, no longer used. (`appl/include/payment_item.html`, shown on
+  the dashboard, is in scope.)
+- `criteria/criteria_options.py`: its text is mostly not shown to
+  applicants directly.
 
 ### Decisions
 
@@ -215,6 +222,15 @@ Out of scope: `backoffice/*` and `supplements/templates/supplements/backoffice/*
   schedules) use separate Thai and English blocks in the template, chosen
   by `{% get_current_language %}`, not catalog entries. Staff edit both
   blocks each season.
+- **Result/print hook templates stay Thai for now**:
+  `interview_application_print_hook`, `paper_application_print_hook`,
+  `project_accepted_for_interview_result_info_hooks`,
+  `project_accepted_result_acceptance_prehook` / `_posthook`,
+  `special_cancel_hook` (all in `appl/templates/appl/include/`). They hold
+  seasonal, round-specific text that the project owner translates when
+  needed.
+- **DB titles use optional `title_en` fields** (phase 2e) instead of
+  catalog lookups; see phase 2.
 - **English text:** machine-translated first drafts, reviewed by the
   project owner before merging.
 - **Long free text stored in the DB** (project/interview descriptions,
@@ -264,20 +280,54 @@ so it can be checked under `/en/` as a whole. For each app:
    (Thai/English blocks), and two unwrapped strings in `regis/views.py`.
    Also updated the old phone number in `regis_result.html` to match the
    footer.
-2. **`appl`.** Dashboard, personal/education forms
-   (`appl/views/general_forms.py`), apply/cancel, major selection
-   (including `major_multiple_selection.html`), uploads (including the
-   document validation messages), payment, per-major additional forms,
-   application status, and `project_accepted_result.html`. Also: validator
-   messages in `appl/models.py` (e.g. phone number), applicant-visible text
-   from `appl/templatetags/appl_tags.py` and `criteria/criteria_options.py`
-   (check which parts applicants actually see), and a language-aware
-   `thaidate` filter (English month names, Gregorian year). Fix the
-   backwards `"Thai"`/`"English"` language-name entries here too.
-   **DB titles:** the goal is to eliminate the `model_messages.py` /
-   `_(self.title)` catalog approach (exact-match lookups that break silently
-   when titles change, and a 2017 dump covering only ~16 majors). The
-   replacement approach is decided when phase 2 is planned.
+2. **`appl`.** Split into steps, one commit each, each reviewed under
+   `/en/` before committing. Templates are under
+   `appl/templates/appl/` (mostly `include/`). Payments, criteria options,
+   printouts and the hook templates are out of scope (see Scope and
+   Decisions).
+   - **2a. Dashboard and forms.** `index.html`, `active_application`,
+     `project_list`, `form_instruction`, `forms/education.html`,
+     `other_application_rounds`, `project_deadline_announcement`,
+     `major_notices`, `project_supplement_link`. Python:
+     `appl/views/general_forms.py`, applicant-facing choices and validator
+     messages in `appl/models.py` (e.g. phone number; staff-only
+     `verbose_name`s skipped), applicant-visible text in
+     `appl/views/__init__.py` and `appl/templatetags/appl_tags.py`. A
+     language-aware `thaidate` filter (English month names, Gregorian
+     year on English pages; unchanged on Thai pages). Fix the backwards
+     `"Thai"`/`"English"` language-name catalog entries.
+   - **2b. Major selection.** `major_selection_item`,
+     `major_multiple_selection.html` (Thai inside inline JS strings via
+     `escapejs`), `major_additional_form`, `major_form_field_modal`,
+     `major_interview_descriptions`, and the strings in
+     `appl/views/major_selection.py`.
+   - **2c. Uploads and application status.** `document_upload_js`,
+     `documents_incomplete`, `old_document_upload_list`, `payment_item`,
+     and the TCASFolio/document validation messages.
+   - **2d. Results and confirmation.** `project_accepted_result`,
+     `project_accepted_for_interview_result`, `interview_description`,
+     `cupt_confirmation_*`, and applicant-visible messages in
+     `appl/clearing_utils.py` (check which parts reach applicants).
+   - **2e. DB titles.** Replaces the `model_messages.py` /
+     `_(self.title)` catalog approach (exact-match lookups that break
+     silently when titles change, and a 2017 dump covering only ~16
+     majors). One migration adds an optional `title_en` field to
+     `Campus`, `Faculty`, `Major` and `AdmissionProject`. `title_trans`
+     returns `title_en` on English pages when it is set, else `title`.
+     `AdmissionRound.title_trans` builds "Round N" / "Round N.M" with
+     gettext (no field). Applicant pages switch from `.title` /
+     `{{ major.faculty }}` (`__str__`) to `title_trans`. Delete
+     `appl/db_messages/model_messages.py` and the title entries in the
+     catalog. The English names are imported later by the project owner
+     (no import command in this phase); until then titles show in Thai
+     on English pages. Done last so template work isn't blocked on the
+     migration.
+
+   Each step includes catalog drafts for its strings, `compilemessages`
+   + committed `.mo`, and tests in `EnglishPagesTestCase`. Pages that
+   include the untranslated hook templates, or that show DB titles, need
+   test fixtures that leave hook content out and (after 2e) set
+   `title_en`; before 2e, test titles go on the allow-list.
 3. **`supplements`.** Applicant supplement forms (templates and
    `supplements/views/forms/*.py`); not `supplements/backoffice/*`.
 4. **Long DB text** (deferred): decide the approach (e.g. optional
