@@ -12,7 +12,7 @@ from admapp import settings
 from regis.models import Applicant
 
 validate_phonenumber = RegexValidator(r'^\+?[0-9#-]+$',
-                                      'เบอร์โทรศัพท์สามารถประกอบด้วยตัวเลข 0-9 สามารถใช้เครื่องหมาย - เพื่อแบ่งกลุ่มตัวเลข และอาจเริ่มต้นด้วยเครื่องหมาย +')
+                                      _('เบอร์โทรศัพท์สามารถประกอบด้วยตัวเลข 0-9 สามารถใช้เครื่องหมาย - เพื่อแบ่งกลุ่มตัวเลข และอาจเริ่มต้นด้วยเครื่องหมาย +'))
 
 
 class Campus(models.Model):
@@ -830,7 +830,7 @@ class PersonalProfile(models.Model):
 
     contact_phone = models.CharField(max_length=20,
                                      verbose_name=_('เบอร์โทรศัพท์ที่ติดต่อได้'),
-                                     help_text='หากเป็นเบอร์ติดต่อภายใน ให้ใช้ # คั่น เช่น 034-567-890#111',
+                                     help_text=_('หากเป็นเบอร์ติดต่อภายใน ให้ใช้ # คั่น เช่น 034-567-890#111'),
                                      validators=[validate_phonenumber])
     mobile_phone = models.CharField(max_length=20,
                                     verbose_name=_('เบอร์โทรศัพท์มือถือ'),
@@ -1293,7 +1293,7 @@ class Eligibility(object):
         from supplements.models import TopSchool
         self.is_eligible = False
         self.is_hidden = False
-        self.notice_text = 'โครงการนี้ผู้สมัครต้องอยู่ในโรงเรียนที่เข้าข่าย กรุณากรอกข้อมูลการศึกษาก่อน'
+        self.notice_text = _('โครงการนี้ผู้สมัครต้องอยู่ในโรงเรียนที่เข้าข่าย กรุณากรอกข้อมูลการศึกษาก่อน')
 
         if not hasattr(self._applicant, 'educationalprofile'):
             return
@@ -1315,7 +1315,7 @@ class Eligibility(object):
         from supplements.models import AdvancedPlacementApplicant
         self.is_eligible = False
         self.is_hidden = False
-        self.notice_text = 'โครงการนี้ผู้สมัครต้องผ่านการเข้าร่วมโครงการเรียนล่วงหน้าของม.เกษตรศาสตร์ รุ่นที่ 15-21 ปีการศึกษา 2563-2569'
+        self.notice_text = _('โครงการนี้ผู้สมัครต้องผ่านการเข้าร่วมโครงการเรียนล่วงหน้าของม.เกษตรศาสตร์ รุ่นที่ 15-21 ปีการศึกษา 2563-2569')
 
         try:
             app = AdvancedPlacementApplicant.objects.get(national_id=self._applicant.national_id)

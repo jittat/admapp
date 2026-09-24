@@ -190,7 +190,7 @@ review.
 ## Implementation plan
 
 Work happens on the `i18n-english` branch. Status: phases 0 and 1 done
-(merged to master); phase 2 planned.
+(merged to master); phase 2 in progress (2a done).
 
 ### Scope
 
@@ -285,7 +285,7 @@ so it can be checked under `/en/` as a whole. For each app:
    `appl/templates/appl/` (mostly `include/`). Payments, criteria options,
    printouts and the hook templates are out of scope (see Scope and
    Decisions).
-   - **2a. Dashboard and forms.** `index.html`, `active_application`,
+   - **2a. Dashboard and forms** (done). `index.html`, `active_application`,
      `project_list`, `form_instruction`, `forms/education.html`,
      `other_application_rounds`, `project_deadline_announcement`,
      `major_notices`, `project_supplement_link`. Python:
@@ -295,7 +295,13 @@ so it can be checked under `/en/` as a whole. For each app:
      `appl/views/__init__.py` and `appl/templatetags/appl_tags.py`. A
      language-aware `thaidate` filter (English month names, Gregorian
      year on English pages; unchanged on Thai pages). Fix the backwards
-     `"Thai"`/`"English"` language-name catalog entries.
+     `"Thai"`/`"English"` language-name catalog entries. Also added a
+     `{% localized_admission_year %}` tag (BE on Thai pages, CE on
+     English) so the year isn't baked into msgids. Printouts also use
+     `thaidate`, so a printout opened from an English page shows an
+     English date. The dashboard test ignores `<script>` blocks until
+     2c translates `document_upload_js.html` (`TODO(2c)` in
+     `main/tests.py`).
    - **2b. Major selection.** `major_selection_item`,
      `major_multiple_selection.html` (Thai inside inline JS strings via
      `escapejs`), `major_additional_form`, `major_form_field_modal`,

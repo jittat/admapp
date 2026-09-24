@@ -26,8 +26,8 @@
       {% if active_application.admission_project.is_portfolio_submission_required %}
         <div class="col-md-12">
           <div class="alert alert-secondary p5 pl10 pr10">
-            <span class="badge badge-danger">TCASFolio</span> ผู้สมัครที่ใช้ระบบ 
-            TCASFolio (จากระบบ mytcas ของทปอ.) ในการสร้างแฟ้มสะสมผลงาน (portfolio) สามารถส่งได้โดย (1) อัพโหลดแฟ้มสะสมผลงานแบบ pdf ที่ดาวน์โหลดจากระบบ TCASFolio หรือ (2) ส่งลิงก์ที่ได้จากระบบ TCASFolio ก็ได้ &nbsp;&nbsp;&nbsp; <b>ข้อควรระวัง</b>: ถ้าส่งแฟ้มสะสมผลงานแบบด้วยไฟล์ pdf จากระบบ ถ้ามีการแก้ไข จะต้องนำมาส่งใหม่อีกครั้ง เพื่อให้ข้อมูลเป็นตามแฟ้มล่าสุดที่แก้ไขในระบบ TCASFolio
+            <span class="badge badge-danger">TCASFolio</span> {% blocktrans trimmed %}ผู้สมัครที่ใช้ระบบ
+            TCASFolio (จากระบบ mytcas ของทปอ.) ในการสร้างแฟ้มสะสมผลงาน (portfolio) สามารถส่งได้โดย (1) อัพโหลดแฟ้มสะสมผลงานแบบ pdf ที่ดาวน์โหลดจากระบบ TCASFolio หรือ (2) ส่งลิงก์ที่ได้จากระบบ TCASFolio ก็ได้{% endblocktrans %} &nbsp;&nbsp;&nbsp; <b>{% trans 'ข้อควรระวัง' %}</b>: {% blocktrans trimmed %}ถ้าส่งแฟ้มสะสมผลงานแบบด้วยไฟล์ pdf จากระบบ ถ้ามีการแก้ไข จะต้องนำมาส่งใหม่อีกครั้ง เพื่อให้ข้อมูลเป็นตามแฟ้มล่าสุดที่แก้ไขในระบบ TCASFolio{% endblocktrans %}
           </div>
         </div>
       {% endif %}
@@ -38,8 +38,8 @@
 {% if not documents_complete_status.status %}
   {% if paid_amount > 0 %}
     <div class="d-none alert alert-warning app-incomplete-warnings">
-      <h2><span class="badge badge-danger">การสมัครยังไม่สมบูรณ์</span></h2>
-      <b>สาเหตุ:</b> เอกสารที่อัพโหลดยังไม่ครบถ้วน --- ทางทีมงานระบบรับสมัครต้องขออภัยถ้าผู้สมัครนำเข้าข้อมูลครบถ้วนแล้ว แต่เนื่องจากปัญหาระบบบันทึกข้อมูลของระบบเสียหายในวันที่ 20 ธ.ค. 64 ทางทีมงานต้องขอรบกวนให้ผู้สมัครอัพโหลดเอกสารอีกครั้ง ทีมงานต้องขออภัยอย่างที่สุดอีกครั้ง
+      <h2><span class="badge badge-danger">{% trans 'การสมัครยังไม่สมบูรณ์' %}</span></h2>
+      <b>{% trans 'สาเหตุ:' %}</b> {% blocktrans trimmed %}เอกสารที่อัพโหลดยังไม่ครบถ้วน --- ทางทีมงานระบบรับสมัครต้องขออภัยถ้าผู้สมัครนำเข้าข้อมูลครบถ้วนแล้ว แต่เนื่องจากปัญหาระบบบันทึกข้อมูลของระบบเสียหายในวันที่ 20 ธ.ค. 64 ทางทีมงานต้องขอรบกวนให้ผู้สมัครอัพโหลดเอกสารอีกครั้ง ทีมงานต้องขออภัยอย่างที่สุดอีกครั้ง{% endblocktrans %}
     </div>
   {% endif %}
 {% endif %}

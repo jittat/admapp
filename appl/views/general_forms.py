@@ -8,6 +8,7 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.utils.text import format_lazy
+from django.utils.translation import gettext, get_language
 from django.utils.translation import gettext_lazy as _
 
 from appl.models import PersonalProfile, EducationalProfile, AdmissionRound
@@ -43,7 +44,7 @@ class EducationForm(ModelForm):
             ),
             Row(
                 Div(
-                    HTML('<small>กรอกหน่วยกิตกลุ่มสาระต่าง ๆ ให้ระบุหน่วยกิตรวม 6 ภาคการศึกษา (ตลอดหลักสูตร ม.ปลาย)</small>')
+                    HTML(format_lazy('<small>{0}</small>', _('กรอกหน่วยกิตกลุ่มสาระต่าง ๆ ให้ระบุหน่วยกิตรวม 6 ภาคการศึกษา (ตลอดหลักสูตร ม.ปลาย)')))
                     ,css_class='col-md-12 form-text mb5'
                 ),
             ),
@@ -80,7 +81,9 @@ class ThaiSelectDateWidget(forms.widgets.SelectDateWidget):
     def get_context(self, name, value, attrs):
         context = super().get_context(name, value, attrs)
         date_context = {}
-        year_choices = [(i, str(i+543)) for i in self.years]
+        # Buddhist-era years on Thai pages, CE years otherwise
+        year_offset = 543 if get_language() == 'th' else 0
+        year_choices = [(i, str(i+year_offset)) for i in self.years]
         if self.is_required is False:
             year_choices.insert(0, self.year_none_value)
         year_attrs = context['widget']['attrs'].copy()
@@ -236,7 +239,7 @@ def personal_profile(request):
             new_personal_profile = form.save(commit=False)
             new_personal_profile.applicant = applicant
             new_personal_profile.save()
-            request.session['notice'] = 'จัดเก็บข้อมูลส่วนตัวเรียบร้อย'
+            request.session['notice'] = gettext('จัดเก็บข้อมูลส่วนตัวเรียบร้อย')
             return redirect(reverse('appl:index'))
     else:
         form = PersonalProfileForm(instance=profile)
@@ -276,7 +279,7 @@ def education_profile(request):
                 new_educational_profile.school_code = ''
 
             new_educational_profile.save()
-            request.session['notice'] = 'จัดเก็บข้อมูลการศึกษาเรียบร้อย'
+            request.session['notice'] = gettext('จัดเก็บข้อมูลการศึกษาเรียบร้อย')
             return redirect(reverse('appl:index'))
     else:
         form = EducationForm(instance=profile)

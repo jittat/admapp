@@ -2,12 +2,21 @@ from django import template
 
 from django.conf import settings
 from django.urls import translate_url
+from django.utils.dates import MONTHS as EN_MONTHS
+from django.utils.translation import get_language
 
 register = template.Library()
 
 @register.simple_tag
 def admission_year():
     return settings.ADMISSION_YEAR
+
+@register.simple_tag
+def localized_admission_year():
+    # ADMISSION_YEAR is in the Buddhist era; English pages use CE
+    if get_language() == 'th':
+        return settings.ADMISSION_YEAR
+    return settings.ADMISSION_YEAR - 543
 
 @register.simple_tag
 def short_admission_year():
@@ -36,6 +45,10 @@ def translated_url(context, lang_code):
 
 @register.filter
 def thaidate(date):
+    # Thai month names and Buddhist-era year on Thai pages;
+    # English month names and CE year otherwise
+    if get_language() != 'th':
+        return '%d %s %d' % (date.day, EN_MONTHS[date.month], date.year)
     MONTHS = ['','มกราคม','กุมภาพันธ์','มีนาคม','เมษายน',
               'พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม',
               'กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม']

@@ -4,6 +4,7 @@ from django.conf import settings
 from django.http import HttpResponseForbidden, HttpResponse, JsonResponse, HttpResponseServerError
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
+from django.utils.translation import gettext
 
 from admapp.utils import number_to_thai_text
 from appl.barcodes import generate
@@ -86,7 +87,7 @@ def check_project_documents(applicant,
     for d in project_uploaded_documents:
         if d.is_required and len(d.applicant_uploaded_documents) == 0:
             status = False
-            errors.append('ยังไม่ได้อัพโหลด' + d.title)
+            errors.append(gettext('ยังไม่ได้อัพโหลด%(title)s') % {'title': d.title})
 
     or_keys = {}
     for d in project_uploaded_documents:
@@ -107,7 +108,8 @@ def check_project_documents(applicant,
             if len(d.applicant_uploaded_documents) > 0:
                 or_status = True
         if not or_status:
-            errors.append('ยังไม่ได้อัพโหลด' + ' หรือ '.join([d.title for d in documents]))
+            errors.append(gettext('ยังไม่ได้อัพโหลด%(title)s') %
+                          {'title': gettext(' หรือ ').join([d.title for d in documents])})
             status = False
             
     for c in supplement_configs:
@@ -119,7 +121,7 @@ def check_project_documents(applicant,
             is_required = c.is_required
         if is_required and (not c.supplement_instance):
             status = False
-            errors.append('ยังไม่ได้ป้อนข้อมูล' + c.title)
+            errors.append(gettext('ยังไม่ได้ป้อนข้อมูล%(title)s') % {'title': c.title})
 
     if major_selection:
         load_major_additional_form_fields(applicant, admission_project, major_selection)
@@ -128,7 +130,7 @@ def check_project_documents(applicant,
                 for f in major.form_fields:
                     if f.value == None or f.value.value.strip() == '':
                         status = False
-                        errors.append(f'ยังตอบคำถามเพิ่มเติมไม่ครบ (คำถามข้อที่ {f.rank})')
+                        errors.append(gettext('ยังตอบคำถามเพิ่มเติมไม่ครบ (คำถามข้อที่ %(rank)s)') % {'rank': f.rank})
             
     return { 'status': status,
              'errors': errors }

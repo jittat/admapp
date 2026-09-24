@@ -89,7 +89,7 @@
   }
 
   var addNoStudyPlanWarning = function() {
-    $("#div_id_education_plan").append('<div id="id_no_plan_warning" style="display:none;"><span class="badge badge-danger">คำเตือน</span> <small>การไม่ระบุแผนการเรียน อาจทำให้ไม่ผ่านเกณฑ์ขั้นพื้นฐานในการสมัครบางสาขา กรุณาตรวจสอบ</small></div>')
+    $("#div_id_education_plan").append('<div id="id_no_plan_warning" style="display:none;"><span class="badge badge-danger">{% trans 'คำเตือน' as x %}{{ x|escapejs }}</span> <small>{% trans 'การไม่ระบุแผนการเรียน อาจทำให้ไม่ผ่านเกณฑ์ขั้นพื้นฐานในการสมัครบางสาขา กรุณาตรวจสอบ' as x %}{{ x|escapejs }}</small></div>')
   };
 
   var updateNoStudyPlanWarning = function() {
@@ -103,13 +103,13 @@
   
   $(function(){
     {% if admission_round and admission_round.number == 4 %}
-      $("#hint_id_gpa").html("สำหรับการคัดเลือกรอบที่ 4 <b>ให้กรอกเกรดเฉลี่ย 6 ภาคการศึกษา</b>");
+      $("#hint_id_gpa").html("{% trans 'สำหรับการคัดเลือกรอบที่ 4 <b>ให้กรอกเกรดเฉลี่ย 6 ภาคการศึกษา</b>' as x %}{{ x|escapejs }}");
     {% else %}
       $('#id_gpa_helptext').hide();
       {% if admission_round and admission_round.id == 1 %}
-        $('#id_gpa').after('สำหรับการรับรอบที่ 1.1 ให้กรอกเกรดเฉลี่ยแค่ 4 ภาคการศึกษา ยกเว้นสมัครคณะแพทยศาสตร์และพยาบาลศาสตร์ ให้กรอกเกรดเฉลี่ย 5 ภาคการศึกษา');
+        $('#id_gpa').after('{% trans 'สำหรับการรับรอบที่ 1.1 ให้กรอกเกรดเฉลี่ยแค่ 4 ภาคการศึกษา ยกเว้นสมัครคณะแพทยศาสตร์และพยาบาลศาสตร์ ให้กรอกเกรดเฉลี่ย 5 ภาคการศึกษา' as x %}{{ x|escapejs }}');
       {% else %}
-        $('#id_gpa').after('ในกรณีที่กำลังศึกษาชั้นม.6 ให้กรอกเกรดเฉลี่ย 5 ภาคการศึกษา แต่ถ้าคะแนนภาคต้นยังไม่เรียบร้อย สามารถกรอกแค่ 4 ภาคการศึกษาได้ ถ้าจบการศึกษาแล้วให้กรอกเกรดเฉลี่ย 6 ภาคการศึกษา');      
+        $('#id_gpa').after('{% trans 'ในกรณีที่กำลังศึกษาชั้นม.6 ให้กรอกเกรดเฉลี่ย 5 ภาคการศึกษา แต่ถ้าคะแนนภาคต้นยังไม่เรียบร้อย สามารถกรอกแค่ 4 ภาคการศึกษาได้ ถ้าจบการศึกษาแล้วให้กรอกเกรดเฉลี่ย 6 ภาคการศึกษา' as x %}{{ x|escapejs }}');
       {% endif %}
     {% endif %}
 

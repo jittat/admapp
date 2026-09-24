@@ -1,6 +1,7 @@
+{% load i18n %}
 {% if supplement_configs %}
   <div class="project-appl-sections bborder-superlight">
-    <h4>ข้อมูลเพิ่มเติมสำหรับโครงการ{{ active_application.admission_project }}</h4>
+    <h4>{% blocktrans trimmed with project_title=active_application.admission_project.title_trans %}ข้อมูลเพิ่มเติมสำหรับโครงการ{{ project_title }}{% endblocktrans %}</h4>
     <ul>
       {% for config in supplement_configs %}
         <li>
@@ -11,6 +12,6 @@
         </li>
       {% endfor %}
     </ul>
-    <a class="btn btn-sm btn-primary" href="{% url 'supplements:index' active_application.admission_project.id active_application.admission_round.id %}">กรอกข้อมูลเพิ่มเติม</a>
+    <a class="btn btn-sm btn-primary" href="{% url 'supplements:index' active_application.admission_project.id active_application.admission_round.id %}">{% trans 'กรอกข้อมูลเพิ่มเติม' %}</a>
   </div>
 {% endif %}

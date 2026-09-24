@@ -1,10 +1,10 @@
 {% load i18n %}
 <div class="alert alert-info">
-  นอกจาก{{ admission_round }} แล้วคุณยังมีใบสมัครในรอบอื่น ๆ อยู่ดังนี้:
+  {% blocktrans trimmed with round_title=admission_round.title_trans %}นอกจาก{{ round_title }} แล้วคุณยังมีใบสมัครในรอบอื่น ๆ อยู่ดังนี้:{% endblocktrans %}
   <ul>
     {% for r,a in other_application_rounds %}
       <li>
-        <a class="btn btn-sm btn-primary" href="{% url 'appl:index-with-round' r.id %}">{{ r }}</a> - {{ a.admission_project }} <a class="btn btn-sm btn-primary" href="{% url 'appl:index-with-round' r.id %}">พิจารณา</a><br />
+        <a class="btn btn-sm btn-primary" href="{% url 'appl:index-with-round' r.id %}">{{ r.title_trans }}</a> - {{ a.admission_project.title_trans }} <a class="btn btn-sm btn-primary" href="{% url 'appl:index-with-round' r.id %}">{% trans 'พิจารณา' %}</a><br />
       </li>
     {% endfor %}
   </ul>
