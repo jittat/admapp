@@ -51,12 +51,17 @@ Findings, in order of impact (the agreed implementation plan is at the end):
   aliases of `translate`/`blocktranslate`).
 - Thai is the **source language**: msgids are Thai, and only an `en` catalog
   exists (`locale/en/LC_MESSAGES/django.po`); there is no `locale/th`.
-- DB-stored content (campus/faculty/major/round/project titles) is
-  translated at read time: some models in `appl/models.py` expose
-  `title_trans`, which returns `_(self.title)` (`AdmissionRound` uses
-  `_(str(self))`). `appl/db_messages/model_messages.py` is **never
-  imported**; it only holds those DB strings as literal `gettext_lazy` calls
-  so `makemessages` puts them in the catalog.
+- DB-stored titles: since phase 2e, `Campus`, `Faculty`, `Major` and
+  `AdmissionProject` have an optional `title_en` field, and their
+  `title_trans` returns it on English pages when it is set (else the Thai
+  `title`; see `localized_title` in `appl/models.py`).
+  `Campus.short_title_trans` does the same for the short name.
+  `AdmissionRound.title_trans` is built from one catalog string
+  ("รอบที่ %(number)s" → "Round %(number)s"). Before 2e, `title_trans`
+  returned `_(self.title)` and relied on catalog entries generated from
+  `appl/db_messages/model_messages.py` (now deleted); their English names
+  for campuses and faculties are kept in `docs/old-catalog-title-en.json`
+  as a starting point for filling `title_en`.
 
 ## 1. Hardcoded Thai in templates (main issue)
 
@@ -190,7 +195,7 @@ review.
 ## Implementation plan
 
 Work happens on the `i18n-english` branch. Status: phases 0 and 1 done
-(merged to master); phase 2 in progress (2a–2d done).
+(merged to master); phase 2 (`appl`) done; phase 3 (`supplements`) next.
 
 ### Scope
 
@@ -266,9 +271,8 @@ so it can be checked under `/en/` as a whole. For each app:
   lazy strings can't be stored in the session.
 - **Titles from the DB:** use `title_trans` wherever applicants see
   major/faculty/campus/project/round titles, and cover
-  `{{ major.faculty }}`-style `__str__` output. Keep
-  `appl/db_messages/model_messages.py` in sync with the DB values so
-  `makemessages` picks them up.
+  `{{ major.faculty }}`-style `__str__` output. English names come from
+  the `title_en` fields (phase 2e).
 - **Catalog:** `makemessages -l en`, fill the app's new and fuzzy entries
   with machine-translated drafts (the fuzzy guesses are usually unrelated
   strings), review, `compilemessages`, commit the `.mo`.
@@ -324,7 +328,7 @@ so it can be checked under `/en/` as a whole. For each app:
      applicants through emails, so it's left for phase 5. Result-page
      tests render the hook templates empty (`WITHOUT_HOOKS` in
      `main/tests.py`).
-   - **2e. DB titles.** Replaces the `model_messages.py` /
+   - **2e. DB titles** (done, migration `appl/0109_title_en`). Replaces the `model_messages.py` /
      `_(self.title)` catalog approach (exact-match lookups that break
      silently when titles change, and a 2017 dump covering only ~16
      majors). One migration adds an optional `title_en` field to
@@ -337,7 +341,10 @@ so it can be checked under `/en/` as a whole. For each app:
      catalog. The English names are imported later by the project owner
      (no import command in this phase); until then titles show in Thai
      on English pages. Done last so template work isn't blocked on the
-     migration.
+     migration. Also dropped all obsolete (`#~`) catalog entries, and
+     added `Campus.short_title_trans` for the campus shown on the
+     multiple-selection page. `title_en` is editable in Django admin for
+     projects, faculties and majors (`Campus` isn't registered there).
 
    Each step includes catalog drafts for its strings, `compilemessages`
    + committed `.mo`, and tests in `EnglishPagesTestCase`. Pages that

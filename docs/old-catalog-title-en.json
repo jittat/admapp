@@ -1,0 +1,147 @@
+{
+  "_comment": "English titles for DB campuses/faculties from the old gettext catalog (locale/en/LC_MESSAGES/django.po at 9432fcd), built from appl/db_messages/model_messages.py (a 2017 dump), removed in i18n phase 2e. Mostly unreviewed first drafts; a starting point for filling Campus.title_en / Faculty.title_en.",
+  "campuses": [
+    {
+      "th": "วิทยาเขตบางเขน",
+      "en": "Bangkhen Campus"
+    },
+    {
+      "th": "วิทยาเขตกำแพงแสน",
+      "en": "Kamphaeng Saen Campus"
+    },
+    {
+      "th": "วิทยาเขตศรีราชา",
+      "en": "Sri Racha Campus"
+    },
+    {
+      "th": "วิทยาเขตเฉลิมพระเกียรติ จังหวัดสกลนคร",
+      "en": "Sakon Nakhon Province Campus"
+    },
+    {
+      "th": "โครงการจัดตั้งวิทยาเขตสุพรรณบุรี",
+      "en": "Suphan Buri Campus"
+    }
+  ],
+  "faculties": [
+    {
+      "th": "คณะเกษตร",
+      "en": "Faculty of Agriculture"
+    },
+    {
+      "th": "คณะประมง",
+      "en": "Faculty of Fisheries"
+    },
+    {
+      "th": "คณะวนศาสตร์",
+      "en": "Faculty of Forestry"
+    },
+    {
+      "th": "คณะวิทยาศาสตร์",
+      "en": "Faculty of Science"
+    },
+    {
+      "th": "คณะวิศวกรรมศาสตร์",
+      "en": "Faculty of Engineering"
+    },
+    {
+      "th": "คณะศึกษาศาสตร์",
+      "en": "Faculty of Education"
+    },
+    {
+      "th": "คณะเศรษฐศาสตร์",
+      "en": "Faculty of Economics"
+    },
+    {
+      "th": "คณะสังคมศาสตร์",
+      "en": "Faculty of Social Science"
+    },
+    {
+      "th": "คณะสัตวแพทยศาสตร์",
+      "en": "Faculty of Veterinary Medicine"
+    },
+    {
+      "th": "คณะอุตสาหกรรมเกษตร",
+      "en": "Faculty of Agro-Industry"
+    },
+    {
+      "th": "คณะมนุษยศาสตร์",
+      "en": "Faculty of Humanities"
+    },
+    {
+      "th": "คณะบริหารธุรกิจ",
+      "en": "Faculty of Business Administration"
+    },
+    {
+      "th": "คณะเทคนิคการสัตวแพทย์",
+      "en": "Faculty Veterinary Technology"
+    },
+    {
+      "th": "คณะสิ่งแวดล้อม",
+      "en": "Faculty of Environment"
+    },
+    {
+      "th": "คณะสถาปัตยกรรมศาสตร์",
+      "en": "Faculty of Architecture"
+    },
+    {
+      "th": "คณะเกษตร กำแพงแสน",
+      "en": "Faculty of Agriculture at Kamphaeng Saen"
+    },
+    {
+      "th": "คณะวิศวกรรมศาสตร์ กำแพงแสน",
+      "en": "Faculty of Engineering at Kamphaeng Saen"
+    },
+    {
+      "th": "คณะศิลปศาสตร์และวิทยาศาสตร์",
+      "en": "Faculty of Liberal Arts and Science"
+    },
+    {
+      "th": "คณะศึกษาศาสตร์และพัฒนศาสตร์",
+      "en": "Faculty of Education and Development Sciences"
+    },
+    {
+      "th": "คณะวิทยาศาสตร์การกีฬา",
+      "en": "Faculty of Sports Science"
+    },
+    {
+      "th": "คณะวิทยาการจัดการ",
+      "en": "Faculty of Management Sciences"
+    },
+    {
+      "th": "คณะวิศวกรรมศาสตร์ศรีราชา",
+      "en": "Faculty of Engineering at Si Racha"
+    },
+    {
+      "th": "คณะวิทยาศาสตร์ ศรีราชา",
+      "en": "Faculty of Science at Si Racha"
+    },
+    {
+      "th": "คณะเศรษฐศาสตร์ ศรีราชา",
+      "en": "Faculty of Economics at Si Racha"
+    },
+    {
+      "th": "คณะพาณิชยนาวีนานาชาติ",
+      "en": "International Maritime College"
+    },
+    {
+      "th": "คณะทรัพยากรธรรมชาติและอุตสาหกรรมเกษตร",
+      "en": "Faculty of Natural Resource and Agro-Industry"
+    },
+    {
+      "th": "คณะวิทยาศาสตร์และวิศวกรรมศาสตร์",
+      "en": "Faculty of Science and Engineering"
+    },
+    {
+      "th": "คณะศิลปศาสตร์และวิทยาการจัดการ",
+      "en": "Faculty of Liberal Arts and Management Sciences"
+    },
+    {
+      "th": "คณะสาธารณสุขศาสตร์",
+      "en": "Faculty of Public Health"
+    },
+    {
+      "th": "โครงการจัดตั้งวิทยาเขตสุพรรณบุรี",
+      "en": "Suphan Buri Campus"
+    }
+  ]
+}

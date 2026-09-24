@@ -6,7 +6,7 @@ from datetime import datetime
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import MinValueValidator, MaxValueValidator, RegexValidator
 from django.db import models
-from django.utils.translation import gettext
+from django.utils.translation import get_language, gettext
 from django.utils.translation import gettext_lazy as _
 
 from admapp import settings
@@ -16,8 +16,17 @@ validate_phonenumber = RegexValidator(r'^\+?[0-9#-]+$',
                                       _('เบอร์โทรศัพท์สามารถประกอบด้วยตัวเลข 0-9 สามารถใช้เครื่องหมาย - เพื่อแบ่งกลุ่มตัวเลข และอาจเริ่มต้นด้วยเครื่องหมาย +'))
 
 
+def localized_title(title, title_en):
+    """The English title on non-Thai pages when it is set, else the Thai one."""
+    if title_en and not (get_language() or '').startswith('th'):
+        return title_en
+    return title
+
+
 class Campus(models.Model):
     title = models.CharField(max_length=100)
+    title_en = models.CharField(max_length=100, blank=True,
+                                verbose_name='ชื่อภาษาอังกฤษ')
     short_title = models.CharField(max_length=50)
 
     class Meta:
@@ -27,11 +36,17 @@ class Campus(models.Model):
         return self.short_title
 
     def title_trans(self):
-        return _(self.title)
+        return localized_title(self.title, self.title_en)
+
+    def short_title_trans(self):
+        # there is no short English title; the full one is short enough
+        return localized_title(self.short_title, self.title_en)
 
 
 class Faculty(models.Model):
     title = models.CharField(max_length=100)
+    title_en = models.CharField(max_length=100, blank=True,
+                                verbose_name='ชื่อภาษาอังกฤษ')
     campus = models.ForeignKey('Campus',
                                on_delete=models.CASCADE)
 
@@ -45,7 +60,7 @@ class Faculty(models.Model):
         return self.title
 
     def title_trans(self):
-        return _(self.title)
+        return localized_title(self.title, self.title_en)
 
 
 class AdmissionRound(models.Model):
@@ -85,7 +100,11 @@ class AdmissionRound(models.Model):
             return 'รอบที่ %d.%d' % (self.number, self.subround_number)
 
     def title_trans(self):
-        return _(str(self))
+        if self.subround_number == 0:
+            number = '%d' % (self.number,)
+        else:
+            number = '%d.%d' % (self.number, self.subround_number)
+        return gettext('รอบที่ %(number)s') % {'number': number}
 
     def get_full_number(self):
         if self.subround_number == 0:
@@ -110,6 +129,8 @@ class AdmissionRound(models.Model):
 
 class AdmissionProject(models.Model):
     title = models.CharField(max_length=400)
+    title_en = models.CharField(max_length=400, blank=True,
+                                verbose_name='ชื่อภาษาอังกฤษ')
     short_title = models.CharField(max_length=200)
     admission_rounds = models.ManyToManyField('AdmissionRound',
                                               through='AdmissionProjectRound')
@@ -235,7 +256,7 @@ class AdmissionProject(models.Model):
         return self.title
 
     def title_trans(self):
-        return _(self.title)
+        return localized_title(self.title, self.title_en)
 
     def get_admission_rounds_display(self):
         return ','.join([str(r) for r in self.admission_rounds.all()])
@@ -358,6 +379,8 @@ class AdmissionProjectRound(models.Model):
 class Major(models.Model):
     number = models.IntegerField()
     title = models.CharField(max_length=200)
+    title_en = models.CharField(max_length=200, blank=True,
+                                verbose_name='ชื่อภาษาอังกฤษ')
     faculty = models.ForeignKey('Faculty',
                                 on_delete=models.CASCADE)
     admission_project = models.ForeignKey('AdmissionProject',
@@ -389,7 +412,7 @@ class Major(models.Model):
         return self.title
 
     def title_trans(self):
-        return _(self.title)
+        return localized_title(self.title, self.title_en)
 
     def title_with_faculty(self):
         return '{} ({})'.format(self.title, self.faculty.title)

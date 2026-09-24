@@ -27,8 +27,8 @@ class TranslationTestCase(SimpleTestCase):
     def test_english_catalog_is_loaded(self):
         # fails if locale/en/LC_MESSAGES/django.mo is missing or stale
         with translation.override('en'):
-            self.assertEqual(translation.gettext('วิทยาเขตบางเขน'),
-                             'Bangkhen Campus')
+            self.assertEqual(translation.gettext('รอบที่ %(number)s'),
+                             'Round %(number)s')
             self.assertEqual(
                 translation.gettext('คุณมีสิทธิ์เข้าสอบสัมภาษณ์ ในสาขาต่อไปนี้'),
                 'You are eligible for an interview for the following major(s)')
@@ -111,8 +111,7 @@ class EnglishPagesTestCase(NoThaiTextMixin, SimpleTestCase):
 
 class ApplicantFixturesMixin:
     """A logged-in applicant with profiles, and an open project in an
-    available round. DB titles (project, round, majors) are in English;
-    translating them is phase 2e."""
+    available round. DB titles are Thai with English title_en set."""
 
     def setUp(self):
         from appl.models import (AdmissionProject, AdmissionProjectRound,
@@ -124,7 +123,8 @@ class ApplicantFixturesMixin:
             number=2, rank=1, is_available=True,
             acceptance_result_date=date.today())
         self.project = AdmissionProject.objects.create(
-            title='Test Project', short_title='Test', is_available=True)
+            title='โครงการทดสอบ', title_en='Test Project', short_title='Test',
+            is_available=True)
         AdmissionProjectRound.objects.create(
             admission_project=self.project,
             admission_round=self.admission_round,
@@ -155,9 +155,12 @@ class ApplicantFixturesMixin:
         self.project.max_num_selections = max_num_selections
         self.project.column_descriptions = '* Details'
         self.project.save()
-        campus = Campus.objects.create(title='Bangkhen Campus', short_title='Bangkhen')
-        faculty = Faculty.objects.create(title='Faculty of Engineering', campus=campus)
-        majors = [Major.objects.create(number=i, title='Major %d' % i, faculty=faculty,
+        campus = Campus.objects.create(title='วิทยาเขตบางเขน', short_title='บางเขน',
+                                       title_en='Bangkhen Campus')
+        faculty = Faculty.objects.create(title='คณะวิศวกรรมศาสตร์', campus=campus,
+                                         title_en='Faculty of Engineering')
+        majors = [Major.objects.create(number=i, title='สาขา %d' % i, title_en='Major %d' % i,
+                                       faculty=faculty,
                                        admission_project=self.project, slots=10,
                                        detail_items_csv='Major details')
                   for i in (1, 2)]
@@ -480,6 +483,42 @@ class EnglishResultPagesTestCase(ApplicantFixturesMixin, NoThaiTextMixin, TestCa
                      'cupt_confirmation_wait']:
             with self.subTest(template=name):
                 self.assertNoThaiText(self.render_en('appl/include/%s.html' % name, {}))
+
+
+class TitleTransTestCase(SimpleTestCase):
+
+    def test_title_trans_uses_title_en_on_english_pages(self):
+        from appl.models import AdmissionProject, Campus, Faculty, Major
+        for model in (AdmissionProject, Campus, Faculty, Major):
+            with self.subTest(model=model.__name__):
+                obj = model(title='ไทย', title_en='English')
+                with translation.override('th'):
+                    self.assertEqual(obj.title_trans(), 'ไทย')
+                with translation.override('en'):
+                    self.assertEqual(obj.title_trans(), 'English')
+                obj.title_en = ''
+                with translation.override('en'):
+                    self.assertEqual(obj.title_trans(), 'ไทย')
+
+    def test_campus_short_title(self):
+        from appl.models import Campus
+        campus = Campus(title='วิทยาเขตบางเขน', short_title='บางเขน',
+                        title_en='Bangkhen Campus')
+        with translation.override('th'):
+            self.assertEqual(campus.short_title_trans(), 'บางเขน')
+        with translation.override('en'):
+            self.assertEqual(campus.short_title_trans(), 'Bangkhen Campus')
+
+    def test_round_title(self):
+        from appl.models import AdmissionRound
+        with translation.override('th'):
+            self.assertEqual(AdmissionRound(number=2, subround_number=0).title_trans(),
+                             'รอบที่ 2')
+            self.assertEqual(AdmissionRound(number=1, subround_number=2).title_trans(),
+                             'รอบที่ 1.2')
+        with translation.override('en'):
+            self.assertEqual(AdmissionRound(number=1, subround_number=2).title_trans(),
+                             'Round 1.2')
 
 
 class ThaiDateFilterTestCase(SimpleTestCase):

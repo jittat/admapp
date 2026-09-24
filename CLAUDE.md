@@ -93,8 +93,9 @@ analyses):
   bypasses, legacy fallback), and a suggested unification plan.
 - `docs/i18n-status.md` — state of the English version (Thai is the
   source language; `en` catalog only): how i18n is wired (`i18n_patterns`
-  `/en/` prefix, TH/EN switcher, `title_trans` for DB titles,
-  `model_messages.py`), and why English barely works — hardcoded Thai in
+  `/en/` prefix, TH/EN switcher, `title_trans` + `title_en` fields for DB
+  titles), the phased implementation plan and its status, and why English
+  barely worked — hardcoded Thai in
   applicant templates, a catalog unmaintained since 2018 (fuzzy/untranslated
   entries, no `compilemessages` step, `*.mo` gitignored), missing
   `title_trans` on live pages, relative `LOCALE_PATHS`, and `<html lang>`
