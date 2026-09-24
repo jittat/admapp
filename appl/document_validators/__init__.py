@@ -8,9 +8,13 @@ receives either the uploaded file or the submitted url:
 
 Rejection messages live in
 appl/templates/appl/include/document_validation_errors/<key>.html.
+A validator may also give the hint shown over the link input of a file-or-link
+slot (DOCUMENT_URL_HINTS); others get DEFAULT_URL_HINT.
 See docs/uploaded-documents.md.
 """
 import logging
+
+from django.utils.translation import gettext_lazy as _
 
 from appl.document_validators import tcasfolio
 from appl.document_validators.base import ValidationResult
@@ -23,6 +27,16 @@ VERIFICATION_ERROR = 'verification_error'
 DOCUMENT_VALIDATORS = {
     'tcasfolio': tcasfolio.validate,
 }
+
+DEFAULT_URL_HINT = _('ลิงก์ไปยังเอกสาร')
+
+DOCUMENT_URL_HINTS = {
+    'tcasfolio': tcasfolio.URL_HINT,
+}
+
+
+def get_url_hint(project_uploaded_document):
+    return DOCUMENT_URL_HINTS.get(project_uploaded_document.validator, DEFAULT_URL_HINT)
 
 
 def run_document_validator(project_uploaded_document, uploaded_file=None, document_url=None):

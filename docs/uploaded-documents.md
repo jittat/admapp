@@ -68,7 +68,7 @@ an unknown validator key, or an unknown project id.
 |---|---|---|
 | `title` | Char | Slot name shown to applicant/staff. |
 | `descriptions` | Text | Longer instructions (rendered with linebreaks). |
-| `specifications` | Char(100) | Short spec line under the file input (e.g. "PDF ≤ 2MB"). |
+| `specifications` | Char(100) | Short spec line under the file input (e.g. "PDF ≤ 2MB"); on a `'url'` slot it is the prompt over the link input. An `'any'` slot shows it in file mode only — link mode shows `url_hint` instead (see below). |
 | `notes` | Char(100, blank) | Internal note; appended to `__str__` when present. |
 
 ### Upload rules
@@ -162,7 +162,12 @@ Views in `appl/views/upload.py`; URLs in `appl/urls.py`.
   อัพโหลดไฟล์ / ระบุลิงก์ radio pair over a file block and a URL block; the
   handler in `document_upload_js.html` (delegated, since the card is replaced
   wholesale after each upload) swaps the blocks, clears the hidden one, and
-  toggles `required` on the file input.
+  toggles `required` on the file input. The file block shows
+  `specifications`; the URL block shows `ProjectUploadedDocument.url_hint`
+  instead — the slot validator's entry in `DOCUMENT_URL_HINTS` (e.g.
+  tcasfolio: "…กรุณาใช้ลิงก์ที่ได้จากระบบ TCASFolio เท่านั้น"), else
+  `DEFAULT_URL_HINT` (ลิงก์ไปยังเอกสาร). Both are `gettext_lazy`, so
+  translated.
 
 - **Upload** — `POST appl:upload` (`/appl/upload/<document_id>/`), AJAX.
   `upload()`:
@@ -225,6 +230,9 @@ Per-slot content checks beyond size/extension/detail, switched on by setting
 - A validator is `fn(project_uploaded_document, uploaded_file=None,
   document_url=None) -> ValidationResult`, called with exactly one of the two
   (whichever kind the applicant submitted).
+- `DOCUMENT_URL_HINTS` (key → `gettext_lazy` string) and `get_url_hint(pud)`
+  — optional link-input hint for `'any'` slots (see the upload flow); a key
+  without an entry gets `DEFAULT_URL_HINT`.
 - `tcasfolio.py` — files: the PDF signature check of
   [pdf-signature-verification.md](pdf-signature-verification.md); urls:
   accepted only when (after stripping) they start with
@@ -243,7 +251,8 @@ The JS puts `message_html` into the card's `.document-upload-errors`.
 **Adding a validator:** write the function (reject with short codes), add it to
 `DOCUMENT_VALIDATORS`, add `document_validation_errors/<key>.html` with an
 `{% if code == ... %}` branch per code (end with an include of `default.html`
-for `misconfigured`/`verification_error`), then set the key on the slot in the
+for `misconfigured`/`verification_error`), optionally a link hint in
+`DOCUMENT_URL_HINTS` (plus its `.po` entry), then set the key on the slot in the
 admin. Editing an applicant-facing message only means editing that template.
 
 ### Requiredness & OR groups

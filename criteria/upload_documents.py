@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 # Applied to every criteria-generated slot on each sync: change here and re-sync.
 DEFAULT_ALLOWED_EXTENSIONS = 'PDF,JPG,JPEG,PNG'
 DEFAULT_SIZE_LIMIT = 20_000_000
-DEFAULT_SPECIFICATIONS = 'ไฟล์ pdf หรือรูปภาพ (jpg, png) ขนาดไม่เกิน 20MB หรือระบุลิงก์'
+DEFAULT_SPECIFICATIONS = 'ไฟล์ pdf หรือรูปภาพ (jpg, png) ขนาดไม่เกิน 20MB'
 
 # generated slots are ranked after the hand-made ones
 RANK_BASE = 10000

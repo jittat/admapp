@@ -1,6 +1,10 @@
 """TCASFolio portfolios: a signed PDF from TCASFolio, or a TCASFolio link."""
+from django.utils.translation import gettext_lazy as _
+
 from appl.document_validators.base import ValidationResult
 from appl.pdfsignatures.verify import verify_with_profile
+
+URL_HINT = _('ลิงก์ไปยังเอกสาร กรุณาใช้ลิงก์ที่ได้จากระบบ TCASFolio เท่านั้น')
 
 
 def validate(project_uploaded_document, uploaded_file=None, document_url=None):

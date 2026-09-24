@@ -611,6 +611,13 @@ class ProjectUploadedDocument(models.Model):
     def is_any_document(self):
         return self.document_type == ProjectUploadedDocument.DOCUMENT_TYPE_ANY
 
+    @property
+    def url_hint(self):
+        """Shown over the link input of a file-or-link slot, in place of the
+        file specifications."""
+        from appl.document_validators import get_url_hint
+        return get_url_hint(self)
+
     @staticmethod
     def get_common_documents():
         return ProjectUploadedDocument.objects.filter(is_common_document=True).all()

@@ -19,6 +19,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.template.loader import render_to_string
 from django.test import RequestFactory, SimpleTestCase, TestCase, override_settings
 from django.urls import reverse
+from django.utils import translation
 from pyhanko.pdf_utils import generic
 from pyhanko.pdf_utils.incremental_writer import IncrementalPdfFileWriter
 from pyhanko.pdf_utils.writer import PageObject, PdfFileWriter
@@ -26,8 +27,9 @@ from pyhanko.sign import signers
 from pyhanko.sign.fields import SigSeedSubFilter
 from pyhanko_certvalidator.registry import SimpleCertificateStore
 
-from appl.document_validators import (DOCUMENT_VALIDATORS, MISCONFIGURED, VERIFICATION_ERROR,
-                                      ValidationResult, run_document_validator, tcasfolio)
+from appl.document_validators import (DEFAULT_URL_HINT, DOCUMENT_VALIDATORS, MISCONFIGURED,
+                                      VERIFICATION_ERROR, ValidationResult,
+                                      run_document_validator, tcasfolio)
 from appl.models import (AdmissionProject, AdmissionProjectRound, AdmissionRound,
                          MajorSelection, ProjectUploadedDocument, UploadedDocument)
 from appl.pdfsignatures import profiles, verify
@@ -624,11 +626,11 @@ class UploadFormTemplateTestCase(SimpleTestCase):
     per-row (not per-slot) rendering of already-uploaded entries."""
 
     def render(self, document_type, uploaded_documents=None,
-               can_have_multiple_files=False):
+               can_have_multiple_files=False, validator=''):
         doc = ProjectUploadedDocument(
-            id=7, rank=1, title='เอกสาร', descriptions='', specifications='PDF',
+            id=7, rank=1, title='เอกสาร', descriptions='', specifications='PDF-SPEC',
             allowed_extentions='PDF', document_type=document_type,
-            can_have_multiple_files=can_have_multiple_files)
+            can_have_multiple_files=can_have_multiple_files, validator=validator)
         doc.applicant_uploaded_documents = uploaded_documents or []
         return render_to_string('appl/include/document_upload_form.html',
                                 {'project_uploaded_document': doc,
@@ -655,6 +657,23 @@ class UploadFormTemplateTestCase(SimpleTestCase):
         self.assertIn('name="uploaded_file"', html)
         self.assertIn('name="document_url"', html)
 
+    def split_any_blocks(self, html):
+        file_part, url_part = html.split('upload-mode-url-block', 1)
+        return file_part.split('upload-mode-file-block', 1)[1], url_part
+
+    def test_any_document_shows_specifications_only_for_files(self):
+        file_block, url_block = self.split_any_blocks(self.render(ANY))
+        self.assertIn('PDF-SPEC', file_block)
+        self.assertNotIn('PDF-SPEC', url_block)
+        self.assertIn(str(DEFAULT_URL_HINT), url_block)
+
+    def test_any_document_url_hint_comes_from_the_validator(self):
+        _, url_block = self.split_any_blocks(self.render(ANY, validator='tcasfolio'))
+        self.assertIn(str(tcasfolio.URL_HINT), url_block)
+
+    def test_url_document_still_shows_specifications(self):
+        self.assertIn('PDF-SPEC', self.render(URL))
+
     def test_mixed_entries_render_per_row(self):
         file_doc = UploadedDocument(id=1, detail='ไฟล์',
                                     uploaded_file='documents/applicant_3/doc_7/a.pdf')
@@ -669,6 +688,26 @@ class UploadFormTemplateTestCase(SimpleTestCase):
         self.assertIn(file_link, html)
         self.assertIn('href="http://example.com/portfolio"', html)
         self.assertNotIn(url_link, html)
+
+
+class UrlHintTestCase(SimpleTestCase):
+
+    def hint(self, validator):
+        return str(ProjectUploadedDocument(validator=validator).url_hint)
+
+    def test_default_hint(self):
+        with translation.override('th'):
+            self.assertEqual(self.hint(''), 'ลิงก์ไปยังเอกสาร')
+            self.assertEqual(self.hint('no-such-validator'), 'ลิงก์ไปยังเอกสาร')
+
+    def test_tcasfolio_hint(self):
+        self.assertIn('TCASFolio', self.hint('tcasfolio'))
+
+    def test_hints_are_translated(self):
+        with translation.override('en'):
+            self.assertEqual(self.hint(''), 'Link to the document')
+            self.assertEqual(self.hint('tcasfolio'),
+                             'Link to the document. Please use only the link from the TCASFolio system.')
 
 
 class ReplaceConfirmTemplateTestCase(SimpleTestCase):

@@ -1999,3 +1999,11 @@ msgstr ""
 #: supplements/views/forms/nat_sport.py:57
 msgid "กรุณาระบุระดับผลงาน"
 msgstr "Choose the level of your achievement"
+
+#: appl/document_validators/__init__.py:31
+msgid "ลิงก์ไปยังเอกสาร"
+msgstr "Link to the document"
+
+#: appl/document_validators/tcasfolio.py:7
+msgid "ลิงก์ไปยังเอกสาร กรุณาใช้ลิงก์ที่ได้จากระบบ TCASFolio เท่านั้น"
+msgstr "Link to the document. Please use only the link from the TCASFolio system."
