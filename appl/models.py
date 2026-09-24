@@ -6,6 +6,7 @@ from datetime import datetime
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import MinValueValidator, MaxValueValidator, RegexValidator
 from django.db import models
+from django.utils.translation import gettext
 from django.utils.translation import gettext_lazy as _
 
 from admapp import settings
@@ -419,7 +420,7 @@ class Major(models.Model):
                 outside_count += 1
                 output_list.append(
                     "<a class=\"badge badge-pill badge-secondary major-info-toggle-links\" " +
-                    "data-major-number=\"" + str(self.number*10 + outside_count) + "\" href=\"#\">แสดงรายละเอียด</a><br/>" + 
+                    "data-major-number=\"" + str(self.number*10 + outside_count) + "\" href=\"#\">" + gettext('แสดงรายละเอียด') + "</a><br/>" + 
                     "<div id=\"major_info_" + str(self.number*10 + outside_count) + "_id\" style=\"display: none; overflow-y: auto; height: 200px;\" class=\"bg-light border rounded mt5 selected-major-details\">"
                 )
                 outside = False

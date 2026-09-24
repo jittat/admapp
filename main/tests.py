@@ -227,6 +227,83 @@ class EnglishApplPagesTestCase(NoThaiTextMixin, TestCase):
                                              [Config()], [], None)
         self.assertEqual(status['errors'], ['Not filled in yet: Form'])
 
+    def apply_with_majors(self, max_num_selections):
+        from appl.models import Campus, Faculty, Major
+        self.project.max_num_selections = max_num_selections
+        self.project.column_descriptions = '* Details'
+        self.project.save()
+        campus = Campus.objects.create(title='Bangkhen Campus', short_title='Bangkhen')
+        faculty = Faculty.objects.create(title='Faculty of Engineering', campus=campus)
+        majors = [Major.objects.create(number=i, title='Major %d' % i, faculty=faculty,
+                                       admission_project=self.project, slots=10,
+                                       detail_items_csv='Major details')
+                  for i in (1, 2)]
+        application = self.applicant.apply_to_project(self.project,
+                                                      self.admission_round)
+        return application, majors
+
+    def assert_major_selection_page(self, max_num_selections):
+        self.apply_with_majors(max_num_selections)
+        response = self.client.get('/en/appl/select/%d/' % self.admission_round.id)
+        self.assertEqual(response.status_code, 200)
+        self.assertNoThaiText(response.content.decode())
+
+    def test_major_selection_page(self):
+        self.assert_major_selection_page(1)
+
+    def test_major_multiple_selection_page(self):
+        self.assert_major_selection_page(2)
+
+    def test_major_selection_errors(self):
+        from appl.views.major_selection import process_selection_form
+        application, majors = self.apply_with_majors(2)
+        request = RequestFactory().post('/', {'major': ['99']})
+        with translation.override('en'):
+            error, message = process_selection_form(request, self.applicant,
+                                                    application, None)
+        self.assertEqual((error, message), (True, 'Invalid major choice'))
+
+    def test_major_includes(self):
+        from appl.models import MajorAdditionalAdmissionFormField, MajorSelection
+        application, majors = self.apply_with_majors(2)
+        major_selection = MajorSelection.objects.create(
+            applicant=self.applicant, project_application=application,
+            admission_project=self.project, admission_round=self.admission_round,
+            major_list='1,2', num_selected=2)
+        major = majors[0]
+        major.form_fields = [
+            MajorAdditionalAdmissionFormField.objects.create(
+                major=major, admission_project=self.project,
+                title='Why this major?', size=size, rank=rank)
+            for rank, size in ((1, 'short'), (2, 'paragraph'))]
+        for f in major.form_fields:
+            f.value = None
+        for m in majors:
+            m.is_accepted_for_interview = (m == major)
+        pages = [
+            ('appl/include/major_selection_item.html',
+             {'active_application': application, 'admission_round': self.admission_round,
+              'major_selection': major_selection}),
+            ('appl/include/major_selection_item.html',
+             {'active_application': application, 'admission_round': self.admission_round,
+              'major_selection': major_selection, 'is_deadline_passed': True,
+              'accepted_for_interview_result_shown': True}),
+            ('appl/include/major_selection_item.html',
+             {'active_application': application, 'admission_round': self.admission_round,
+              'major_selection': None}),
+            ('appl/include/major_additional_form.html', {'major': major}),
+        ]
+        for template_name, context in pages:
+            with self.subTest(template=template_name):
+                self.assertNoThaiText(self.render_en(template_name, context))
+
+    def test_major_hidden_info_link(self):
+        from appl.models import Major
+        major = Major(number=1)
+        with translation.override('en'):
+            html = major.process_hidden_info('a\n--info-start--\nb\n--info-end--')
+        self.assertIn('>Show details</a>', html)
+
 
 class ThaiDateFilterTestCase(SimpleTestCase):
 

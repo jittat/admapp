@@ -1,4 +1,5 @@
 {% extends 'appl/base.html' %}
+{% load i18n %}
 {% block content %}
 <div class="major-multiple-selection-container">
   <form 
@@ -10,20 +11,20 @@
     <div class="form">
       <div class="row">
         <div class="form-group col-md-12">
-          <h1>เลือกสาขาโครงการ{{ admission_project }}</h1>
-          <b>ผู้สมัคร: {{ applicant }} จำนวนสาขาที่เลือกได้ {{ admission_project.max_num_selections }}</b>
+          <h1>{% blocktrans trimmed with project_title=admission_project.title_trans %}เลือกสาขาโครงการ{{ project_title }}{% endblocktrans %}</h1>
+          <b>{% blocktrans trimmed with num=admission_project.max_num_selections %}ผู้สมัคร: {{ applicant }} จำนวนสาขาที่เลือกได้ {{ num }}{% endblocktrans %}</b>
         </div>
       </div>
       <div class="row">
         <div class="form-group col-md-12">
-          <p>รายชื่อที่เลือก (สามารถลากเปลี่ยนอันดับได้)</p>
+          <p>{% trans 'รายชื่อที่เลือก (สามารถลากเปลี่ยนอันดับได้)' %}</p>
           <div  
             id="select-badge" class="alert alert-warning"
             {% if selected_majors %}
             style="display: none;"
             {% endif %}
           >                                   
-            ยังไม่ได้เลือกสาขา สามารถเลือกได้ {{ admission_project.max_num_selections }} สาขา
+            {% blocktrans trimmed count counter=admission_project.max_num_selections %}ยังไม่ได้เลือกสาขา สามารถเลือกได้ {{ counter }} สาขา{% plural %}ยังไม่ได้เลือกสาขา สามารถเลือกได้ {{ counter }} สาขา{% endblocktrans %}
           </div>
           <ul id="selected-list" class="list-group d-flex">
             {% for major in selected_majors %}
@@ -33,7 +34,7 @@
               >
                 <div>
                   <b>{{ forloop.counter }}</b>
-                  {{ major.faculty }} - {{ major.title }}
+                  {{ major.faculty.title_trans }} - {{ major.title_trans }}
                 </div>
                 <div class="d-flex flex-nowrap"> 
                   <button 
@@ -67,18 +68,18 @@
       </div>
       <div class="row">
         <div class="form-group col-md-12">
-          เลือกคณะเพื่อเลือกสาขา
+          {% trans 'เลือกคณะเพื่อเลือกสาขา' %}
           <select
             class="form-control" 
             name="falculty" 
             onchange="changeFaculty(this)"
           >
-            <option value="">เลือกคณะ</option>            
+            <option value="">{% trans 'เลือกคณะ' %}</option>            
             {% for f in faculties %}
               <option 
                 value="{{ f.id }}"
               >
-                {{ f.title }} ({{ f.campus }})
+                {{ f.title_trans }} ({{ f.campus }})
               </option>
             {% endfor %}
           </select>
@@ -96,8 +97,8 @@
       </div>
       <div class="row">
         <div class="form-group col-md-12">
-          <input id="form_save_id" type="submit" name="save" class="btn btn-success" value="จัดเก็บ" />
-          <input type="submit" name="cancel" class="btn btn-danger" value="ยกเลิก" />
+          <input id="form_save_id" type="submit" name="save" class="btn btn-success" value="{% trans 'จัดเก็บ' %}" />
+          <input type="submit" name="cancel" class="btn btn-danger" value="{% trans 'ยกเลิก' %}" />
         </div>
       </div>
     </div>
@@ -122,14 +123,14 @@
   {% for m in all_majors %}
     majors[{{ m.number }}] = {
       number: "{{ m.number }}",
-      title: "{{ m.title|escapejs }}",
+      title: "{{ m.title_trans|escapejs }}",
       faculty_id: "{{ m.faculty_id }}"
     };
   {% endfor %}
   
   {% for f in faculties %}
     faculties[{{ f.id }}] = {
-      title: "{{ f.title|escapejs }}"
+      title: "{{ f.title_trans|escapejs }}"
     }
   {% endfor %}
 
@@ -137,7 +138,7 @@
   {% for m in selected_majors %}
     selectedList.push({
       number: "{{ m.number }}",
-      title: "{{ m.title }}",
+      title: "{{ m.title_trans|escapejs }}",
       faculty_id: "{{ m.faculty_id }}"
     });
   {% endfor %}
@@ -166,7 +167,7 @@
         majorWrapper.setAttribute('class', 'list-group-item d-flex col col-lg-3 col-12 justify-content-between');
         
         var majorButton = document.createElement('button');
-        majorButton.innerHTML = 'เพิ่ม';
+        majorButton.innerHTML = '{% trans 'เพิ่ม' as x %}{{ x|escapejs }}';
         majorButton.setAttribute('value', index);
         majorButton.setAttribute('class', 'btn btn-outline-success')
         majorButton.onclick = function(e) {
@@ -250,11 +251,11 @@
     
     var error = null;
     if (selectedList.length >= Number("{{ admission_project.max_num_selections }}")) {
-      error = 'เลือกสาขาเกินจำนวนที่เลือกได้ !';
+      error = '{% trans 'เลือกสาขาเกินจำนวนที่เลือกได้ !' as x %}{{ x|escapejs }}';
     }
     
     if (duplicate) {
-      error = 'สาขานี้ถูกเลือกแล้ว !';
+      error = '{% trans 'สาขานี้ถูกเลือกแล้ว !' as x %}{{ x|escapejs }}';
     }
     
     if (error) {
@@ -285,7 +286,7 @@
   $(function(){
     $("#form_save_id").click(function(){
       if(selectedList.length == 0) {
-        alert('ไม่สามารถจัดเก็บได้ เนื่องจากยังไม่เลือกสาขา');
+        alert('{% trans 'ไม่สามารถจัดเก็บได้ เนื่องจากยังไม่เลือกสาขา' as x %}{{ x|escapejs }}');
         return false;
       }
     });

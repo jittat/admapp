@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-24 18:34+0700\n"
+"POT-Creation-Date: 2026-09-24 20:15+0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,7 +25,7 @@ msgstr ""
 msgid "English"
 msgstr ""
 
-#: appl/db_messages/model_messages.py:3 main/tests.py:29
+#: appl/db_messages/model_messages.py:3 main/tests.py:30
 msgid "วิทยาเขตบางเขน"
 msgstr "Bangkhen Campus"
 
@@ -251,7 +251,7 @@ msgstr "TCAS Round 4"
 msgid "รอบที่ 5"
 msgstr "TCAS Round 5"
 
-#: appl/models.py:15
+#: appl/models.py:16
 msgid ""
 "เบอร์โทรศัพท์สามารถประกอบด้วยตัวเลข 0-9 สามารถใช้เครื่องหมาย - "
 "เพื่อแบ่งกลุ่มตัวเลข และอาจเริ่มต้นด้วยเครื่องหมาย +"
@@ -259,59 +259,63 @@ msgstr ""
 "A phone number may contain the digits 0-9, use - to group digits, and may "
 "start with +."
 
-#: appl/models.py:723
+#: appl/models.py:423 appl/templates/appl/include/major_selection_item.html:22
+msgid "แสดงรายละเอียด"
+msgstr "Show details"
+
+#: appl/models.py:724
 msgid "กำลังศึกษาชั้นมัธยมศึกษาปีที่ 6 หรือเทียบเท่า"
 msgstr "Currently in Grade 12 (Mathayom 6) or equivalent"
 
-#: appl/models.py:724
+#: appl/models.py:725
 msgid "จบการศึกษาชั้นมัธยมศึกษาปีที่ 6 หรือเทียบเท่า"
 msgstr "Graduated from Grade 12 (Mathayom 6) or equivalent"
 
-#: appl/models.py:727
+#: appl/models.py:728
 msgid "วิทย์-คณิต"
 msgstr "Science-Math"
 
-#: appl/models.py:728
+#: appl/models.py:729
 msgid "ศิลป์-คำนวณ"
 msgstr "Art-Math"
 
-#: appl/models.py:729
+#: appl/models.py:730
 msgid "ศิลป์-ภาษา"
 msgstr "Art-Language"
 
-#: appl/models.py:730
+#: appl/models.py:731
 msgid "ศิลป์-สังคม"
 msgstr "Art-Social Studies"
 
-#: appl/models.py:731
+#: appl/models.py:732
 msgid "อาชีวศึกษา"
 msgstr "Vocational Education"
 
-#: appl/models.py:732
+#: appl/models.py:733
 msgid "ไม่ระบุ"
 msgstr "Not specified"
 
-#: appl/models.py:738
+#: appl/models.py:739
 msgid "ระดับการศึกษา"
 msgstr "Educational level"
 
-#: appl/models.py:740
+#: appl/models.py:741
 msgid "แผนการศึกษา"
 msgstr "Study plan"
 
-#: appl/models.py:742
+#: appl/models.py:743
 msgid "หน่วยกิตกลุ่มสาระวิทยาศาสตร์และเทคโนโลยี"
 msgstr "Science and technology credits"
 
-#: appl/models.py:744
+#: appl/models.py:745
 msgid "หน่วยกิตกลุ่มสาระคณิตศาสตร์"
 msgstr "Mathematics credits"
 
-#: appl/models.py:746
+#: appl/models.py:747
 msgid "หน่วยกิตกลุ่มสาระภาษาต่างประเทศ"
 msgstr "Foreign language credits"
 
-#: appl/models.py:752 appl/templates/appl/forms/education.html:112
+#: appl/models.py:753 appl/templates/appl/forms/education.html:112
 msgid ""
 "ในกรณีที่กำลังศึกษาชั้นม.6 ให้กรอกเกรดเฉลี่ย 5 ภาคการศึกษา "
 "แต่ถ้าคะแนนภาคต้นยังไม่เรียบร้อย สามารถกรอกแค่ 4 ภาคการศึกษาได้ "
@@ -322,110 +326,110 @@ msgstr ""
 "over 4 semesters. If you have already graduated, enter your GPAX over 6 "
 "semesters."
 
-#: appl/models.py:755 appl/models.py:827
+#: appl/models.py:756 appl/models.py:828
 msgid "จังหวัด"
 msgstr "Province"
 
-#: appl/models.py:758 appl/templates/appl/index.html:38
+#: appl/models.py:759 appl/templates/appl/index.html:38
 msgid "โรงเรียน"
 msgstr "School"
 
-#: appl/models.py:786
+#: appl/models.py:787
 msgid "คำนำหน้า (อังกฤษ)"
 msgstr "Prefix (English)"
 
-#: appl/models.py:789
+#: appl/models.py:790
 msgid "ชื่อ (อังกฤษ)"
 msgstr "Name (English)"
 
-#: appl/models.py:791
+#: appl/models.py:792
 msgid "ชื่อกลาง (อังกฤษ, ถ้ามี)"
 msgstr "Middle name (English, if any)"
 
-#: appl/models.py:794
+#: appl/models.py:795
 msgid "นามสกุล (อังกฤษ)"
 msgstr "Last name (English)"
 
-#: appl/models.py:796
+#: appl/models.py:797
 msgid "หมายเลข Passport (ถ้ามี)"
 msgstr "Passport number (if any)"
 
-#: appl/models.py:798
+#: appl/models.py:799
 msgid "วันเดือนปีเกิด"
 msgstr "Date of birth"
 
-#: appl/models.py:800
+#: appl/models.py:801
 msgid "คำนำหน้าชื่อบิดา"
 msgstr "Prefix of father's name"
 
-#: appl/models.py:802
+#: appl/models.py:803
 msgid "ชื่อบิดา"
 msgstr "Father's first name"
 
-#: appl/models.py:804
+#: appl/models.py:805
 msgid "นามสกุลบิดา"
 msgstr "Father's last name"
 
-#: appl/models.py:806
+#: appl/models.py:807
 msgid "คำนำหน้าชื่อมารดา"
 msgstr "Prefix of mother's name"
 
-#: appl/models.py:808
+#: appl/models.py:809
 msgid "ชื่อมารดา"
 msgstr "Mother's first name"
 
-#: appl/models.py:810
+#: appl/models.py:811
 msgid "นามสกุลมารดา"
 msgstr "Mother's last name"
 
-#: appl/models.py:812
+#: appl/models.py:813
 msgid "บ้านเลขที่"
 msgstr "House number"
 
-#: appl/models.py:814
+#: appl/models.py:815
 msgid "หมู่"
 msgstr "Village"
 
-#: appl/models.py:817
+#: appl/models.py:818
 msgid "ซอย"
 msgstr "Avenue"
 
-#: appl/models.py:820
+#: appl/models.py:821
 msgid "ถนน"
 msgstr "Road"
 
-#: appl/models.py:823
+#: appl/models.py:824
 msgid "ตำบล/แขวง"
 msgstr "Sub-district (Tumbon)"
 
-#: appl/models.py:825
+#: appl/models.py:826
 msgid "อำเภอ/เขต"
 msgstr "District (Ampher)"
 
-#: appl/models.py:829
+#: appl/models.py:830
 msgid "รหัสไปรษณีย์"
 msgstr "Postal code"
 
-#: appl/models.py:832
+#: appl/models.py:833
 msgid "เบอร์โทรศัพท์ที่ติดต่อได้"
 msgstr "Contact phone"
 
-#: appl/models.py:833
+#: appl/models.py:834
 msgid "หากเป็นเบอร์ติดต่อภายใน ให้ใช้ # คั่น เช่น 034-567-890#111"
 msgstr "For an extension number, separate it with #, e.g. 034-567-890#111"
 
-#: appl/models.py:836
+#: appl/models.py:837
 msgid "เบอร์โทรศัพท์มือถือ"
 msgstr "Mobile phone"
 
-#: appl/models.py:1296
+#: appl/models.py:1297
 msgid ""
 "โครงการนี้ผู้สมัครต้องอยู่ในโรงเรียนที่เข้าข่าย กรุณากรอกข้อมูลการศึกษาก่อน"
 msgstr ""
 "Applicants to this project must be from an eligible school. Please fill in "
 "your educational information first."
 
-#: appl/models.py:1318
+#: appl/models.py:1319
 msgid ""
 "โครงการนี้ผู้สมัครต้องผ่านการเข้าร่วมโครงการเรียนล่วงหน้าของม.เกษตรศาสตร์ "
 "รุ่นที่ 15-21 ปีการศึกษา 2563-2569"
@@ -589,6 +593,7 @@ msgstr "Document title or description (optional)"
 
 #: appl/templates/appl/include/document_upload_form.html:48
 #: appl/templates/appl/include/document_upload_form.html:90
+#: appl/templates/appl/major_multiple_selection.html:100
 #: appl/templates/appl/major_selection.html:62 appl/views/general_forms.py:75
 #: appl/views/general_forms.py:185
 msgid "จัดเก็บ"
@@ -632,7 +637,9 @@ msgid "ยืนยันการแทนที่"
 msgstr "I confirm my application"
 
 #: appl/templates/appl/include/document_upload_form.html:104
+#: appl/templates/appl/include/major_form_field_modal.html:34
 #: appl/templates/appl/include/project_list.html:60
+#: appl/templates/appl/major_multiple_selection.html:101
 #: appl/templates/appl/major_selection.html:63
 msgid "ยกเลิก"
 msgstr "Cancel"
@@ -750,6 +757,62 @@ msgstr "Print your application"
 msgid "เพื่อนำมาประกอบการสัมภาษณ์ในวันที่ 18 ม.ค. 2563"
 msgstr "for an interview on February 13th, 2018."
 
+#: appl/templates/appl/include/major_additional_form.html:4
+msgid "คำถามเพิ่มเติม"
+msgstr "Additional questions"
+
+#: appl/templates/appl/include/major_additional_form.html:4
+msgid "สาขานี้มีคำถามเพิ่มเติม"
+msgstr "This major has additional questions."
+
+#: appl/templates/appl/include/major_additional_form.html:6
+msgid "จัดเก็บคำตอบแล้ว"
+msgstr "Answer saved"
+
+#: appl/templates/appl/include/major_additional_form.html:10
+#: appl/templates/appl/include/major_form_field_modal.html:6
+#, python-format
+msgid "คำถาม %(rank)s:"
+msgstr "Question %(rank)s:"
+
+#: appl/templates/appl/include/major_additional_form.html:11
+msgid "ตอบ"
+msgstr "Answer"
+
+#: appl/templates/appl/include/major_additional_form.html:33
+msgid "กรุณากรอกคำตอบ"
+msgstr "Please enter your answer."
+
+#: appl/templates/appl/include/major_additional_form.html:37
+#, python-brace-format
+msgid "คำตอบยาวเกินกำหนด ({length} / {max} ตัวอักษร)"
+msgstr "Your answer is too long ({length} / {max} characters)."
+
+#: appl/templates/appl/include/major_additional_form.html:50
+#, python-brace-format
+msgid "จัดเก็บคำตอบของคำถาม {rank} แล้ว"
+msgstr "Answer to question {rank} saved"
+
+#: appl/templates/appl/include/major_additional_form.html:57
+msgid "เกิดข้อผิดพลาด: "
+msgstr "An error occurred: "
+
+#: appl/templates/appl/include/major_additional_form.html:60
+msgid "เกิดข้อผิดพลาด ไม่สามารถบันทึกคำตอบได้"
+msgstr "An error occurred. Your answer could not be saved."
+
+#: appl/templates/appl/include/major_form_field_modal.html:16
+msgid "กรอกคำตอบสั้น ความยาวไม่เกิน 200 ตัวอักษร"
+msgstr "Short answer, up to 200 characters."
+
+#: appl/templates/appl/include/major_form_field_modal.html:22
+msgid "เขียนอธิบายได้ ความยาวไม่เกิน 2000 ตัวอักษร"
+msgstr "Long answer, up to 2000 characters."
+
+#: appl/templates/appl/include/major_form_field_modal.html:33
+msgid "บันทึกคำตอบ"
+msgstr "Save answer"
+
 #: appl/templates/appl/include/major_notices.html:4
 msgid "ประกาศ"
 msgstr "Notice"
@@ -777,6 +840,14 @@ msgstr[1] ""
 "      You can choose %(counter)s majors. Your choices are:<br />\n"
 "    "
 
+#: appl/templates/appl/include/major_selection_item.html:15
+msgid "เรียกสัมภาษณ์"
+msgstr "Called for interview"
+
+#: appl/templates/appl/include/major_selection_item.html:17
+msgid "ไม่เรียกสัมภาษณ์"
+msgstr "Not called for interview"
+
 #: appl/templates/appl/include/major_selection_item.html:32
 msgctxt "major link"
 msgid "แก้ไขสาขาที่เลือก"
@@ -786,8 +857,7 @@ msgstr "Edit major choice(s)"
 #: appl/templates/appl/include/major_selection_item.html:48
 msgid "หมดเขตการรับสมัครแล้ว ขณะนี้ไม่สามารถแก้ไขอันดับที่เลือกได้"
 msgstr ""
-"The application deadline has been passed.  You cannot change your "
-"selection(s)."
+"The application deadline has passed. You can no longer change your choices."
 
 #: appl/templates/appl/include/major_selection_item.html:40
 #, python-format
@@ -866,7 +936,7 @@ msgid "ขอแสดงความยินดีด้วย"
 msgstr "Congratulations"
 
 #: appl/templates/appl/include/project_accepted_for_interview_result.html:8
-#: main/tests.py:32
+#: main/tests.py:33
 msgid "คุณผ่านการคัดเลือกมีสิทธิ์เข้าสอบสัมภาษณ์ ในสาขาต่อไปนี้"
 msgstr "You have been accepted for an interview for the following major(s)"
 
@@ -1080,6 +1150,53 @@ msgctxt "form link"
 msgid "กรอกข้อมูลการศึกษา"
 msgstr "Enter educational information"
 
+#: appl/templates/appl/major_multiple_selection.html:14
+#, python-format
+msgid "เลือกสาขาโครงการ%(project_title)s"
+msgstr "Choose majors: %(project_title)s"
+
+#: appl/templates/appl/major_multiple_selection.html:15
+#, python-format
+msgid "ผู้สมัคร: %(applicant)s จำนวนสาขาที่เลือกได้ %(num)s"
+msgstr ""
+"Applicant: %(applicant)s. Maximum number of majors you can choose: %(num)s"
+
+#: appl/templates/appl/major_multiple_selection.html:20
+msgid "รายชื่อที่เลือก (สามารถลากเปลี่ยนอันดับได้)"
+msgstr "Your choices (drag to reorder)"
+
+#: appl/templates/appl/major_multiple_selection.html:27
+#, python-format
+msgid "ยังไม่ได้เลือกสาขา สามารถเลือกได้ %(counter)s สาขา"
+msgid_plural "ยังไม่ได้เลือกสาขา สามารถเลือกได้ %(counter)s สาขา"
+msgstr[0] "You have not chosen a major yet. You can choose %(counter)s major."
+msgstr[1] ""
+"You have not chosen a major yet. You can choose up to %(counter)s majors."
+
+#: appl/templates/appl/major_multiple_selection.html:71
+msgid "เลือกคณะเพื่อเลือกสาขา"
+msgstr "Choose a faculty to see its majors"
+
+#: appl/templates/appl/major_multiple_selection.html:77
+msgid "เลือกคณะ"
+msgstr "Choose a faculty"
+
+#: appl/templates/appl/major_multiple_selection.html:170
+msgid "เพิ่ม"
+msgstr "Add"
+
+#: appl/templates/appl/major_multiple_selection.html:254
+msgid "เลือกสาขาเกินจำนวนที่เลือกได้ !"
+msgstr "You have chosen the maximum number of majors!"
+
+#: appl/templates/appl/major_multiple_selection.html:258
+msgid "สาขานี้ถูกเลือกแล้ว !"
+msgstr "This major is already chosen!"
+
+#: appl/templates/appl/major_multiple_selection.html:289
+msgid "ไม่สามารถจัดเก็บได้ เนื่องจากยังไม่เลือกสาขา"
+msgstr "Cannot save because no major is chosen."
+
 #: appl/templates/appl/major_selection.html:14
 msgid "เลือกสาขาโครงการ"
 msgstr "Major selection: "
@@ -1105,18 +1222,18 @@ msgstr "You have not made any major selection. (You can choose 1 major.)"
 #: appl/templates/appl/major_selection.html:30
 msgctxt "major selection"
 msgid "เลือกคณะเพื่อเลือกสาขา"
-msgstr "Choose the faculty to see the list of majors"
+msgstr "Choose a faculty to see its majors"
 
 #: appl/templates/appl/major_selection.html:32
 msgctxt "major selection"
 msgid "เลือกคณะ"
-msgstr "Choose the faculty"
+msgstr "Choose a faculty"
 
 #: appl/templates/appl/major_selection.html:55
 #: appl/templates/appl/major_selection.html:96
 msgctxt "major selection"
 msgid "เลือกสาขานี้"
-msgstr "Apply"
+msgstr "Choose this major"
 
 #: appl/templates/appl/payments/payment_qr.html:6
 #, fuzzy
@@ -1217,6 +1334,14 @@ msgstr "Personal information saved."
 #: appl/views/general_forms.py:282
 msgid "จัดเก็บข้อมูลการศึกษาเรียบร้อย"
 msgstr "Educational information saved."
+
+#: appl/views/major_selection.py:21
+msgid "คุณยังไม่ได้เลือกสาขา"
+msgstr "You have not chosen a major"
+
+#: appl/views/major_selection.py:29
+msgid "สาขาที่คุณเลือกผิดพลาด"
+msgstr "Invalid major choice"
 
 #: main/templates/base.html:75
 msgid ""

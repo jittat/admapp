@@ -190,7 +190,7 @@ review.
 ## Implementation plan
 
 Work happens on the `i18n-english` branch. Status: phases 0 and 1 done
-(merged to master); phase 2 in progress (2a done).
+(merged to master); phase 2 in progress (2a, 2b done).
 
 ### Scope
 
@@ -302,11 +302,14 @@ so it can be checked under `/en/` as a whole. For each app:
      English date. The dashboard test ignores `<script>` blocks until
      2c translates `document_upload_js.html` (`TODO(2c)` in
      `main/tests.py`).
-   - **2b. Major selection.** `major_selection_item`,
+   - **2b. Major selection** (done). `major_selection_item`,
      `major_multiple_selection.html` (Thai inside inline JS strings via
      `escapejs`), `major_additional_form`, `major_form_field_modal`,
-     `major_interview_descriptions`, and the strings in
-     `appl/views/major_selection.py`.
+     `major_interview_descriptions` (all Thai there is inside
+     `{% comment %}`), the strings in `appl/views/major_selection.py`, and
+     the "show details" link built by `Major.process_hidden_info`. Campus
+     names in the selection page (`{{ f.campus }}`, the short title) are
+     left for 2e.
    - **2c. Uploads and application status.** `document_upload_js`,
      `documents_incomplete`, `old_document_upload_list`, `payment_item`,
      and the TCASFolio/document validation messages.

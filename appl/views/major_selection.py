@@ -3,6 +3,7 @@
 from django.http import HttpResponseForbidden
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
+from django.utils.translation import gettext
 
 from appl.models import AdmissionRound, Major, MajorSelection, Faculty
 from regis.decorators import appl_login_required
@@ -17,7 +18,7 @@ def process_selection_form(request,
                            application,
                            major_selection):
     if 'major' not in request.POST:
-        return (True, 'คุณยังไม่ได้เลือกสาขา')
+        return (True, gettext('คุณยังไม่ได้เลือกสาขา'))
 
     numbers = request.POST.getlist('major')
     majors = []
@@ -25,7 +26,7 @@ def process_selection_form(request,
         major = Major.get_by_project_number(application.admission_project,
                                             number)
         if not major:
-            return (True, 'สาขาที่คุณเลือกผิดพลาด')
+            return (True, gettext('สาขาที่คุณเลือกผิดพลาด'))
         majors.append(major)
 
     major_selection.set_majors(majors)
