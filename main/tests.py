@@ -9,6 +9,16 @@ from django.urls import set_script_prefix
 from django.utils import translation
 
 
+class ResetLanguageMixin:
+    """LocaleMiddleware activates the request's language and leaves it active,
+    so after an /en/ request later tests (in other apps too) would render in
+    English. List this mixin first."""
+
+    def tearDown(self):
+        translation.deactivate()
+        super().tearDown()
+
+
 class MainTestCase(SimpleTestCase):
 
     def test_index(self):
@@ -16,7 +26,7 @@ class MainTestCase(SimpleTestCase):
         self.assertEqual(response.status_code, 200)
 
 
-class TranslationTestCase(SimpleTestCase):
+class TranslationTestCase(ResetLanguageMixin, SimpleTestCase):
 
     def test_locale_paths_are_absolute(self):
         # relative paths resolve against the process cwd, which breaks
@@ -38,7 +48,7 @@ class TranslationTestCase(SimpleTestCase):
         self.assertContains(self.client.get('/en/'), '<html lang="en">')
 
 
-class LanguageSwitcherTestCase(SimpleTestCase):
+class LanguageSwitcherTestCase(ResetLanguageMixin, SimpleTestCase):
 
     def test_switcher_links_to_same_page_in_other_language(self):
         self.assertContains(self.client.get('/'), 'href="/en/"')
@@ -88,7 +98,7 @@ class NoThaiTextMixin:
             return render_to_string(template_name, context, request=request)
 
 
-class EnglishPagesTestCase(NoThaiTextMixin, SimpleTestCase):
+class EnglishPagesTestCase(ResetLanguageMixin, NoThaiTextMixin, SimpleTestCase):
     """Applicant pages under /en/ should show no Thai text."""
 
     def test_pages(self):
@@ -172,7 +182,7 @@ class ApplicantFixturesMixin:
         return application, majors
 
 
-class EnglishApplPagesTestCase(ApplicantFixturesMixin, NoThaiTextMixin, TestCase):
+class EnglishApplPagesTestCase(ResetLanguageMixin, ApplicantFixturesMixin, NoThaiTextMixin, TestCase):
     """appl pages under /en/ for a logged-in applicant."""
 
     def test_pages(self):
@@ -405,7 +415,8 @@ WITHOUT_HOOKS = override_settings(TEMPLATES=[{
 
 
 @WITHOUT_HOOKS
-class EnglishResultPagesTestCase(ApplicantFixturesMixin, NoThaiTextMixin, TestCase):
+class EnglishResultPagesTestCase(ResetLanguageMixin, ApplicantFixturesMixin, NoThaiTextMixin,
+                                  TestCase):
     """The dashboard after applying, including interview and admission
     results."""
 
@@ -489,7 +500,8 @@ class EnglishResultPagesTestCase(ApplicantFixturesMixin, NoThaiTextMixin, TestCa
 
 
 @WITHOUT_HOOKS
-class EnglishSupplementPagesTestCase(ApplicantFixturesMixin, NoThaiTextMixin, TestCase):
+class EnglishSupplementPagesTestCase(ResetLanguageMixin, ApplicantFixturesMixin,
+                                     NoThaiTextMixin, TestCase):
     """Supplement forms and dashboard blocks under /en/. The choice lists in
     supplements/views/forms/*.py stay Thai, so <option> text is ignored."""
 
