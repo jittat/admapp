@@ -1,4 +1,5 @@
+{% load i18n %}
 <div class="alert alert-warning">
-  <span class="badge badge-danger">ไม่สามารถสมัครได้</span> เนื่องจากคุณได้ยืนยันสิทธิ์ผ่านระบบเคลียริงเฮาส์ของทปอ.ในรอบก่อน อย่างไรก็ตาม ถ้าคุณได้สละสิทธิ์แล้ว สามารถระบุให้ระบบตรวจสอบสิทธิ์ใหม่ได้ (สามารถสั่งได้ไม่เกินหนึ่งครั้งต่อสองชั่วโมง)
-  <a class="btn btn-sm btn-warning" href="{% url 'regis:reset-cupt-check' %}">ตรวจสอบสิทธิ์ใหม่</a>
+  <span class="badge badge-danger">{% trans 'ไม่สามารถสมัครได้' %}</span> {% blocktrans trimmed %}เนื่องจากคุณได้ยืนยันสิทธิ์ผ่านระบบเคลียริงเฮาส์ของทปอ.ในรอบก่อน อย่างไรก็ตาม ถ้าคุณได้สละสิทธิ์แล้ว สามารถระบุให้ระบบตรวจสอบสิทธิ์ใหม่ได้ (สามารถสั่งได้ไม่เกินหนึ่งครั้งต่อสองชั่วโมง){% endblocktrans %}
+  <a class="btn btn-sm btn-warning" href="{% url 'regis:reset-cupt-check' %}">{% trans 'ตรวจสอบสิทธิ์ใหม่' %}</a>
 </div>

@@ -190,7 +190,7 @@ review.
 ## Implementation plan
 
 Work happens on the `i18n-english` branch. Status: phases 0 and 1 done
-(merged to master); phase 2 in progress (2a–2c done).
+(merged to master); phase 2 in progress (2a–2d done).
 
 ### Scope
 
@@ -314,10 +314,16 @@ so it can be checked under `/en/` as a whole. For each app:
      in `payment_item` are translated, but the pages they open
      (`payments/*`) stay Thai. Uploaded-document titles (DB text) stay
      Thai until phase 4.
-   - **2d. Results and confirmation.** `project_accepted_result`,
+   - **2d. Results and confirmation** (done). `project_accepted_result`,
      `project_accepted_for_interview_result`, `interview_description`,
-     `cupt_confirmation_*`, and applicant-visible messages in
-     `appl/clearing_utils.py` (check which parts reach applicants).
+     `cupt_confirmation_*`, and the applicant-visible interview choices
+     in `backoffice/models.py` (`InterviewDescription`). The seasonal
+     round-2 announcement (copied three times) is now one include,
+     `appl/include/next_round_announcement.html`, with Thai/English blocks.
+     `appl/clearing_utils.py` (clearing-code reading guide) only reaches
+     applicants through emails, so it's left for phase 5. Result-page
+     tests render the hook templates empty (`WITHOUT_HOOKS` in
+     `main/tests.py`).
    - **2e. DB titles.** Replaces the `model_messages.py` /
      `_(self.title)` catalog approach (exact-match lookups that break
      silently when titles change, and a 2017 dump covering only ~16

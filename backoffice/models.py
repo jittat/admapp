@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.utils.translation import gettext_lazy as _
 
 from appl.models import AdmissionProject, AdmissionRound, ProjectApplication
 from appl.models import Campus, Faculty
@@ -398,9 +399,9 @@ class InterviewDescription(models.Model):
     interview_options = models.IntegerField(
         verbose_name="ทางเลือกการสัมภาษณ์",
         choices=[
-            (OPTION_NO_INTERVIEW, "ไม่มีการสัมภาษณ์"),
-            (OPTION_ONLINE_INTERVIEW, "สัมภาษณ์ออนไลน์"),
-            (OPTION_OFFLINE_INTERVIEW, "สัมภาษณ์ที่สถานที่"),
+            (OPTION_NO_INTERVIEW, _("ไม่มีการสัมภาษณ์")),
+            (OPTION_ONLINE_INTERVIEW, _("สัมภาษณ์ออนไลน์")),
+            (OPTION_OFFLINE_INTERVIEW, _("สัมภาษณ์ที่สถานที่")),
         ],
     )
 
@@ -410,8 +411,8 @@ class InterviewDescription(models.Model):
             ("webex", "Cisco Webex"),
             ("zoom", "Zoom"),
             ("google-meet", "Google Meet"),
-            ("other", "โปรแกรมอื่น (กรุณาระบุในรายละเอียด)"),
-            ("", "ไม่ระบุ"),
+            ("other", _("โปรแกรมอื่น (กรุณาระบุในรายละเอียด)")),
+            ("", _("ไม่ระบุ")),
         ]
     )
 
@@ -452,9 +453,9 @@ class InterviewDescription(models.Model):
 
     def get_additional_documents_option_user_display(self):
         mesgs = {
-            InterviewDescription.OPTION_DOC_NO_NEW_DOC: 'ไม่มีเอกสารต้องอัพโหลดเพิ่มเติม',
-            InterviewDescription.OPTION_DOC_UPLOAD_ON_ADMAPP: 'ต้องอัพโหลดเอกสารเพิ่มเติม โดยอัพโหลดในระบบ อ่านรายละเอียดในส่วนการเตรียมตัว',
-            InterviewDescription.OPTION_DOC_UPLOAD_OTHER: 'ต้องส่งเอกสารเพิ่มเติม โดยส่งทางช่องทางที่ระบุในรายละเอียดส่วนการเตรียมตัว',
+            InterviewDescription.OPTION_DOC_NO_NEW_DOC: _('ไม่มีเอกสารต้องอัพโหลดเพิ่มเติม'),
+            InterviewDescription.OPTION_DOC_UPLOAD_ON_ADMAPP: _('ต้องอัพโหลดเอกสารเพิ่มเติม โดยอัพโหลดในระบบ อ่านรายละเอียดในส่วนการเตรียมตัว'),
+            InterviewDescription.OPTION_DOC_UPLOAD_OTHER: _('ต้องส่งเอกสารเพิ่มเติม โดยส่งทางช่องทางที่ระบุในรายละเอียดส่วนการเตรียมตัว'),
         }
         if self.additional_documents_option in mesgs:
             return mesgs[self.additional_documents_option]

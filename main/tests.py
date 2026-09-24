@@ -4,7 +4,7 @@ from django.conf import settings
 from django.template.loader import render_to_string
 from datetime import date, datetime, timedelta
 
-from django.test import RequestFactory, SimpleTestCase, TestCase
+from django.test import RequestFactory, SimpleTestCase, TestCase, override_settings
 from django.urls import set_script_prefix
 from django.utils import translation
 
@@ -30,8 +30,8 @@ class TranslationTestCase(SimpleTestCase):
             self.assertEqual(translation.gettext('วิทยาเขตบางเขน'),
                              'Bangkhen Campus')
             self.assertEqual(
-                translation.gettext('คุณผ่านการคัดเลือกมีสิทธิ์เข้าสอบสัมภาษณ์ ในสาขาต่อไปนี้'),
-                'You have been accepted for an interview for the following major(s)')
+                translation.gettext('คุณมีสิทธิ์เข้าสอบสัมภาษณ์ ในสาขาต่อไปนี้'),
+                'You are eligible for an interview for the following major(s)')
 
     def test_html_lang_follows_active_language(self):
         self.assertContains(self.client.get('/'), '<html lang="th">')
@@ -109,12 +109,10 @@ class EnglishPagesTestCase(NoThaiTextMixin, SimpleTestCase):
                 self.assertNoThaiText(self.render_en(template_name, context))
 
 
-class EnglishApplPagesTestCase(NoThaiTextMixin, TestCase):
-    """appl pages under /en/ for a logged-in applicant.
-
-    DB titles (project, round) are in English here; translating them is
-    phase 2e. The page after applying is checked once its includes are
-    translated (phase 2d)."""
+class ApplicantFixturesMixin:
+    """A logged-in applicant with profiles, and an open project in an
+    available round. DB titles (project, round, majors) are in English;
+    translating them is phase 2e."""
 
     def setUp(self):
         from appl.models import (AdmissionProject, AdmissionProjectRound,
@@ -151,6 +149,25 @@ class EnglishApplPagesTestCase(NoThaiTextMixin, TestCase):
         session = self.client.session
         session['applicant_id'] = self.applicant.id
         session.save()
+
+    def apply_with_majors(self, max_num_selections):
+        from appl.models import Campus, Faculty, Major
+        self.project.max_num_selections = max_num_selections
+        self.project.column_descriptions = '* Details'
+        self.project.save()
+        campus = Campus.objects.create(title='Bangkhen Campus', short_title='Bangkhen')
+        faculty = Faculty.objects.create(title='Faculty of Engineering', campus=campus)
+        majors = [Major.objects.create(number=i, title='Major %d' % i, faculty=faculty,
+                                       admission_project=self.project, slots=10,
+                                       detail_items_csv='Major details')
+                  for i in (1, 2)]
+        application = self.applicant.apply_to_project(self.project,
+                                                      self.admission_round)
+        return application, majors
+
+
+class EnglishApplPagesTestCase(ApplicantFixturesMixin, NoThaiTextMixin, TestCase):
+    """appl pages under /en/ for a logged-in applicant."""
 
     def test_pages(self):
         for url in ['/en/appl/', '/en/appl/personal/', '/en/appl/education/']:
@@ -222,21 +239,6 @@ class EnglishApplPagesTestCase(NoThaiTextMixin, TestCase):
             status = check_project_documents(self.applicant, self.project,
                                              [Config()], [], None)
         self.assertEqual(status['errors'], ['Not filled in yet: Form'])
-
-    def apply_with_majors(self, max_num_selections):
-        from appl.models import Campus, Faculty, Major
-        self.project.max_num_selections = max_num_selections
-        self.project.column_descriptions = '* Details'
-        self.project.save()
-        campus = Campus.objects.create(title='Bangkhen Campus', short_title='Bangkhen')
-        faculty = Faculty.objects.create(title='Faculty of Engineering', campus=campus)
-        majors = [Major.objects.create(number=i, title='Major %d' % i, faculty=faculty,
-                                       admission_project=self.project, slots=10,
-                                       detail_items_csv='Major details')
-                  for i in (1, 2)]
-        application = self.applicant.apply_to_project(self.project,
-                                                      self.admission_round)
-        return application, majors
 
     def assert_major_selection_page(self, max_num_selections):
         self.apply_with_majors(max_num_selections)
@@ -370,6 +372,114 @@ class EnglishApplPagesTestCase(NoThaiTextMixin, TestCase):
                         ProjectUploadedDocument(validator=validator),
                         ValidationResult.reject(code), None)
                     self.assertNoThaiText(html)
+
+
+# Seasonal hook templates stay Thai for now (see docs/i18n-status.md), so
+# the result-page tests render them empty.
+HOOK_TEMPLATES = [
+    'appl/include/interview_application_print_hook.html',
+    'appl/include/paper_application_print_hook.html',
+    'appl/include/project_accepted_for_interview_result_info_hooks.html',
+    'appl/include/project_accepted_result_acceptance_prehook.html',
+    'appl/include/project_accepted_result_acceptance_posthook.html',
+    'appl/include/special_cancel_hook.html',
+]
+WITHOUT_HOOKS = override_settings(TEMPLATES=[{
+    'BACKEND': 'django.template.backends.django.DjangoTemplates',
+    'DIRS': [],
+    'OPTIONS': {
+        'context_processors': settings.TEMPLATES[0]['OPTIONS']['context_processors'],
+        'loaders': [
+            ('django.template.loaders.locmem.Loader',
+             {name: '' for name in HOOK_TEMPLATES}),
+            'django.template.loaders.app_directories.Loader',
+        ],
+    },
+}])
+
+
+@WITHOUT_HOOKS
+class EnglishResultPagesTestCase(ApplicantFixturesMixin, NoThaiTextMixin, TestCase):
+    """The dashboard after applying, including interview and admission
+    results."""
+
+    def setUp(self):
+        super().setUp()
+        from appl.models import MajorSelection
+        self.application, majors = self.apply_with_majors(1)
+        self.major = majors[0]
+        MajorSelection.objects.create(
+            applicant=self.applicant, project_application=self.application,
+            admission_project=self.project, admission_round=self.admission_round,
+            major_list='1', num_selected=1)
+        self.project_round = self.project.get_project_round_for(self.admission_round)
+
+    def show_results(self, is_accepted_for_interview, is_accepted=None):
+        from appl.models import AdmissionResult
+        self.project_round.accepted_for_interview_result_shown = True
+        self.project_round.accepted_result_shown = is_accepted is not None
+        self.project_round.save()
+        AdmissionResult.objects.create(
+            applicant=self.applicant, application=self.application,
+            admission_project=self.project, admission_round=self.admission_round,
+            major=self.major, is_accepted_for_interview=is_accepted_for_interview,
+            is_accepted=is_accepted, interview_rank=3)
+
+    def add_interview_description(self, interview_options):
+        from appl.models import MajorInterviewDescriptionCache
+        from backoffice.models import InterviewDescription
+        description = InterviewDescription.objects.create(
+            admission_round=self.admission_round, admission_project=self.project,
+            major=self.major, faculty=self.major.faculty,
+            interview_options=interview_options,
+            video_conference_platform='zoom',
+            interview_date=datetime(2026, 2, 25, 9, 0),
+            additional_documents_option=InterviewDescription.OPTION_DOC_UPLOAD_ON_ADMAPP,
+            contacts=[{'name': 'Staff', 'tel': '021234567', 'email': 'a@example.com'}])
+        MajorInterviewDescriptionCache.objects.create(
+            major=self.major, interview_description=description)
+
+    def assert_index_has_no_thai(self):
+        response = self.client.get('/en/appl/')
+        self.assertEqual(response.status_code, 200)
+        self.assertNoThaiText(response.content.decode())
+        return response
+
+    def test_active_application(self):
+        self.assert_index_has_no_thai()
+
+    def test_accepted_for_interview(self):
+        from backoffice.models import InterviewDescription
+        self.show_results(True)
+        self.add_interview_description(InterviewDescription.OPTION_ONLINE_INTERVIEW)
+        response = self.assert_index_has_no_thai()
+        self.assertContains(response, 'Interview information')
+        self.assertContains(response, '25 February 2026')
+
+    def test_not_accepted_for_interview(self):
+        self.show_results(False)
+        self.assert_index_has_no_thai()
+
+    def test_accepted(self):
+        self.show_results(True, is_accepted=True)
+        response = self.assert_index_has_no_thai()
+        self.assertContains(response, 'are admitted to')
+
+    def test_not_accepted(self):
+        self.show_results(True, is_accepted=False)
+        self.assert_index_has_no_thai()
+
+    def test_next_round_announcement(self):
+        html = self.render_en('appl/include/next_round_announcement.html',
+                              {'active_application': self.application})
+        self.assertNoThaiText(html)
+        self.assertIn('Round 2', html)
+
+    def test_cupt_confirmation_includes(self):
+        for name in ['cupt_confirmation_not_free', 'cupt_confirmation_not_registered',
+                     'cupt_confirmation_wait']:
+            with self.subTest(template=name):
+                self.assertNoThaiText(self.render_en('appl/include/%s.html' % name, {}))
 
 
 class ThaiDateFilterTestCase(SimpleTestCase):

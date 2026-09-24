@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-24 20:48+0700\n"
+"POT-Creation-Date: 2026-09-24 20:55+0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -291,7 +291,7 @@ msgstr "Art-Social Studies"
 msgid "อาชีวศึกษา"
 msgstr "Vocational Education"
 
-#: appl/models.py:733
+#: appl/models.py:733 backoffice/models.py:415
 msgid "ไม่ระบุ"
 msgstr "Not specified"
 
@@ -562,6 +562,53 @@ msgctxt "appl status"
 msgid "ยังไม่ได้เลือกสาขา"
 msgstr "No major chosen."
 
+#: appl/templates/appl/include/cupt_confirmation_not_free.html:3
+#: appl/templates/appl/include/project_list.html:78
+msgid "ไม่สามารถสมัครได้"
+msgstr "Cannot apply"
+
+#: appl/templates/appl/include/cupt_confirmation_not_free.html:3
+msgid ""
+"เนื่องจากคุณได้ยืนยันสิทธิ์ผ่านระบบเคลียริงเฮาส์ของทปอ.ในรอบก่อน อย่างไรก็ตาม"
+" ถ้าคุณได้สละสิทธิ์แล้ว สามารถระบุให้ระบบตรวจสอบสิทธิ์ใหม่ได้ "
+"(สามารถสั่งได้ไม่เกินหนึ่งครั้งต่อสองชั่วโมง)"
+msgstr ""
+"because you confirmed your admission through CUPT's clearing house in an "
+"earlier round. If you have since waived that admission, you can ask the "
+"system to check your eligibility again (at most once every two hours)."
+
+#: appl/templates/appl/include/cupt_confirmation_not_free.html:4
+#: appl/templates/appl/include/cupt_confirmation_not_registered.html:12
+msgid "ตรวจสอบสิทธิ์ใหม่"
+msgstr "Check eligibility again"
+
+#: appl/templates/appl/include/cupt_confirmation_not_registered.html:3
+#: appl/templates/appl/include/project_list.html:65
+#: appl/templates/appl/include/project_list.html:76
+msgid "ยังไม่สามารถสมัครได้"
+msgstr "Cannot apply yet"
+
+#: appl/templates/appl/include/cupt_confirmation_not_registered.html:4
+msgid ""
+"เนื่องจากคุณยังไม่ได้ลงทะเบียนกับระบบ <a href=\"https://www.mytcas.com/\" "
+"target=\"_blank\">mytcas</a> ของทปอ. กรุณาลงทะเบียนให้เรียบร้อยก่อน"
+msgstr ""
+"because you have not registered in CUPT's <a href=\"https://www.mytcas.com/\""
+" target=\"_blank\">mytcas</a> system. Please register first."
+
+#: appl/templates/appl/include/cupt_confirmation_not_registered.html:8
+msgid ""
+"สามารถระบุให้ระบบตรวจสอบสิทธิ์ใหม่ได้ "
+"(สามารถสั่งได้ไม่เกินหนึ่งครั้งต่อสิบนาที)"
+msgstr ""
+"You can then ask the system to check your eligibility again (at most once "
+"every ten minutes)."
+
+#: appl/templates/appl/include/cupt_confirmation_wait.html:3
+msgid "ระบบกำลังตรวจสอบสิทธิ์การสมัครผ่านระบบ mytcas ของทปอ. กรุณารอสักครู่"
+msgstr ""
+"Checking your application eligibility with CUPT's mytcas system. Please wait."
+
 #: appl/templates/appl/include/document_upload_form.html:12
 msgctxt "upload form"
 msgid "ไฟล์"
@@ -795,6 +842,111 @@ msgstr "Print your application"
 msgid "เพื่อนำมาประกอบการสัมภาษณ์ในวันที่ 18 ม.ค. 2563"
 msgstr "for an interview on February 13th, 2018."
 
+#: appl/templates/appl/include/interview_description.html:6
+msgid "ข้อมูลการสัมภาษณ์"
+msgstr "Interview information"
+
+#: appl/templates/appl/include/interview_description.html:9
+#, python-format
+msgid "สาขา%(major_title)s"
+msgstr "Major: %(major_title)s"
+
+#: appl/templates/appl/include/interview_description.html:10
+#, python-format
+msgid "โครงการ%(project_title)s"
+msgstr "Project: %(project_title)s"
+
+#: appl/templates/appl/include/interview_description.html:14
+msgid "ข้อมูลทั่วไป"
+msgstr "General information"
+
+#: appl/templates/appl/include/interview_description.html:17
+msgid "รูปแบบการสัมภาษณ์"
+msgstr "Interview format"
+
+#: appl/templates/appl/include/interview_description.html:24
+msgid "การส่งเอกสารเพิ่มเติม"
+msgstr "Additional documents"
+
+#: appl/templates/appl/include/interview_description.html:32
+msgid "วันเวลา"
+msgstr "Date and time"
+
+#: appl/templates/appl/include/interview_description.html:39
+#, python-format
+msgid "เวลา %(time)s"
+msgstr "at %(time)s"
+
+#: appl/templates/appl/include/interview_description.html:46
+#, python-format
+msgid ""
+"ผู้สมัครจะได้รับการประกาศรายชื่อเป็นผู้ผ่านการสอบสัมภาษณ์ในวันที่ "
+"%(result_date)s (เวลา 13:00 น.) พร้อมแจ้งกำหนดการยืนยันสิทธิ์ในวันที่ "
+"%(clearing_house_dates)s"
+msgstr ""
+"The list of applicants who pass the interview will be announced on "
+"%(result_date)s (at 13:00), together with the admission confirmation schedule"
+" (%(clearing_house_dates)s)."
+
+#: appl/templates/appl/include/interview_description.html:55
+msgid "กรรมการจะพิจารณาเอกสารที่ส่งเพิ่มเติมในการตัดสินผลการสอบสัมภาษณ์"
+msgstr ""
+"The committee will consider the additional documents when deciding the "
+"interview results."
+
+#: appl/templates/appl/include/interview_description.html:59
+msgid "การเตรียมตัวก่อนสัมภาษณ์"
+msgstr "Interview preparation"
+
+#: appl/templates/appl/include/interview_description.html:70
+msgid "รูปประกอบการเตรียมตัว"
+msgstr "Preparation image"
+
+#: appl/templates/appl/include/interview_description.html:73
+#: appl/templates/appl/include/interview_description.html:105
+msgid "คลิ๊กที่รูปเพื่อขยาย"
+msgstr "Click the image to enlarge"
+
+#: appl/templates/appl/include/interview_description.html:80
+#: appl/templates/appl/include/interview_description.html:162
+msgid "รายละเอียดการสัมภาษณ์ออนไลน์"
+msgstr "Online interview details"
+
+#: appl/templates/appl/include/interview_description.html:84
+msgid "สัมภาษณ์ผ่านทางโปรแกรม"
+msgstr "Video conference platform"
+
+#: appl/templates/appl/include/interview_description.html:102
+msgid "รูปประกอบข้อมูลการสัมภาษณ์"
+msgstr "Interview information image"
+
+#: appl/templates/appl/include/interview_description.html:110
+msgid "ข้อมูลการติดต่อ"
+msgstr "Contacts"
+
+#: appl/templates/appl/include/interview_description.html:115
+#, python-format
+msgid "ชื่อ: %(name)s โทร: %(tel)s อีเมล: %(email)s"
+msgstr "Name: %(name)s Tel: %(tel)s E-mail: %(email)s"
+
+#: appl/templates/appl/include/interview_description.html:119
+msgid "กรุณาติดต่อทางโทรศัพท์เฉพาะกรณีเร่งด่วน ในช่วงเวลาสัมภาษณ์เท่านั้น"
+msgstr ""
+"Please call only in urgent cases, and only during the interview period."
+
+#: appl/templates/appl/include/interview_description.html:140
+msgid "ปิด"
+msgstr "Close"
+
+#: appl/templates/appl/include/interview_description.html:161
+#: backoffice/models.py:402
+msgid "ไม่มีการสัมภาษณ์"
+msgstr "No interview"
+
+#: appl/templates/appl/include/interview_description.html:163
+msgid "รายละเอียดการสัมภาษณ์"
+msgstr "Interview details"
+
 #: appl/templates/appl/include/major_additional_form.html:4
 msgid "คำถามเพิ่มเติม"
 msgstr "Additional questions"
@@ -921,6 +1073,14 @@ msgctxt "major link"
 msgid "เลือกสาขา"
 msgstr "Choose majors to apply"
 
+#: appl/templates/appl/include/next_round_announcement.html:27
+msgid "ยืนยัน"
+msgstr "Confirm"
+
+#: appl/templates/appl/include/next_round_announcement.html:28
+msgid "ไม่ยืนยัน"
+msgstr "Cancel"
+
 #: appl/templates/appl/include/old_document_upload_list.html:3
 msgid "ทีมงานต้องขออภัยเป็นอย่างสูง"
 msgstr "We sincerely apologize"
@@ -1028,38 +1188,99 @@ msgid "ไม่ต้องชำระเพิ่ม"
 msgstr "No additional fee."
 
 #: appl/templates/appl/include/project_accepted_for_interview_result.html:6
+#: appl/templates/appl/include/project_accepted_result.html:20
 msgid "ขอแสดงความยินดีด้วย"
 msgstr "Congratulations"
 
 #: appl/templates/appl/include/project_accepted_for_interview_result.html:8
-#: main/tests.py:33
-msgid "คุณผ่านการคัดเลือกมีสิทธิ์เข้าสอบสัมภาษณ์ ในสาขาต่อไปนี้"
-msgstr "You have been accepted for an interview for the following major(s)"
+msgid "คุณมีสิทธิ์เข้าสอบสัมภาษณ์ ในสาขาต่อไปนี้"
+msgstr "You are eligible for an interview for the following major(s)"
 
-#: appl/templates/appl/include/project_accepted_for_interview_result.html:16
-#, fuzzy
-#| msgid "รอบที่ 2"
+#: appl/templates/appl/include/project_accepted_for_interview_result.html:15
 msgid "ลำดับที่"
-msgstr "TCAS Round 2"
+msgstr "rank"
 
-#: appl/templates/appl/include/project_accepted_for_interview_result.html:44
+#: appl/templates/appl/include/project_accepted_for_interview_result.html:36
+msgid "รายละเอียดการสอบสัมภาษณ์"
+msgstr "Interview details"
+
+#: appl/templates/appl/include/project_accepted_for_interview_result.html:43
+#: appl/templates/appl/include/project_accepted_for_interview_result.html:52
+#: appl/templates/appl/include/project_accepted_result.html:34
+#: appl/templates/appl/include/project_accepted_result.html:62
 msgid "ขอแสดงความเสียใจด้วย"
 msgstr "We are sorry"
 
-#: appl/templates/appl/include/project_accepted_for_interview_result.html:45
-#, fuzzy
-#| msgid ""
-#| "\n"
-#| "          คุณไม่ผ่านการพิจารณาคัดเลือกให้เข้าสอบสัมภาษณ์ มหาวิทยาลัยเกษตรศาสตร์ขอขอบคุณผู้สมัครที่สนใจเข้าศึกษาต่อที่มหาวิทยาลัยเกษตรศาสตร์ นอกจากโครงการนี้แล้วยังมีโครงการรับสมัครในรอบการคัดเลือกอื่น ๆ อีก สามารถติดตามข้อมูลได้จากเว็บไซต์ admission.ku.ac.th\n"
-#| "        "
+#: appl/templates/appl/include/project_accepted_for_interview_result.html:44
+#: appl/templates/appl/include/project_accepted_result.html:63
 msgid ""
-"\n"
-"            คุณไม่ผ่านการพิจารณาคัดเลือกให้เข้าสอบสัมภาษณ์ มหาวิทยาลัยเกษตรศาสตร์ขอขอบคุณผู้สมัครที่สนใจเข้าศึกษาต่อที่มหาวิทยาลัยเกษตรศาสตร์ นอกจากโครงการนี้แล้วยังมีโครงการรับสมัครในรอบการคัดเลือกอื่น ๆ อีก สามารถติดตามข้อมูลได้จากเว็บไซต์ admission.ku.ac.th\n"
-"          "
+"คุณไม่ผ่านการพิจารณาคัดเลือกให้เข้าสอบสัมภาษณ์ "
+"มหาวิทยาลัยเกษตรศาสตร์ขอขอบคุณผู้สมัครที่สนใจเข้าศึกษาต่อที่มหาวิทยาลัยเกษตรศาสตร์"
+" นอกจากโครงการนี้แล้วยังมีโครงการรับสมัครในรอบการคัดเลือกอื่น ๆ อีก "
+"สามารถติดตามข้อมูลได้จากเว็บไซต์ admission.ku.ac.th"
 msgstr ""
-"\n"
-"          You have not been selected for an interview. Kasetsart University would like to thank you for your interest in applying to KU. You can find more applying information for other rounds of TCAS and other opportunities at admission.ku.ac.th.\n"
-"        "
+"You were not selected for an interview. Kasetsart University thanks you for "
+"your interest. There are other projects in other admission rounds; please "
+"follow the news at admission.ku.ac.th."
+
+#: appl/templates/appl/include/project_accepted_for_interview_result.html:53
+msgid "คุณไม่ผ่านการพิจารณาคัดเลือกให้เข้าสอบสัมภาษณ์โควตานักกีฬาดีเด่น"
+msgstr ""
+"You were not selected for an interview for the outstanding athletes quota."
+
+#: appl/templates/appl/include/project_accepted_for_interview_result.html:54
+msgid ""
+"มหาวิทยาลัยเกษตรศาสตร์ขอขอบคุณผู้สมัครที่สนใจเข้าศึกษาต่อที่มหาวิทยาลัยเกษตรศาสตร์"
+" นอกจากโครงการนี้แล้วยังมีโครงการรับสมัครในรอบการคัดเลือกอื่น ๆ อีก "
+"สามารถติดตามข้อมูลได้จากเว็บไซต์ admission.ku.ac.th"
+msgstr ""
+"Kasetsart University thanks you for your interest. There are other projects "
+"in other admission rounds; please follow the news at admission.ku.ac.th."
+
+#: appl/templates/appl/include/project_accepted_result.html:7
+msgid "ยืนยันสิทธิ์แล้ว"
+msgstr "Admission confirmed"
+
+#: appl/templates/appl/include/project_accepted_result.html:7
+#, python-format
+msgid ""
+"ยินดีต้อนรับสู่มหาวิทยาลัยเกษตรศาสตร์ ในปีการศึกษา %(year)s "
+"สำหรับกำหนดการและการดำเนินการอื่น ๆ สามารถให้ติดตามได้ที่เว็บ <a "
+"href=\"http://admission.ku.ac.th\">http://admission.ku.ac.th</a>"
+msgstr ""
+"Welcome to Kasetsart University for the %(year)s academic year. Please follow"
+" the schedule and next steps at <a "
+"href=\"http://admission.ku.ac.th\">http://admission.ku.ac.th</a>."
+
+#: appl/templates/appl/include/project_accepted_result.html:22
+msgid "คุณผ่านการสอบสัมภาษณ์และมีสิทธิ์เข้าศึกษาต่อในสาขา:"
+msgstr "You passed the interview and are admitted to:"
+
+#: appl/templates/appl/include/project_accepted_result.html:35
+msgid ""
+"คุณไม่ผ่านการสอบสัมภาษณ์ อย่างไรก็ตาม "
+"คุณยังมีโอกาสเข้าศึกษาต่อที่มหาวิทยาลัยเกษตรศาสตร์ผ่านทางโครงการอื่น ๆ "
+"ในรอบถัด ๆ ไป กรุณาติดตามข่าวสารได้จากเว็บไซต์ admission.ku.ac.th"
+msgstr ""
+"You did not pass the interview. You can still apply to Kasetsart University "
+"through other projects in later rounds; please follow the news at "
+"admission.ku.ac.th."
+
+#: appl/templates/appl/include/project_accepted_result.html:39
+msgid "รายการสาขาที่มีสิทธิ์เข้าสัมภาษณ์:"
+msgstr "Majors you were interviewed for:"
+
+#: appl/templates/appl/include/project_accepted_result.html:53
+#, python-format
+msgid ""
+"ฝ่ายรับสมัครและพัฒนาการรับเข้าศึกษา "
+"ใคร่ขอรบกวนเวลาผู้สมัครช่วยทำแบบประเมินความพึงพอใจที่มีต่อการรับบุคคลเข้าศึกษา"
+" โดย<a href=\"%(url)s\" target=\"_blank\" rel=\"noopener "
+"noreferrer\">กรอกแบบสอบถามนี้ %(url)s</a>  ทีมงานขอขอบคุณทุกท่าน"
+msgstr ""
+"The Admission Division would appreciate it if you could take a moment to <a "
+"href=\"%(url)s\" target=\"_blank\" rel=\"noopener noreferrer\">fill in this "
+"satisfaction survey: %(url)s</a>. Thank you."
 
 #: appl/templates/appl/include/project_cancel_div.html:3
 msgid "คุณแน่ใจที่จะยกเลิกการสมัครโครงการนี้"
@@ -1147,11 +1368,6 @@ msgstr "Please confirm your application"
 msgid "ยืนยันการสมัคร"
 msgstr "I confirm my application"
 
-#: appl/templates/appl/include/project_list.html:65
-#: appl/templates/appl/include/project_list.html:76
-msgid "ยังไม่สามารถสมัครได้"
-msgstr "Cannot apply yet"
-
 #: appl/templates/appl/include/project_list.html:73
 msgid "รอตรวจสอบสิทธิ์"
 msgstr "checking eligibility"
@@ -1159,10 +1375,6 @@ msgstr "checking eligibility"
 #: appl/templates/appl/include/project_list.html:76
 msgid "ยังไม่ได้ลงทะเบียนระบบ mytcas"
 msgstr "not registered in mytcas"
-
-#: appl/templates/appl/include/project_list.html:78
-msgid "ไม่สามารถสมัครได้"
-msgstr "Cannot apply"
 
 #: appl/templates/appl/include/project_list.html:78
 msgid "ยืนยันสิทธิ์แล้วในการสมัครรอบอื่น"
@@ -1439,6 +1651,36 @@ msgstr "You have not chosen a major"
 msgid "สาขาที่คุณเลือกผิดพลาด"
 msgstr "Invalid major choice"
 
+#: backoffice/models.py:403
+msgid "สัมภาษณ์ออนไลน์"
+msgstr "Online interview"
+
+#: backoffice/models.py:404
+msgid "สัมภาษณ์ที่สถานที่"
+msgstr "On-site interview"
+
+#: backoffice/models.py:414
+msgid "โปรแกรมอื่น (กรุณาระบุในรายละเอียด)"
+msgstr "Other (see details)"
+
+#: backoffice/models.py:456
+msgid "ไม่มีเอกสารต้องอัพโหลดเพิ่มเติม"
+msgstr "No additional documents to upload"
+
+#: backoffice/models.py:457
+msgid ""
+"ต้องอัพโหลดเอกสารเพิ่มเติม โดยอัพโหลดในระบบ อ่านรายละเอียดในส่วนการเตรียมตัว"
+msgstr ""
+"Additional documents must be uploaded in this system; see the preparation "
+"section for details."
+
+#: backoffice/models.py:458
+msgid ""
+"ต้องส่งเอกสารเพิ่มเติม โดยส่งทางช่องทางที่ระบุในรายละเอียดส่วนการเตรียมตัว"
+msgstr ""
+"Additional documents must be sent through the channel given in the "
+"preparation section."
+
 #: main/templates/base.html:75
 msgid ""
 "ฝ่ายรับสมัครและพัฒนาการรับเข้าศึกษา สำนักบริหารการศึกษา "
@@ -1496,6 +1738,10 @@ msgstr "If you forget your password,"
 #: main/templates/main/index.html:51
 msgid "สามารถขอรหัสผ่านใหม่ได้"
 msgstr "request a new password here."
+
+#: main/tests.py:33
+msgid "คุณผ่านการคัดเลือกมีสิทธิ์เข้าสอบสัมภาษณ์ ในสาขาต่อไปนี้"
+msgstr "You have been accepted for an interview for the following major(s)"
 
 #: regis/templates/regis/forget.html:8
 msgid "ขอรหัสผ่านบัญชีผู้สมัครเข้าศึกษาใหม่"
@@ -1758,9 +2004,6 @@ msgid ""
 msgstr ""
 "Your registration or application eligibility cannot be checked again yet. "
 "Please wait 10 minutes."
-
-#~ msgid "สัมภาษณ์ลำดับที่"
-#~ msgstr "Interview number"
 
 #~ msgid "สถานที่และเวลา:"
 #~ msgstr "Time and location:"

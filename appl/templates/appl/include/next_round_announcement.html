@@ -1,0 +1,31 @@
+{% load i18n %}
+{% comment %}
+  Seasonal: shown on round-1.2 results (admission round id 5) to let
+  applicants start applying in round 2. Staff update both language blocks.
+{% endcomment %}
+{% get_current_language as LANGUAGE_CODE %}
+<div class="alert alert-secondary mt-1">
+  {% if LANGUAGE_CODE == 'en' %}
+    <span class="badge badge-secondary">Round 2 applications</span> Kasetsart University
+    is now accepting Round 2 applications (until 12 March 2026). &nbsp;&nbsp;
+    Round 1.2 applicants who have received their results can start applying to Round 2 projects by confirming below.<br>
+    <a href="#" class="btn btn-sm btn-info app-deactivation-links">Start applying for Round 2</a>
+  {% else %}
+    <span class="badge badge-secondary">ประกาศการสมัครรอบที่ 2</span> สำหรับการรับเข้าศึกษาต่อที่มหาวิทยาลัยเกษตรศาสตร์ 
+    ขณะนี้อยู่ระหว่างการรับในรอบที่ 2 (จนถึงวันที่ 12 มี.ค. 69) &nbsp;&nbsp; 
+    ผู้สมัครในรอบที่ 1.2 ที่ทราบผลการคัดเลือกแล้ว สามารถเริ่มสมัครโครงการในรอบที่ 2 ได้ โดยการกดยืนยันด้านล่าง<br>
+    <a href="#" class="btn btn-sm btn-info app-deactivation-links">เริ่มต้นการสมัครรอบ 2</a>
+  {% endif %}
+  <div class="p10 border-a0 app-deactivation-confirmations mb5 mt-2" style="display:none;">
+    {% if LANGUAGE_CODE == 'en' %}
+      Please confirm that you want to start applying for Round 2 (16 February - 12 March 2026) &nbsp;&nbsp;
+    {% else %}
+      กรุณายืนยันการเริ่มต้นสมัครรอบ 2 (16 ก.พ. - 12 มี.ค. 69) &nbsp;&nbsp;
+    {% endif %}
+    <form class="d-inline" method="post" action="{% url 'appl:deactivate-project' active_application.admission_project.id active_application.admission_round.id %}">
+      {% csrf_token %}
+      <input type="submit" name="ok" class="btn btn-sm btn-success" value="{% trans 'ยืนยัน' %}" />
+      <input type="submit" name="cancel" class="btn btn-sm btn-secondary app-deactivation-cancels" value="{% trans 'ไม่ยืนยัน' %}" />
+    </form>
+  </div>
+</div>

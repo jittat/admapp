@@ -5,8 +5,7 @@
       {% if is_accepted_for_interview %}
         <h3>{% trans 'ขอแสดงความยินดีด้วย' %}</h3>
         <i class="text-success fa fa-check"></i>
-        <!--{% trans 'คุณผ่านการคัดเลือกมีสิทธิ์เข้าสอบสัมภาษณ์ ในสาขาต่อไปนี้' %}-->
-        คุณมีสิทธิ์เข้าสอบสัมภาษณ์ ในสาขาต่อไปนี้
+        {% trans 'คุณมีสิทธิ์เข้าสอบสัมภาษณ์ ในสาขาต่อไปนี้' %}
         <ul>
           {% for result in admission_results %}
             {% if result.is_accepted_for_interview %}
@@ -33,7 +32,7 @@
         {% endif %}
         {% if major_interview_descriptions %}
           <div>
-            <h4>รายละเอียดการสอบสัมภาษณ์</h4>
+            <h4>{% trans 'รายละเอียดการสอบสัมภาษณ์' %}</h4>
             {% include "appl/include/major_interview_descriptions.html" %}
           </div>
         {% endif %}
@@ -41,30 +40,17 @@
       {% else %}
         {% if active_application.admission_project.id != 100000 %} <!-- for two-step sport quota, ignored in 2563 admission -->
           <h3>{% trans 'ขอแสดงความเสียใจด้วย' %}</h3>
-          {% blocktrans %}
+          {% blocktrans trimmed %}
             คุณไม่ผ่านการพิจารณาคัดเลือกให้เข้าสอบสัมภาษณ์ มหาวิทยาลัยเกษตรศาสตร์ขอขอบคุณผู้สมัครที่สนใจเข้าศึกษาต่อที่มหาวิทยาลัยเกษตรศาสตร์ นอกจากโครงการนี้แล้วยังมีโครงการรับสมัครในรอบการคัดเลือกอื่น ๆ อีก สามารถติดตามข้อมูลได้จากเว็บไซต์ admission.ku.ac.th
           {% endblocktrans %}
 
           {% if active_application.admission_round_id == 5 %}
-            <div class="alert alert-secondary mt-1">
-              <span class="badge badge-secondary">ประกาศการสมัครรอบที่ 2</span> สำหรับการรับเข้าศึกษาต่อที่มหาวิทยาลัยเกษตรศาสตร์ 
-              ขณะนี้อยู่ระหว่างการรับในรอบที่ 2 (จนถึงวันที่ 12 มี.ค. 69) &nbsp;&nbsp; 
-              ผู้สมัครในรอบที่ 1.2 ที่ทราบผลการคัดเลือกแล้ว สามารถเริ่มสมัครโครงการในรอบที่ 2 ได้ โดยการกดยืนยันด้านล่าง<br>
-              <a href="#" class="btn btn-sm btn-info app-deactivation-links">เริ่มต้นการสมัครรอบ 2</a>
-              <div class="p10 border-a0 app-deactivation-confirmations mb5 mt-2" style="display:none;">
-                กรุณายืนยันการเริ่มต้นสมัครรอบ 2 (16 ก.พ. - 12 มี.ค. 69) &nbsp;&nbsp;
-                <form class="d-inline" method="post" action="{% url 'appl:deactivate-project' active_application.admission_project.id active_application.admission_round.id %}">
-                  {% csrf_token %}
-                  <input type="submit" name="ok" class="btn btn-sm btn-success" value="ยืนยัน" />
-                  <input type="submit" name="cancel" class="btn btn-sm btn-secondary app-deactivation-cancels" value="ไม่ยืนยัน" />
-                </form>
-              </div>
-            </div>
+            {% include 'appl/include/next_round_announcement.html' %}
           {% endif %} 
         {% else %}
-          <h3>ขอแสดงความเสียใจด้วย</h3>
-          คุณไม่ผ่านการพิจารณาคัดเลือกให้เข้าสอบสัมภาษณ์โควตานักกีฬาดีเด่น<br>
-          มหาวิทยาลัยเกษตรศาสตร์ขอขอบคุณผู้สมัครที่สนใจเข้าศึกษาต่อที่มหาวิทยาลัยเกษตรศาสตร์ นอกจากโครงการนี้แล้วยังมีโครงการรับสมัครในรอบการคัดเลือกอื่น ๆ อีก สามารถติดตามข้อมูลได้จากเว็บไซต์ admission.ku.ac.th
+          <h3>{% trans 'ขอแสดงความเสียใจด้วย' %}</h3>
+          {% trans 'คุณไม่ผ่านการพิจารณาคัดเลือกให้เข้าสอบสัมภาษณ์โควตานักกีฬาดีเด่น' %}<br>
+          {% blocktrans trimmed %}มหาวิทยาลัยเกษตรศาสตร์ขอขอบคุณผู้สมัครที่สนใจเข้าศึกษาต่อที่มหาวิทยาลัยเกษตรศาสตร์ นอกจากโครงการนี้แล้วยังมีโครงการรับสมัครในรอบการคัดเลือกอื่น ๆ อีก สามารถติดตามข้อมูลได้จากเว็บไซต์ admission.ku.ac.th{% endblocktrans %}
         {% endif %}
       {% endif %}
     </div>

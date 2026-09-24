@@ -1,7 +1,13 @@
+{% load i18n %}
 <div class="alert alert-warning">
-  <span class="badge badge-danger">ยังไม่สามารถสมัครได้</span>
+  <span class="badge badge-danger">{% trans 'ยังไม่สามารถสมัครได้' %}</span>
+  {% blocktrans trimmed %}
   เนื่องจากคุณยังไม่ได้ลงทะเบียนกับระบบ <a href="https://www.mytcas.com/" target="_blank">mytcas</a> ของทปอ.
-  กรุณาลงทะเบียนให้เรียบร้อยก่อน &nbsp;&nbsp; สามารถระบุให้ระบบตรวจสอบสิทธิ์ใหม่ได้
+  กรุณาลงทะเบียนให้เรียบร้อยก่อน
+  {% endblocktrans %} &nbsp;&nbsp;
+  {% blocktrans trimmed %}
+  สามารถระบุให้ระบบตรวจสอบสิทธิ์ใหม่ได้
   (สามารถสั่งได้ไม่เกินหนึ่งครั้งต่อสิบนาที)
-  <a class="btn btn-sm btn-warning" href="{% url 'regis:reset-cupt-check' %}">ตรวจสอบสิทธิ์ใหม่</a>
+  {% endblocktrans %}
+  <a class="btn btn-sm btn-warning" href="{% url 'regis:reset-cupt-check' %}">{% trans 'ตรวจสอบสิทธิ์ใหม่' %}</a>
 </div>
