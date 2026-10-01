@@ -38,8 +38,11 @@ against more samples before relying on details that may vary.
    rejects the upload (logged) with a "try again / contact staff" message.
 7. **Size limit** is the slot's ordinary `size_limit` (samples are ~4.7 MB, so
    raise it on TCASFolio slots); the validator does not check size.
-8. **TCASFolio links** (for url/any slots) are accepted as-is until the URL
-   pattern is known (`validate_url()` in `appl/document_validators/tcasfolio.py`).
+8. **TCASFolio links** (for url/any slots) are checked by prefix only: they
+   must start with `https://student.mytcas.com/view-folio/` or
+   `https://folio.mytcas.com/view-folio/` (`validate_url()` in
+   `appl/document_validators/tcasfolio.py`); the linked folio is not fetched
+   or verified.
 
 ## What a TCASFolio PDF looks like
 

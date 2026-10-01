@@ -236,7 +236,8 @@ Per-slot content checks beyond size/extension/detail, switched on by setting
 - `tcasfolio.py` — files: the PDF signature check of
   [pdf-signature-verification.md](pdf-signature-verification.md); urls:
   accepted only when (after stripping) they start with
-  `https://student.mytcas.com/view-folio/`, else `reject('invalid_url')`;
+  `https://student.mytcas.com/view-folio/` or
+  `https://folio.mytcas.com/view-folio/`, else `reject('invalid_url')`;
   a missing url gives `reject('no_document')`.
 
 In `appl/views/upload.py`, `upload_check` / `url_check` call
