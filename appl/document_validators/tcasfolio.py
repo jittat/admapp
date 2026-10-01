@@ -20,7 +20,8 @@ def validate(project_uploaded_document, uploaded_file=None, document_url=None):
 def validate_url(document_url):
     if document_url is not None:
         document_url = document_url.strip()
-        if document_url.startswith('https://student.mytcas.com/view-folio/'):
+        if (document_url.startswith('https://student.mytcas.com/view-folio/') or
+            document_url.startswith('https://folio.mytcas.com/view-folio/')):
             return ValidationResult.accept()
         return ValidationResult.reject('invalid_url')
     return ValidationResult.reject('no_document')
