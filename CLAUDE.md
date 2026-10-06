@@ -91,6 +91,11 @@ analyses):
   `cupt_full_code` string, a usage survey of `cupt_full_code` /
   `get_full_major_cupt_code()` (divergent parsers, `detail_items_csv[-2:]`
   bypasses, legacy fallback), and a suggested unification plan.
+- `docs/deployment.md` — production setup (systemd unit running gunicorn
+  on a unix socket, nginx `/kuadm/` location) and open ops issues, e.g.
+  `DisallowedHost` error emails caused by scanner requests that send no
+  `Host` header (nginx `proxy_params` uses `$http_host`), with the nginx and
+  `LOGGING` fixes.
 - `docs/i18n-status.md` — state of the English version (Thai is the
   source language; `en` catalog only): how i18n is wired (`i18n_patterns`
   `/en/` prefix, TH/EN switcher, `title_trans` + `title_en` fields for DB
