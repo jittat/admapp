@@ -115,7 +115,7 @@ class PersonalProfileForm(ModelForm):
         }
         exclude = ['applicant']
         widgets = {
-            'birthday': ThaiSelectDateWidget(years=range(1990,2010))
+            'birthday': ThaiSelectDateWidget(years=range(1990,2016))
         }
 
     def _show_passport_field(self):
