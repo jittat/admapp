@@ -23,9 +23,14 @@ others are reported as "wrong url". The folio id is the last path segment.
 
 Usage (run from the scripts/ directory, inside the project's virtualenv):
     python fetch_mytcasfolio_pdf.py <base_path> <base_url>
+    python fetch_mytcasfolio_pdf.py --dry-run [--limit N]
 
     base_path  directory to save the PDFs in
     base_url   public URL that serves base_path (a trailing / is dropped)
+    --dry-run  fetch a random sample of N (default 10) not-yet-mirrored
+               documents into memory and report size / PDF check; nothing
+               is saved and no document is updated (base_path/base_url are
+               not needed). The token cache below is still written.
 
 Files (both in the current directory):
     - .mytcas-env with TCAS_EMAIL and TCAS_PASSWORD (a TCASFolio admin
@@ -41,6 +46,7 @@ import sys
 
 from appl.models import UploadedDocument
 
+import argparse
 import json
 import sys
 import os
@@ -260,17 +266,30 @@ class TCASFetcher:
             return False
 
     def download_pdf(self, pdf_url, folio_id, 
-                     base_path, prefix=''):
+                     base_path, prefix='', dry_run=False):
         """
         Download PDF from S3 URL and save it.
 
         Args:
             pdf_url: The S3 pre-signed URL for the PDF
             folio_id: The folio ID to use as filename
+            dry_run: Download into memory only, without saving
 
         Returns:
             str: Path to downloaded file, or None if failed
+            (dry_run: tuple (size in bytes, starts with %PDF), or None)
         """
+        if dry_run:
+            try:
+                response = self.session.get(pdf_url)
+            except requests.exceptions.RequestException as e:
+                print(f"✗ Download error: {e}")
+                return None
+            if response.status_code != 200:
+                print(f"✗ Failed to download PDF: HTTP {response.status_code}")
+                return None
+            return (len(response.content), response.content.startswith(b'%PDF'))
+
         filename = f"{base_path}/{prefix}-{folio_id}.pdf"
 
         try:
@@ -343,7 +362,7 @@ def extract_folio_id(url):
     return url
 
 
-def fetch_pdf_main(url, base_path='.', prefix=''):
+def fetch_pdf_main(url, base_path='.', prefix='', dry_run=False):
     url_or_id = url
     folio_id = extract_folio_id(url_or_id)
 
@@ -373,7 +392,8 @@ def fetch_pdf_main(url, base_path='.', prefix=''):
                 # Download the PDF
                 downloaded_file = fetcher.download_pdf(pdf_url, folio_id, 
                                                        base_path=base_path, 
-                                                       prefix=prefix)
+                                                       prefix=prefix,
+                                                       dry_run=dry_run)
 
                 if not downloaded_file:
                     print("✗ Failed to download PDF")
@@ -405,14 +425,48 @@ def random_prefix(length=10):
     return ''.join(random.choice(letters) for i in range(length))
 
 
+def dry_run_fetch(pending, limit):
+    import random
+    sample = random.sample(pending, min(limit, len(pending)))
+    print(f'DRY RUN: fetching {len(sample)} of {len(pending)} not-yet-mirrored '
+          'documents (nothing is saved)')
+
+    fetched = 0
+    for d, document_url in sample:
+        print(d.applicant, document_url)
+        result = fetch_pdf_main(document_url, dry_run=True)
+
+        if not result:
+            print('ERROR: cannot fetch pdf for', d.applicant, document_url)
+            continue
+
+        size, is_pdf = result
+        print(f'  {size} bytes, {"PDF" if is_pdf else "NOT A PDF"}')
+        if is_pdf:
+            fetched += 1
+
+    print(f'DRY RUN: {fetched}/{len(sample)} fetched as PDF')
+
+
 def main():
-    base_path = sys.argv[1]
-    base_url = sys.argv[2]
-    if base_url.endswith('/'):
-        base_url = base_url[:-1]
+    parser = argparse.ArgumentParser(
+        description='Mirror TCASFolio PDFs linked from uploaded documents.')
+    parser.add_argument('base_path', nargs='?',
+                        help='directory to save the PDFs in')
+    parser.add_argument('base_url', nargs='?',
+                        help='public URL that serves base_path')
+    parser.add_argument('--dry-run', action='store_true',
+                        help='fetch a random sample into memory only; save nothing')
+    parser.add_argument('--limit', type=int, default=10,
+                        help='number of documents to fetch in a dry run (default 10)')
+    args = parser.parse_args()
+
+    if not args.dry_run and not (args.base_path and args.base_url):
+        parser.error('base_path and base_url are required unless --dry-run')
 
     documents = UploadedDocument.objects.filter(document_url__contains='mytcas.com').all()
 
+    pending = []
     for d in documents:
         if d.local_document_url != '':
             continue
@@ -422,6 +476,18 @@ def main():
             print('ERROR: wrong url:', d.applicant, document_url)
             continue
 
+        pending.append((d, document_url))
+
+    if args.dry_run:
+        dry_run_fetch(pending, args.limit)
+        return
+
+    base_path = args.base_path
+    base_url = args.base_url
+    if base_url.endswith('/'):
+        base_url = base_url[:-1]
+
+    for d, document_url in pending:
         print(d.applicant, d.document_url)
         prefix = random_prefix()
         filename = fetch_pdf_main(document_url, base_path=base_path, prefix=prefix)
@@ -434,8 +500,6 @@ def main():
         d.local_document_url = f'{base_url}/{base_filename}'
         print(f'URL: {d.local_document_url}')
         d.save()
-
-        #break
 
 if __name__ == '__main__':
     main()
