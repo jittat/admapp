@@ -1,22 +1,45 @@
+#!/usr/bin/env python3
+"""
+Mirror TCASFolio PDFs linked from uploaded documents to local storage.
+
+Applicants can submit a TCASFolio link instead of a file (see
+docs/uploaded-documents.md). This script downloads the PDF behind each
+such link so staff can open a local copy: for every UploadedDocument whose
+document_url contains 'mytcas.com' and whose local_document_url is still
+blank, it
+
+  1. logs in to the TCASFolio admin API (folio-admins) and asks for the
+     folio's PDF (a pre-signed S3 URL),
+  2. saves it as <base_path>/<random 10-digit prefix>-<folio id>.pdf,
+  3. sets local_document_url to <base_url>/<that filename>.
+
+The staff applicant page then links to local_document_url instead of
+document_url. Documents that already have a local_document_url are skipped,
+so the script is safe to re-run.
+
+Fetched links are https://folio.mytcas.com/... (the /_/<id> short-link
+form, or /view-folio/<id>) and https://student.mytcas.com/view-folio/<id>;
+others are reported as "wrong url". The folio id is the last path segment.
+
+Usage (run from the scripts/ directory, inside the project's virtualenv):
+    python fetch_mytcasfolio_pdf.py <base_path> <base_url>
+
+    base_path  directory to save the PDFs in
+    base_url   public URL that serves base_path (a trailing / is dropped)
+
+Files (both in the current directory):
+    - .mytcas-env with TCAS_EMAIL and TCAS_PASSWORD (a TCASFolio admin
+      account)
+    - mytcas-token.json is written here to cache the access token
+      (TOKEN_EXPIRY_DAYS days); delete it to force a new login
+"""
+
 from django_bootstrap import bootstrap
 bootstrap()
 
 import sys
 
 from appl.models import UploadedDocument
-
-#!/usr/bin/env python3
-"""
-Standalone script to fetch PDF URLs from TCAS FOLIO.
-Handles authentication and PDF metadata retrieval.
-
-Usage:
-    python fetch_pdf.py <url>
-    python fetch_pdf.py https://folio.mytcas.com/_/68e3880c2ef4c36c489ad051_19a3d2b7c42
-
-Requirements:
-    - .env file with TCAS_EMAIL and TCAS_PASSWORD
-"""
 
 import json
 import sys
@@ -294,9 +317,18 @@ def extract_folio_id(url):
         'https://folio.mytcas.com/_/68e3880c2ef4c36c489ad051_19a3d2b7c42'
         -> '68e3880c2ef4c36c489ad051_19a3d2b7c42'
 
+        'https://student.mytcas.com/view-folio/68e3880c2ef4c36c489ad051'
+        -> '68e3880c2ef4c36c489ad051'
+
         'https://tcas-pdf-dot-tcas65.as.r.appspot.com/folios/68e3880b2ef4c36c489acfc1_199e7dca88e/get-pdf'
         -> '68e3880b2ef4c36c489acfc1_199e7dca88e'
     """
+    # Try to extract from view-folio URL pattern (/view-folio/ID), used on
+    # both student.mytcas.com and folio.mytcas.com
+    match = re.search(r'/view-folio/([^/?#]+)', url)
+    if match:
+        return match.group(1)
+
     # Try to extract from folio.mytcas.com URL pattern (/_/ID)
     match = re.search(r'/_/([^/]+)', url)
     if match:
@@ -360,6 +392,12 @@ def fetch_pdf_main(url, base_path='.', prefix=''):
         return None
 
 
+FOLIO_URL_PREFIXES = (
+    'https://folio.mytcas.com/',
+    'https://student.mytcas.com/view-folio/',
+)
+
+
 def random_prefix(length=10):
     import random
     import string
@@ -379,8 +417,8 @@ def main():
         if d.local_document_url != '':
             continue
 
-        document_url = d.document_url
-        if not document_url.startswith('https://folio.mytcas.com/'):
+        document_url = d.document_url.strip()
+        if not document_url.startswith(FOLIO_URL_PREFIXES):
             print('ERROR: wrong url:', d.applicant, document_url)
             continue
 
