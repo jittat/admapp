@@ -350,11 +350,11 @@ attaches `applicant_uploaded_documents` per slot, rendered by
 into a side menu with an inline PDF/image previewer (PhotoSwipe / `<embed>`).
 
 Menu rendering, per slot: a slot with no uploads is still listed, greyed out
-as `<title> (ไม่มีเอกสาร)`; each entry carries a count badge and a
-ไฟล์/ลิงก์ badge (from the row's `is_file`, so mixed `'any'` slots read
-clearly). Files open in the previewer; links open in a new tab, using
-`local_document_url` when set (else `document_url`), with the original
-`document_url` as the hover tooltip. Covered by
+as `<title> (ไม่มีเอกสาร)`; each entry carries a count badge, and link entries
+(per row, `not is_file`) a ลิงก์ badge so links stand out in mixed `'any'`
+slots; files carry no type badge. Files open in the previewer; links open in
+a new tab, using `local_document_url` when set (else `document_url`), with the
+original `document_url` as the hover tooltip. Covered by
 `ApplicantUploadedDocMenuTestCase` in `backoffice/tests.py`, which renders
 the include directly.
 

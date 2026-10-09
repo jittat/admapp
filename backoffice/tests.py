@@ -80,13 +80,13 @@ class ApplicantUploadedDocMenuTestCase(SimpleTestCase):
         html = self.render_menu(self.make_slot(10, 'Transcript', []))
         self.assertIn('Transcript (ไม่มีเอกสาร)', html)
 
-    def test_mixed_slot_labels_files_and_links(self):
+    def test_mixed_slot_labels_only_links(self):
         html = self.render_menu(self.make_slot(10, 'Portfolio', [
             self.make_file(20, detail='scan'),
             self.make_link(21, 'https://folio.mytcas.com/view-folio/abc'),
         ]))
         self.assertIn('/doc/1234567890123/10/20/', html)
-        self.assertIn('>ไฟล์</span>', html)
+        self.assertNotIn('>ไฟล์</span>', html)
         self.assertIn('>ลิงก์</span>', html)
         self.assertIn('title="https://folio.mytcas.com/view-folio/abc"', html)
         self.assertNotIn('ไม่มีเอกสาร', html)

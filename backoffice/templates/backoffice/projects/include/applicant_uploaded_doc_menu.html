@@ -16,7 +16,6 @@
               <i class="fa fa-angle-double-right"></i>
               {% if app_doc.detail %}{{ app_doc.detail }}{% else %}เอกสารที่ {{ forloop.counter }}{% endif %}
             </a>
-            <span class="badge badge-light">ไฟล์</span>
           {% else %}
             {% firstof app_doc.local_document_url app_doc.document_url as link_url %}
             <a target="_blank" rel="noopener noreferrer" href="{{ link_url }}" title="{{ app_doc.document_url }}">
@@ -35,7 +34,6 @@
               {{ doc.title }}
             </a>
             <span class="badge badge-secondary">{{ app_docs|length }}</span>
-            <span class="badge badge-light">ไฟล์</span>
           {% else %}
             {% firstof app_doc.local_document_url app_doc.document_url as link_url %}
             <a target="_blank" rel="noopener noreferrer" href="{{ link_url }}" title="{{ app_doc.document_url }}">
