@@ -119,7 +119,7 @@ an unknown validator key, or an unknown project id.
 | `uploaded_file` | FileField | The file; `upload_to=applicant_document_path`. Blank for URL documents. |
 | `original_filename` | Char(200, blank) | Original client filename. (Note: the upload view assigns `orginal_filename` — a **typo attribute**, not this field; `original_filename` is largely unset via the normal flow.) |
 | `document_url` | URLField (blank) | The URL, for URL submissions. |
-| `local_document_url` | URLField (blank) | Optional locally-cached URL (preferred over `document_url` in the staff menu when present). |
+| `local_document_url` | URLField (blank) | Optional locally-cached URL (preferred over `document_url` in the staff menu when present). Filled for TCASFolio links by [`fetch_mytcasfolio_pdf.py`](#mirrored-tcasfolio-pdfs). |
 
 **Storage path** (`applicant_document_path`):
 ```
@@ -383,6 +383,41 @@ the include directly.
 
 Both applicant and staff download paths funnel through this one function, so
 they share MIME handling and the S3 fallback.
+
+### Mirrored TCASFolio PDFs
+
+TCASFolio link submissions are not stored as files, so staff would open the
+live TCASFolio page. `scripts/fetch_mytcasfolio_pdf.py` (run by hand from
+`scripts/`) mirrors them: for each `UploadedDocument` whose `document_url`
+contains `mytcas.com` and whose `local_document_url` is blank, it logs in to
+the TCASFolio admin API, downloads the folio's PDF to
+`<base_path>/<random 10-digit prefix>-<folio id>.pdf`, and sets
+`local_document_url = <base_url>/<that filename>`. Already-mirrored documents
+are skipped, so re-runs only pick up new links.
+
+```
+python fetch_mytcasfolio_pdf.py <base_path> <base_url>
+python fetch_mytcasfolio_pdf.py --dry-run [--limit N]
+```
+
+- **Links fetched:** `.../view-folio/<id>` on `folio.mytcas.com` or
+  `student.mytcas.com` (the forms the [tcasfolio validator](#custom-validators)
+  accepts), plus older `https://folio.mytcas.com/_/<id>` short links. The
+  folio id is the last path segment; anything else is reported as
+  `wrong url`.
+- **Dry run:** `--dry-run` downloads a random sample of `N` (default 10)
+  not-yet-mirrored documents into memory and reports size and whether each
+  starts with `%PDF`; nothing is written and no row is updated
+  (`<base_path>`/`<base_url>` not needed). Use it to check credentials and the
+  API before a real run.
+- **Files** (in the current directory): `.mytcas-env` with `TCAS_EMAIL` /
+  `TCAS_PASSWORD` (a TCASFolio university account), and `mytcas-token.json`,
+  the cached access token (written on login, also in a dry run; delete it to
+  force a new login). Needs `python-dotenv`.
+- **Serving:** the mirrored files are served by whatever serves `<base_path>`
+  at `<base_url>`, not through `download_uploaded_document_response`, so the
+  app's staff permission check does not apply; unless that server adds its own
+  access control, the random filename prefix is the only guard.
 
 ---
 
