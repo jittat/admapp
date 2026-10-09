@@ -349,6 +349,15 @@ attaches `applicant_uploaded_documents` per slot, rendered by
 `backoffice/templates/backoffice/projects/include/applicant_uploaded_doc_menu.html`
 into a side menu with an inline PDF/image previewer (PhotoSwipe / `<embed>`).
 
+Menu rendering, per slot: a slot with no uploads is still listed, greyed out
+as `<title> (ไม่มีเอกสาร)`; each entry carries a count badge and a
+ไฟล์/ลิงก์ badge (from the row's `is_file`, so mixed `'any'` slots read
+clearly). Files open in the previewer; links open in a new tab, using
+`local_document_url` when set (else `document_url`), with the original
+`document_url` as the hover tooltip. Covered by
+`ApplicantUploadedDocMenuTestCase` in `backoffice/tests.py`, which renders
+the include directly.
+
 - **Staff download** — `backoffice:projects-download-app-document`
   (`.../doc/<pud_id>/<uploaded_doc_id>/`). `download_applicant_document`
   reuses `download_uploaded_document_response` after
