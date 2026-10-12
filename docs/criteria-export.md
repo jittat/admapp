@@ -567,6 +567,21 @@ computed diff.
   Both parsers wrap the pasted lines in `[...]` and tolerate a trailing
   comma. They will raise `IndexError` on an empty last line, and the view
   has no error handling — a malformed paste is a 500.
+- **`scripts/import_cupt_export_custom_projects.py`** (command line) —
+  `python import_cupt_export_custom_projects.py [--dry-run] <project_id> <json_file>`
+  imports both kinds from one JSON file,
+  `{"additional_projects": [[cupt_code, title], ...],
+  "rules": [[cupt_code, program_major_codes, rule_json], ...]}`.
+  Unlike `import_config`, the admission project is the `project_id`
+  argument and `program_major_codes` are in the **stored form** (no project
+  prefix to strip); they may be a comma-separated string or a list, and
+  `rule_json` may be an object or a JSON string. Custom projects are
+  upserted by `cupt_code`. A rule matches an existing one on
+  (admission project, custom project, *set* of program major codes) and
+  gets its `rule_json` updated; otherwise it is created. Nothing is
+  deleted — existing rules of the project that the file did not match are
+  listed so stale ones (e.g. after a rule's major codes changed) can be
+  removed in the admin. One transaction: a bad row aborts everything.
 
 ## Field lists (`cuptexport_fields.py`)
 
