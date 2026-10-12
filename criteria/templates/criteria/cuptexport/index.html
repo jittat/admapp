@@ -3,6 +3,7 @@
 <div class="row">
   <div class="col-md-12">
     <h2>Export ข้อมูลเงื่อนไข</h2>
+    {% include "backoffice/messages_alert.html" %}
     <h3>รายการข้อมูล</h3>
     <ul>
       <li>
@@ -45,17 +46,27 @@
     </form>
 
     นำเข้า export configs: <a class="btn btn-sm btn-outline-secondary" id="importConfigFormToggleButtonId" href="#">นำเข้าข้อมูล</a>
-    <div class="border rounded p-2 mb-2" style="display: none;" id="importConfigFormId">
+    <div class="border rounded p-2 mb-2" {% if not config_import_errors %}style="display: none;"{% endif %} id="importConfigFormId">
+      {% if config_import_errors %}
+        <div class="alert alert-danger m-2" id="importConfigErrorsId">
+          นำเข้าข้อมูลไม่สำเร็จ ไม่มีข้อมูลใดถูกบันทึก กรุณาแก้ไขแล้วนำเข้าอีกครั้ง
+          <ul class="mb-0">
+            {% for error in config_import_errors %}
+              <li>{{ error }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endif %}
       <form method="POST" action="{% url 'backoffice:criteria:export-import-config' %}">
         <div class="form-group m-2">
           <label class="mr-2">ประเภทข้อมูล</label>
           <select class="form-control mr-2" name="config_type">
             <option value="custom-projects">Custom projects</option>
-            <option value="custom-rules">Additional project rules</option>
+            <option value="custom-rules" {% if config_type == 'custom-rules' %}selected{% endif %}>Additional project rules</option>
           </select>
         </div>
         <div class="form-group m-2">
-          <textarea class="form-control" name="config" style="min-height: 100px; field-sizing: content;"></textarea>
+          <textarea class="form-control" name="config" style="min-height: 100px; field-sizing: content;">{{ config_data }}</textarea>
         </div>
         {% csrf_token %}
         <button type="submit" class="btn btn-secondary mb-2">นำเข้า</button>

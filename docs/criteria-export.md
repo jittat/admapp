@@ -556,17 +556,25 @@ computed diff.
   line as `data_json`. The index page shows the current row counts.
 - **`import_config`** (POST) — takes `config_type` and a `config` textarea:
   - `custom-projects`: lines of `["C2801", "ชื่อโครงการ"],` →
-    `CuptExportCustomProject` (upsert by `cupt_code`; blank titles skipped);
+    `CuptExportCustomProject` (upsert by `cupt_code`; blank titles skipped
+    and counted);
   - `custom-rules`: lines of
     `["C2805", "C2810020108901001A,C28...", "{\"score-include\": \"Math1\"}"],`
-    → `CuptExportAdditionalProjectRule`. The **first 5 characters** of the
-    second field are taken as the `AdmissionProject.cupt_code` and stripped
-    from every listed code; unknown projects or custom projects are skipped
-    silently.
+    → `CuptExportAdditionalProjectRule` (upsert by stored codes + custom
+    project). The **first 5 characters** of the second field are taken as
+    the `AdmissionProject.cupt_code` and stripped from every listed code.
+    `rule_json` is a *string* holding a JSON object.
 
-  Both parsers wrap the pasted lines in `[...]` and tolerate a trailing
-  comma. They will raise `IndexError` on an empty last line, and the view
-  has no error handling — a malformed paste is a 500.
+  `parse_config_rows` wraps the pasted lines in `[...]` and tolerates a
+  trailing comma. The import is **all-or-nothing**
+  (`import_config_in_transaction`): every bad row is collected — wrong shape
+  or non-string item, unknown admission project prefix, unknown custom
+  project, a code without the project prefix, `rule_json` that is not a JSON
+  object, over-long values — and if there is any, or the paste is empty or
+  not valid JSON, nothing is saved and the index page is re-rendered with
+  the errors listed, the form open and the pasted text kept. On success it
+  redirects to the index with a message giving the created / updated /
+  unchanged (/ skipped) counts.
 - **`scripts/import_cupt_export_custom_projects.py`** (command line) —
   `python import_cupt_export_custom_projects.py [--dry-run] <project_id> <json_file>`
   imports both kinds from one JSON file,

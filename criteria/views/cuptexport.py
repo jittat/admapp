@@ -2,6 +2,8 @@ import csv
 from collections import defaultdict
 from datetime import datetime
 
+from django.contrib import messages
+from django.db import transaction
 from django.db.models import Q
 from django.http import HttpResponse, HttpResponseForbidden
 from django.shortcuts import render, redirect, get_object_or_404
@@ -539,17 +541,21 @@ def index(request):
     if not user.profile.is_admission_admin:
         return redirect(reverse('backoffice:index'))
 
+    return render(request,
+                  'criteria/cuptexport/index.html',
+                  get_index_context())
+
+
+def get_index_context():
     admission_projects = AdmissionProject.objects.filter(Q(is_available=True) | Q(is_visible_in_backoffice=True)).all()
 
     condition_json_count = ImportedCriteriaJSON.objects.filter(criteria_type='required').count()
     scoring_json_count = ImportedCriteriaJSON.objects.filter(criteria_type='scoring').count()
-    
-    return render(request,
-                  'criteria/cuptexport/index.html',
-                  { 'admission_projects': admission_projects,
-                    'condition_json_count': condition_json_count,
-                    'scoring_json_count': scoring_json_count,
-                    'export_logs': load_latest_export_logs() })
+
+    return { 'admission_projects': admission_projects,
+             'condition_json_count': condition_json_count,
+             'scoring_json_count': scoring_json_count,
+             'export_logs': load_latest_export_logs() }
 
 
 LATEST_EXPORT_LOG_COUNT = 5
@@ -1387,66 +1393,194 @@ def import_file(request):
     return redirect(reverse('backoffice:criteria:export-index'))
 
 
-def import_custom_project_config(config_data):
-    lines = config_data.split("\n")
-    if lines[-1][-1] == ',':
-        lines.append("[]")
-    json_str = "[" + "\n".join(lines) + "]"
+class ConfigImportError(Exception):
+    pass
+
+
+class ConfigImportResult:
+    def __init__(self):
+        self.created = 0
+        self.updated = 0
+        self.unchanged = 0
+        self.skipped = 0
+        # one message per bad row; when there is any, nothing is saved
+        self.errors = []
+
+
+def parse_config_rows(config_data):
+    """Parses the pasted config: rows of JSON lists, one per line, each
+    followed by a comma (the last comma is optional).
+
+    Raises ConfigImportError when it is empty or not valid JSON.
+    """
     import json
-    config = json.loads(json_str)
 
-    for items in config:
-        if len(items) == 2:
-            cupt_code = items[0].strip()
-            title = items[1].strip()
+    text = config_data.strip()
+    if text.endswith(','):
+        text = text[:-1]
+    if text.strip() == '':
+        raise ConfigImportError('ไม่มีข้อมูลที่จะนำเข้า')
 
-            if title == '':
+    try:
+        return json.loads("[" + text + "]")
+    except json.JSONDecodeError as e:
+        # the position is in the pasted text, without the added "["
+        colno = e.colno - 1 if e.lineno == 1 else e.colno
+        raise ConfigImportError(
+            f'รูปแบบข้อมูลไม่ถูกต้อง (บรรทัดที่ {e.lineno} ตำแหน่งที่ {colno}): {e.msg}')
+
+
+def check_config_row(items, field_names):
+    """Returns an error message when items is not a list of strings, one for
+    each of field_names; None when it is fine."""
+    if not isinstance(items, list) or len(items) != len(field_names):
+        return f'ต้องอยู่ในรูป [{", ".join(field_names)}]'
+    for item, field_name in zip(items, field_names):
+        if not isinstance(item, str):
+            return f'{field_name} ต้องเป็นข้อความ (string)'
+    return None
+
+
+def import_custom_project_config(config_data):
+    """Imports rows of [cupt_code, title] as CuptExportCustomProject.
+
+    Returns a ConfigImportResult; the caller must not keep the changes when
+    it has errors (see import_config_in_transaction).
+    """
+    result = ConfigImportResult()
+
+    for i, items in enumerate(parse_config_rows(config_data), start=1):
+        error = check_config_row(items, ['cupt_code', 'title'])
+        if error:
+            result.errors.append(f'รายการที่ {i}: {error}')
+            continue
+
+        cupt_code = items[0].strip()
+        title = items[1].strip()
+
+        if title == '':
+            result.skipped += 1
+            continue
+
+        if cupt_code == '':
+            result.errors.append(f'รายการที่ {i}: ไม่มี cupt_code')
+            continue
+        if len(cupt_code) > 10:
+            result.errors.append(f'รายการที่ {i}: cupt_code {cupt_code} ยาวเกิน 10 ตัวอักษร')
+            continue
+        if len(title) > 400:
+            result.errors.append(f'รายการที่ {i}: title ของ {cupt_code} ยาวเกิน 400 ตัวอักษร')
+            continue
+
+        old_projects = CuptExportCustomProject.objects.filter(cupt_code=cupt_code).all()
+        if len(old_projects) > 0:
+            custom_project = old_projects[0]
+            if custom_project.title == title:
+                result.unchanged += 1
                 continue
+            result.updated += 1
+        else:
+            custom_project = CuptExportCustomProject(cupt_code=cupt_code)
+            result.created += 1
+        custom_project.title = title
+        custom_project.save()
 
-            old_projects = CuptExportCustomProject.objects.filter(cupt_code=cupt_code).all()
-            if len(old_projects) > 0:
-                custom_project = old_projects[0]
-            else:
-                custom_project = CuptExportCustomProject(cupt_code=cupt_code)
-            custom_project.title = title
-            custom_project.save()
+    return result
 
 
 def import_custom_project_rule_config(config_data):
-    lines = config_data.split("\n")
-    if lines[-1][-1] == ',':
-        lines.append("[]")
-    json_str = "[" + "\n".join(lines) + "]"
+    """Imports rows of [cupt_code, program_major_codes, rule_json] as
+    CuptExportAdditionalProjectRule, where every program major code is
+    prefixed with the 5-character cupt code of its admission project.
+
+    Returns a ConfigImportResult; the caller must not keep the changes when
+    it has errors (see import_config_in_transaction).
+    """
     import json
-    config = json.loads(json_str)
 
-    for items in config:
-        if len(items) == 3:
-            cupt_code = items[0].strip()
-            full_program_major_codes = items[1].strip()
-            rule_json = items[2].strip()
+    result = ConfigImportResult()
 
-            project_cupt_code = full_program_major_codes[:5]
-            program_major_codes = ','.join([(c.strip())[5:] for c in full_program_major_codes.split(',')])
+    for i, items in enumerate(parse_config_rows(config_data), start=1):
+        error = check_config_row(items, ['cupt_code', 'program_major_codes', 'rule_json'])
+        if error:
+            result.errors.append(f'รายการที่ {i}: {error}')
+            continue
 
-            admission_project = AdmissionProject.objects.filter(cupt_code=project_cupt_code).first()
-            if not admission_project:
+        cupt_code = items[0].strip()
+        full_program_major_codes = items[1].strip()
+        rule_json = items[2].strip()
+
+        project_cupt_code = full_program_major_codes[:5]
+        full_codes = [c.strip() for c in full_program_major_codes.split(',')]
+        program_major_codes = ','.join([c[5:] for c in full_codes])
+
+        errors = []
+
+        admission_project = AdmissionProject.objects.filter(cupt_code=project_cupt_code).first()
+        if full_program_major_codes == '':
+            errors.append('ไม่มี program_major_codes')
+        elif not admission_project:
+            errors.append(f'ไม่พบโครงการรับเข้าที่มีรหัส {project_cupt_code} '
+                          f'(5 ตัวอักษรแรกของ program_major_codes)')
+        else:
+            for c in full_codes:
+                if not c.startswith(project_cupt_code) or len(c) <= 5:
+                    errors.append(f'รหัสสาขา "{c}" ไม่ได้อยู่ในรูปรหัสโครงการ {project_cupt_code} ตามด้วยรหัสสาขา')
+            if len(program_major_codes) > 200:
+                errors.append('program_major_codes ยาวเกิน 200 ตัวอักษร (หลังตัดรหัสโครงการ)')
+
+        custom_project = CuptExportCustomProject.objects.filter(cupt_code=cupt_code).first()
+        if not custom_project:
+            errors.append(f'ไม่พบ custom project รหัส {cupt_code}')
+
+        try:
+            if not isinstance(json.loads(rule_json), dict):
+                errors.append('rule_json ต้องเป็น JSON object')
+        except ValueError:
+            errors.append('rule_json ไม่ใช่ JSON ที่ถูกต้อง')
+
+        if errors:
+            result.errors += [f'รายการที่ {i}: {e}' for e in errors]
+            continue
+
+        old_rules = CuptExportAdditionalProjectRule.objects.filter(program_major_codes=program_major_codes,
+                                                                   custom_project=custom_project).all()
+        if len(old_rules) > 0:
+            rule = old_rules[0]
+            if rule.admission_project_id == admission_project.id and rule.rule_json == rule_json:
+                result.unchanged += 1
                 continue
+            result.updated += 1
+        else:
+            rule = CuptExportAdditionalProjectRule(program_major_codes=program_major_codes,
+                                                  custom_project=custom_project)
+            result.created += 1
+        rule.admission_project = admission_project
+        rule.rule_json = rule_json
+        rule.save()
 
-            custom_project = CuptExportCustomProject.objects.filter(cupt_code=cupt_code).first()
-            if not custom_project:
-                continue
+    return result
 
-            old_rules = CuptExportAdditionalProjectRule.objects.filter(program_major_codes=program_major_codes,
-                                                                       custom_project=custom_project).all()
-            if len(old_rules) > 0:
-                rule = old_rules[0]
-            else:
-                rule = CuptExportAdditionalProjectRule(program_major_codes=program_major_codes,
-                                                      custom_project=custom_project)
-            rule.admission_project = admission_project
-            rule.rule_json = rule_json
-            rule.save()
+
+CONFIG_IMPORTERS = {
+    'custom-projects': ('Custom projects', import_custom_project_config),
+    'custom-rules': ('Additional project rules', import_custom_project_rule_config),
+}
+
+
+def import_config_in_transaction(config_type, config_data):
+    """Runs the importer of config_type all-or-nothing: when the result has
+    any error, nothing is saved."""
+    importer = CONFIG_IMPORTERS[config_type][1]
+    try:
+        with transaction.atomic():
+            result = importer(config_data)
+            if result.errors:
+                transaction.set_rollback(True)
+    except ConfigImportError as e:
+        result = ConfigImportResult()
+        result.errors.append(str(e))
+    return result
 
 
 @user_login_required
@@ -1461,13 +1595,27 @@ def import_config(request):
     config_type = request.POST.get('config_type','')
     config_data = request.POST.get('config','')
 
-    if config_type not in ['custom-projects','custom-rules']:
+    if config_type not in CONFIG_IMPORTERS:
         return HttpResponseForbidden()
-    
-    if config_type == 'custom-projects':
-        import_custom_project_config(config_data)
-    else:
-        import_custom_project_rule_config(config_data)
+
+    result = import_config_in_transaction(config_type, config_data)
+
+    if result.errors:
+        # show the form again with the pasted data, so it can be fixed
+        context = get_index_context()
+        context.update({ 'config_import_errors': result.errors,
+                         'config_type': config_type,
+                         'config_data': config_data })
+        return render(request,
+                      'criteria/cuptexport/index.html',
+                      context)
+
+    message = (f'นำเข้า {CONFIG_IMPORTERS[config_type][0]} เรียบร้อย: '
+               f'เพิ่มใหม่ {result.created} รายการ แก้ไข {result.updated} รายการ '
+               f'ไม่เปลี่ยนแปลง {result.unchanged} รายการ')
+    if result.skipped:
+        message += f' ข้าม {result.skipped} รายการ (ไม่มีชื่อ)'
+    messages.success(request, message)
 
     return redirect(reverse('backoffice:criteria:export-index'))
 

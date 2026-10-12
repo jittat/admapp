@@ -1976,3 +1976,154 @@ class ConditionRowMinValueTestCase(TestCase):
         self.assertEqual(row['subject_names'], 'min_gpax min_tgat')
         self.assertEqual(row['score_minimum'], '2.75 30')
         self.assertNotIn('None', row['score_minimum'])
+
+
+class ImportConfigErrorHandlingTestCase(TestCase):
+    """The config import form of the export index page (import_config):
+    bad input is reported on the page instead of being a 500 or silently
+    skipped, an import with any bad row saves nothing, and a successful
+    import says what it did."""
+
+    def setUp(self):
+        from criteria.models import CuptExportCustomProject
+
+        self.project = AdmissionProject.objects.create(
+            title='Test Project', short_title='Test', cupt_code='C2810')
+        self.custom_project = CuptExportCustomProject.objects.create(
+            cupt_code='C2805', title='Custom')
+
+        user = User.objects.create_user('admin01', password='pw')
+        user.profile.is_admission_admin = True
+        user.profile.save()
+        self.client.force_login(user)
+
+    def _post(self, config_type, config, follow=False):
+        return self.client.post(reverse('backoffice:criteria:export-import-config'),
+                                {'config_type': config_type, 'config': config},
+                                follow=follow)
+
+    def _errors(self, response):
+        return response.context['config_import_errors']
+
+    def _custom_projects(self):
+        from criteria.models import CuptExportCustomProject
+        return list(CuptExportCustomProject.objects.values_list('cupt_code', 'title'))
+
+    def _rules(self):
+        from criteria.models import CuptExportAdditionalProjectRule
+        return list(CuptExportAdditionalProjectRule.objects.order_by('id').values_list(
+            'admission_project_id', 'custom_project__cupt_code',
+            'program_major_codes', 'rule_json'))
+
+    def test_custom_projects_success_is_reported(self):
+        response = self._post('custom-projects',
+                              '["C2801", "ใหม่"],\n["C2805", "Renamed"],\n["C2806", ""],\n',
+                              follow=True)
+
+        self.assertRedirects(response, reverse('backoffice:criteria:export-index'))
+        self.assertEqual(self._custom_projects(),
+                         [('C2801', 'ใหม่'), ('C2805', 'Renamed')])
+        self.assertContains(
+            response,
+            'นำเข้า Custom projects เรียบร้อย: เพิ่มใหม่ 1 รายการ แก้ไข 1 รายการ '
+            'ไม่เปลี่ยนแปลง 0 รายการ ข้าม 1 รายการ (ไม่มีชื่อ)')
+
+        response = self._post('custom-projects', '["C2805", "Renamed"]', follow=True)
+        self.assertContains(
+            response, 'เพิ่มใหม่ 0 รายการ แก้ไข 0 รายการ ไม่เปลี่ยนแปลง 1 รายการ')
+        self.assertNotContains(response, 'ข้าม')
+
+    def test_rules_success_is_reported(self):
+        config = ('["C2805", "C281001,C281002", "{\\"score-include\\": \\"Math1\\"}"],\r\n'
+                  '["C2805", "C281003", "{}"],\r\n')
+        response = self._post('custom-rules', config, follow=True)
+
+        self.assertEqual(
+            self._rules(),
+            [(self.project.id, 'C2805', '01,02', '{"score-include": "Math1"}'),
+             (self.project.id, 'C2805', '03', '{}')])
+        self.assertContains(
+            response,
+            'นำเข้า Additional project rules เรียบร้อย: เพิ่มใหม่ 2 รายการ '
+            'แก้ไข 0 รายการ ไม่เปลี่ยนแปลง 0 รายการ')
+
+        response = self._post(
+            'custom-rules',
+            '["C2805", "C281001,C281002", "{}"],\n["C2805", "C281003", "{}"]',
+            follow=True)
+        self.assertContains(
+            response, 'เพิ่มใหม่ 0 รายการ แก้ไข 1 รายการ ไม่เปลี่ยนแปลง 1 รายการ')
+        self.assertEqual(len(self._rules()), 2)
+
+    def test_malformed_json_is_reported_with_the_pasted_data_kept(self):
+        config = '["C2801", "ใหม่"],\n["C2802", "ค้าง'
+        response = self._post('custom-projects', config)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(self._errors(response)), 1)
+        self.assertIn('รูปแบบข้อมูลไม่ถูกต้อง (บรรทัดที่ 2 ', self._errors(response)[0])
+        self.assertContains(response, 'id="importConfigErrorsId"')
+        self.assertContains(response, 'ค้าง</textarea>')
+        self.assertNotContains(response, 'style="display: none;" id="importConfigFormId"')
+        self.assertEqual(self._custom_projects(), [('C2805', 'Custom')])
+
+    def test_json_error_position_on_the_first_line_is_in_the_pasted_text(self):
+        response = self._post('custom-projects', '["C2801" "ใหม่"]')
+
+        self.assertIn('(บรรทัดที่ 1 ตำแหน่งที่ 10)', self._errors(response)[0])
+
+    def test_empty_data_is_reported(self):
+        for config in ['', '  \n', ',']:
+            response = self._post('custom-rules', config)
+            self.assertEqual(self._errors(response), ['ไม่มีข้อมูลที่จะนำเข้า'])
+        self.assertContains(response, '<option value="custom-rules" selected>')
+
+    def test_bad_custom_project_rows_are_all_reported_and_nothing_is_saved(self):
+        config = ('["C2801", "ใหม่"],\n'
+                  '["C2802"],\n'
+                  '["C2803", 5],\n'
+                  '"C2804",\n'
+                  '["", "ไม่มีรหัส"],\n'
+                  '["C2800000000", "ยาวไป"],\n')
+        response = self._post('custom-projects', config)
+
+        self.assertEqual(self._errors(response), [
+            'รายการที่ 2: ต้องอยู่ในรูป [cupt_code, title]',
+            'รายการที่ 3: title ต้องเป็นข้อความ (string)',
+            'รายการที่ 4: ต้องอยู่ในรูป [cupt_code, title]',
+            'รายการที่ 5: ไม่มี cupt_code',
+            'รายการที่ 6: cupt_code C2800000000 ยาวเกิน 10 ตัวอักษร',
+        ])
+        self.assertEqual(self._custom_projects(), [('C2805', 'Custom')])
+
+    def test_bad_rule_rows_are_all_reported_and_nothing_is_saved(self):
+        config = ('["C2805", "C281001", "{}"],\n'
+                  '["C2805", "C289901", "{}"],\n'
+                  '["C2899", "C281001", "{}"],\n'
+                  '["C2805", "C281001", "{a"],\n'
+                  '["C2805", "C281001", "[1]"],\n'
+                  '["C2805", "C281001", {"a": 1}],\n'
+                  '["C2805", "C281001,02,C2810", "{}"],\n'
+                  '["C2805", "", ""],\n'
+                  '["C2805", "C281001"],\n')
+        response = self._post('custom-rules', config)
+
+        self.assertEqual(self._errors(response), [
+            'รายการที่ 2: ไม่พบโครงการรับเข้าที่มีรหัส C2899 (5 ตัวอักษรแรกของ program_major_codes)',
+            'รายการที่ 3: ไม่พบ custom project รหัส C2899',
+            'รายการที่ 4: rule_json ไม่ใช่ JSON ที่ถูกต้อง',
+            'รายการที่ 5: rule_json ต้องเป็น JSON object',
+            'รายการที่ 6: rule_json ต้องเป็นข้อความ (string)',
+            'รายการที่ 7: รหัสสาขา "02" ไม่ได้อยู่ในรูปรหัสโครงการ C2810 ตามด้วยรหัสสาขา',
+            'รายการที่ 7: รหัสสาขา "C2810" ไม่ได้อยู่ในรูปรหัสโครงการ C2810 ตามด้วยรหัสสาขา',
+            'รายการที่ 8: ไม่มี program_major_codes',
+            'รายการที่ 8: rule_json ไม่ใช่ JSON ที่ถูกต้อง',
+            'รายการที่ 9: ต้องอยู่ในรูป [cupt_code, program_major_codes, rule_json]',
+        ])
+        self.assertEqual(self._rules(), [])
+
+    def test_index_page_shows_no_error_and_keeps_the_form_hidden(self):
+        response = self.client.get(reverse('backoffice:criteria:export-index'))
+
+        self.assertNotContains(response, 'id="importConfigErrorsId"')
+        self.assertContains(response, 'style="display: none;" id="importConfigFormId"')
