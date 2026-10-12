@@ -70,12 +70,24 @@ def combine_slots(curriculum_major_rows):
 
 def is_criteria_match(row, custom_project):
     for key, str_key in [('score-include', 'scoring_criteria_str'),
-                         ('require-include', 'required_criteria_str')]:
+                         ('score-include-1', 'scoring_criteria_str'),
+                         ('score-include-2', 'scoring_criteria_str'),
+                         ('score-include-3', 'scoring_criteria_str'),
+                         ('require-include', 'required_criteria_str'),
+                         ('require-include-1', 'required_criteria_str'),
+                         ('require-include-2', 'required_criteria_str'),
+                         ('require-include-3', 'required_criteria_str')]:
         if key in custom_project:
             if custom_project[key] not in row[str_key]:
                 return False
     for key, str_key in [('score-not-include', 'scoring_criteria_str'),
-                         ('require-not-include', 'required_criteria_str')]:
+                         ('score-not-include-1', 'scoring_criteria_str'),
+                         ('score-not-include-2', 'scoring_criteria_str'),
+                         ('score-not-include-3', 'scoring_criteria_str'),
+                         ('require-not-include', 'required_criteria_str'),
+                         ('require-not-include-1', 'required_criteria_str'),
+                         ('require-not-include-2', 'required_criteria_str'),
+                         ('require-not-include-3', 'required_criteria_str')]:
         if key in custom_project:
             if custom_project[key] in row[str_key]:
                 return False
