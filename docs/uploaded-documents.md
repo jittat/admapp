@@ -117,7 +117,7 @@ an unknown validator key, or an unknown project id.
 | `rank` | Int | Ordering among multiple files (set to `0` on upload). |
 | `detail` | Char(200, blank) | Free-text label/description (required when the slot's `is_detail_required`). |
 | `uploaded_file` | FileField | The file; `upload_to=applicant_document_path`. Blank for URL documents. |
-| `original_filename` | Char(200, blank) | Original client filename. (Note: the upload view assigns `orginal_filename` — a **typo attribute**, not this field; `original_filename` is largely unset via the normal flow.) |
+| `original_filename` | Char(200, blank) | Original client filename (cut at 200 chars), set by the upload view; kept in full even when the stored name is shortened. Blank on rows uploaded before the view's `orginal_filename` typo was fixed. |
 | `document_url` | URLField (blank) | The URL, for URL submissions. |
 | `local_document_url` | URLField (blank) | Optional locally-cached URL (preferred over `document_url` in the staff menu when present). Filled for TCASFolio links by [`fetch_mytcasfolio_pdf.py`](#mirrored-tcasfolio-pdfs). |
 
@@ -126,6 +126,17 @@ an unknown validator key, or an unknown project id.
 documents/applicant_<applicant.id>/doc_<project_uploaded_document.id>/<filename>
 ```
 under `settings.MEDIA_ROOT`.
+
+The whole path must fit `uploaded_file`'s `max_length` (the `FileField`
+default, 100), so `applicant_document_path` **shortens long file names**: it
+keeps the last extension and cuts the rest to `MAX_STORED_FILENAME_LENGTH`
+(40) characters. With the ~33-character directory prefix and a short
+extension, that leaves room for the 8-character `_xxxxxxx` suffix the storage
+adds when the name is already taken. That room matters: Django treats
+everything after the *first* dot as the extension, so a name like
+`ม.5-1-….pdf` cannot be truncated by the storage itself and used to fail with
+`SuspiciousFileOperation`. The upload form's own 100-character file name check
+is switched off for the same reason.
 
 **Which kind is this row?** Derived, not stored: `is_file()` is
 `bool(uploaded_file)`, `is_url()` is "no file but a `document_url`". The
@@ -184,7 +195,8 @@ Views in `appl/views/upload.py`; URLs in `appl/urls.py`.
      slot's [custom validator](#custom-validators), if any
      (`custom_validation_check()`); this happens **before** step 4, so a
      rejected submission never deletes the previous one.
-  4. if the slot is single-file, deletes the previous file+row first. This is
+  4. if the slot is single-file, the previous file+row will be replaced
+     (deleted once the new one is saved, see step 5). This is
      destructive, so the **client** asks first: on a single-document slot that
      already holds an entry the card renders a hidden
      `.upload-replace-confirms` panel and the form carries
@@ -197,6 +209,8 @@ Views in `appl/views/upload.py`; URLs in `appl/urls.py`.
      replaces.
   5. saves the `UploadedDocument` (applicant, slot, `rank=0`), logs a
      `LogItem`, and returns JSON `{result:'OK', html:<re-rendered card>}`.
+     For a single-file slot the replaced documents are deleted only after
+     this save succeeds, so a failed save keeps the existing document.
   - Error codes returned to the JS: `FORM_ERROR`, `SIZE_ERROR`, `EXT_ERROR`,
     `DETAIL_REQUIRE`, `URL_INVALID`, `NO_INPUT`, `DETAIL_ERROR`,
     `FILENAME_ERROR`, `APPLICATION_ERROR` (messages hard-coded in

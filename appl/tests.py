@@ -302,6 +302,61 @@ class UploadViewTestCase(TestCase):
         self.assertEqual(len(uploaded), 1)
         self.assertTrue(uploaded[0].is_file())
 
+    def test_failed_save_keeps_the_old_document(self):
+        doc = self.make_document(FILE)
+        self.post_file(doc, filename='old.pdf')
+        old = self.uploaded_documents(doc)
+
+        with mock.patch.object(UploadedDocument, 'save', side_effect=UnicodeEncodeError('ascii', '', 0, 1, '')):
+            result = self.post_file(doc, filename='new.pdf')
+
+        self.assertEqual(result['result'], 'FILENAME_ERROR')
+        self.assertEqual(self.uploaded_documents(doc), old)
+        self.assertTrue(os.path.exists(old[0].uploaded_file.path))
+
+    # --- long file names ---------------------------------------------------
+
+    LONG_FILENAME = 'ม.5-1-' + 'โครงงานการพัฒนาตู้อบแห้งพลังงานแสงอาทิตย์' * 3 + '_2.pdf'
+
+    def assert_stored_name_fits(self, uploaded_document):
+        max_length = UploadedDocument._meta.get_field('uploaded_file').max_length
+        name = uploaded_document.uploaded_file.name
+        self.assertLessEqual(len(name), max_length)
+        self.assertTrue(name.endswith('.pdf'))
+        self.assertTrue(os.path.exists(uploaded_document.uploaded_file.path))
+
+    def test_long_filename_is_shortened(self):
+        doc = self.make_document(FILE)
+
+        result = self.post_file(doc, filename=self.LONG_FILENAME)
+
+        self.assertEqual(result['result'], 'OK')
+        uploaded = self.uploaded_documents(doc)[0]
+        self.assert_stored_name_fits(uploaded)
+        self.assertEqual(uploaded.original_filename, self.LONG_FILENAME)
+
+    def test_long_filename_uploaded_again_is_shortened(self):
+        doc = self.make_document(FILE, can_have_multiple_files=True)
+
+        self.post_file(doc, filename=self.LONG_FILENAME)
+        result = self.post_file(doc, filename=self.LONG_FILENAME)
+
+        self.assertEqual(result['result'], 'OK')
+        uploaded = self.uploaded_documents(doc)
+        self.assertEqual(len(uploaded), 2)
+        self.assertNotEqual(uploaded[0].uploaded_file.name, uploaded[1].uploaded_file.name)
+        for uploaded_document in uploaded:
+            self.assert_stored_name_fits(uploaded_document)
+
+    def test_short_filename_is_kept(self):
+        doc = self.make_document(FILE)
+
+        self.post_file(doc, filename='short-name.pdf')
+
+        uploaded = self.uploaded_documents(doc)[0]
+        self.assertEqual(os.path.basename(uploaded.uploaded_file.name), 'short-name.pdf')
+        self.assertEqual(uploaded.original_filename, 'short-name.pdf')
+
     # --- file-only / url-only documents are unchanged ----------------------
 
     def test_file_document_ignores_a_url(self):

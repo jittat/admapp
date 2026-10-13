@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import csv
 import io
+import os
 from datetime import datetime
 
 from django.core.exceptions import ObjectDoesNotExist
@@ -664,11 +665,19 @@ class ProjectUploadedDocument(models.Model):
         return self.is_interview_document or self.is_late_upload_open(admission_project)
 
 
+# Long file names are cut to this length (extension excluded), so that the
+# whole path, plus the '_xxxxxxx' suffix the storage adds when the name is
+# taken, fits the file field.
+MAX_STORED_FILENAME_LENGTH = 40
+
+
 def applicant_document_path(instance, filename):
-    return ('documents/applicant_{0}/doc_{1}/{2}'
+    name, extension = os.path.splitext(filename)
+    return ('documents/applicant_{0}/doc_{1}/{2}{3}'
             .format(instance.applicant.id,
                     instance.project_uploaded_document.id,
-                    filename))
+                    name[:MAX_STORED_FILENAME_LENGTH],
+                    extension))
 
 
 class UploadedDocument(models.Model):

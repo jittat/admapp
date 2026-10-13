@@ -2,7 +2,7 @@ import json
 import os
 
 from django.conf import settings
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, SuspiciousFileOperation
 from django.db import transaction
 from django.db.utils import OperationalError
 from django.forms import ModelForm
@@ -20,6 +20,11 @@ class UploadedDocumentForm(ModelForm):
     class Meta:
         model = UploadedDocument
         fields = ['uploaded_file','document_url','detail']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # long file names are shortened when stored (applicant_document_path)
+        self.fields['uploaded_file'].max_length = None
 
 def upload_form_for(project_uploaded_document):
     return UploadedDocumentForm()
@@ -176,11 +181,11 @@ def upload(request, document_id):
                                                                 project_uploaded_document)
 
     if is_valid:
+        # replaced documents are only removed after the new one is saved, so
+        # that a failed save does not lose the applicant's existing document
+        old_uploaded_documents = []
         if not project_uploaded_document.can_have_multiple_files:
-            old_uploaded_documents = project_uploaded_document.get_uploaded_documents_for_applicant(applicant)
-            for odoc in old_uploaded_documents:
-                odoc.uploaded_file.delete()
-                odoc.delete()
+            old_uploaded_documents = list(project_uploaded_document.get_uploaded_documents_for_applicant(applicant))
 
         uploaded_document = form.save(commit=False)
         uploaded_document.applicant = request.applicant
@@ -191,7 +196,8 @@ def upload(request, document_id):
             uploaded_document.uploaded_file = ''
         else:
             uploaded_document.document_url = ''
-            uploaded_document.orginal_filename = uploaded_document.uploaded_file.name
+            original_filename_max_length = UploadedDocument._meta.get_field('original_filename').max_length
+            uploaded_document.original_filename = uploaded_document.uploaded_file.name[:original_filename_max_length]
 
         error = False
         result_code = 'OK'
@@ -202,11 +208,15 @@ def upload(request, document_id):
         except OperationalError:
             error = True
             result_code = 'DETAIL_ERROR'
-        except UnicodeEncodeError:
+        except (UnicodeEncodeError, SuspiciousFileOperation):
             error = True
             result_code = 'FILENAME_ERROR'
 
         if not error:
+            for odoc in old_uploaded_documents:
+                odoc.uploaded_file.delete()
+                odoc.delete()
+
             from django.template import loader
 
             template = loader.get_template('appl/include/document_upload_form.html')
