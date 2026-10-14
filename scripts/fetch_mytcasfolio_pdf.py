@@ -69,6 +69,7 @@ import sys
 import os
 import re
 import shutil
+import time
 import requests
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -81,6 +82,7 @@ VERIFY_ENDPOINT = "/folio-admins/me"
 PDF_BASE_URL = "https://tcas-pdf-dot-tcas65.as.r.appspot.com"
 TOKEN_FILE = "mytcas-token.json"
 TOKEN_EXPIRY_DAYS = 2
+PDF_REQUEST_DELAY = 1  # seconds between PDF requests
 
 # Request headers
 HEADERS = {
@@ -111,6 +113,7 @@ class TCASFetcher:
             )
 
         self.session = requests.Session()
+        self.last_pdf_request_time = None
         self.access_token = None
         self.token_expiry = None
 
@@ -228,6 +231,12 @@ class TCASFetcher:
             'accessToken': self.access_token,
             'Content-Length': '0'
         }
+
+        if self.last_pdf_request_time is not None:
+            wait = PDF_REQUEST_DELAY - (time.monotonic() - self.last_pdf_request_time)
+            if wait > 0:
+                time.sleep(wait)
+        self.last_pdf_request_time = time.monotonic()
 
         try:
             response = self.session.post(pdf_url, headers=headers)
