@@ -412,6 +412,7 @@ are skipped, so re-runs only pick up new links.
 ```
 python fetch_mytcasfolio_pdf.py <base_path> <base_url>
 python fetch_mytcasfolio_pdf.py --dry-run [--limit N]
+python fetch_mytcasfolio_pdf.py --refresh [--report FILE] <base_path> <base_url>
 ```
 
 - **Links fetched:** `.../view-folio/<id>` on `folio.mytcas.com` or
@@ -424,6 +425,19 @@ python fetch_mytcasfolio_pdf.py --dry-run [--limit N]
   starts with `%PDF`; nothing is written and no row is updated
   (`<base_path>`/`<base_url>` not needed). Use it to check credentials and the
   API before a real run.
+- **Refresh:** `--refresh` also re-downloads already-mirrored documents
+  (the file is `<base_path>/<basename of local_document_url>`; a
+  `local_document_url` not under `<base_url>` is reported as failed). If
+  the bytes differ from the local copy, the old copy is kept as
+  `<filename>.<YYYYmmdd-HHMMSS>.bak` and the new PDF replaces it under the
+  same name, so `local_document_url` is unchanged; a missing local copy is
+  written back ("restored"); a download that is not a PDF leaves the old
+  copy alone. This assumes TCASFolio PDFs are byte-stable across fetches
+  (not yet verified). The run ends with a report of the updated / new /
+  restored / failed documents — applicant, document slot, the applicant's
+  active applications to the slot's projects with selected majors, and
+  sizes — and `--report FILE` also writes it as a CSV (UTF-8 with BOM).
+  Cannot be combined with `--dry-run`.
 - **Files** (in the current directory): `.mytcas-env` with `TCAS_EMAIL` /
   `TCAS_PASSWORD` (a TCASFolio university account), and `mytcas-token.json`,
   the cached access token (written on login, also in a dry run; delete it to

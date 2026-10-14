@@ -17,6 +17,15 @@ The staff applicant page then links to local_document_url instead of
 document_url. Documents that already have a local_document_url are skipped,
 so the script is safe to re-run.
 
+With --refresh, already-mirrored documents are downloaded again as well and
+compared byte-for-byte with the local copy; a changed PDF replaces it under
+the same filename (so local_document_url is unchanged), and the old copy is
+kept as <filename>.<YYYYmmdd-HHMMSS>.bak. A missing local copy is written
+back. Not-yet-mirrored documents are mirrored as usual. At the end it prints
+a report of the updated / new / restored / failed documents: the applicant,
+the document slot, the applicant's applications to the slot's projects (with
+the selected majors), and the file sizes.
+
 Fetched links are https://folio.mytcas.com/... (the /_/<id> short-link
 form, or /view-folio/<id>) and https://student.mytcas.com/view-folio/<id>;
 others are reported as "wrong url". The folio id is the last path segment.
@@ -24,6 +33,7 @@ others are reported as "wrong url". The folio id is the last path segment.
 Usage (run from the scripts/ directory, inside the project's virtualenv):
     python fetch_mytcasfolio_pdf.py <base_path> <base_url>
     python fetch_mytcasfolio_pdf.py --dry-run [--limit N]
+    python fetch_mytcasfolio_pdf.py --refresh [--report FILE] <base_path> <base_url>
 
     base_path  directory to save the PDFs in
     base_url   public URL that serves base_path (a trailing / is dropped)
@@ -31,6 +41,10 @@ Usage (run from the scripts/ directory, inside the project's virtualenv):
                documents into memory and report size / PDF check; nothing
                is saved and no document is updated (base_path/base_url are
                not needed). The token cache below is still written.
+    --refresh  re-download every document, replacing local copies that
+               changed (see above)
+    --report   with --refresh, also write the report rows to FILE as CSV
+               (UTF-8 with BOM, so Excel shows Thai correctly)
 
 Files (both in the current directory):
     - .mytcas-env with TCAS_EMAIL and TCAS_PASSWORD (a TCASFolio admin
@@ -44,13 +58,17 @@ bootstrap()
 
 import sys
 
+from django.core.exceptions import ObjectDoesNotExist
+
 from appl.models import UploadedDocument
 
 import argparse
+import csv
 import json
 import sys
 import os
 import re
+import shutil
 import requests
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -265,61 +283,27 @@ class TCASFetcher:
             print(f"✗ Error loading token: {e}")
             return False
 
-    def download_pdf(self, pdf_url, folio_id, 
-                     base_path, prefix='', dry_run=False):
+    def download_pdf(self, pdf_url):
         """
-        Download PDF from S3 URL and save it.
+        Download PDF from S3 URL.
 
         Args:
             pdf_url: The S3 pre-signed URL for the PDF
-            folio_id: The folio ID to use as filename
-            dry_run: Download into memory only, without saving
 
         Returns:
-            str: Path to downloaded file, or None if failed
-            (dry_run: tuple (size in bytes, starts with %PDF), or None)
+            bytes: The PDF content, or None if failed
         """
-        if dry_run:
-            try:
-                response = self.session.get(pdf_url)
-            except requests.exceptions.RequestException as e:
-                print(f"✗ Download error: {e}")
-                return None
-            if response.status_code != 200:
-                print(f"✗ Failed to download PDF: HTTP {response.status_code}")
-                return None
-            return (len(response.content), response.content.startswith(b'%PDF'))
-
-        filename = f"{base_path}/{prefix}-{folio_id}.pdf"
-
         try:
-            #print(f"Downloading PDF to {filename}...")
-            response = self.session.get(pdf_url, stream=True)
-
-            if response.status_code == 200:
-                total_size = int(response.headers.get('content-length', 0))
-
-                with open(filename, 'wb') as f:
-                    if total_size == 0:
-                        f.write(response.content)
-                    else:
-                        downloaded = 0
-                        for chunk in response.iter_content(chunk_size=8192):
-                            if chunk:
-                                f.write(chunk)
-                                downloaded += len(chunk)
-                                percent = (downloaded / total_size) * 100
-                                #print(f"  Progress: {percent:.1f}% ({downloaded}/{total_size} bytes)", end='\r')
-
-                #print(f"\n✓ PDF downloaded successfully: {filename}")
-                return filename
-            else:
-                #print(f"✗ Failed to download PDF: HTTP {response.status_code}")
-                return None
-
+            response = self.session.get(pdf_url)
         except requests.exceptions.RequestException as e:
-            #print(f"✗ Download error: {e}")
+            print(f"✗ Download error: {e}")
             return None
+
+        if response.status_code != 200:
+            print(f"✗ Failed to download PDF: HTTP {response.status_code}")
+            return None
+
+        return response.content
 
 
 def extract_folio_id(url):
@@ -362,51 +346,47 @@ def extract_folio_id(url):
     return url
 
 
-def fetch_pdf_main(url, base_path='.', prefix='', dry_run=False):
-    url_or_id = url
-    folio_id = extract_folio_id(url_or_id)
+_fetcher = None
 
-    #print(f"Folio ID: {folio_id}")
 
-    try:
-        # Initialize fetcher
-        fetcher = TCASFetcher()
+def get_fetcher():
+    """Return a TCASFetcher authenticated once for the whole run."""
+    global _fetcher
+    if _fetcher is None:
+        try:
+            fetcher = TCASFetcher()
+        except ValueError as e:
+            print(f"✗ Configuration error: {e}")
+            sys.exit(1)
 
-        # Ensure authenticated
         if not fetcher.ensure_authenticated():
             print("✗ Authentication failed")
             sys.exit(1)
 
-        # Fetch PDF URL
+        _fetcher = fetcher
+    return _fetcher
+
+
+def fetch_pdf_main(url):
+    """Fetch the PDF behind a TCASFolio link. Returns its bytes, or None."""
+    folio_id = extract_folio_id(url)
+    fetcher = get_fetcher()
+
+    try:
         result = fetcher.fetch_pdf_url(folio_id)
-
-        if result:
-            #print("\nResult:")
-            #print(json.dumps(result, indent=2))
-
-            # Extract and display the PDF URL
-            if 'pdf' in result:
-                pdf_url = result['pdf']
-                #print(f"\nPDF URL: {pdf_url}")
-
-                # Download the PDF
-                downloaded_file = fetcher.download_pdf(pdf_url, folio_id, 
-                                                       base_path=base_path, 
-                                                       prefix=prefix,
-                                                       dry_run=dry_run)
-
-                if not downloaded_file:
-                    print("✗ Failed to download PDF")
-                    return None
-                
-                return downloaded_file
-        else:
+        if not result:
             print("✗ Failed to fetch PDF URL")
             return None
+        if 'pdf' not in result:
+            return None
 
-    except ValueError as e:
-        print(f"✗ Configuration error: {e}")
-        return None
+        content = fetcher.download_pdf(result['pdf'])
+        if not content:
+            print("✗ Failed to download PDF")
+            return None
+
+        return content
+
     except Exception as e:
         print(f"✗ Unexpected error: {e}")
         return None
@@ -425,6 +405,33 @@ def random_prefix(length=10):
     return ''.join(random.choice(letters) for i in range(length))
 
 
+def write_file(path, content):
+    """Write content to path atomically (temp file, then os.replace)."""
+    tmp_path = f'{path}.tmp'
+    with open(tmp_path, 'wb') as f:
+        f.write(content)
+    os.replace(tmp_path, path)
+
+
+def mirror_document(d, document_url, base_path, base_url):
+    """
+    Download the PDF of a not-yet-mirrored document to a new file and set
+    its local_document_url. Returns (filename, content), or None.
+    """
+    content = fetch_pdf_main(document_url)
+    if not content:
+        return None
+
+    filename = f'{random_prefix()}-{extract_folio_id(document_url)}.pdf'
+    with open(f'{base_path}/{filename}', 'wb') as f:
+        f.write(content)
+
+    d.local_document_url = f'{base_url}/{filename}'
+    print(f'URL: {d.local_document_url}')
+    d.save()
+    return filename, content
+
+
 def dry_run_fetch(pending, limit):
     import random
     sample = random.sample(pending, min(limit, len(pending)))
@@ -434,18 +441,178 @@ def dry_run_fetch(pending, limit):
     fetched = 0
     for d, document_url in sample:
         print(d.applicant, document_url)
-        result = fetch_pdf_main(document_url, dry_run=True)
+        content = fetch_pdf_main(document_url)
 
-        if not result:
+        if not content:
             print('ERROR: cannot fetch pdf for', d.applicant, document_url)
             continue
 
-        size, is_pdf = result
-        print(f'  {size} bytes, {"PDF" if is_pdf else "NOT A PDF"}')
+        is_pdf = content.startswith(b'%PDF')
+        print(f'  {len(content)} bytes, {"PDF" if is_pdf else "NOT A PDF"}')
         if is_pdf:
             fetched += 1
 
     print(f'DRY RUN: {fetched}/{len(sample)} fetched as PDF')
+
+
+# --refresh statuses, in report order
+REFRESH_STATUSES = ['updated', 'new', 'restored', 'failed', 'unchanged']
+REPORTED_STATUSES = ['updated', 'new', 'restored', 'failed']
+
+
+def refresh_document(d, document_url, base_path, base_url, backup_suffix):
+    """
+    Re-download the PDF of a document and replace the local copy if it
+    changed (the old copy is kept as <file>.<backup_suffix>.bak). A document
+    without a local copy is mirrored as usual.
+
+    Returns a dict with 'status' (one of REFRESH_STATUSES) and file details.
+    """
+    if d.local_document_url == '':
+        result = mirror_document(d, document_url, base_path, base_url)
+        if not result:
+            return {'status': 'failed', 'note': 'cannot fetch pdf'}
+        filename, content = result
+        return {'status': 'new', 'filename': filename,
+                'new_size': len(content)}
+
+    url_prefix = f'{base_url}/'
+    filename = d.local_document_url[len(url_prefix):]
+    if (not d.local_document_url.startswith(url_prefix)
+            or filename == '' or '/' in filename):
+        return {'status': 'failed',
+                'note': 'local_document_url is not under base_url'}
+    path = f'{base_path}/{filename}'
+
+    content = fetch_pdf_main(document_url)
+    if not content:
+        return {'status': 'failed', 'filename': filename,
+                'note': 'cannot fetch pdf'}
+    if not content.startswith(b'%PDF'):
+        return {'status': 'failed', 'filename': filename,
+                'new_size': len(content), 'note': 'not a PDF'}
+
+    if not os.path.exists(path):
+        write_file(path, content)
+        return {'status': 'restored', 'filename': filename,
+                'new_size': len(content), 'note': 'local file was missing'}
+
+    with open(path, 'rb') as f:
+        old_content = f.read()
+
+    # Assumes TCASFolio PDFs are byte-stable (the same folio gives the same
+    # bytes on every fetch); if not, every document would show as updated.
+    if old_content == content:
+        return {'status': 'unchanged', 'filename': filename,
+                'old_size': len(old_content), 'new_size': len(content)}
+
+    backup_filename = f'{filename}.{backup_suffix}.bak'
+    shutil.copy2(path, f'{base_path}/{backup_filename}')
+    write_file(path, content)
+    return {'status': 'updated', 'filename': filename,
+            'old_size': len(old_content), 'new_size': len(content),
+            'backup_filename': backup_filename}
+
+
+def applicant_projects(d):
+    """
+    The applicant's active applications to the projects of the document's
+    slot (all active applications if the slot lists no project), as
+    'project / round [major, ...]' strings.
+    """
+    project_ids = set(d.project_uploaded_document.admission_projects
+                      .values_list('id', flat=True))
+    applications = (d.applicant.get_all_active_applications()
+                    .select_related('admission_project', 'admission_round'))
+
+    items = []
+    for application in applications:
+        if project_ids and application.admission_project_id not in project_ids:
+            continue
+
+        try:
+            majors = application.major_selection.get_majors()
+        except (ObjectDoesNotExist, ValueError):
+            majors = []
+        major_titles = ', '.join(f'{m.number} {m.title}'
+                                 for m in majors if m)
+
+        items.append(f'{application.admission_project.title} / '
+                     f'{application.admission_round} [{major_titles}]')
+    return '; '.join(items)
+
+
+REPORT_FIELDS = [
+    'status', 'applicant_id', 'national_id', 'name', 'email',
+    'document_id', 'document_title', 'projects',
+    'filename', 'old_size', 'new_size', 'backup_filename',
+    'local_document_url', 'document_url', 'note',
+]
+
+
+def report_row(d, document_url, result):
+    applicant = d.applicant
+    return {
+        'status': result['status'],
+        'applicant_id': applicant.id,
+        'national_id': applicant.passport_number or applicant.national_id,
+        'name': applicant.get_full_name(),
+        'email': applicant.email,
+        'document_id': d.id,
+        'document_title': d.project_uploaded_document.title,
+        'projects': applicant_projects(d),
+        'filename': result.get('filename', ''),
+        'old_size': result.get('old_size', ''),
+        'new_size': result.get('new_size', ''),
+        'backup_filename': result.get('backup_filename', ''),
+        'local_document_url': d.local_document_url,
+        'document_url': document_url,
+        'note': result.get('note', ''),
+    }
+
+
+def refresh_fetch(pending, base_path, base_url, report_filename=None):
+    backup_suffix = datetime.now().strftime('%Y%m%d-%H%M%S')
+    counts = {status: 0 for status in REFRESH_STATUSES}
+    rows = []
+
+    for d, document_url in pending:
+        print(d.applicant, document_url)
+        result = refresh_document(d, document_url, base_path, base_url,
+                                  backup_suffix)
+        status = result['status']
+        counts[status] += 1
+        print(f'  {status}', result.get('note', ''))
+
+        if status in REPORTED_STATUSES:
+            rows.append(report_row(d, document_url, result))
+
+    print()
+    print('REFRESH SUMMARY:',
+          ', '.join(f'{status} {counts[status]}' for status in REFRESH_STATUSES))
+
+    rows.sort(key=lambda row: REPORTED_STATUSES.index(row['status']))
+    for row in rows:
+        print()
+        print(f"[{row['status']}] {row['name']} ({row['national_id']}, "
+              f"applicant {row['applicant_id']}, {row['email']})")
+        print(f"  document: {row['document_title']} (id {row['document_id']})")
+        print(f"  projects: {row['projects']}")
+        if row['filename']:
+            print(f"  file: {row['filename']} "
+                  f"{row['old_size']} -> {row['new_size']} bytes"
+                  + (f", old copy: {row['backup_filename']}"
+                     if row['backup_filename'] else ''))
+        if row['note']:
+            print(f"  note: {row['note']}")
+
+    if report_filename:
+        with open(report_filename, 'w', encoding='utf-8-sig', newline='') as f:
+            writer = csv.DictWriter(f, fieldnames=REPORT_FIELDS)
+            writer.writeheader()
+            writer.writerows(rows)
+        print()
+        print(f'Report written to {report_filename}')
 
 
 def main():
@@ -459,16 +626,27 @@ def main():
                         help='fetch a random sample into memory only; save nothing')
     parser.add_argument('--limit', type=int, default=10,
                         help='number of documents to fetch in a dry run (default 10)')
+    parser.add_argument('--refresh', action='store_true',
+                        help='re-download all documents and replace local copies that changed')
+    parser.add_argument('--report',
+                        help='with --refresh, also write the report to this CSV file')
     args = parser.parse_args()
 
+    if args.dry_run and args.refresh:
+        parser.error('--dry-run cannot be used with --refresh')
+    if args.report and not args.refresh:
+        parser.error('--report requires --refresh')
     if not args.dry_run and not (args.base_path and args.base_url):
         parser.error('base_path and base_url are required unless --dry-run')
 
-    documents = UploadedDocument.objects.filter(document_url__contains='mytcas.com').all()
+    documents = (UploadedDocument.objects
+                 .filter(document_url__contains='mytcas.com')
+                 .select_related('applicant', 'project_uploaded_document')
+                 .all())
 
     pending = []
     for d in documents:
-        if d.local_document_url != '':
+        if d.local_document_url != '' and not args.refresh:
             continue
 
         document_url = d.document_url.strip()
@@ -487,20 +665,14 @@ def main():
     if base_url.endswith('/'):
         base_url = base_url[:-1]
 
+    if args.refresh:
+        refresh_fetch(pending, base_path, base_url, args.report)
+        return
+
     for d, document_url in pending:
         print(d.applicant, d.document_url)
-        prefix = random_prefix()
-        filename = fetch_pdf_main(document_url, base_path=base_path, prefix=prefix)
-
-        if not filename:
+        if not mirror_document(d, document_url, base_path, base_url):
             print('ERROR: cannot fetch pdf for', d.applicant, document_url)
-            continue
-
-        base_filename = os.path.basename(filename)
-        d.local_document_url = f'{base_url}/{base_filename}'
-        print(f'URL: {d.local_document_url}')
-        d.save()
 
 if __name__ == '__main__':
     main()
-    
