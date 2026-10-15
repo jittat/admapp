@@ -172,7 +172,10 @@ def load_export_config(project):
 
         for k in this_config:
             if k in config:
-                config[k] += this_config[k]
+                for f in this_config[k]:
+                    if f in config[k]:
+                        raise ValueError(f"Duplicate field '{f}' found in config")
+                    config[k][f] = this_config[k][f]
             else:
                 config[k] = this_config[k]
 
