@@ -116,6 +116,16 @@ Why presigned links rather than a public bucket with random prefixes:
     full-access key, `s3cmd`, or the control panel.
   - Keys can only be created in the control panel.
   - Limited keys don't work on buckets that use bucket policies.
+- **Misleading errors seen in production:**
+  - A wrong access key/secret gave a bare `InvalidArgument` (HTTP 400, no
+    message) on every call, not `InvalidAccessKeyId`.
+  - `S3_PORTFOLIO_ENDPOINT` must be the region endpoint
+    (`https://<region>.digitaloceanspaces.com`), not the bucket's own address
+    (`https://<bucket>.<region>.digitaloceanspaces.com`) that the control
+    panel shows. Otherwise boto3 puts the bucket name in the path a second
+    time.
+  - The build script checks the endpoint at startup, and prints the full S3
+    error with a key hint for a bare `InvalidArgument`.
 - Older community threads report `SignatureDoesNotMatch` on presigned URLs.
   These were mostly about presigned uploads with mismatched headers. Set
   `signature_version='s3v4'` and the correct `region_name` explicitly.

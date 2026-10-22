@@ -139,6 +139,44 @@ class MirrorPathTestCase(SimpleTestCase):
         self.assertIsNone(pz.mirror_local_path('https://example.com/folio/123.pdf'))
 
 
+class S3SettingsAndErrorsTestCase(SimpleTestCase):
+
+    def test_endpoint_includes_bucket(self):
+        self.assertTrue(pz.endpoint_includes_bucket(
+            'https://adm70-portfolio.sgp1.digitaloceanspaces.com', 'adm70-portfolio'))
+        self.assertTrue(pz.endpoint_includes_bucket(
+            'https://ADM70-portfolio.sgp1.digitaloceanspaces.com/', 'adm70-portfolio'))
+        self.assertFalse(pz.endpoint_includes_bucket(
+            'https://sgp1.digitaloceanspaces.com', 'adm70-portfolio'))
+        self.assertFalse(pz.endpoint_includes_bucket(
+            'https://adm70-portfolio-old.sgp1.digitaloceanspaces.com', 'adm70-portfolio'))
+        self.assertFalse(pz.endpoint_includes_bucket('', 'adm70-portfolio'))
+
+    def client_error(self, code, message=None, status=400, request_id='req-1'):
+        from botocore.exceptions import ClientError
+        error = {'Code': code}
+        if message is not None:
+            error['Message'] = message
+        return ClientError({'Error': error,
+                            'ResponseMetadata': {'HTTPStatusCode': status,
+                                                 'RequestId': request_id}},
+                           'CreateMultipartUpload')
+
+    def test_describe_s3_error(self):
+        text = pz.describe_error(self.client_error('AccessDenied', 'Access Denied', 403))
+        self.assertEqual(text, 'S3 error AccessDenied, Access Denied, HTTP 403, '
+                               'request id req-1, in CreateMultipartUpload')
+
+    def test_bare_invalid_argument_hints_at_the_key(self):
+        text = pz.describe_error(self.client_error('InvalidArgument'))
+        self.assertTrue(text.startswith('S3 error InvalidArgument, HTTP 400, '
+                                        'request id req-1, in CreateMultipartUpload.'))
+        self.assertIn('S3_PORTFOLIO_ACCESS_KEY', text)
+
+    def test_other_errors(self):
+        self.assertEqual(pz.describe_error(RuntimeError('boom')), 'RuntimeError: boom')
+
+
 class S3MultipartWriterTestCase(SimpleTestCase):
 
     def test_splits_into_parts_and_completes(self):

@@ -319,6 +319,48 @@ class S3MultipartWriter:
                                            UploadId=self.upload_id)
 
 
+def endpoint_includes_bucket(endpoint, bucket):
+    """True when endpoint is the bucket's own address
+    (https://<bucket>.<region>.digitaloceanspaces.com) instead of the
+    region endpoint; boto3 then puts the bucket name in the path again."""
+    from urllib.parse import urlparse
+
+    if not endpoint or not bucket:
+        return False
+    host = (urlparse(endpoint).hostname or '').lower()
+    return host.startswith(bucket.lower() + '.')
+
+
+def describe_error(e):
+    """A readable one-line description of an exception; for S3 errors the
+    code, message, HTTP status and request id."""
+    response = getattr(e, 'response', None)
+    if not isinstance(response, dict) or 'Error' not in response:
+        return f'{type(e).__name__}: {e}'
+
+    error = response.get('Error') or {}
+    meta = response.get('ResponseMetadata') or {}
+    code = error.get('Code') or '?'
+    message = error.get('Message')
+    parts = [f'S3 error {code}']
+    if message:
+        parts.append(message)
+    if meta.get('HTTPStatusCode'):
+        parts.append(f'HTTP {meta["HTTPStatusCode"]}')
+    request_id = meta.get('RequestId') or (meta.get('HTTPHeaders') or {}).get('x-amz-request-id')
+    if request_id:
+        parts.append(f'request id {request_id}')
+    operation = getattr(e, 'operation_name', None)
+    if operation:
+        parts.append(f'in {operation}')
+    text = ', '.join(parts)
+    if code == 'InvalidArgument' and not message:
+        # What Spaces answered for a wrong access key/secret
+        text += ('. Check S3_PORTFOLIO_ACCESS_KEY / S3_PORTFOLIO_SECRET_KEY '
+                 '(Spaces gives this error for a wrong key) and S3_PORTFOLIO_ENDPOINT.')
+    return text
+
+
 def get_portfolio_s3_client():
     import boto3
     from botocore.config import Config

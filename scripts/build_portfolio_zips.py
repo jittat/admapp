@@ -71,6 +71,11 @@ def check_settings():
                if not getattr(settings, name, '')]
     if missing:
         sys.exit(f'Missing settings: {", ".join(missing)}')
+    if pz.endpoint_includes_bucket(settings.S3_PORTFOLIO_ENDPOINT,
+                                   settings.S3_PORTFOLIO_BUCKET_NAME):
+        sys.exit(f'S3_PORTFOLIO_ENDPOINT {settings.S3_PORTFOLIO_ENDPOINT!r} is the '
+                 f'bucket\'s own address. Use the region endpoint without the bucket '
+                 f'name, e.g. https://<region>.digitaloceanspaces.com')
     if not settings.LOCAL_DOCUMENT_BASE_PATH or not settings.LOCAL_DOCUMENT_BASE_URL:
         print('Warning: LOCAL_DOCUMENT_BASE_PATH/URL not set; '
               'mirrored TCASFolio PDFs will be reported as mirror-missing.')
@@ -131,7 +136,7 @@ def main():
                                           client, bucket, args.batch_size,
                                           rebuild=args.rebuild)
         except Exception as e:
-            print(f'  FAILED: {type(e).__name__}: {e}')
+            print(f'  FAILED: {pz.describe_error(e)}')
             failed.append(major)
             continue
 
