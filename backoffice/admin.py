@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from .models import Profile
 from .models import ProjectMenuConfig
 from .models import APIToken
+from .models import PortfolioZipFile
 
 admin.site.register(Profile)
 
@@ -47,3 +48,17 @@ admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
 admin.site.register(ProjectMenuConfig)
 admin.site.register(APIToken)
+
+@admin.register(PortfolioZipFile)
+class PortfolioZipFileAdmin(admin.ModelAdmin):
+    """Read-only: rows are written by scripts/build_portfolio_zips.py."""
+    list_display = ('admission_project', 'admission_round', 'major',
+                    'batch_number', 'first_seq', 'last_seq',
+                    'file_count', 'missing_count', 'size', 'built_at', 'expires_at')
+    list_filter = ('admission_round', 'admission_project')
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False

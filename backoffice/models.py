@@ -8,6 +8,7 @@ from django.utils.translation import gettext_lazy as _
 from appl.models import AdmissionProject, AdmissionRound, ProjectApplication
 from appl.models import Campus, Faculty
 from appl.models import Major, AdmissionResult, ExamScore
+from appl.models import ProjectUploadedDocument
 from criteria.models import MajorCuptCode
 from regis.models import Applicant
 
@@ -505,3 +506,44 @@ class APIToken(models.Model):
 
     def __str__(self):
         return self.description
+
+
+class PortfolioZipFile(models.Model):
+    """One zip of a major's portfolios, built by
+    scripts/build_portfolio_zips.py and stored in the private
+    S3_PORTFOLIO_BUCKET_NAME bucket. A major is split into batches of
+    applicants (one row per batch); seq numbers run across the whole major.
+    See docs/portfolio-bulk-download.md."""
+
+    admission_project = models.ForeignKey(AdmissionProject,
+                                          on_delete=models.CASCADE)
+    admission_round = models.ForeignKey(AdmissionRound,
+                                        on_delete=models.CASCADE)
+    major = models.ForeignKey(Major,
+                              on_delete=models.CASCADE)
+    project_uploaded_document = models.ForeignKey(ProjectUploadedDocument,
+                                                  on_delete=models.CASCADE)
+
+    batch_number = models.IntegerField()
+    bucket_name = models.CharField(max_length=100)
+    object_key = models.CharField(max_length=500)
+    size = models.BigIntegerField(default=0)
+
+    first_seq = models.IntegerField()
+    last_seq = models.IntegerField()
+    first_applicant_name = models.CharField(max_length=200, blank=True)
+    last_applicant_name = models.CharField(max_length=200, blank=True)
+    applicant_count = models.IntegerField(default=0)
+    file_count = models.IntegerField(default=0)
+    missing_count = models.IntegerField(default=0)
+
+    built_at = models.DateTimeField()
+    expires_at = models.DateTimeField()
+
+    class Meta:
+        unique_together = (('admission_round', 'major',
+                            'project_uploaded_document', 'batch_number'),)
+        ordering = ['major__number', 'batch_number']
+
+    def __str__(self):
+        return f'{self.major} batch {self.batch_number} ({self.first_seq}-{self.last_seq})'

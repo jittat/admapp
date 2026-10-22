@@ -325,6 +325,23 @@ S3_MEDIA_BACKUP_SECRET_KEY = ''
 S3_MEDIA_BACKUP_ACCESS_KEY = ''
 S3_MEDIA_BACKUP_ENDPOINT = ''
 
+# Bulk portfolio zips (see docs/portfolio-bulk-download.md). A private
+# bucket of its own, with a limited key and a lifecycle rule deleting objects
+# after S3_PORTFOLIO_EXPIRY_DAYS.
+S3_PORTFOLIO_BUCKET_NAME = ''
+S3_PORTFOLIO_ENDPOINT = ''
+S3_PORTFOLIO_REGION = ''
+S3_PORTFOLIO_ACCESS_KEY = ''
+S3_PORTFOLIO_SECRET_KEY = ''
+S3_PORTFOLIO_EXPIRY_DAYS = 30
+PORTFOLIO_ZIP_BATCH_SIZE = 100
+
+# Where scripts/fetch_mytcasfolio_pdf.py saves mirrored TCASFolio PDFs: its
+# <base_path> and <base_url> arguments. Used to find the file behind an
+# UploadedDocument.local_document_url.
+LOCAL_DOCUMENT_BASE_PATH = ''
+LOCAL_DOCUMENT_BASE_URL = ''
+
 
 # Manipulate Settings with Local Settings
 

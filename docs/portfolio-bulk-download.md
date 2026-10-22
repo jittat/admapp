@@ -1,8 +1,10 @@
-# Portfolio Bulk Download (design notes)
+# Portfolio Bulk Download
 
-**Status: planned, not implemented.** This records the chosen design and the
-alternatives that were considered, so we can pick it up again when we build
-the feature. Discuss and confirm the open questions before implementing.
+**Status: the build step is implemented** (settings, the
+`backoffice.PortfolioZipFile` model, `backoffice/portfolio_zips.py` and
+`scripts/build_portfolio_zips.py`; see [Build step](#build-step-implemented)).
+**The staff download page (presigned links) is not built yet.** The rest of
+this doc records the design and the alternatives that were considered.
 
 ## Problem
 
@@ -30,26 +32,21 @@ Backoffice users want to download all portfolios (`UploadedDocument`s of one
 
 ### Overview
 
-1. **Build script** (management command or `scripts/` script), run offline.
-   It takes the project, the round, and the `document_key` of the portfolio
+1. **Build script** (`scripts/build_portfolio_zips.py`), run by hand. It
+   takes the project, the round, and the `document_key` of the portfolio
    `ProjectUploadedDocument`.
-   - For each major in the project, it loads that major's applicants in UI
-     order (see [Ordering](#ordering-and-naming)) and splits them into
-     batches of **100 applicants per zip**.
-   - It writes each zip directly to a private DigitalOcean Spaces bucket
-     using **multipart upload**, so no full zip ever sits on local disk. If a
-     temp file is used instead, it must be a single batch, deleted right
-     after upload.
+   - For each major in the project, it loads the major's **paid applicants
+     ordered by name** (see [Ordering and naming](#ordering-and-naming)) and
+     splits them into batches of **100 applicants per zip**.
+   - It streams each zip directly into a private DigitalOcean Space using
+     **multipart upload**, so no zip is ever written to local disk.
    - Entries are stored without compression (`ZIP_STORED`), since PDFs and
      images don't compress.
    - Files missing locally are taken from the encrypted S3 backup and
-     decrypted. This is offline, so it can be slow without causing problems.
-   - Each zip includes an `index.csv` that lists every applicant in the
-     batch, the file(s), and a status: `ok`, `from-backup`, `missing`,
-     `url-only`.
-   - The script records what it built, e.g. in a small model or a JSON
-     manifest per major: object key, batch number, applicant range, size,
-     file count, build time.
+     decrypted. Mirrored TCASFolio PDFs are read from the mirror folder.
+   - Each zip includes an `index.csv` listing every applicant in the batch
+     and what happened to each document.
+   - Each zip is recorded as a `PortfolioZipFile` row.
 
 2. **Storage**: a separate private Space just for these zips, e.g.
    `<portfolio-zip-bucket>`, in the same region as the backup.
@@ -87,13 +84,13 @@ from botocore.config import Config
 s3 = boto3.client('s3',
     region_name='<region>',                                  # e.g. the backup's region
     endpoint_url='https://<region>.digitaloceanspaces.com',  # origin, not CDN
-    aws_access_key_id=settings.PORTFOLIO_ZIP_S3_ACCESS_KEY,
-    aws_secret_access_key=settings.PORTFOLIO_ZIP_S3_SECRET_KEY,
+    aws_access_key_id=settings.S3_PORTFOLIO_ACCESS_KEY,
+    aws_secret_access_key=settings.S3_PORTFOLIO_SECRET_KEY,
     config=Config(signature_version='s3v4'))
 
 url = s3.generate_presigned_url(
     'get_object',
-    Params={'Bucket': settings.PORTFOLIO_ZIP_S3_BUCKET_NAME, 'Key': key},
+    Params={'Bucket': settings.S3_PORTFOLIO_BUCKET_NAME, 'Key': key},
     ExpiresIn=900)
 return HttpResponseRedirect(url)
 ```
@@ -114,7 +111,7 @@ Why presigned links rather than a public bucket with random prefixes:
 - **Per-bucket ("limited") access keys** are available (Read,
   Read/Write/Delete, All). The app should use a Read/Write/Delete key
   limited to the zip Space, separate from the backup key, stored as new
-  `PORTFOLIO_ZIP_S3_*` settings.
+  `S3_PORTFOLIO_*` settings.
   - Limited keys can't change lifecycle rules. Set the rule once with a
     full-access key, `s3cmd`, or the control panel.
   - Keys can only be created in the control panel.
@@ -140,105 +137,196 @@ Why presigned links rather than a public bucket with random prefixes:
 
 ### Ordering and naming
 
-Applicants inside a major should be **ordered as in the UI**. The backoffice
-uses two orders:
+**Applicants**: the major's **paid** applicants only, ordered **by name as in
+the backoffice**. This is the same code as the score-sheet download
+(`download_applicants_score_sheet` in `backoffice/views/reports.py`):
 
-- **Major applicant list** (`load_major_applicants` → `sorted_applicants` in
-  `backoffice/views/projects.py`): paid first, then Thai-collated first
-  name, last name, and national ID.
-- **Score page** (`show_scores` → `sort_applicants_by_calculated_scores`):
-  calculated score, highest first.
+- `load_major_applicants_no_cache` (in `backoffice/views/projects.py`),
+- then `sorted_by_name` (Thai collation of first name, then last name, then
+  national ID),
+- keeping only applicants where `has_paid` is true.
 
-The default plan is the **major applicant list order**; confirm this (open
-question 1).
+`<seq>` is the applicant's position in that order, starting at 1 for the
+whole major, so batch 2 starts at `101`. It is zero-padded to 3 digits (4 if a
+major has 1000 or more applicants). The order can change between builds
+(late payments), so labels show the applicant range by sequence number and
+name, not just "batch 2".
 
-Batch boundaries depend on this order, and it can change between builds
-(e.g. payment status changes, late applicants), so applicant N can move to
-another batch after a rebuild. The page and `index.csv` should therefore show
-the applicant range by **sequence number and name**, not just "batch 2".
-
-**File names are still being worked out.** Current direction:
-
-- **Flat zip with no per-applicant folders.** Each applicant normally has
-  exactly one file, named from the applicant, not from the uploaded file name:
-
-  ```
-  <seq>_<national_id>_<fullname>.<ext>       first (usually only) file
-  <seq>_<national_id>_<fullname>_2.<ext>     second file, if any
-  <seq>_<national_id>_<fullname>_3.<ext>     ...
-  index.csv
-  ```
-
-  Example: `001_1234567890123_สมชาย ใจดี.pdf`, `001_1234567890123_สมชาย ใจดี_2.pdf`.
-- `<seq>` is the applicant's position in the major order, zero-padded
-  (`001`, `002`, ...), so files sort like the UI. It stays the same numbering
-  across all batches of a major (batch 2 starts at `101`).
-- `<ext>` comes from the stored file (usually `pdf`).
-- If an applicant has several files (e.g. a multi-file slot), order them by
-  `rank`, then `id`, so the result is deterministic. The first file gets no
-  suffix, and later ones get `_2`, `_3`, ...
-- The original upload name isn't in the zip file name. Keep it in
-  `index.csv` (`original_filename`, falling back to the stored basename).
-
-Still to decide:
-- The exact `<fullname>` format: with or without a title (prefix), a space or
-  `_` between first and last name, and Thai or English name.
-- Removing characters that are invalid in Windows/macOS file names (`/ \ : *
-  ? " < > |`), and trimming whitespace.
-- Should the first file be `_1` when an applicant has several, for
-  consistency? Current choice: no suffix on the first file.
-- Names are Thai. Python `zipfile` sets the UTF-8 flag automatically for
-  non-ASCII names; check that Windows Explorer and macOS open them correctly.
-
-Other names (proposed):
+**Files in the zip**: flat, with no folder per applicant.
 
 ```
-<object key>  <project-id>/<round-id>/major-<number>/<build-timestamp>/batch-<NN>.zip
-<zip file>    <project short title>_major-<number>_batch-<NN>.zip   (Content-Disposition)
+001_1234567890123_สมชาย_ใจดี.pdf       first (usually only) file
+001_1234567890123_สมชาย_ใจดี_2.pdf     second file, if any
+001_1234567890123_สมชาย_ใจดี_3.pdf     ...
+index.csv
 ```
 
-The download filename can be set with `ResponseContentDisposition` in the
-presigned URL params (check that Spaces honours it).
+- The name is `<seq>_<national_id>_<first_name>_<last_name>`, with no title
+  (prefix). Each part is cleaned by `safe_filename_part()`:
+  - Unicode NFC normalization, keeping Thai vowels and tone marks.
+  - Remove control and invisible characters (e.g. zero-width spaces, common
+    in Thai input) and `\ / : * ? " < > |`.
+  - Turn whitespace inside a name into `_`, trim `_`, `.` and spaces from
+    the ends, and cap at 80 characters.
+  - An empty name becomes `noname`.
+- An applicant's documents are ordered by `rank`, then `id`. The first file
+  in the zip gets no suffix, and later ones get `_2`, `_3`, ...
+- The extension comes from the stored file name, lowercased. Mirrored PDFs
+  are always `.pdf`.
+- Python `zipfile` sets the UTF-8 flag for the Thai names. Entries written
+  from memory get mode 0644, since without it Linux `unzip` creates
+  unreadable files.
 
-### Settings to add
+**`index.csv`** (UTF-8 with a BOM, so Excel shows the Thai names) is the last
+entry in every zip. It has one row per document, or one row for an applicant
+with nothing:
+
+| Column | |
+|---|---|
+| `seq`, `national_id`, `first_name`, `last_name` | the applicant |
+| `zip_filename` | the file in the zip; blank if the document is not included |
+| `original_filename` | the applicant's upload name (or stored basename) |
+| `status` | see below |
+| `document_url` | the link, for link entries |
+
+| Status | Meaning | In zip |
+|---|---|---|
+| `local` | uploaded file, read from `MEDIA_ROOT` | yes |
+| `backup` | uploaded file missing locally, restored from the encrypted S3 backup | yes |
+| `mirror` | link; the mirrored PDF behind `local_document_url`, read from `LOCAL_DOCUMENT_BASE_PATH` | yes |
+| `missing` | uploaded file, neither local nor in the backup | no |
+| `mirror-missing` | link with `local_document_url`, but the file wasn't found | no |
+| `url-only` | link that was never mirrored | no |
+| `no-upload` | applicant has nothing in the slot | no |
+
+**Mirrored PDFs**: `fetch_mytcasfolio_pdf.py <base_path> <base_url>` saves a
+PDF to `<base_path>/<filename>` and sets `local_document_url =
+<base_url>/<filename>`. The settings `LOCAL_DOCUMENT_BASE_PATH` and
+`LOCAL_DOCUMENT_BASE_URL` must hold the same two values.
+`mirror_local_path()` accepts only a URL directly under the base URL, with no
+`/` or `..` in the file name.
+
+**Object key** (major number zero-padded to 3 digits):
 
 ```
-PORTFOLIO_ZIP_S3_BUCKET_NAME
-PORTFOLIO_ZIP_S3_ENDPOINT
-PORTFOLIO_ZIP_S3_REGION
-PORTFOLIO_ZIP_S3_ACCESS_KEY
-PORTFOLIO_ZIP_S3_SECRET_KEY
+<project_id>/<round_id>/major-<NNN>/<YYYYmmdd-HHMMSS>/batch-<NN>.zip
+```
+
+The build timestamp means a rebuild never overwrites a zip that someone may
+be downloading.
+
+For the download step (not built yet): the download file name, e.g.
+`<project short title>_major-<NNN>_batch-<NN>.zip`, can be set with
+`ResponseContentDisposition` in the presigned URL params (check that Spaces
+honours it).
+
+## Build step (implemented)
+
+### Settings (`admapp/settings.py`; real values in `settings_local.py`)
+
+```python
+S3_PORTFOLIO_BUCKET_NAME = ''
+S3_PORTFOLIO_ENDPOINT = ''        # https://<region>.digitaloceanspaces.com
+S3_PORTFOLIO_REGION = ''
+S3_PORTFOLIO_ACCESS_KEY = ''      # limited key, this bucket only
+S3_PORTFOLIO_SECRET_KEY = ''
+S3_PORTFOLIO_EXPIRY_DAYS = 30     # only sets expires_at; S3's lifecycle rule deletes
 PORTFOLIO_ZIP_BATCH_SIZE = 100
-PORTFOLIO_ZIP_LINK_EXPIRES = 900   # seconds
+LOCAL_DOCUMENT_BASE_PATH = ''     # = fetch_mytcasfolio_pdf.py <base_path>
+LOCAL_DOCUMENT_BASE_URL = ''      # = fetch_mytcasfolio_pdf.py <base_url>
 ```
+
+### Model: `backoffice.PortfolioZipFile`
+
+One row per uploaded zip (one batch of one major):
+
+- **Which zip**: `admission_project`, `admission_round`, `major`,
+  `project_uploaded_document`, `batch_number`.
+- **Where it is**: `bucket_name`, `object_key`, `size`.
+- **What's in it**: `first_seq`, `last_seq`, `first_applicant_name`,
+  `last_applicant_name`, `applicant_count`, `file_count`, `missing_count`
+  (applicants with no file in the zip).
+- **When**: `built_at`, `expires_at` (`built_at` + `S3_PORTFOLIO_EXPIRY_DAYS`).
+
+It is unique on (round, major, slot, batch_number) and shown read-only in the
+Django admin. There is no separate build record, since each project is built
+once and a major's rows are replaced as a whole on `--rebuild`.
+
+### Script: `scripts/build_portfolio_zips.py`
+
+```
+cd scripts
+python build_portfolio_zips.py [options] <project_id> <round_id> <document_key>
+
+  --major N [N ...]  only these major numbers (default: all majors)
+  --batch-size N     applicants per zip (default PORTFOLIO_ZIP_BATCH_SIZE)
+  --dry-run          print batches and planned file names; no S3, no DB writes
+  --rebuild          build majors that already have zips again
+```
+
+- **Finding the slot**: the `ProjectUploadedDocument` with `document_key`
+  that is attached to the project or is a common slot. It must be exactly
+  one, otherwise the script exits.
+- **Built majors are skipped**: a major that already has rows is skipped, so
+  re-running after a failure continues with the remaining majors.
+- **All-or-nothing per major**: rows are created only after every batch of
+  the major has uploaded.
+  - On an error, the failing upload is aborted and that major's earlier
+    uploads are deleted. Existing rows are kept, and the script continues
+    with the next major and exits with status 1 at the end.
+- **`--rebuild`**: swaps a major's rows in one transaction, then deletes the
+  old objects.
+- **Dry run**: shows a file missing locally as `backup` without fetching it,
+  so a file that's in neither place shows up only in a real build.
+- **Report**: counts by status for each major, then a list of every document
+  that didn't make it into the zips.
+
+Code is in `backoffice/portfolio_zips.py`:
+- Naming: `safe_filename_part`, `applicant_file_base`.
+- Finding files: `resolve_document`, `mirror_local_path`.
+- Writing: `write_batch_zip` writes a zip into any object that has `write()`.
+- `S3MultipartWriter` is a write-only object that sends a 16 MB part each
+  time its buffer fills.
+  - It has no `tell`/`seek`, so `zipfile` uses its streaming mode.
+  - Memory use is about 16 MB plus one decrypted backup file.
+- `build_major_zips` builds and records one major.
+- `get_portfolio_s3_client()` sets s3v4 and checksums "when required", and
+  can be reused by the download view.
+
+Tests are in `backoffice/test_portfolio_zips.py` (fake S3 client, SQLite).
 
 ### One-time setup
 
 1. Create a private Space `<portfolio-zip-bucket>`.
 2. Add a lifecycle rule: expire objects after 30 days, and abort unfinished
    multipart uploads after 1 day.
-3. Create a limited Read/Write/Delete key for that Space only, and put it in
-   the local settings.
+3. Create a limited Read/Write/Delete key for that Space only, and put it and
+   the other `S3_PORTFOLIO_*` / `LOCAL_DOCUMENT_*` values in
+   `settings_local.py`.
+4. Run `python manage.py migrate backoffice`.
 
-### Open questions
+### Decisions made
 
-1. **Order**: the major applicant list order or the score order? Which
-   applicants are included: all applicants, only those who paid, or only
-   those called for interview?
-2. **Content**: only the portfolio slot, or optionally several slots (e.g.
-   a list of `document_key`s)? Include TCASFolio links that have a mirrored
-   PDF (`local_document_url`)?
-3. **Staleness**: applicants can still upload interview or late documents
-   after a build. Rebuild nightly while the round is open, or have staff
-   request a rebuild? Offer a "changes since last build" zip?
-4. **Trigger**: only run by hand or cron, or should staff be able to request
-   a build ("prepare download") that cron picks up?
-5. **Manifest**: store build records in a model (for the page and audit) or
-   in a JSON manifest object in the Space?
-6. **Data policy**: sign-off for unencrypted copies held in Spaces
+- **Applicants**: paid applicants only, by name as in the backoffice.
+- **Content**: one slot per build (`document_key`). Mirrored TCASFolio PDFs
+  are included.
+- **Names**: first and last name joined by `_`, with no title. Major number
+  zero-padded in object keys.
+- **Records**: a single model (`PortfolioZipFile`).
+- **Upload**: streamed, with no temp file.
+- **Trigger**: run by hand, once per project and round.
+
+### Open questions (download step and later)
+
+1. **Staleness**: applicants can still upload interview or late documents
+   after a build. Is `--rebuild` by hand enough?
+2. **Data policy**: sign-off for unencrypted copies held in Spaces
    (Singapore) for up to 30 days, or use AES-encrypted zips.
-7. **Permission**: anyone who can view the major's scores, or a narrower
+3. **Permission**: anyone who can view the major's scores, or a narrower
    permission?
+4. **Opening the zips**: check that Windows Explorer and macOS open the
+   streamed zips with Thai names. The zips use data descriptors because they
+   are streamed.
 
 ## Alternatives considered
 

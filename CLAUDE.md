@@ -107,11 +107,13 @@ analyses):
   unmaintained since 2018, missing `title_trans`, relative `LOCALE_PATHS`,
   `<html lang>` hardcoded to `en`; all fixed). Client-side translation was
   considered and rejected.
-- `docs/portfolio-bulk-download.md` — **design notes, not implemented**:
-  bulk download of a major's portfolios (`UploadedDocument`) for staff. Chosen
-  plan: an offline script builds 100-applicant zips into a private
-  DigitalOcean Space (30-day lifecycle expiry); backoffice clicks check
-  permission, log, and redirect to a short-lived presigned URL. Includes
-  ordering/naming, Spaces notes, open questions, and the alternatives
-  (streamed batches, nginx `mod_zip`, local-disk build, browser folder
-  download, filters).
+- `docs/portfolio-bulk-download.md` — bulk download of a major's portfolios
+  (`UploadedDocument`) for staff. **Build step implemented**:
+  `scripts/build_portfolio_zips.py` + `backoffice/portfolio_zips.py` stream
+  100-applicant zips (paid applicants by name, flat
+  `<seq>_<national_id>_<first>_<last>[_2].pdf` + `index.csv`, incl. mirrored
+  TCASFolio PDFs) into a private DigitalOcean Space (`S3_PORTFOLIO_*`
+  settings, 30-day lifecycle expiry), recorded as
+  `backoffice.PortfolioZipFile`. **Not built yet**: the staff download page
+  (permission check, log, redirect to a short-lived presigned URL). Also
+  Spaces notes, open questions, and the alternatives considered.
