@@ -107,3 +107,11 @@ analyses):
   unmaintained since 2018, missing `title_trans`, relative `LOCALE_PATHS`,
   `<html lang>` hardcoded to `en`; all fixed). Client-side translation was
   considered and rejected.
+- `docs/portfolio-bulk-download.md` — **design notes, not implemented**:
+  bulk download of a major's portfolios (`UploadedDocument`) for staff. Chosen
+  plan: an offline script builds 100-applicant zips into a private
+  DigitalOcean Space (30-day lifecycle expiry); backoffice clicks check
+  permission, log, and redirect to a short-lived presigned URL. Includes
+  ordering/naming, Spaces notes, open questions, and the alternatives
+  (streamed batches, nginx `mod_zip`, local-disk build, browser folder
+  download, filters).
