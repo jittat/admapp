@@ -115,6 +115,16 @@ urlpatterns = [
         {"with_additional_forms": True},
         name="projects-download-app-sheet-with-additional-forms",
     ),
+    path(
+        "projects/<int:project_id>/<int:round_id>/<int:major_number>/portfolios/",
+        projects.portfolio_zips,
+        name="projects-portfolio-zips",
+    ),
+    path(
+        "projects/<int:project_id>/<int:round_id>/<int:major_number>/portfolios/<int:zip_id>/download/",
+        projects.download_portfolio_zip,
+        name="projects-download-portfolio-zip",
+    ),
     re_path(
         r"^projects/applicants/(\d+)/(\d+)/(\d+)/interview-sheet$",
         reports.download_applicants_interview_sheet,

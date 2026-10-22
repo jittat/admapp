@@ -516,3 +516,48 @@ def delete_objects(client, bucket, keys, log=print):
             client.delete_object(Bucket=bucket, Key=key)
         except Exception as e:
             log(f'  could not delete {key}: {e}')
+
+
+# ---------------------------------------------------------------------------
+# Downloading (backoffice portfolio_zips / download_portfolio_zip views)
+
+def download_filename(zip_file):
+    """ASCII file name for the browser's Save dialog, e.g.
+    portfolio_p12_r3_major-007_batch-01_001-100.zip (Thai in
+    Content-Disposition is unreliable across browsers)."""
+    width = seq_width_for(zip_file.last_seq)
+    return (f'portfolio_p{zip_file.admission_project_id}_r{zip_file.admission_round_id}'
+            f'_major-{zip_file.major.number:03d}_batch-{zip_file.batch_number:02d}'
+            f'_{zip_file.first_seq:0{width}d}-{zip_file.last_seq:0{width}d}.zip')
+
+
+def zip_object_exists(zip_file, client=None):
+    """False when the object is gone (e.g. already deleted by the bucket's
+    lifecycle rule); other S3 errors are raised."""
+    from botocore.exceptions import ClientError
+
+    client = client or get_portfolio_s3_client()
+    try:
+        client.head_object(Bucket=zip_file.bucket_name, Key=zip_file.object_key)
+    except ClientError as e:
+        error = e.response.get('Error') or {}
+        status = (e.response.get('ResponseMetadata') or {}).get('HTTPStatusCode')
+        if status == 404 or error.get('Code') in ('404', 'NoSuchKey', 'NotFound'):
+            return False
+        raise
+    return True
+
+
+def presigned_download_url(zip_file, client=None, expires_in=None):
+    """A GET link to the zip, valid for PORTFOLIO_ZIP_LINK_EXPIRES seconds.
+    Signing is local; no request is made to S3."""
+    client = client or get_portfolio_s3_client()
+    if expires_in is None:
+        expires_in = settings.PORTFOLIO_ZIP_LINK_EXPIRES
+    disposition = f'attachment; filename="{download_filename(zip_file)}"'
+    return client.generate_presigned_url(
+        'get_object',
+        Params={'Bucket': zip_file.bucket_name,
+                'Key': zip_file.object_key,
+                'ResponseContentDisposition': disposition},
+        ExpiresIn=expires_in)

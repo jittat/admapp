@@ -335,6 +335,7 @@ S3_PORTFOLIO_ACCESS_KEY = ''
 S3_PORTFOLIO_SECRET_KEY = ''
 S3_PORTFOLIO_EXPIRY_DAYS = 30
 PORTFOLIO_ZIP_BATCH_SIZE = 100
+PORTFOLIO_ZIP_LINK_EXPIRES = 900   # seconds a presigned download link stays valid
 
 # Where scripts/fetch_mytcasfolio_pdf.py saves mirrored TCASFolio PDFs: its
 # <base_path> and <base_url> arguments. Used to find the file behind an

@@ -1,0 +1,63 @@
+{% extends 'backoffice/base.html' %}
+{% load appl_tags %}
+{% block content %}
+<div class="row">
+  <div class="col-md-12">
+    <p>
+      <a href="{% url 'backoffice:projects-index' project.id admission_round.id %}">&laquo; กลับไปหน้าโครงการ</a>
+    </p>
+    <h2>ดาวน์โหลดพอร์ตโฟลิโอ</h2>
+    <h4>{{ major.number }}. {{ major.title }} &mdash; {{ project.title }} ({{ admission_round }})</h4>
+
+    {% if error_message %}
+      <div class="alert alert-warning">{{ error_message }}</div>
+    {% endif %}
+
+    {% if zip_files %}
+      <table class="table table-striped table-sm table-bordered">
+        <thead>
+          <tr>
+            <th>เอกสาร</th>
+            <th>ชุดที่</th>
+            <th>ลำดับ</th>
+            <th>ผู้สมัคร</th>
+            <th class="text-right">จำนวนไฟล์</th>
+            <th class="text-right">ไม่มีไฟล์</th>
+            <th class="text-right">ขนาด</th>
+            <th>หมดอายุ</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for z in zip_files %}
+            <tr>
+              <td>{{ z.project_uploaded_document.title }}</td>
+              <td>{{ z.batch_number }}</td>
+              <td>{{ z.first_seq }}&ndash;{{ z.last_seq }}</td>
+              <td>{{ z.first_applicant_name }} &ndash; {{ z.last_applicant_name }}</td>
+              <td class="text-right">{{ z.file_count }}</td>
+              <td class="text-right">{{ z.missing_count }}</td>
+              <td class="text-right">{{ z.size|filesizeformat }}</td>
+              <td>{{ z.expires_at|thaidate }}</td>
+              <td>
+                {% if z.is_expired %}
+                  <span class="text-muted">หมดอายุ</span>
+                {% else %}
+                  <a class="btn btn-sm btn-primary" href="{% url 'backoffice:projects-download-portfolio-zip' project.id admission_round.id major.number z.id %}">ดาวน์โหลด</a>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <ul class="text-muted">
+        <li>ผู้สมัครเรียงตามชื่อ เฉพาะผู้ที่ชำระเงินแล้ว ชื่อไฟล์ขึ้นต้นด้วยลำดับของผู้สมัคร</li>
+        <li>ในแต่ละไฟล์ zip มีไฟล์ index.csv ระบุรายชื่อผู้สมัครทุกคนในชุด และเอกสารที่ไม่มีหรือไม่ได้รวมไว้ (คอลัมน์ "ไม่มีไฟล์" คือจำนวนผู้สมัครที่ไม่มีไฟล์ใน zip)</li>
+        <li>เมื่อกดดาวน์โหลด ระบบจะบันทึกการดาวน์โหลดไว้ ลิงก์ดาวน์โหลดใช้ได้ {{ link_expires_minutes }} นาที หากดาวน์โหลดไม่สำเร็จ ให้กดปุ่มดาวน์โหลดใหม่</li>
+      </ul>
+    {% else %}
+      <p>ยังไม่มีไฟล์พอร์ตโฟลิโอสำหรับสาขานี้</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

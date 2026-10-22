@@ -114,6 +114,8 @@ analyses):
   `<seq>_<national_id>_<first>_<last>[_2].pdf` + `index.csv`, incl. mirrored
   TCASFolio PDFs) into a private DigitalOcean Space (`S3_PORTFOLIO_*`
   settings, 30-day lifecycle expiry), recorded as
-  `backoffice.PortfolioZipFile`. **Not built yet**: the staff download page
-  (permission check, log, redirect to a short-lived presigned URL). Also
-  Spaces notes, open questions, and the alternatives considered.
+  `backoffice.PortfolioZipFile`. **Download page implemented**: per-major
+  page linked from the project index "ดาวน์โหลด" menu; the download view
+  checks `can_user_view_applicants_in_major`, writes a `LogItem`, and
+  redirects to a 15-minute presigned URL. Also Spaces notes (incl.
+  misleading errors), open questions, and the alternatives considered.

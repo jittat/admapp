@@ -501,3 +501,239 @@ class BuildMajorZipsTestCase(TestCase):
                   ('001_1000000000001_กมล_ใจดี_2.pdf', 'backup')])],
             [(2, [('', 'no-upload')])],
         ])
+
+
+@override_settings(S3_PORTFOLIO_BUCKET_NAME='portfolio-bucket',
+                   S3_PORTFOLIO_ENDPOINT='https://sgp1.digitaloceanspaces.com',
+                   S3_PORTFOLIO_REGION='sgp1',
+                   S3_PORTFOLIO_ACCESS_KEY='test-access-key',
+                   S3_PORTFOLIO_SECRET_KEY='test-secret-key',
+                   PORTFOLIO_ZIP_LINK_EXPIRES=900)
+class PortfolioZipViewsTestCase(TestCase):
+    """The staff list page, the download redirect, and the project index
+    menu item. Presigned URLs are signed by a real boto3 client with dummy
+    keys (signing is local); head_object is mocked."""
+
+    PASSWORD = 'testpass1234'
+
+    def setUp(self):
+        from django.contrib.auth.models import User
+        from appl.models import (AdmissionProject, AdmissionProjectRound, AdmissionRound,
+                                 Campus, Faculty, Major, ProjectUploadedDocument)
+        from backoffice.models import PortfolioZipFile
+
+        self.admission_round = AdmissionRound.objects.create(
+            number=1, rank=1, is_available=True,
+            acceptance_result_date=datetime.now().date())
+        self.project = AdmissionProject.objects.create(
+            title='Test Project', short_title='Test', base_fee=400, max_num_selections=1)
+        AdmissionProjectRound.objects.create(
+            admission_project=self.project, admission_round=self.admission_round,
+            is_started=True, applicant_info_viewable=True,
+            applying_deadline=datetime.now() + timedelta(days=7),
+            payment_deadline=(datetime.now() + timedelta(days=10)).date())
+        campus = Campus.objects.create(title='Bang Khen', short_title='BK')
+        self.faculty = Faculty.objects.create(title='Engineering', campus=campus)
+        self.other_faculty = Faculty.objects.create(title='Science', campus=campus)
+        self.major = Major.objects.create(
+            number=7, title='วิศวกรรมคอมพิวเตอร์', faculty=self.faculty,
+            admission_project=self.project, slots=10, detail_items_csv='')
+        self.other_major = Major.objects.create(
+            number=8, title='วิศวกรรมไฟฟ้า', faculty=self.faculty,
+            admission_project=self.project, slots=10, detail_items_csv='')
+        self.pud = ProjectUploadedDocument.objects.create(
+            rank=1, title='Portfolio', descriptions='', specifications='PDF',
+            allowed_extentions='pdf', document_key='portfolio')
+
+        now = datetime.now()
+
+        def make_zip(major, batch_number, first, last, expires_at):
+            return PortfolioZipFile.objects.create(
+                admission_project=self.project, admission_round=self.admission_round,
+                major=major, project_uploaded_document=self.pud,
+                batch_number=batch_number, bucket_name='portfolio-bucket',
+                object_key=f'{self.project.id}/{self.admission_round.id}/'
+                           f'major-{major.number:03d}/20261023-090000/batch-{batch_number:02d}.zip',
+                size=712 * 1024 * 1024, first_seq=first, last_seq=last,
+                first_applicant_name='กมล ใจดี', last_applicant_name='ขจร สุขใจ',
+                applicant_count=last - first + 1, file_count=98, missing_count=2,
+                built_at=now, expires_at=expires_at)
+
+        self.zip1 = make_zip(self.major, 1, 1, 100, now + timedelta(days=30))
+        self.zip2 = make_zip(self.major, 2, 101, 150, now + timedelta(days=30))
+        self.expired_zip = make_zip(self.other_major, 1, 1, 20, now - timedelta(days=1))
+        self.other_major_zip = make_zip(self.other_major, 2, 21, 30, now + timedelta(days=30))
+
+        self.user = User.objects.create_user(username='staff1', password=self.PASSWORD)
+        profile = self.user.profile
+        profile.faculty = self.faculty
+        profile.major_number = profile.ANY_MAJOR
+        profile.save()
+        profile.admission_projects.add(self.project)
+
+    def login(self, user=None):
+        self.client.login(username=(user or self.user).username, password=self.PASSWORD)
+
+    def make_other_user(self, faculty=None, major_number=0):
+        from django.contrib.auth.models import User
+        user = User.objects.create_user(username='staff2', password=self.PASSWORD)
+        profile = user.profile
+        profile.faculty = faculty or self.other_faculty
+        profile.major_number = major_number
+        profile.save()
+        profile.admission_projects.add(self.project)
+        return user
+
+    def list_url(self, major=None):
+        from django.urls import reverse
+        return reverse('backoffice:projects-portfolio-zips',
+                       args=[self.project.id, self.admission_round.id,
+                             (major or self.major).number])
+
+    def download_url(self, zip_file, major=None):
+        from django.urls import reverse
+        return reverse('backoffice:projects-download-portfolio-zip',
+                       args=[self.project.id, self.admission_round.id,
+                             (major or zip_file.major).number, zip_file.id])
+
+    def mock_head(self, exists=True, error_code='404', status=404):
+        from unittest import mock
+        from botocore.exceptions import ClientError
+
+        def head_object(self_client, **kwargs):
+            if not exists:
+                raise ClientError({'Error': {'Code': error_code},
+                                   'ResponseMetadata': {'HTTPStatusCode': status}},
+                                  'HeadObject')
+            return {}
+        return mock.patch('botocore.client.BaseClient._make_api_call',
+                          autospec=True,
+                          side_effect=lambda client, op, params: head_object(client, **params))
+
+    def download_logs(self):
+        from regis.models import LogItem
+        return list(LogItem.objects.filter(message__startswith='Portfolio zip download'))
+
+    # -- list page --
+
+    def test_list_page_shows_the_majors_zips(self):
+        self.login()
+        response = self.client.get(self.list_url())
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(list(response.context['zip_files']), [self.zip1, self.zip2])
+        self.assertContains(response, self.download_url(self.zip1))
+        self.assertContains(response, self.download_url(self.zip2))
+        self.assertContains(response, '101&ndash;150')
+        self.assertContains(response, '712.0')
+        self.assertNotContains(response, self.download_url(self.other_major_zip))
+
+    def test_expired_zip_has_no_download_button(self):
+        self.login()
+        response = self.client.get(self.list_url(self.other_major))
+        self.assertNotContains(response, self.download_url(self.expired_zip))
+        self.assertContains(response, self.download_url(self.other_major_zip))
+        self.assertContains(response, 'หมดอายุ</span>')
+
+    def test_other_faculty_and_other_major_users_are_redirected(self):
+        for user in [self.make_other_user(),
+                     self.make_other_user_for_major(self.other_major.number)]:
+            self.login(user)
+            for url in [self.list_url(), self.download_url(self.zip1)]:
+                response = self.client.get(url)
+                self.assertRedirects(response, '/backoffice/', fetch_redirect_response=False)
+        self.assertEqual(self.download_logs(), [])
+
+    def make_other_user_for_major(self, major_number):
+        from django.contrib.auth.models import User
+        user = User.objects.create_user(username=f'staff-major-{major_number}',
+                                        password=self.PASSWORD)
+        profile = user.profile
+        profile.faculty = self.faculty
+        profile.major_number = major_number
+        profile.save()
+        profile.admission_projects.add(self.project)
+        return user
+
+    def test_not_logged_in(self):
+        response = self.client.get(self.download_url(self.zip1))
+        self.assertEqual(response.status_code, 302)
+        self.assertNotIn('digitaloceanspaces', response['Location'])
+
+    # -- download --
+
+    def test_download_redirects_to_presigned_url_and_logs(self):
+        from urllib.parse import parse_qs, urlparse
+
+        self.login()
+        with self.mock_head(exists=True):
+            response = self.client.get(self.download_url(self.zip1))
+        self.assertEqual(response.status_code, 302)
+
+        url = urlparse(response['Location'])
+        query = parse_qs(url.query)
+        # boto3 uses path-style addressing with a custom endpoint
+        self.assertEqual(url.netloc, 'sgp1.digitaloceanspaces.com')
+        self.assertEqual(url.path, '/portfolio-bucket/' + self.zip1.object_key)
+        self.assertEqual(query['X-Amz-Expires'], ['900'])
+        self.assertIn('X-Amz-Signature', query)
+        self.assertEqual(query['response-content-disposition'],
+                         [f'attachment; filename="portfolio_p{self.project.id}_'
+                          f'r{self.admission_round.id}_major-007_batch-01_001-100.zip"'])
+
+        logs = self.download_logs()
+        self.assertEqual(len(logs), 1)
+        self.assertEqual(logs[0].message,
+                         f'Portfolio zip download by staff1: project {self.project.id} '
+                         f'round {self.admission_round.id} major 7 batch 1')
+        self.assertEqual(logs[0].request_ip, '127.0.0.1')
+
+    def test_zip_of_another_major_is_404(self):
+        self.login()
+        response = self.client.get(self.download_url(self.other_major_zip, major=self.major))
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(self.download_logs(), [])
+
+    def test_expired_zip_shows_message(self):
+        self.login()
+        with self.mock_head(exists=True) as head:
+            response = self.client.get(self.download_url(self.expired_zip))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'ไฟล์ชุดที่ 1 หมดอายุแล้ว')
+        head.assert_not_called()
+        self.assertEqual(self.download_logs(), [])
+
+    def test_missing_object_shows_message(self):
+        self.login()
+        with self.mock_head(exists=False):
+            response = self.client.get(self.download_url(self.zip1))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'ไม่พบไฟล์ชุดที่ 1')
+        self.assertEqual(self.download_logs(), [])
+
+    def test_s3_error_shows_message(self):
+        self.login()
+        with self.mock_head(exists=False, error_code='InvalidArgument', status=400):
+            with self.assertLogs('backoffice.views.projects', level='ERROR'):
+                response = self.client.get(self.download_url(self.zip1))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'ไม่สามารถดาวน์โหลดได้ในขณะนี้')
+        self.assertEqual(self.download_logs(), [])
+
+    # -- project index --
+
+    def test_project_index_menu_item_only_for_majors_with_zips(self):
+        from django.urls import reverse
+        from appl.models import Major
+
+        no_zip_major = Major.objects.create(
+            number=9, title='วิศวกรรมเครื่องกล', faculty=self.faculty,
+            admission_project=self.project, slots=10, detail_items_csv='')
+        self.login()
+        response = self.client.get(reverse('backoffice:projects-index',
+                                           args=[self.project.id, self.admission_round.id]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.list_url(self.major))
+        self.assertContains(response, self.list_url(self.other_major))
+        self.assertNotContains(response, self.list_url(no_zip_major))
+        counts = {m.number: m.portfolio_zip_count for m in response.context['majors']}
+        self.assertEqual(counts, {7: 2, 8: 1, 9: 0})

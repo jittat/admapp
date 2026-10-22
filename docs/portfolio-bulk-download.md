@@ -1,10 +1,14 @@
 # Portfolio Bulk Download
 
-**Status: the build step is implemented** (settings, the
-`backoffice.PortfolioZipFile` model, `backoffice/portfolio_zips.py` and
-`scripts/build_portfolio_zips.py`; see [Build step](#build-step-implemented)).
-**The staff download page (presigned links) is not built yet.** The rest of
-this doc records the design and the alternatives that were considered.
+**Status: implemented.**
+- The build step: settings, the `backoffice.PortfolioZipFile` model,
+  `backoffice/portfolio_zips.py` and `scripts/build_portfolio_zips.py`. See
+  [Build step](#build-step-implemented).
+- The staff download page with presigned links. See
+  [Download page](#download-page-implemented).
+
+The rest of this doc records the design and the alternatives that were
+considered.
 
 ## Problem
 
@@ -54,15 +58,14 @@ Backoffice users want to download all portfolios (`UploadedDocument`s of one
      and aborts unfinished multipart uploads after 1 day.
    - Objects are private. No public ACL and no CDN address.
 
-3. **Download**: a backoffice page per major lists its zips, e.g.
-   "Batch 1: applicants 1–100 (712 MB, built 2026-10-22 09:00)".
-   - When the user clicks a batch, Django checks the user's permission for
-     that project/major (reuse the existing major-level checks used by the
-     score/applicant pages) and writes a `LogItem`.
-   - Django then generates a **presigned GET URL** (expiring after about
-     15–30 minutes) and redirects to it. The browser downloads straight from
-     Spaces, so gunicorn and nginx aren't in the path.
-   - If a zip has expired or was never built, the page says so.
+3. **Download**: a backoffice page per major lists its zips (see
+   [Download page](#download-page-implemented)).
+   - When the user clicks a zip, Django checks the user's permission for
+     that project/major and writes a `LogItem`.
+   - Django then generates a **presigned GET URL** valid for 15 minutes and
+     redirects to it. The browser downloads straight from Spaces, so
+     gunicorn and nginx aren't in the path.
+   - If a zip has expired or is gone, the page says so.
 
 ### Presigned links (background)
 
@@ -225,10 +228,13 @@ PDF to `<base_path>/<filename>` and sets `local_document_url =
 The build timestamp means a rebuild never overwrites a zip that someone may
 be downloading.
 
-For the download step (not built yet): the download file name, e.g.
-`<project short title>_major-<NNN>_batch-<NN>.zip`, can be set with
-`ResponseContentDisposition` in the presigned URL params (check that Spaces
-honours it).
+**Download file name** (set with `ResponseContentDisposition` on the
+presigned link; ASCII only, since Thai in that header is unreliable across
+browsers):
+
+```
+portfolio_p<project_id>_r<round_id>_major-<NNN>_batch-<NN>_<first seq>-<last seq>.zip
+```
 
 ## Build step (implemented)
 
@@ -242,6 +248,7 @@ S3_PORTFOLIO_ACCESS_KEY = ''      # limited key, this bucket only
 S3_PORTFOLIO_SECRET_KEY = ''
 S3_PORTFOLIO_EXPIRY_DAYS = 30     # only sets expires_at; S3's lifecycle rule deletes
 PORTFOLIO_ZIP_BATCH_SIZE = 100
+PORTFOLIO_ZIP_LINK_EXPIRES = 900  # seconds a presigned download link stays valid
 LOCAL_DOCUMENT_BASE_PATH = ''     # = fetch_mytcasfolio_pdf.py <base_path>
 LOCAL_DOCUMENT_BASE_URL = ''      # = fetch_mytcasfolio_pdf.py <base_url>
 ```
@@ -326,15 +333,56 @@ Tests are in `backoffice/test_portfolio_zips.py` (fake S3 client, SQLite).
 - **Upload**: streamed, with no temp file.
 - **Trigger**: run by hand, once per project and round.
 
-### Open questions (download step and later)
+## Download page (implemented)
+
+### Where staff find it
+
+On the project's major list (`backoffice/projects/index.html`), each major's
+"ดาวน์โหลด" menu has "พอร์ตโฟลิโอ (zip)". It shows only when the major has
+unexpired zips:
+- `projects.index` counts them with `load_major_portfolio_zip_counts`, which
+  sets `major.portfolio_zip_count`.
+- The menu flag `download-portfolio-zips` (default on) can hide it per
+  project/round through `ProjectMenuConfig`.
+
+The menu is inside the `applicant_info_viewable` part of that page.
+
+### URLs and views (`backoffice/views/projects.py`)
+
+```
+projects/<project_id>/<round_id>/<major_number>/portfolios/                    projects-portfolio-zips
+projects/<project_id>/<round_id>/<major_number>/portfolios/<zip_id>/download/  projects-download-portfolio-zip
+```
+
+- **Permission**: both views use `can_user_view_applicants_in_major`, the
+  same as the major's other downloads. Without permission, they redirect to
+  the backoffice index.
+- **`portfolio_zips`** lists the major's `PortfolioZipFile` rows for the round
+  (template `backoffice/projects/portfolio_zips.html`, Thai only). Expired
+  rows show "หมดอายุ" and have no button.
+- **`download_portfolio_zip`** (GET):
+  1. Loads the row and checks it belongs to the project, round and major in
+     the URL, otherwise 404.
+  2. Checks expiry, then `head_object`. An expired or missing zip, or any
+     S3 error, re-renders the list with a message. S3 errors are also
+     logged to `backoffice.views.projects` with `describe_error`.
+  3. Writes `LogItem("Portfolio zip download by <username>: project <p>
+     round <r> major <n> batch <b>")` with the request IP.
+  4. Redirects (302) to `presigned_download_url()`.
+- **Link expiry**: `PORTFOLIO_ZIP_LINK_EXPIRES` (900 s). A download that has
+  started finishes after the link expires; resuming needs a new click.
+- **Address style**: boto3 signs path-style URLs for a custom endpoint
+  (`https://<region>.digitaloceanspaces.com/<bucket>/<key>?X-Amz-...`).
+
+Tests are in `PortfolioZipViewsTestCase` in `backoffice/test_portfolio_zips.py`.
+
+### Open questions
 
 1. **Staleness**: applicants can still upload interview or late documents
    after a build. Is `--rebuild` by hand enough?
 2. **Data policy**: sign-off for unencrypted copies held in Spaces
    (Singapore) for up to 30 days, or use AES-encrypted zips.
-3. **Permission**: anyone who can view the major's scores, or a narrower
-   permission?
-4. **Opening the zips**: check that Windows Explorer and macOS open the
+3. **Opening the zips**: check that Windows Explorer and macOS open the
    streamed zips with Thai names. The zips use data descriptors because they
    are streamed.
 

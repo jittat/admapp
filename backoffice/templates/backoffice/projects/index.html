@@ -208,6 +208,9 @@
                       <a class="dropdown-item {% dnone_flag menu_flags 'download-gen-info-interview' %}" href="{% url 'backoffice:projects-download-app-sheet-only-interview' project.id admission_round.id major.number %}">ข้อมูลผู้มีสิทธิ์สอบสัมภาษณ์</a>
                       <a class="dropdown-item {% dnone_flag menu_flags 'download-scores-only-interview' %}" href="{% url 'backoffice:projects-download-app-interview-score-sheet' project.id admission_round.id major.number %}">ดาวน์โหลดรายงานคะแนน</a>
                       <a class="dropdown-item {% dnone_flag menu_flags 'download-interview-form' %}" href="{% url 'backoffice:projects-download-app-interview-sheet' project.id admission_round.id major.number %}">ฟอร์มสัมภาษณ์</a>
+                      {% if major.portfolio_zip_count %}
+                        <a class="dropdown-item {% dnone_flag menu_flags 'download-portfolio-zips' %}" href="{% url 'backoffice:projects-portfolio-zips' project.id admission_round.id major.number %}">พอร์ตโฟลิโอ (zip)</a>
+                      {% endif %}
                     </div>
                   </div>
                 {% endif %}

@@ -34,6 +34,7 @@ DEFAULT_MENU_FLAGS = {
     'download-scores-only-interview': False,
     'download-gen-info-interview': False,
     'download-interview-form': False,
+    'download-portfolio-zips': True,     # shown only for majors with built zips
 
     # messages
     'project_index_message': "",

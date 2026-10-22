@@ -1,6 +1,8 @@
 import json
+import logging
 from datetime import datetime
 
+from django.conf import settings
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseNotFound
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
@@ -11,10 +13,13 @@ from appl.models import ProjectUploadedDocument, UploadedDocument, ExamScoreProv
 from appl.models import ApplicantAdditionalAdmissionFormValue, MajorAdditionalAdmissionFormField
 from backoffice.decorators import user_login_required
 from backoffice.models import CheckMarkGroup, JudgeComment, MajorInterviewCallDecision, InterviewDescription, AdmissionProjectMajorCuptCodeInterviewDescription, ProjectMenuConfig
+from backoffice.models import PortfolioZipFile
 from backoffice.permissions import can_user_view_project, can_user_view_applicant_in_major, \
     can_user_view_applicants_in_major
 from regis.models import Applicant, LogItem
 from supplements.models import load_supplement_configs_with_instance
+
+logger = logging.getLogger(__name__)
 
 PROJECTS_WITH_SUPPLEMENTS = [
     35,   # med
@@ -434,6 +439,19 @@ def load_major_additional_form_fields(project, majors):
         m.has_additional_form_fields = m.id in major_field_map
 
 
+def load_major_portfolio_zip_counts(admission_round, project, majors):
+    from django.db.models import Count
+
+    counts = dict(PortfolioZipFile.objects
+                  .filter(admission_project=project,
+                          admission_round=admission_round,
+                          expires_at__gt=datetime.now())
+                  .values_list('major_id')
+                  .annotate(count=Count('id')))
+    for m in majors:
+        m.portfolio_zip_count = counts.get(m.id, 0)
+
+
 @user_login_required
 def index(request, project_id, round_id):
     user = request.user
@@ -483,6 +501,7 @@ def index(request, project_id, round_id):
                                 faculty,
                                 majors)
     load_major_additional_form_fields(project, majors)
+    load_major_portfolio_zip_counts(admission_round, project, majors)
 
     menu_flags = ProjectMenuConfig.load_menu_config_flags(admission_round, project)
     
@@ -1937,4 +1956,78 @@ def list_major_interview_status_dashboard(request, project_id, round_id):
     return list_major_interview_status_response(request, project_id, round_id)
 
 
+def render_portfolio_zips(request, project, admission_round, major, error_message=''):
+    zip_files = list(PortfolioZipFile.objects
+                     .filter(admission_project=project,
+                             admission_round=admission_round,
+                             major=major)
+                     .select_related('project_uploaded_document')
+                     .order_by('project_uploaded_document__rank',
+                               'project_uploaded_document_id',
+                               'batch_number'))
+    now = datetime.now()
+    for z in zip_files:
+        z.is_expired = z.expires_at <= now
 
+    return render(request,
+                  'backoffice/projects/portfolio_zips.html',
+                  {'project': project,
+                   'admission_round': admission_round,
+                   'major': major,
+                   'zip_files': zip_files,
+                   'error_message': error_message,
+                   'link_expires_minutes': settings.PORTFOLIO_ZIP_LINK_EXPIRES // 60})
+
+
+@user_login_required
+def portfolio_zips(request, project_id, round_id, major_number):
+    """The major's portfolio zips (built by scripts/build_portfolio_zips.py)."""
+    project = get_object_or_404(AdmissionProject, pk=project_id)
+    admission_round = get_object_or_404(AdmissionRound, pk=round_id)
+    major = Major.get_by_project_number(project, major_number)
+
+    if not major or not can_user_view_applicants_in_major(request.user, project, major):
+        return redirect(reverse('backoffice:index'))
+
+    return render_portfolio_zips(request, project, admission_round, major)
+
+
+@user_login_required
+def download_portfolio_zip(request, project_id, round_id, major_number, zip_id):
+    """Log the download and redirect to a short-lived presigned S3 link."""
+    from backoffice import portfolio_zips as pz
+
+    project = get_object_or_404(AdmissionProject, pk=project_id)
+    admission_round = get_object_or_404(AdmissionRound, pk=round_id)
+    major = Major.get_by_project_number(project, major_number)
+
+    if not major or not can_user_view_applicants_in_major(request.user, project, major):
+        return redirect(reverse('backoffice:index'))
+
+    zip_file = get_object_or_404(PortfolioZipFile,
+                                 pk=zip_id,
+                                 admission_project=project,
+                                 admission_round=admission_round,
+                                 major=major)
+
+    if zip_file.expires_at <= datetime.now():
+        return render_portfolio_zips(request, project, admission_round, major,
+                                     f'ไฟล์ชุดที่ {zip_file.batch_number} หมดอายุแล้ว')
+
+    try:
+        client = pz.get_portfolio_s3_client()
+        if not pz.zip_object_exists(zip_file, client):
+            return render_portfolio_zips(request, project, admission_round, major,
+                                         f'ไม่พบไฟล์ชุดที่ {zip_file.batch_number} '
+                                         '(อาจหมดอายุและถูกลบไปแล้ว)')
+        url = pz.presigned_download_url(zip_file, client)
+    except Exception as e:
+        logger.error('Portfolio zip %s: %s', zip_file.id, pz.describe_error(e))
+        return render_portfolio_zips(request, project, admission_round, major,
+                                     'ไม่สามารถดาวน์โหลดได้ในขณะนี้ กรุณาลองใหม่ภายหลัง')
+
+    LogItem.create(f'Portfolio zip download by {request.user.username}: '
+                   f'project {project.id} round {admission_round.id} '
+                   f'major {major.number} batch {zip_file.batch_number}'[:200],
+                   None, request)
+    return redirect(url)
