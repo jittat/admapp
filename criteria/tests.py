@@ -1445,6 +1445,178 @@ class AdditionalFolioCriteriaTestCase(SimpleTestCase):
         self.assertNotIn('folio_criteria', row)
 
 
+class CopyToProjectsTestCase(SimpleTestCase):
+    """apply_copy_to_projects appends copies of export rows under new project
+    ids. Entries are keyed like custom_comments ("<program+major>-<project
+    id>"), plus "*-<project id>" for every major of that project."""
+
+    CATALOG = {'C2805': 'Admission (ใช้คะแนน TPAT3)',
+               'C2806': 'Admission (อื่น ๆ)'}
+
+    def make_row(self, program_id='10020104212301A', major_id='',
+                 project_id='C2800', slots=10):
+        return {
+            'project_id': project_id,
+            'project_name_th': 'Admission',
+            'program_id': program_id,
+            'major_id': major_id,
+            'type': '3_2570',
+            'slots': slots,
+        }
+
+    def apply(self, config, rows, catalog=None):
+        from criteria.views.cuptexport import apply_copy_to_projects
+
+        if catalog is None:
+            catalog = self.CATALOG
+        with mock.patch('builtins.print'):
+            apply_copy_to_projects({'copy_to_projects': config}, rows, catalog)
+        return rows
+
+    def test_no_config_key_leaves_rows_alone(self):
+        from criteria.views.cuptexport import apply_copy_to_projects
+
+        rows = [self.make_row()]
+        apply_copy_to_projects({}, rows, self.CATALOG)
+
+        self.assertEqual(len(rows), 1)
+
+    def test_exact_key_copies_only_that_major(self):
+        rows = [self.make_row(),
+                self.make_row(program_id='10020105303201A')]
+
+        self.apply({'10020104212301A-C2800': ['C2805']}, rows)
+
+        self.assertEqual([(r['project_id'], r['program_id']) for r in rows],
+                         [('C2800', '10020104212301A'),
+                          ('C2800', '10020105303201A'),
+                          ('C2805', '10020104212301A')])
+
+    def test_star_key_copies_every_major_of_that_project_only(self):
+        rows = [self.make_row(),
+                self.make_row(program_id='10020105303201A'),
+                self.make_row(project_id='C2900')]
+
+        self.apply({'*-C2800': ['C2805']}, rows)
+
+        copies = rows[3:]
+        self.assertEqual([(r['project_id'], r['program_id']) for r in copies],
+                         [('C2805', '10020104212301A'),
+                          ('C2805', '10020105303201A')])
+
+    def test_exact_and_star_ids_are_merged_in_order_without_duplicates(self):
+        rows = [self.make_row()]
+
+        self.apply({'10020104212301A-C2800': ['C2806', 'C2805'],
+                    '*-C2800': ['C2805', 'C2807']}, rows)
+
+        self.assertEqual([r['project_id'] for r in rows],
+                         ['C2800', 'C2806', 'C2805', 'C2807'])
+
+    def test_row_keyed_by_program_and_major_code(self):
+        row = self.make_row(program_id='10020105303201A', major_id='10')
+        rows = [row]
+
+        self.apply({'10020105303201A010-C2800': ['C2805']}, rows)
+
+        self.assertEqual(len(rows), 2)
+        self.assertEqual(rows[1]['major_id'], '10')
+
+    def test_copy_is_a_separate_dict(self):
+        row = self.make_row()
+        rows = [row]
+
+        self.apply({'*-C2800': ['C2805']}, rows)
+        rows[1]['slots'] = 99
+
+        self.assertIsNot(rows[1], row)
+        self.assertEqual(row['slots'], 10)
+        self.assertEqual(row['project_id'], 'C2800')
+
+    def test_copies_are_not_copied_again(self):
+        # C2800 -> C2805, and a C2805 entry exists too; the C2805 copy must
+        # not itself be copied.
+        rows = [self.make_row()]
+
+        self.apply({'*-C2800': ['C2805'],
+                    '*-C2805': ['C2806']}, rows)
+
+        self.assertEqual([r['project_id'] for r in rows], ['C2800', 'C2805'])
+
+    def test_copy_to_own_project_id_is_skipped(self):
+        rows = [self.make_row()]
+
+        self.apply({'*-C2800': ['C2800']}, rows)
+
+        self.assertEqual(len(rows), 1)
+
+    def test_name_from_catalog_other_columns_kept(self):
+        rows = [self.make_row()]
+
+        self.apply({'*-C2800': ['C2805']}, rows)
+
+        copy = rows[1]
+        self.assertEqual(copy['project_name_th'], 'Admission (ใช้คะแนน TPAT3)')
+        self.assertEqual(copy['type'], '3_2570')
+        self.assertEqual(copy['slots'], 10)
+
+    def test_missing_catalog_entry_keeps_source_name(self):
+        rows = [self.make_row()]
+
+        self.apply({'*-C2800': ['C2899']}, rows)
+
+        self.assertEqual(rows[1]['project_id'], 'C2899')
+        self.assertEqual(rows[1]['project_name_th'], 'Admission')
+
+    def test_validation_messages_list_is_not_shared(self):
+        row = self.make_row()
+        row['validation_messages'] = []
+        rows = [row]
+
+        self.apply({'*-C2800': ['C2805']}, rows)
+        rows[1]['validation_messages'].append('copy only')
+
+        self.assertEqual(row['validation_messages'], [])
+
+
+class CopyToProjectsUpdateProjectInformationTestCase(TestCase):
+    """update_project_information copies rows before applying the other
+    options, so options keyed by the new project id reach the copy."""
+
+    def test_custom_comments_keyed_by_new_id_reach_the_copy(self):
+        from types import SimpleNamespace
+        from criteria.models import CuptExportConfig
+        from criteria.views.cuptexport import update_project_information
+
+        project = AdmissionProject.objects.create(
+            title='P', short_title='P', cupt_code='C2800')
+        CuptExportConfig.objects.create(
+            admission_project=project,
+            config_json=json.dumps({
+                'copy_to_projects': {'10020104212301A-C2800': ['C2805']},
+                'custom_comments': {'10020104212301A-C2805': 'เฉพาะสำเนา'},
+            }))
+
+        cupt_code = SimpleNamespace(
+            get_program_major_code_as_str=lambda: '10020104212301A')
+        row = {
+            'project_id': 'C2800',
+            'project_name_th': 'P',
+            'program_id': '10020104212301A',
+            'major_id': '',
+            'curriculum_major': SimpleNamespace(id=1, cupt_code=cupt_code),
+            'slots': 10,
+        }
+        rows = [row]
+
+        with mock.patch('builtins.print'):
+            update_project_information(project, rows)
+
+        self.assertEqual([r['project_id'] for r in rows], ['C2800', 'C2805'])
+        self.assertNotIn('condition', rows[0])
+        self.assertEqual(rows[1]['condition'], 'เฉพาะสำเนา')
+
+
 class CriteriaReportIndexTestCase(TestCase):
     """The criteria report landing page (/backoffice/criteria/report/) links
     the two cross-project additional-fields reports and shows per-project

@@ -8,9 +8,12 @@ from django.core.exceptions import ValidationError
 class CuptExportConfig(models.Model):
     admission_project = models.ForeignKey(AdmissionProject,
                                           on_delete=models.CASCADE)
+    title = models.CharField(max_length=200, blank=True)
     config_json = models.TextField(blank=True)
 
     def __str__(self):
+        if self.title:
+            return f'{self.title} ({self.admission_project.title})'
         return self.admission_project.title
 
     def clean(self):

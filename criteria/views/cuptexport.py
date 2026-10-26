@@ -988,9 +988,67 @@ def apply_additional_folio_criteria(project_export_config, rows):
             if text:
                 r['folio_criteria'] += '\n' + text
 
+COPY_TO_PROJECTS_ALL_MAJORS_KEY = '*'
+
+def apply_copy_to_projects(project_export_config, rows, additional_projects):
+    """Appends copies of rows under new project ids, from `copy_to_projects`.
+
+    `copy_to_projects` is keyed like `custom_comments` ("<program+major>-<project
+    id>"), plus "*-<project id>" for every major of that project; each value
+    is a list of new project ids.  Only the original rows are copied, so a
+    copy is never copied again.  A copy keeps every column of its source
+    except project_id, and project_name_th, which comes from the `projects`
+    catalog.
+    """
+    if 'copy_to_projects' not in project_export_config:
+        return
+
+    copy_config = export_options_as_dict(project_export_config['copy_to_projects'])
+
+    copies = []
+    for r in list(rows):
+        project_id, pkey = row_export_config_key(r)
+        new_project_ids = []
+        for key in [(project_id, pkey), (project_id, COPY_TO_PROJECTS_ALL_MAJORS_KEY)]:
+            for new_project_id in copy_config.get(key, []):
+                if new_project_id not in new_project_ids:
+                    new_project_ids.append(new_project_id)
+
+        for new_project_id in new_project_ids:
+            if new_project_id == project_id:
+                print(f'copy_to_projects: {pkey}-{project_id} copied to itself, skipped')
+                continue
+
+            c = dict(r)
+            if 'validation_messages' in c:
+                c['validation_messages'] = list(c['validation_messages'])
+            c['project_id'] = new_project_id
+            if new_project_id in additional_projects:
+                c['project_name_th'] = additional_projects[new_project_id]
+            else:
+                print(f'copy_to_projects: {new_project_id} not in projects catalog, '
+                      f'keeping project_name_th of {project_id}')
+            copies.append(c)
+
+    rows += copies
+
+
+def print_duplicate_rows(rows):
+    """Prints each (project_id, program_id, major_id) that appears more than once."""
+    counts = defaultdict(int)
+    for r in rows:
+        counts[(r['project_id'], r['program_id'], r['major_id'])] += 1
+    for key, count in counts.items():
+        if count > 1:
+            print(f'duplicate export rows: {key} x {count}')
+
+
 def update_project_information(project, rows):
     project_export_config = load_export_config(project)
     additional_projects, cupt_code_custom_projects = extract_additional_projects(project_export_config)
+
+    # Before everything else, so the options below apply to the copies too.
+    apply_copy_to_projects(project_export_config, rows, additional_projects)
 
     majors = defaultdict(list)
 
@@ -999,6 +1057,8 @@ def update_project_information(project, rows):
 
     for mid in majors:
         validate_project_ids(majors[mid], additional_projects, cupt_code_custom_projects, False)
+
+    print_duplicate_rows(rows)
 
     if 'custom_comments' in project_export_config:
         comments = export_options_as_dict(project_export_config['custom_comments'])

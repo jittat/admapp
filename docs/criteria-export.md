@@ -64,10 +64,14 @@ models these read from (`AdmissionCriteria`, `ScoreCriteria`,
 `CurriculumMajor`, `CurriculumMajorAdmissionCriteria`) are described in
 [criteria.md](criteria.md#data-model).
 
-- **`CuptExportConfig`** — `(admission_project, config_json)`. The JSON is
-  the per-project export config; a config whose top level is `{"GLOBAL":
-  {...}}` applies to **every** project instead. `clean()` validates the
-  JSON, so admin edits can't save garbage (direct writes still can).
+- **`CuptExportConfig`** — `(admission_project, title, config_json)`. The
+  JSON is the per-project export config; a config whose top level is
+  `{"GLOBAL": {...}}` applies to **every** project instead (it still needs an
+  `admission_project`, which is then meaningless). `title` is an optional
+  label so configs can be told apart in the admin; `__str__` shows
+  `"<title> (<project title>)"`, or just the project title when it is blank.
+  `clean()` validates the JSON, so admin edits can't save garbage (direct
+  writes still can).
 - **`CuptExportCustomProject`** — `(cupt_code, title)`. An extra CUPT
   project id (e.g. `C2805` "Admission (ใช้คะแนน TPAT3)") that does not
   correspond to an `AdmissionProject`. Used when ทปอ. requires one KU
@@ -126,19 +130,22 @@ id>"`, split on `-` in `export_options_as_dict`.
 1. every row is parsed; a row whose top level is `GLOBAL` contributes
    `config['GLOBAL']` to *all* projects, any other row is skipped unless it
    belongs to `project`;
-2. per key, values are merged with `+=`;
+2. per key, the entries of the dict values are merged, raising
+   `ValueError("Duplicate field ...")` when two config rows define the same
+   entry;
 3. `CuptExportCustomProject` rows are appended to `projects` as
    `[cupt_code, title]` pairs;
 4. `CuptExportAdditionalProjectRule` rows for this project are expanded into
    `custom_projects[<program+major code>]` lists, each entry being
    `{'project_id': <custom project code>, **rule_json}`.
 
-> ⚠️ Step 2 uses `config[k] += this_config[k]`, which works for lists but
-> **raises `TypeError` for dicts**. `custom_projects`, `custom_comments`,
-> `custom_options` and `additional_folio_criteria` are dicts, so a given key
-> may only appear in **one** config row across the whole table (e.g. `GLOBAL`
-> *or* the project's own row, never both). JSON parse errors are collected
-> under `errors` and shown on the validation page.
+> ⚠️ Step 2 assumes **dict** values. `custom_projects`, `custom_comments`,
+> `custom_options`, `additional_folio_criteria` and `copy_to_projects` are dicts,
+> so they can be split across `GLOBAL` and project rows as long as no entry is
+> repeated. A **list**-valued key (`projects`, or `errors` from a JSON parse
+> failure) that appears in two config rows raises `TypeError` instead, since
+> each list item is used as a dict key. JSON parse errors are collected under
+> `errors` and shown on the validation page.
 
 Recognised keys (samples live in `criteria/views/export-config*.json`, one
 per admission year):
@@ -150,6 +157,7 @@ per admission year):
 | `custom_comments` | `{"prog-project": "ข้อความ"}` | sets the `condition` column |
 | `custom_options` | `{"prog-project": {...}}` | `accepts_male_only: 1` → `gender_male_number = slots`; `custom_values: {field: value}` → set arbitrary CSV columns |
 | `additional_folio_criteria` | `{"prog-project": "ข้อความ", "*": "ข้อความ"}` | appends text to the `folio_criteria` column, see below |
+| `copy_to_projects` | `{"prog-project": [new_project_id, ...], "*-project": [...]}` | copies rows under new project ids before every other option, see [Row copies](#row-copies) |
 | `interview_percents` | `{"<project pk>": [{full_code, porfolio, interview}]}` | per-major portfolio/interview weights for portfolio projects (note the misspelled `porfolio` key, which the code reads verbatim) |
 
 `interview_percents` is keyed by the **numeric `AdmissionProject.id` as a
@@ -164,7 +172,7 @@ load_all_criterias()                # once, all projects
   └─ per project (is_visible_in_backoffice=True)
        extract_condition_rows / extract_scoring_rows
          └─ extract_rows(convert_to_base_row, extract_f, postprocess_f)
-       update_project_information(project, rows)   # config: re-map, comments, options
+       update_project_information(project, rows)   # config: copies, re-map, comments, options
        fill_zero_min_scores / fill_zero_scoring_scores
 sort_csv_rows(all rows)
 [update_slots]                      # conditions + ?adjustment=true only
@@ -465,7 +473,60 @@ and is reported on the validation page.
 
 `update_project_information` runs this on the export path (with
 `save_criteria_str=False`, so the rendered strings are dropped again) and
-then applies `custom_comments` and `custom_options`.
+then applies `custom_comments` and `custom_options`. The full order inside
+`update_project_information` is:
+
+1. `apply_copy_to_projects` (see [Row copies](#row-copies));
+2. `validate_project_ids` per curriculum major (copies included);
+3. `print_duplicate_rows` — `print`s every `(project_id, program_id,
+   major_id)` that appears more than once, whether from copies or re-mapping;
+4. `custom_comments`, `custom_options`, `additional_folio_criteria`.
+
+### Row copies
+
+`copy_to_projects` makes the export emit a row again under another project id,
+e.g. the same majors of `C2800` also as `C2805`:
+
+```json
+"copy_to_projects": {
+  "10020104212301A-C2800": ["C2805"],
+  "*-C2800": ["C2806"]
+}
+```
+
+Keys are `"<program+major>-<project id>"` like `custom_comments`, or
+`"*-<project id>"` for every major of that project; a row matching both gets
+the exact key's ids first, duplicates dropped.
+
+`apply_copy_to_projects` runs **first** in `update_project_information`, so
+everything after it — re-mapping, comments, options, folio text, the sort and
+`update_slots` — treats copies as ordinary rows, keyed by their new id. In
+detail:
+
+- only the **original** rows are copied, so a copy is never copied again; a
+  copy to the row's own id is skipped with a `print`;
+- at this point every row still has `project_id == project.cupt_code`, so the
+  project part of a key only discriminates in a `GLOBAL` config;
+- a copy is a shallow `dict(row)` (its own `validation_messages` list) with
+  `project_id` replaced and `project_name_th` looked up in the `projects`
+  catalog — a miss keeps the source name, with a `print`. `type`, `slots`,
+  `add_limit`, criteria columns etc. are the source's;
+- grouping (`combine_slots`) and the scoring export's `interview_percents`
+  override both run **earlier**, in the postprocess functions, so copies are
+  never merged back into their source and inherit its portfolio/interview
+  split (`custom_values` on the copy's key can still override it);
+- the scoring export skips grouped non-portfolio projects before any of this,
+  so their copies do not appear there either.
+
+> ⚠️ Copies belong to the same curriculum major as their source, so
+> `validate_project_ids` sees them in the same group and **re-maps them with
+> the same custom-project rules** — a copy with identical criteria matches the
+> same rule as its source and loses its new id. The rules have no option to
+> target originals vs copies yet; add one (e.g. matching on `project_id`) when
+> it is needed.
+>
+> `project_validation` does not call `update_project_information`, so copies
+> are not shown on the validation page.
 
 ### Sorting and slot adjustment
 
@@ -637,6 +698,8 @@ Notably those scripts *do* read `AdmissionCriteria.additional_description` /
 - `load_export_config` cannot merge dict-valued keys across config rows.
 - Custom-project rules match on rendered Thai criteria text — fragile by
   construction.
+- `copy_to_projects` copies go through the custom-project rules too, and the
+  duplicate-row check only `print`s — check the server output.
 - Portfolio sub-rounds, closing dates and the portfolio project list are all
   hardcoded per admission year in `cuptexport.py`.
 - Scoring extraction now runs for **every** criteria, including
