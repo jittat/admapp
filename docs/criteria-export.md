@@ -137,7 +137,8 @@ id>"`, split on `-` in `export_options_as_dict`.
    `[cupt_code, title]` pairs;
 4. `CuptExportAdditionalProjectRule` rows for this project are expanded into
    `custom_projects[<program+major code>]` lists, each entry being
-   `{'project_id': <custom project code>, **rule_json}`.
+   `{**rule_json, 'project_id': <custom project code>}` — the target is set
+   last, so a stray `project_id` key inside `rule_json` cannot replace it.
 
 > ⚠️ Step 2 assumes **dict** values. `custom_projects`, `custom_comments`,
 > `custom_options`, `additional_folio_criteria` and `copy_to_projects` are dicts,
@@ -457,6 +458,18 @@ rendered to human-readable Thai strings
 | `require-include` | substring must appear in the required criteria string |
 | `score-not-include` | substring must **not** appear in the scoring string |
 | `require-not-include` | substring must **not** appear in the required string |
+| `row-project-id` | the row's current `project_id` must equal this string |
+| `row-project-id-not` | the row's current `project_id` must **not** equal this string |
+
+The text keys also come numbered (`score-include-1` … `-3`, etc.) so one rule
+can hold several substrings; all conditions of a rule are ANDed.
+
+The `row-project-id*` keys take a **single string** (not a list). They test
+the row's `project_id` as it is when the rules run: `project.cupt_code` for
+an original row, the new id for a copy made by
+[`copy_to_projects`](#row-copies). A rule without them matches originals and
+copies alike. The `row-` prefix keeps them apart from the rule's own
+`project_id`, which is the **target** id.
 
 The **first** matching rule wins and its `project_id` replaces the row's;
 `project_name_th` is then looked up in `additional_projects` (the
@@ -521,9 +534,10 @@ detail:
 > ⚠️ Copies belong to the same curriculum major as their source, so
 > `validate_project_ids` sees them in the same group and **re-maps them with
 > the same custom-project rules** — a copy with identical criteria matches the
-> same rule as its source and loses its new id. The rules have no option to
-> target originals vs copies yet; add one (e.g. matching on `project_id`) when
-> it is needed.
+> same rule as its source and loses its new id. Add `row-project-id` (or
+> `row-project-id-not`) to a rule to make it apply only to the originals or
+> only to the copies, e.g. `{"row-project-id": "C2800", "score-include":
+> "TPAT3"}` re-maps the original and leaves its copies alone.
 >
 > `project_validation` does not call `update_project_information`, so copies
 > are not shown on the validation page.
@@ -698,8 +712,9 @@ Notably those scripts *do* read `AdmissionCriteria.additional_description` /
 - `load_export_config` cannot merge dict-valued keys across config rows.
 - Custom-project rules match on rendered Thai criteria text — fragile by
   construction.
-- `copy_to_projects` copies go through the custom-project rules too, and the
-  duplicate-row check only `print`s — check the server output.
+- `copy_to_projects` copies go through the custom-project rules too, unless
+  the rule restricts itself with `row-project-id` / `row-project-id-not`; and
+  the duplicate-row check only `print`s — check the server output.
 - Portfolio sub-rounds, closing dates and the portfolio project list are all
   hardcoded per admission year in `cuptexport.py`.
 - Scoring extraction now runs for **every** criteria, including

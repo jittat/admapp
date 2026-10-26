@@ -1617,6 +1617,114 @@ class CopyToProjectsUpdateProjectInformationTestCase(TestCase):
         self.assertEqual(rows[1]['condition'], 'เฉพาะสำเนา')
 
 
+class RowProjectIdRuleTestCase(SimpleTestCase):
+    """Custom-project rules can test the row's current project_id with
+    row-project-id / row-project-id-not, so a rule can target the original
+    rows or the copies made by copy_to_projects."""
+
+    def make_row(self, project_id='C2800'):
+        return {
+            'project_id': project_id,
+            'required_criteria_str': 'GPAX 2.00',
+            'scoring_criteria_str': 'TPAT3 50%',
+        }
+
+    def match(self, row, rule):
+        from criteria.views.cuptexport import is_criteria_match
+        return is_criteria_match(row, rule)
+
+    def test_row_project_id_must_equal(self):
+        rule = {'project_id': 'C2810', 'row-project-id': 'C2805'}
+
+        self.assertTrue(self.match(self.make_row('C2805'), rule))
+        self.assertFalse(self.match(self.make_row('C2800'), rule))
+
+    def test_row_project_id_not_must_differ(self):
+        rule = {'project_id': 'C2810', 'row-project-id-not': 'C2805'}
+
+        self.assertTrue(self.match(self.make_row('C2800'), rule))
+        self.assertFalse(self.match(self.make_row('C2805'), rule))
+
+    def test_combined_with_criteria_text_condition(self):
+        rule = {'project_id': 'C2810', 'row-project-id': 'C2805',
+                'score-include': 'TPAT3'}
+
+        self.assertTrue(self.match(self.make_row('C2805'), rule))
+
+        row = self.make_row('C2805')
+        row['scoring_criteria_str'] = 'TGAT 50%'
+        self.assertFalse(self.match(row, rule))
+
+    def test_rule_without_row_keys_matches_any_project_id(self):
+        rule = {'project_id': 'C2810', 'score-include': 'TPAT3'}
+
+        self.assertTrue(self.match(self.make_row('C2800'), rule))
+        self.assertTrue(self.match(self.make_row('C2805'), rule))
+
+    def make_major_rows(self):
+        """An original row and its copy, in the same curriculum major."""
+        from types import SimpleNamespace
+
+        cupt_code = SimpleNamespace(
+            get_program_major_code_as_str=lambda: '10020104212301A')
+        curriculum_major = SimpleNamespace(id=1, cupt_code=cupt_code)
+        criteria = SimpleNamespace(
+            get_all_required_score_criteria_as_str=lambda: 'GPAX 2.00',
+            get_all_scoring_score_criteria_as_str=lambda: 'TPAT3 50%')
+        return [{'project_id': project_id, 'project_name_th': 'P',
+                 'curriculum_major': curriculum_major, 'criteria': criteria}
+                for project_id in ['C2800', 'C2805']]
+
+    def remap(self, rule):
+        from criteria.views.cuptexport import validate_project_ids
+
+        rows = self.make_major_rows()
+        validate_project_ids(rows, {'C2810': 'Custom'},
+                             {'10020104212301A': [rule]}, False)
+        return [r['project_id'] for r in rows]
+
+    def test_rule_targets_only_the_copy(self):
+        self.assertEqual(self.remap({'project_id': 'C2810',
+                                     'row-project-id': 'C2805'}),
+                         ['C2800', 'C2810'])
+
+    def test_rule_targets_only_the_original(self):
+        self.assertEqual(self.remap({'project_id': 'C2810',
+                                     'row-project-id': 'C2800'}),
+                         ['C2810', 'C2805'])
+
+    def test_rule_excluding_the_copy(self):
+        self.assertEqual(self.remap({'project_id': 'C2810',
+                                     'row-project-id-not': 'C2805'}),
+                         ['C2810', 'C2805'])
+
+
+class AdditionalProjectRuleTargetTestCase(TestCase):
+    """load_export_config sets a rule's target project_id after reading
+    rule_json, so a project_id key inside rule_json cannot replace it."""
+
+    def test_project_id_in_rule_json_does_not_replace_target(self):
+        from criteria.models import (CuptExportAdditionalProjectRule,
+                                     CuptExportCustomProject)
+        from criteria.views.cuptexport import load_export_config
+
+        project = AdmissionProject.objects.create(
+            title='P', short_title='P', cupt_code='C2800')
+        custom_project = CuptExportCustomProject.objects.create(
+            cupt_code='C2810', title='Custom')
+        CuptExportAdditionalProjectRule.objects.create(
+            admission_project=project,
+            program_major_codes='10020104212301A',
+            custom_project=custom_project,
+            rule_json=json.dumps({'project_id': 'C2899',
+                                  'row-project-id': 'C2805'}))
+
+        config = load_export_config(project)
+
+        self.assertEqual(config['custom_projects']['10020104212301A'],
+                         [{'project_id': 'C2810', 'row-project-id': 'C2805'}])
+
+
 class CriteriaReportIndexTestCase(TestCase):
     """The criteria report landing page (/backoffice/criteria/report/) links
     the two cross-project additional-fields reports and shows per-project

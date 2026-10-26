@@ -71,6 +71,15 @@ def combine_slots(curriculum_major_rows):
 
 
 def is_criteria_match(row, custom_project):
+    # Conditions on the row's current project_id: project.cupt_code for an
+    # original row, the new id for a copy made by copy_to_projects.
+    if 'row-project-id' in custom_project:
+        if row['project_id'] != custom_project['row-project-id']:
+            return False
+    if 'row-project-id-not' in custom_project:
+        if row['project_id'] == custom_project['row-project-id-not']:
+            return False
+
     for key, str_key in [('score-include', 'scoring_criteria_str'),
                          ('score-include-1', 'scoring_criteria_str'),
                          ('score-include-2', 'scoring_criteria_str'),
@@ -189,8 +198,10 @@ def load_export_config(project):
         config['projects'].append([p.cupt_code, p.title])
 
     for r in CuptExportAdditionalProjectRule.objects.filter(admission_project=project).all():
-        full_rule = { 'project_id': r.custom_project.cupt_code }
-        full_rule.update(json.loads(r.rule_json))
+        # The target id is set last, so a project_id key in rule_json cannot
+        # replace it.
+        full_rule = json.loads(r.rule_json)
+        full_rule['project_id'] = r.custom_project.cupt_code
 
         for program_major_code in [p.strip() for p in r.program_major_codes.split(',')]:
         
