@@ -84,9 +84,10 @@ analyses):
 - `docs/criteria-export.md` — the CUPT/ทปอ. export pipeline
   (`criteria/views/cuptexport.py`, `cuptexport_fields.py`, `export/*` URLs):
   the two CSVs and how their rows are built, the export config JSON
-  (`CuptExportConfig` / custom projects / project rules), custom-project
-  re-mapping, portfolio handling, slot adjustment, the validation page,
-  CSV/config import, and the field-list constants.
+  (`CuptExportConfig` / custom projects / project rules), row copies
+  (`copy_to_projects`), custom-project re-mapping (incl. `row-project-id`
+  rule conditions), portfolio handling, slot adjustment, the validation
+  page, CSV/config import, and the field-list constants.
 - `docs/major-cupt-code.md` — how `Major` links to `MajorCuptCode` via the
   `cupt_full_code` string, a usage survey of `cupt_full_code` /
   `get_full_major_cupt_code()` (divergent parsers, `detail_items_csv[-2:]`
