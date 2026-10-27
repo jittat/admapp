@@ -521,9 +521,13 @@ detail:
 - at this point every row still has `project_id == project.cupt_code`, so the
   project part of a key only discriminates in a `GLOBAL` config;
 - a copy is a shallow `dict(row)` (its own `validation_messages` list) with
-  `project_id` replaced and `project_name_th` looked up in the `projects`
-  catalog — a miss keeps the source name, with a `print`. `type`, `slots`,
-  `add_limit`, criteria columns etc. are the source's;
+  `project_id` replaced and `project_name_th` taken from, in order: the
+  `projects` catalog; the `short_title` of the `AdmissionProject` whose
+  `cupt_code` is the new id (only when exactly one matches — `cupt_code` is
+  not unique; looked up once per new id); else the source name is kept, with
+  a `print`. `type`, `slots`, `add_limit`, criteria columns etc. are the
+  source's. (Custom-project re-mapping has no such fallback: a target missing
+  from the catalog keeps the row's name.)
 - grouping (`combine_slots`) and the scoring export's `interview_percents`
   override both run **earlier**, in the postprocess functions, so copies are
   never merged back into their source and inherit its portfolio/interview

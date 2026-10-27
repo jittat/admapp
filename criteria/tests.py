@@ -1469,7 +1469,11 @@ class CopyToProjectsTestCase(SimpleTestCase):
 
         if catalog is None:
             catalog = self.CATALOG
-        with mock.patch('builtins.print'):
+        # No database here: ids missing from the catalog find no
+        # AdmissionProject (see CopyToProjectsNameFallbackTestCase).
+        with mock.patch('builtins.print'), \
+             mock.patch('criteria.views.cuptexport.find_admission_project_short_title',
+                        return_value=None):
             apply_copy_to_projects({'copy_to_projects': config}, rows, catalog)
         return rows
 
@@ -1560,7 +1564,7 @@ class CopyToProjectsTestCase(SimpleTestCase):
         self.assertEqual(copy['type'], '3_2570')
         self.assertEqual(copy['slots'], 10)
 
-    def test_missing_catalog_entry_keeps_source_name(self):
+    def test_unknown_id_keeps_source_name(self):
         rows = [self.make_row()]
 
         self.apply({'*-C2800': ['C2899']}, rows)
@@ -1577,6 +1581,63 @@ class CopyToProjectsTestCase(SimpleTestCase):
         rows[1]['validation_messages'].append('copy only')
 
         self.assertEqual(row['validation_messages'], [])
+
+
+class CopyToProjectsNameFallbackTestCase(TestCase):
+    """A copy whose new id is not in the projects catalog takes its name from
+    the AdmissionProject with that cupt_code - only when exactly one matches."""
+
+    def setUp(self):
+        self.row = {
+            'project_id': 'C2800',
+            'project_name_th': 'Admission',
+            'program_id': '10020104212301A',
+            'major_id': '',
+        }
+
+    def apply(self, new_project_id, catalog=None):
+        from criteria.views.cuptexport import apply_copy_to_projects
+
+        rows = [dict(self.row)]
+        with mock.patch('builtins.print'):
+            apply_copy_to_projects({'copy_to_projects': {'*-C2800': [new_project_id]}},
+                                   rows, catalog or {})
+        return rows[1]
+
+    def test_name_from_admission_project_short_title(self):
+        AdmissionProject.objects.create(title='Quota', short_title='โควตา',
+                                        cupt_code='C2900')
+
+        self.assertEqual(self.apply('C2900')['project_name_th'], 'โควตา')
+
+    def test_catalog_wins_over_admission_project(self):
+        AdmissionProject.objects.create(title='Quota', short_title='โควตา',
+                                        cupt_code='C2900')
+
+        copy = self.apply('C2900', catalog={'C2900': 'จาก catalog'})
+
+        self.assertEqual(copy['project_name_th'], 'จาก catalog')
+
+    def test_ambiguous_cupt_code_keeps_source_name(self):
+        for short_title in ['A', 'B']:
+            AdmissionProject.objects.create(title=short_title,
+                                            short_title=short_title,
+                                            cupt_code='C2900')
+
+        self.assertEqual(self.apply('C2900')['project_name_th'], 'Admission')
+
+    def test_one_query_per_new_id(self):
+        from criteria.views.cuptexport import apply_copy_to_projects
+
+        AdmissionProject.objects.create(title='Quota', short_title='โควตา',
+                                        cupt_code='C2900')
+        rows = [dict(self.row, program_id=f'1002010421230{i}A') for i in range(5)]
+
+        with mock.patch('builtins.print'), self.assertNumQueries(1):
+            apply_copy_to_projects({'copy_to_projects': {'*-C2800': ['C2900']}},
+                                   rows, {})
+
+        self.assertEqual([r['project_name_th'] for r in rows[5:]], ['โควตา'] * 5)
 
 
 class CopyToProjectsUpdateProjectInformationTestCase(TestCase):

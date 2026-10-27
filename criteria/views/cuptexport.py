@@ -1001,6 +1001,18 @@ def apply_additional_folio_criteria(project_export_config, rows):
 
 COPY_TO_PROJECTS_ALL_MAJORS_KEY = '*'
 
+def find_admission_project_short_title(cupt_code):
+    """The short_title of the one AdmissionProject with this cupt_code, or
+    None when there is none or more than one (cupt_code is not unique)."""
+    if not cupt_code:
+        return None
+    projects = list(AdmissionProject.objects.filter(cupt_code=cupt_code)[:2])
+    if len(projects) != 1:
+        if len(projects) > 1:
+            print(f'copy_to_projects: several admission projects have cupt_code {cupt_code}')
+        return None
+    return projects[0].short_title
+
 def apply_copy_to_projects(project_export_config, rows, additional_projects):
     """Appends copies of rows under new project ids, from `copy_to_projects`.
 
@@ -1009,12 +1021,22 @@ def apply_copy_to_projects(project_export_config, rows, additional_projects):
     is a list of new project ids.  Only the original rows are copied, so a
     copy is never copied again.  A copy keeps every column of its source
     except project_id, and project_name_th, which comes from the `projects`
-    catalog.
+    catalog, else from the AdmissionProject with that cupt_code, else stays
+    the source's.
     """
     if 'copy_to_projects' not in project_export_config:
         return
 
     copy_config = export_options_as_dict(project_export_config['copy_to_projects'])
+
+    project_titles = {}
+
+    def lookup_project_name(new_project_id):
+        if new_project_id in additional_projects:
+            return additional_projects[new_project_id]
+        if new_project_id not in project_titles:
+            project_titles[new_project_id] = find_admission_project_short_title(new_project_id)
+        return project_titles[new_project_id]
 
     copies = []
     for r in list(rows):
@@ -1034,10 +1056,11 @@ def apply_copy_to_projects(project_export_config, rows, additional_projects):
             if 'validation_messages' in c:
                 c['validation_messages'] = list(c['validation_messages'])
             c['project_id'] = new_project_id
-            if new_project_id in additional_projects:
-                c['project_name_th'] = additional_projects[new_project_id]
+            project_name = lookup_project_name(new_project_id)
+            if project_name is not None:
+                c['project_name_th'] = project_name
             else:
-                print(f'copy_to_projects: {new_project_id} not in projects catalog, '
+                print(f'copy_to_projects: no project name found for {new_project_id}, '
                       f'keeping project_name_th of {project_id}')
             copies.append(c)
 
