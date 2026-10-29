@@ -34,6 +34,7 @@ Usage (run from the scripts/ directory, inside the project's virtualenv):
     python fetch_mytcasfolio_pdf.py <base_path> <base_url>
     python fetch_mytcasfolio_pdf.py --dry-run [--limit N]
     python fetch_mytcasfolio_pdf.py --refresh [--report FILE] <base_path> <base_url>
+    (any of these can add --project ID [--major N [N ...]])
 
     base_path  directory to save the PDFs in
     base_url   public URL that serves base_path (a trailing / is dropped)
@@ -45,6 +46,14 @@ Usage (run from the scripts/ directory, inside the project's virtualenv):
                changed (see above)
     --report   with --refresh, also write the report rows to FILE as CSV
                (UTF-8 with BOM, so Excel shows Thai correctly)
+    --project ID
+               only documents of applicants with an active (not canceled)
+               application to this project, in any round, and only in the
+               project's own document slots and common slots. Works with
+               every mode above.
+    --major N [N ...]
+               with --project, only applicants that selected any of these
+               major numbers (slot major_numbers restrictions are ignored)
 
 Files (both in the current directory):
     - .mytcas-env with TCAS_EMAIL and TCAS_PASSWORD (a TCASFolio admin
@@ -59,8 +68,9 @@ bootstrap()
 import sys
 
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Q
 
-from appl.models import UploadedDocument
+from appl.models import AdmissionProject, MajorSelection, UploadedDocument
 
 import argparse
 import csv
@@ -624,6 +634,42 @@ def refresh_fetch(pending, base_path, base_url, report_filename=None):
         print(f'Report written to {report_filename}')
 
 
+def select_applicant_ids(project, major_numbers=None):
+    """
+    Ids of applicants with an active application to project (in any round)
+    that selected any of major_numbers (any major if not given).
+    """
+    selections = (MajorSelection.objects
+                  .filter(admission_project=project,
+                          project_application__is_canceled=False))
+    if not major_numbers:
+        return set(selections.values_list('applicant_id', flat=True))
+
+    wanted = set(major_numbers)
+    return {s.applicant_id for s in selections
+            if wanted.intersection(s.get_major_numbers())}
+
+
+def apply_project_filter(documents, project, major_numbers):
+    """
+    Limit documents to the selected applicants, in the project's own slots
+    and common slots.
+    """
+    applicant_ids = select_applicant_ids(project, major_numbers)
+    documents = (documents
+                 .filter(applicant_id__in=applicant_ids)
+                 .filter(Q(project_uploaded_document__admission_projects=project) |
+                         Q(project_uploaded_document__is_common_document=True))
+                 .distinct())
+
+    majors = (f', majors {", ".join(str(n) for n in major_numbers)}'
+              if major_numbers else '')
+    print(f'Project {project.id} {project.title}{majors}: '
+          f'{len(applicant_ids)} applicants, '
+          f'{documents.count()} TCASFolio documents')
+    return documents
+
+
 def main():
     parser = argparse.ArgumentParser(
         description='Mirror TCASFolio PDFs linked from uploaded documents.')
@@ -639,6 +685,12 @@ def main():
                         help='re-download all documents and replace local copies that changed')
     parser.add_argument('--report',
                         help='with --refresh, also write the report to this CSV file')
+    parser.add_argument('--project', type=int, metavar='ID',
+                        help='only applicants with an active application to this '
+                        'project (any round), in its slots and common slots')
+    parser.add_argument('--major', type=int, nargs='+', metavar='N',
+                        help='with --project, only applicants that selected any '
+                        'of these major numbers')
     args = parser.parse_args()
 
     if args.dry_run and args.refresh:
@@ -647,11 +699,27 @@ def main():
         parser.error('--report requires --refresh')
     if not args.dry_run and not (args.base_path and args.base_url):
         parser.error('base_path and base_url are required unless --dry-run')
+    if args.major and args.project is None:
+        parser.error('--major requires --project')
+
+    project = None
+    if args.project is not None:
+        project = AdmissionProject.objects.filter(pk=args.project).first()
+        if project is None:
+            parser.error(f'no project with id {args.project}')
+        if args.major:
+            known = set(project.major_set.values_list('number', flat=True))
+            unknown = [n for n in args.major if n not in known]
+            if unknown:
+                parser.error(f'project {project.id} has no major '
+                             f'{", ".join(str(n) for n in unknown)}')
 
     documents = (UploadedDocument.objects
                  .filter(document_url__contains='mytcas.com')
                  .select_related('applicant', 'project_uploaded_document')
                  .all())
+    if project is not None:
+        documents = apply_project_filter(documents, project, args.major)
 
     pending = []
     for d in documents:

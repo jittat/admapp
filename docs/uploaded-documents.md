@@ -413,6 +413,7 @@ are skipped, so re-runs only pick up new links.
 python fetch_mytcasfolio_pdf.py <base_path> <base_url>
 python fetch_mytcasfolio_pdf.py --dry-run [--limit N]
 python fetch_mytcasfolio_pdf.py --refresh [--report FILE] <base_path> <base_url>
+# any of these: add --project ID [--major N [N ...]] to limit the run
 ```
 
 - **Links fetched:** `.../view-folio/<id>` on `folio.mytcas.com` or
@@ -438,6 +439,14 @@ python fetch_mytcasfolio_pdf.py --refresh [--report FILE] <base_path> <base_url>
   active applications to the slot's projects with selected majors, and
   sizes — and `--report FILE` also writes it as a CSV (UTF-8 with BOM).
   Cannot be combined with `--dry-run`.
+- **Project / major filter:** `--project ID [--major N [N ...]]` (with any
+  mode) limits the run to applicants with an active (not canceled)
+  application to that project in any round — and, with `--major`, who
+  selected any of those major numbers (`MajorSelection.get_major_numbers()`,
+  as in the backoffice major lists; paid or not) — and to documents in the
+  project's own slots plus common slots. Slot `major_numbers` restrictions
+  are not applied. An unknown project or major number is an error, and the
+  run prints the selected applicant / document counts first.
 - **Files** (in the current directory): `.mytcas-env` with `TCAS_EMAIL` /
   `TCAS_PASSWORD` (a TCASFolio university account), and `mytcas-token.json`,
   the cached access token (written on login, also in a dry run; delete it to
