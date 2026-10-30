@@ -8,10 +8,11 @@ cleared so fetch_mytcasfolio_pdf.py mirrors the new link.
 
 Applicants must have an active application to the project with the given
 major selected. A document that is already a link is left alone: the same
-link is reported as already done, another one as a mismatch. In TCASFolio
-slots links are the same when the ids at the end match (host ignored, so
-student.mytcas.com and folio.mytcas.com links to the same folio match);
-elsewhere the whole urls must match.
+link is reported as already done, another one as a mismatch (or, with
+replace_mismatch, replaced by the new link; the old one is kept in a
+LogItem). In TCASFolio slots links are the same when the ids at the end match
+(host ignored, so student.mytcas.com and folio.mytcas.com links to the same
+folio match); elsewhere the whole urls must match.
 See docs/uploaded-documents.md.
 """
 from dataclasses import dataclass
@@ -30,6 +31,8 @@ REPLACED = 'replaced'
 TO_REPLACE = 'to-replace'      # dry run: would be replaced
 ALREADY_DONE = 'already-done'
 URL_MISMATCH = 'url-mismatch'  # a warning: the document already has another link
+URL_REPLACED = 'url-replaced'  # --replace-mismatch: another link was replaced
+URL_TO_REPLACE = 'url-to-replace'  # dry run of the above
 ERROR_NO_APPLICANT = 'error-no-applicant'
 ERROR_MULTIPLE_APPLICANTS = 'error-multiple-applicants'
 ERROR_NOT_IN_MAJOR = 'error-not-in-major'
@@ -161,7 +164,19 @@ def replace_with_url(document, url):
                        document.applicant)
 
 
-def process_row(slot, applicant_ids, national_id, url, apply=False):
+def replace_url(document, url):
+    old_url = document.document_url
+    with transaction.atomic():
+        document.document_url = url
+        document.local_document_url = ''
+        document.save()
+        message = (f'Replaced url of document id {document.id} '
+                   f'({document.project_uploaded_document_id}) by script; old: {old_url}')
+        max_length = LogItem._meta.get_field('message').max_length
+        LogItem.create(message[:max_length], document.applicant)
+
+
+def process_row(slot, applicant_ids, national_id, url, apply=False, replace_mismatch=False):
     national_id = national_id.strip()
     url = url.strip()
 
@@ -191,9 +206,18 @@ def process_row(slot, applicant_ids, national_id, url, apply=False):
     document = documents[0]
 
     if not document.is_file():
-        status = ALREADY_DONE if is_same_link(slot, document.document_url, url) else URL_MISMATCH
+        current_url = document.document_url
+        if is_same_link(slot, current_url, url):
+            status = ALREADY_DONE
+        elif not replace_mismatch:
+            status = URL_MISMATCH
+        elif not apply:
+            status = URL_TO_REPLACE
+        else:
+            replace_url(document, url)
+            status = URL_REPLACED
         return result(status, applicant=applicant, document=document,
-                      current_url=document.document_url)
+                      current_url=current_url)
 
     old_file = document.uploaded_file.name
     if not apply:
@@ -204,12 +228,14 @@ def process_row(slot, applicant_ids, national_id, url, apply=False):
                   old_file=old_file)
 
 
-def replace_files_with_urls(project, major_number, updates, document_key=None, apply=False):
+def replace_files_with_urls(project, major_number, updates, document_key=None, apply=False,
+                            replace_mismatch=False):
     """updates: (national_id, url) pairs. Returns (slot, [RowResult]).
     Raises SetupError before touching any row."""
     check_major(project, major_number)
     slot = find_slot(project, major_number, document_key)
     applicant_ids = selected_applicant_ids(project, major_number)
-    results = [process_row(slot, applicant_ids, national_id, url, apply=apply)
+    results = [process_row(slot, applicant_ids, national_id, url, apply=apply,
+                           replace_mismatch=replace_mismatch)
                for national_id, url in updates]
     return slot, results

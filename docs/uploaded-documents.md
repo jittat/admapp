@@ -468,7 +468,7 @@ project and major. The logic is in `maintenance/document_url_replacement.py`
 ```
 python replace_uploaded_files_with_urls.py --project ID --major N updates.csv [--dry-run]
 python replace_uploaded_files_with_urls.py --project ID --major N updates.csv --apply
-# also: --slot KEY, --report FILE
+# also: --replace-mismatch, --slot KEY, --report FILE
 ```
 
 - **CSV:** `national_id,url` (a `national_id,url` header row is optional).
@@ -497,13 +497,21 @@ python replace_uploaded_files_with_urls.py --project ID --major N updates.csv --
     transaction.
   - one link document → compared with the update's link. Same link →
     `already-done` (so re-runs are safe); another one → `url-mismatch`
-    warning, not changed. In slots with the `tcasfolio` validator only the
+    warning, not changed (unless `--replace-mismatch`, below). In slots with the `tcasfolio` validator only the
     id at the end counts (last path segment; host, query, fragment and a
     trailing `/` ignored), so `student.mytcas.com/view-folio/<id>`,
     `folio.mytcas.com/view-folio/<id>` and `folio.mytcas.com/_/<id>` all
     match; links with no path compare whole. Other slots compare the whole
     (stripped) urls.
   - none, or several → error, not changed.
+- **`--replace-mismatch`:** a link document whose link differs from the
+  CSV one gets the new link instead of the warning: `document_url` is set,
+  `local_document_url` is cleared (the old mirrored PDF stays on disk), and
+  `replaced_uploaded_file` is left as it is. The old link is kept only in a
+  `LogItem` (`Replaced url of document id X (<slot id>) by script; old:
+  <url>`, cut to the 200-character message limit) and in the `--report` CSV
+  (`current_url`). Status `url-replaced` (`url-to-replace` in a dry run). The
+  new link still has to pass the url checks above.
 - **Dry run:** the default (`--dry-run` says so explicitly; it cannot be
   combined with `--apply`). Rows that would change are reported as
   `to-replace`. Nothing is written without `--apply`.

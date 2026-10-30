@@ -11,6 +11,7 @@ from appl.models import (AdmissionProject, AdmissionProjectRound, AdmissionRound
 from maintenance.document_url_replacement import (
     is_same_link, link_id, ALREADY_DONE, ERROR_INVALID_URL, ERROR_MULTIPLE_DOCUMENTS, ERROR_NO_APPLICANT,
     ERROR_NO_DOCUMENT, ERROR_NOT_IN_MAJOR, REPLACED, TO_REPLACE, URL_MISMATCH,
+    URL_REPLACED, URL_TO_REPLACE,
     SetupError, replace_files_with_urls)
 from regis.models import Applicant, LogItem
 
@@ -87,9 +88,11 @@ class ReplaceFilesWithUrlsTestCase(TestCase):
                                                project_uploaded_document=self.slot,
                                                rank=0, document_url=url)
 
-    def run_updates(self, updates, major=1, apply=True, document_key=None):
+    def run_updates(self, updates, major=1, apply=True, document_key=None,
+                    replace_mismatch=False):
         return replace_files_with_urls(self.project, major, updates,
-                                       document_key=document_key, apply=apply)
+                                       document_key=document_key, apply=apply,
+                                       replace_mismatch=replace_mismatch)
 
     def run_one(self, url=FOLIO_URL, national_id='1234567890121', **kwargs):
         _, results = self.run_updates([(national_id, url)], **kwargs)
@@ -181,6 +184,59 @@ class ReplaceFilesWithUrlsTestCase(TestCase):
         self.slot.save()
         self.add_url('https://student.mytcas.com/view-folio/abc123')
         self.assertEqual(self.run_one().status, URL_MISMATCH)
+
+    # --- --replace-mismatch -----------------------------------------------
+
+    def test_replace_mismatch_replaces_the_link_and_logs_the_old_one(self):
+        document = self.add_url(OTHER_FOLIO_URL)
+        document.replaced_uploaded_file = 'documents/applicant_1/doc_1/old.pdf'
+        document.local_document_url = 'http://mirror/old.pdf'
+        document.save()
+
+        result = self.run_one(replace_mismatch=True)
+
+        self.assertEqual(result.status, URL_REPLACED)
+        self.assertEqual(result.current_url, OTHER_FOLIO_URL)
+        document.refresh_from_db()
+        self.assertEqual(document.document_url, FOLIO_URL)
+        self.assertEqual(document.local_document_url, '')
+        self.assertEqual(document.replaced_uploaded_file.name,
+                         'documents/applicant_1/doc_1/old.pdf')
+        log = LogItem.objects.get(applicant=self.applicant)
+        self.assertEqual(log.message,
+                         f'Replaced url of document id {document.id} ({self.slot.id}) '
+                         f'by script; old: {OTHER_FOLIO_URL}')
+
+    def test_replace_mismatch_log_is_cut_to_the_message_length(self):
+        long_url = 'https://folio.mytcas.com/view-folio/' + 'x' * 160
+        self.add_url(long_url)
+        self.run_one(replace_mismatch=True)
+        log = LogItem.objects.get(applicant=self.applicant)
+        self.assertEqual(len(log.message), LogItem._meta.get_field('message').max_length)
+
+    def test_replace_mismatch_dry_run_writes_nothing(self):
+        document = self.add_url(OTHER_FOLIO_URL)
+
+        result = self.run_one(replace_mismatch=True, apply=False)
+
+        self.assertEqual(result.status, URL_TO_REPLACE)
+        document.refresh_from_db()
+        self.assertEqual(document.document_url, OTHER_FOLIO_URL)
+        self.assertFalse(LogItem.objects.exists())
+
+    def test_replace_mismatch_keeps_same_links_and_still_replaces_files(self):
+        self.add_url('https://student.mytcas.com/view-folio/abc123')
+        self.assertEqual(self.run_one(replace_mismatch=True).status, ALREADY_DONE)
+        UploadedDocument.objects.all().delete()
+        self.add_file()
+        self.assertEqual(self.run_one(replace_mismatch=True).status, REPLACED)
+
+    def test_replace_mismatch_still_checks_the_new_url(self):
+        document = self.add_url(OTHER_FOLIO_URL)
+        result = self.run_one(url='https://example.com/x1', replace_mismatch=True)
+        self.assertEqual(result.status, ERROR_INVALID_URL)
+        document.refresh_from_db()
+        self.assertEqual(document.document_url, OTHER_FOLIO_URL)
 
     # --- refused rows ------------------------------------------------------
 

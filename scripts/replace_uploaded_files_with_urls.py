@@ -14,14 +14,16 @@ reports what would change; the two cannot be combined). Rows are refused (and re
 when the applicant is not found, has no active application to the project
 with the major selected, the url fails the slot's checks, or the slot holds
 no or several documents. A document that is already a link is not changed:
-the same url is reported as already done, a different one as a warning.
+the same url is counted as already done, a different one is a warning --
+unless --replace-mismatch is given, which replaces the link with the csv url
+(the old one is written to a LogItem).
 
 Usage (run from the scripts/ directory, inside the project's virtualenv):
     python replace_uploaded_files_with_urls.py --project ID --major N updates.csv [--dry-run]
     python replace_uploaded_files_with_urls.py --project ID --major N updates.csv --apply
-    (add --slot KEY, the slot's document_key, when the project has several
-    file-or-link slots for the major, and --report FILE to write the results
-    as a CSV)
+    (add --replace-mismatch to also replace links that differ; --slot KEY,
+    the slot's document_key, when the project has several file-or-link slots
+    for the major; and --report FILE to write the results as a CSV)
 
     updates.csv  columns national_id,url (a header row with those names is
                  optional)
@@ -38,7 +40,7 @@ import sys
 
 from appl.models import AdmissionProject
 from maintenance.document_url_replacement import (
-    REPLACED, TO_REPLACE, URL_MISMATCH,
+    REPLACED, TO_REPLACE, URL_MISMATCH, URL_REPLACED, URL_TO_REPLACE,
     SetupError, describe_slot, replace_files_with_urls)
 
 REPORT_FIELDS = ['national_id', 'applicant', 'document_id', 'status',
@@ -79,8 +81,10 @@ def describe(r):
         line += f' (document {r.document.id})'
     if r.old_file:
         line += f'\n  file: {r.old_file}\n  url:  {r.url}'
-    if r.current_url and r.status == URL_MISMATCH:
+    if r.status in (URL_MISMATCH, URL_TO_REPLACE):
         line += f'\n  current url: {r.current_url}\n  csv url:     {r.url}'
+    elif r.status == URL_REPLACED:
+        line += f'\n  old url: {r.current_url}\n  new url: {r.url}'
     if r.message:
         line += f'\n  {r.message}'
     return line
@@ -101,6 +105,9 @@ def main():
                       help='only report what would change (the default)')
     mode.add_argument('--apply', action='store_true',
                       help='write the changes')
+    parser.add_argument('--replace-mismatch', action='store_true',
+                        help='also replace links that differ from the csv url '
+                             '(the old link is written to a LogItem)')
     parser.add_argument('--report', metavar='FILE',
                         help='also write the results as a CSV (UTF-8 with BOM)')
     args = parser.parse_args()
@@ -116,7 +123,8 @@ def main():
 
     try:
         slot, results = replace_files_with_urls(project, args.major, updates,
-                                                document_key=args.slot, apply=args.apply)
+                                                document_key=args.slot, apply=args.apply,
+                                                replace_mismatch=args.replace_mismatch)
     except SetupError as e:
         print(f'ERROR: {e}', file=sys.stderr)
         sys.exit(1)
@@ -128,7 +136,7 @@ def main():
 
     for r in results:
         # already-done rows are only counted in the summary (and the report)
-        if r.status in (REPLACED, TO_REPLACE):
+        if r.status in (REPLACED, TO_REPLACE, URL_REPLACED, URL_TO_REPLACE):
             print(describe(r))
 
     problems = [r for r in results if r.is_warning or r.is_error]
@@ -144,7 +152,7 @@ def main():
     print()
     print('Summary: ' + (', '.join(f'{status} {n}' for status, n in sorted(counts.items()))
                          or 'no rows'))
-    if not args.apply and counts.get(TO_REPLACE):
+    if not args.apply and (counts.get(TO_REPLACE) or counts.get(URL_TO_REPLACE)):
         print('Run again with --apply to write the changes.')
 
     if args.report:
