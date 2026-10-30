@@ -24,6 +24,9 @@ acceptance, document uploads, etc.). UI/labels are primarily Thai.
 - **`api`** — REST API (DRF).
 - **`main`** — public-facing site.
 - **`backupmedia`** — media backup utility/scripts.
+- **`maintenance`** — not a Django app: a plain package holding the logic
+  of maintenance scripts in `scripts/` (so it can be unit-tested; run with
+  `python manage.py test maintenance`). Scripts stay thin (args, CSV, output).
 
 ## Working agreement
 
@@ -68,9 +71,11 @@ analyses):
   definition→instance model pair (`ProjectUploadedDocument` /
   `UploadedDocument`), applicant upload flow, staff review flow, file
   serving/storage + encrypted S3 backup, major-specific (`major_numbers`) and
-  late-upload slots, custom validators, and the per-criteria
+  late-upload slots, custom validators, the per-criteria
   `additional_admission_upload_fields` → slots sync
-  (`criteria/upload_documents.py`).
+  (`criteria/upload_documents.py`), and the script that replaces uploaded
+  files with links (`replace_uploaded_files_with_urls.py`, keeps the old file
+  in `replaced_uploaded_file`).
 - `docs/criteria.md` — the `criteria` app: data model
   (`AdmissionCriteria`, `ScoreCriteria`, `CurriculumMajor(AdmissionCriteria)`,
   `MajorCuptCode`), the **copy-on-write versioning** of criteria in

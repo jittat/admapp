@@ -697,6 +697,11 @@ class UploadedDocument(models.Model):
     document_url = models.URLField(blank=True)
     local_document_url = models.URLField(blank=True, default='')
 
+    # the file a link replaced (set by scripts/replace_uploaded_files_with_urls.py);
+    # the file itself is kept on disk
+    replaced_uploaded_file = models.FileField(upload_to=applicant_document_path,
+                                              blank=True)
+
     def __str__(self):
         return '%s (%s)' % (self.project_uploaded_document.title,
                             self.applicant)

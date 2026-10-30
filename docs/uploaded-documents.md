@@ -120,6 +120,7 @@ an unknown validator key, or an unknown project id.
 | `original_filename` | Char(200, blank) | Original client filename (cut at 200 chars), set by the upload view; kept in full even when the stored name is shortened. Blank on rows uploaded before the view's `orginal_filename` typo was fixed. |
 | `document_url` | URLField (blank) | The URL, for URL submissions. |
 | `local_document_url` | URLField (blank) | Optional locally-cached URL (preferred over `document_url` in the staff menu when present). Filled for TCASFolio links by [`fetch_mytcasfolio_pdf.py`](#mirrored-tcasfolio-pdfs). |
+| `replaced_uploaded_file` | FileField (blank) | The file a link replaced, set only by [`replace_uploaded_files_with_urls.py`](#replacing-files-with-links-script); the file stays on disk. Not shown anywhere and not used by `is_file()` / `is_url()`. |
 
 **Storage path** (`applicant_document_path`):
 ```
@@ -152,10 +153,11 @@ staff viewer); `encrypted_backup_filename()` →
 ### OldUploadedDocument
 
 `appl/models.py:573`. Same shape as `UploadedDocument`
-(`related_name='old_uploaded_document_set'`, no `local_document_url`). Holds
-prior-round/archived uploads so they can be shown read-only; surfaced on the
-applicant page via `prepare_old_uploaded_documents()` (which caches
-`applicant.olduploadeddocument_set` keyed by slot id).
+(`related_name='old_uploaded_document_set'`, no `local_document_url`). Used
+once, to recover from a disk crash (the `send_data_loss_emails*.py` scripts
+read it); surfaced on the applicant page via `prepare_old_uploaded_documents()`
+(which caches `applicant.olduploadeddocument_set` keyed by slot id). Do not
+reuse it for new purposes.
 
 ---
 
@@ -455,6 +457,66 @@ python fetch_mytcasfolio_pdf.py --refresh [--report FILE] <base_path> <base_url>
   at `<base_url>`, not through `download_uploaded_document_response`, so the
   app's staff permission check does not apply; unless that server adds its own
   access control, the random filename prefix is the only guard.
+
+### Replacing files with links (script)
+
+`scripts/replace_uploaded_files_with_urls.py` (run by hand from `scripts/`)
+turns applicants' uploaded files into links, from a CSV of updates, for one
+project and major. The logic is in `maintenance/document_url_replacement.py`
+(tests: `python manage.py test maintenance`).
+
+```
+python replace_uploaded_files_with_urls.py --project ID --major N updates.csv [--dry-run]
+python replace_uploaded_files_with_urls.py --project ID --major N updates.csv --apply
+# also: --slot KEY, --report FILE
+```
+
+- **CSV:** `national_id,url` (a `national_id,url` header row is optional).
+- **Slot:** the project's own file-or-link (`'any'`) slot shown for major
+  `N` (blank `major_numbers`, or `N` listed). There must be exactly one;
+  otherwise the run stops before any row and lists the candidates (with
+  their keys), and `--slot KEY` picks the slot by `document_key` — the
+  project's slot or a common slot with that key, exactly one, looked up as in
+  `build_portfolio_zips.py` (`find_project_uploaded_document`). It must also
+  be a file-or-link slot for `N`. Slots without a `document_key` (e.g.
+  criteria-generated ones) can only be used when they are the single
+  candidate. An
+  unknown major number is an error too. File-only and link-only slots are
+  never changed.
+- **Applicants:** looked up by `national_id`; must have an active (not
+  canceled) application to the project, in any round, with `N` in its
+  `MajorSelection`. Others are refused.
+- **Url:** stripped, then must pass `URLValidator`, the `document_url`
+  length limit, and the slot's [custom validator](#custom-validators) (for
+  TCASFolio slots, the `view-folio` link forms).
+- **Per row**, the applicant's documents in the slot:
+  - exactly one file document → replaced: `replaced_uploaded_file` gets the
+    file's name (the file stays on disk), `uploaded_file` is cleared,
+    `document_url` is set, `local_document_url` is cleared, and a `LogItem`
+    is written. `original_filename` is kept. Each row is saved in its own
+    transaction.
+  - one link document → compared with the update's link. Same link →
+    `already-done` (so re-runs are safe); another one → `url-mismatch`
+    warning, not changed. In slots with the `tcasfolio` validator only the
+    id at the end counts (last path segment; host, query, fragment and a
+    trailing `/` ignored), so `student.mytcas.com/view-folio/<id>`,
+    `folio.mytcas.com/view-folio/<id>` and `folio.mytcas.com/_/<id>` all
+    match; links with no path compare whole. Other slots compare the whole
+    (stripped) urls.
+  - none, or several → error, not changed.
+- **Dry run:** the default (`--dry-run` says so explicitly; it cannot be
+  combined with `--apply`). Rows that would change are reported as
+  `to-replace`. Nothing is written without `--apply`.
+- **Output:** the changed (or, in a dry run, to-be-changed) rows, then
+  warnings and errors, then counts per status; `already-done` rows are not
+  listed, only counted; `--report FILE` also writes a CSV (UTF-8 with BOM) with the old
+  file and current url per row, enough to undo changes by hand.
+- **Afterwards:** run [`fetch_mytcasfolio_pdf.py`](#mirrored-tcasfolio-pdfs)
+  to mirror the new TCASFolio links for staff.
+- Undoing is manual: move `replaced_uploaded_file` back to `uploaded_file`
+  and clear `document_url`. If the applicant later uploads to the slot again,
+  the upload view deletes the row (and its current file), so the
+  `replaced_uploaded_file` reference is lost; the file itself stays on disk.
 
 ---
 
