@@ -14,8 +14,8 @@ def main():
     first_row_for_app = True
     old_nat_id = ''
 
-    subject_count = 11
-    SUBJECT_START_COL = 9
+    subject_count = 15
+    SUBJECT_START_COL = 7
     
     with open(appresult_filename) as csvfile:
         reader = csv.reader(csvfile, delimiter=',')

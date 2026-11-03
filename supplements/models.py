@@ -38,6 +38,10 @@ class AdvancedPlacementResult(models.Model):
         '11134111': 'หลักการตลาด (ภาษาอังกฤษ)',
         '01204111': 'คอมพิวเตอร์และการโปรแกรม',
         '01208111': 'การเขียนแบบวิศวกรรม',
+        '01203381': 'การประยุกต์คอมพิวเตอร์ในงานวิศวกรรมโยธา',
+        '03603111': 'หลักการโปรแกรมเบื้องต้น',
+        '03600012': 'เทคโนโลยีสีเขียว',	
+        '03604223': 'หลักพื้นฐานทางกลศาสตร์วิศวกรรม',
     }
     
     ap_applicant = models.ForeignKey(AdvancedPlacementApplicant,
@@ -51,7 +55,7 @@ class AdvancedPlacementResult(models.Model):
         if self.subject_id in AdvancedPlacementResult.SUBJECT_TITLE:
             return AdvancedPlacementResult.SUBJECT_TITLE[self.subject_id]
         else:
-            return ''
+            return self.subject_id
 
 class ProjectSupplement(models.Model):
     applicant = models.ForeignKey(Applicant,
@@ -299,6 +303,10 @@ def load_applicant_ap_results(applicant,
             '01204111': 8,
             '01208111': 9,
             '01418112': 10,
+            '01203381': 11,
+            '03603111': 12,
+            '03600012': 13,	
+            '03604223': 14,
         }
         
         ap_course_results = {}
@@ -308,7 +316,7 @@ def load_applicant_ap_results(applicant,
             national_id = ap_applicants[res.ap_applicant_id].national_id
             if national_id not in ap_course_results:
                 ap_app = ap_applicants[res.ap_applicant_id]
-                ap_app.course_results = ['-','-','-','-','-','-','-','-','-','-','-']
+                ap_app.course_results = ['-','-','-','-','-','-','-','-','-','-','-','-','-','-','-']
                 ap_course_results[ap_app.national_id] = ap_app
 
             ap_app = ap_course_results[national_id]
