@@ -13,6 +13,14 @@
   <div class="col-md-12">
     <div class="border-a0 p5 mb10 pl10 pr10 bg-light">
       {% if is_accepted_for_interview %}
+        <!-- ------------- NAT SPORT --------------- -->
+        {% if active_application.admission_project_id == 4 %}
+
+          {% include "appl/include/project_accepted_result_acceptance_fullhook_natsport.html" %}
+  
+          <!-- ------------- NAT SPORT --------------- -->
+        {% else %}
+
         {% if is_accepted %}
 
 		      {% include "appl/include/project_accepted_result_acceptance_prehook.html" %}
@@ -29,6 +37,7 @@
           <div class="mt5">
             {{ project_round.accepted_instructions|safe }}
           </div>
+
         {% else %}
           <h3>{% trans 'ขอแสดงความเสียใจด้วย' %}</h3>
           {% blocktrans trimmed %}คุณไม่ผ่านการสอบสัมภาษณ์ อย่างไรก็ตาม คุณยังมีโอกาสเข้าศึกษาต่อที่มหาวิทยาลัยเกษตรศาสตร์ผ่านทางโครงการอื่น ๆ ในรอบถัด ๆ ไป กรุณาติดตามข่าวสารได้จากเว็บไซต์ admission.ku.ac.th{% endblocktrans %}<br />
@@ -56,6 +65,9 @@
 					</div>
 
           {{ project_round.accepted_for_interview_instructions|safe }}
+        {% endif %}
+
+        <!-- ------------- NAT SPORT --------------- -->
         {% endif %}
       {% else %}
         <h3>{% trans 'ขอแสดงความเสียใจด้วย' %}</h3>

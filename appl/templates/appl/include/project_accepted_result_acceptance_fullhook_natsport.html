@@ -1,0 +1,17 @@
+{% load i18n %}
+{% load appl_tags %}
+{% if is_accepted %}
+  <h3>{% trans 'ขอแสดงความยินดีด้วย' %}</h3>
+  <i class="text-success fa fa-check"></i>
+  {% trans 'คุณผ่านการสอบสัมภาษณ์ใน<b>รอบที่ 1</b> และมีสิทธิ์เข้าศึกษาต่อในสาขา:' %}
+  <h4>{{ accepted_result.major.title_trans }} - {{ accepted_result.major.faculty.title_trans }} ({{ accepted_result.major.faculty.campus.title_trans }})</h4>
+
+  <span class="badge badge-danger">ยืนยันสิทธิ์เลือกสาขา</span> สำหรับผู้ที่ผ่านการสอบสัมภาษณ์รอบที่ 1  ให้ผู้สมัครยืนยันสิทธิ์เลือกคณะและสาขา รอบที่ 1 ในวันที่ <b>20 พ.ย. 2569</b> ที่ 
+  <a target="_blank" href="https://sac.ku.ac.th/confirmation-athletes-tcas">https://sac.ku.ac.th/confirmation-athletes-tcas</a><br>
+  ให้ดำเนินการยืนยันภายในเวลา 23:59 น. ของวันที่ 20 พ.ย. 2569 &nbsp;&nbsp; ถ้าไม่ดำเนินการยืนยัน จะถือว่า<b>สละสิทธิ์</b>การเข้าศึกษาและจะไม่ได้รับการพิจารณาในรอบที่ 2
+{% else %}
+  <h3>ผู้สมัครยังไม่ผ่านการคัดเลือกโครงการรับผู้มีความสามารถทางกีฬาดีเด่นในรอบที่ 1</h3>
+  <b>ให้ผู้สมัครตรวจสอบผลการสัมภาษณ์ในรอบที่ 2 อีกครั้ง ในวันที่ 30 พ.ย. 2569</b><br>  ถ้าผ่านการสัมภาษณ์จะต้องยืนยันสิทธิ์การเลือกสาขาในวันที่ 11 ธ.ค. 2569
+  <br><br>
+  <span class="badge badge-danger">อย่าลืม</span> ตรวจสอบผลการสัมภาษณ์ในรอบที่ 2 อีกครั้ง ในวันที่ 30 พ.ย. 2569
+{% endif %}
