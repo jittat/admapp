@@ -17,6 +17,7 @@ from appl.models import ProjectApplication
 from appl.models import ProjectUploadedDocument
 from appl.models import MajorInterviewDescriptionCache
 from appl.models import MajorAdditionalAdmissionFormField, ApplicantAdditionalAdmissionFormValue
+from appl.pending_results import is_accepted_result_shown_for
 from appl.qrpayment import generate_ku_qr, generate_empty_img
 from appl.views.upload import upload_form_for, prepare_deadline_flags
 from regis.decorators import appl_login_required
@@ -352,7 +353,8 @@ def index_with_active_application(request, active_application, admission_round=N
                     'interview_description': interview_description,
                     'interview_description_hash': interview_description_hash,
 
-                    'accepted_result_shown': project_round.accepted_result_shown,
+                    'accepted_result_shown': is_accepted_result_shown_for(project_round,
+                                                                          admission_results),
                     'is_accepted': is_accepted,
                     'accepted_result': accepted_result,
                     'has_confirmed': has_confirmed,
@@ -584,7 +586,7 @@ def deactivate_project(request, project_id, admission_round_id):
     is_accepted_for_interview = len([r for r in admission_results if r.is_accepted_for_interview]) > 0
     is_accepted = len([r for r in admission_results if r.is_accepted]) > 0
     
-    if ((project_round.accepted_result_shown and not is_accepted) or
+    if ((is_accepted_result_shown_for(project_round, admission_results) and not is_accepted) or
         (project_round.accepted_for_interview_result_shown and not is_accepted_for_interview)):
 
         applicant.accepted_application = None

@@ -10,6 +10,7 @@ from django.urls import reverse
 from appl.models import AdmissionProject, AdmissionRound
 from appl.models import ProjectApplication, Payment, Major, AdmissionResult, Faculty
 from appl.models import ProjectUploadedDocument, UploadedDocument, ExamScoreProvider, MajorInterviewDescription
+from appl.pending_results import is_major_accepted_result_pending
 from appl.models import ApplicantAdditionalAdmissionFormValue, MajorAdditionalAdmissionFormField
 from backoffice.decorators import user_login_required
 from backoffice.models import CheckMarkGroup, JudgeComment, MajorInterviewCallDecision, InterviewDescription, AdmissionProjectMajorCuptCodeInterviewDescription, ProjectMenuConfig
@@ -893,7 +894,9 @@ def show_applicant(request, project_id, round_id, major_number, rank):
 
         'criteria': (not project_round.criteria_check_required) or project_round.criteria_check_frozen,
         'interview': project_round.accepted_for_interview_result_frozen,
-        'acceptance': project_round.accepted_result_frozen or project_round.accepted_result_shown
+        'acceptance': (project_round.accepted_result_frozen or
+                       (project_round.accepted_result_shown and
+                        not is_major_accepted_result_pending(major)))
     }
 
     only_bulk_interview_acceptance = (project_round.only_bulk_interview_acceptance) and (not major.is_forced_individual_interview_call)
@@ -1134,7 +1137,8 @@ def set_acceptance(request, project_id, round_id, national_id, major_number, dec
     major = request.major
     application = request.application
 
-    if request.project_round.accepted_result_shown:
+    if (request.project_round.accepted_result_shown and
+            not is_major_accepted_result_pending(major)):
         return HttpResponseForbidden()
     
     if request.project_round.accepted_result_frozen:
