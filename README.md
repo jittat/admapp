@@ -20,9 +20,11 @@
 ## ใช้ pipenv
 สร้าง env และ install dependencies สำหรับทำครั้งแรก
 ```
-    pipenv --python 3.8
-    pipenv install
+    pipenv --python 3.10
+    pipenv sync --dev
 ```
+(`pipenv sync --dev` ติดตั้งตาม Pipfile.lock ทั้ง packages และ dev-packages เช่น flake8, jupyter
+ใช้คำสั่งนี้ซ้ำทุกครั้งที่ Pipfile.lock เปลี่ยน)
 สำหรับเปิด shell เพื่อเข้าไปรันคำสั่ง manage.py ต่างๆ
 ```
     pipenv shell
@@ -39,6 +41,11 @@ pipenv requirements | sed -E 's/;.*$//' > requirements.txt
 คำสั่ง `sed` ตัด environment markers (เช่น `; python_version >= '3.10'`) ออก
 ให้ requirements.txt เป็นแบบ `name==version` ตามเดิม (โปรเจกต์กำหนด Python 3.10
 ซึ่ง marker ทุกตัวใน lock เป็นจริงอยู่แล้ว จึงได้ package ชุดเดียวกัน)
+
+production ติดตั้งจาก requirements.txt อย่างเดียว ดังนั้น package ที่ production ต้องใช้
+(รวมถึง gunicorn) ต้องอยู่ใน `[packages]` ของ Pipfile ส่วน `[dev-packages]` จะไม่ถูก export
+ไปที่ requirements.txt ห้ามแก้ requirements.txt ด้วยมือ เพราะจะถูกเขียนทับตอน export ครั้งถัดไป
+
 **ไม่ได้ใช้ pipenv**  
 file requirements.txt จะถูกใช้อยู่ ก็ใช้ตามปกติ แต่ถ้าจะอัปเดต dependency ตัวไหน แนะนำให้ใช้ pipenv แล้วทำตามด้านบนจะดีกว่า
 
